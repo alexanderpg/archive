@@ -366,6 +366,11 @@ charset="utf-8";    # кодировка базы</pre>
 /license
 /UserFiles/Image
 /UserFiles/Files
+/UserFiles/Cache
+/1cManager/upload
+/1cManager/goods
+/1cManager/sklad
+/1cManager/orders
 /phpshop/admpanel/csv
 /phpshop/admpanel/dumper/backup</pre>
 

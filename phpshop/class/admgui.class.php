@@ -131,7 +131,7 @@ class PHPShopGUI {
             $icon = '<img src="' . $data . '" data-thumbnail="' . $id . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="img-thumbnail" ' . $width . '>';
             $icon_hide = $drag = '';
         } else {
-            $icon = '<img class="img-thumbnail img-thumbnail-dashed" data-thumbnail="' . $id . '" src="images/no_photo.gif">';
+            $icon = '<img class="img-thumbnail img-thumbnail-dashed" data-thumbnail="' . $id . '" src="images/no_photo.gif" alt="">';
             $name = '<span data-icon="' . $id . '">' . $this->__('Выбрать файл') . '</span>';
             $icon_hide = 'hide';
         }

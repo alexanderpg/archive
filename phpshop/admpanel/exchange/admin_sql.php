@@ -318,6 +318,7 @@ TRUNCATE ' . $GLOBALS['SysValue']['base']['foto'] . ';', '');
     $query_value[] = array('Очистить базу городов', 'TRUNCATE ' . $GLOBALS['SysValue']['base']['citylist_country'] . ';
 TRUNCATE ' . $GLOBALS['SysValue']['base']['citylist_region'] . ';
 TRUNCATE ' . $GLOBALS['SysValue']['base']['citylist_city'] . ';', '');
+     $query_value[] = array('Удалить все лиды', 'TRUNCATE ' . $GLOBALS['SysValue']['base']['notes'] . ';', '');
 
 
 

@@ -8,10 +8,6 @@
  */
 class PHPShopPhoto extends PHPShopCore {
 
-    /**
-     * @var Int  Кол-во фото в длину
-     */
-    var $ilim = 4;
     var $empty_index_action = true;
 
     /**
@@ -93,7 +89,7 @@ class PHPShopPhoto extends PHPShopCore {
      * Вывод списка фото
      */
     function ListPhoto() {
-        $disp = '
+        $dis = '
                 <link href="phpshop/lib/templates/photo/highslide/highslide.css" rel="stylesheet">
                 <script src="phpshop/lib/templates/photo/highslide/highslide-p.js"></script>
                 <script>
@@ -114,19 +110,37 @@ class PHPShopPhoto extends PHPShopCore {
         if (is_array($this->dataArray))
             foreach ($this->dataArray as $row) {
 
-                $name_s = str_replace(".", "s.", $row['name']);
-                $this->set('photoIcon', $name_s);
-                $this->set('photoInfo', $row['info']);
-                $this->set('photoImg', $row['name']);
 
-                // Перехват модуля
-                $this->setHook(__CLASS__, __FUNCTION__, $row, 'MIDDLE');
+                // Видео
+                if (in_array(pathinfo($row['name'], PATHINFO_EXTENSION), array('mp4', 'mov'))) {
+                    $this->set('photoVideo', $row['name']);
+                    $this->set('photoInfo', $row['info']);
 
-                if (PHPShopParser::checkFile('photo/photo_element_forma.tpl'))
-                    $disp .= ParseTemplateReturn('photo/photo_element_forma.tpl');
-                else
-                    $disp .= ParseTemplateReturn('phpshop/lib/templates/photo/photo_element_forma.tpl', true);
+                    // Перехват модуля
+                    $this->setHook(__CLASS__, __FUNCTION__, $row, 'MIDDLE');
+
+                    if (PHPShopParser::checkFile('photo/photo_element_forma_video.tpl'))
+                        $dis .= ParseTemplateReturn('photo/photo_element_forma_video.tpl');
+                    else
+                        $dis .= ParseTemplateReturn('phpshop/lib/templates/photo/photo_element_forma_video.tpl', true);
+                }
+                // Изображение
+                else {
+                    $name_s = str_replace(".", "s.", $row['name']);
+                    $this->set('photoIcon', $name_s);
+                    $this->set('photoInfo', $row['info']);
+                    $this->set('photoImg', $row['name']);
+
+                    // Перехват модуля
+                    $this->setHook(__CLASS__, __FUNCTION__, $row, 'MIDDLE');
+
+                    if (PHPShopParser::checkFile('photo/photo_element_forma.tpl'))
+                        $dis .= ParseTemplateReturn('photo/photo_element_forma.tpl');
+                    else
+                        $dis .= ParseTemplateReturn('phpshop/lib/templates/photo/photo_element_forma.tpl', true);
+                }
             }
+           
         // Если есть описание каталога
         if (empty($this->LoadItems['CatalogPhoto'][$this->category]))
             $content = $this->PHPShopPhotoCategory->getContent();
@@ -134,8 +148,7 @@ class PHPShopPhoto extends PHPShopCore {
             $content = $this->PHPShopPhotoCategory->getContent();
 
 
-
-        $this->set('pageContent', $content . $disp);
+        $this->set('pageContent', $content . PHPShopText::div($dis, false, false, false, 'row'));
         $this->set('pageTitle', $this->category_name);
 
         // Пагинатор
@@ -193,6 +206,6 @@ class PHPShopPhoto extends PHPShopCore {
         // Подключаем шаблон
         $this->parseTemplate($this->getValue('templates.page_page_list'));
     }
-
 }
+
 ?>

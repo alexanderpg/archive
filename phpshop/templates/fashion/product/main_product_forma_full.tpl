@@ -138,7 +138,7 @@
                 <div class="js-quantity-counter row align-items-center">
                     <div class="col-7">
                         <small class="d-block text-body font-weight-bold">{Выберите количество}:</small>
-                        <input class="js-result form-control h-auto border-0 rounded-lg p-0" type="text" value="1" name="quant[1]">
+                        <input class="js-result form-control h-auto border-0 rounded-lg p-0" type="text" value="1" name="quant[2]">
                     </div>
                     <div class="col-5 text-right">
                         <a class="js-minus btn btn-xs btn-icon btn-outline-secondary rounded-circle" href="javascript:;">

@@ -3,7 +3,7 @@
 /**
  * Áèáëèîòåêà âèäæåòà äîñòàâîê
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopModules
  */
 class DeliveryWidget {
@@ -65,32 +65,35 @@ class DeliveryWidget {
             }
     }
 
-    public function get($url) {
+    public function get($url, $protocol = false) {
 
-        if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
-            $protocol = 'https://';
-        } else
-            $protocol = 'http://';
+        if (empty($protocol)) {
+
+            if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
+                $protocol = 'https://';
+            } else
+                $protocol = 'http://';
+        }
 
         $ñurl = curl_init();
         curl_setopt_array($ñurl, [
-            CURLOPT_URL => $protocol.$url,
+            CURLOPT_URL => $protocol . $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
         ]);
         $result = curl_exec($ñurl);
         curl_close($ñurl);
-        
+
         return json_decode($result, true);
     }
 
 }
 
-class Mysqlcached {
+class DeliveryWidgetMysqlcached extends PHPShopMysqlCache {
 
     public function __construct() {
-        
+        parent::__construct();
     }
 
     public function addServer($server, $port) {
@@ -98,32 +101,9 @@ class Mysqlcached {
         $this->PHPShopOrm->debug = false;
     }
 
-    private function delete($key) {
-        $this->PHPShopOrm->delete(['uid' => '="' . $key . '"']);
-    }
-
-    public function get($key) {
-        $cache = $this->PHPShopOrm->getOne(['*'], ['uid' => '="' . $key . '"']);
-
-        if (!empty($cache)) {
-            if ($cache['time'] > time())
-                return $cache['content'];
-            else
-                $this->delete($key);
-        }
-    }
-
-    public function set($key, $val, $time) {
-        $content = json_decode($this->get($key), true);
-        if (empty($content))
-            $this->PHPShopOrm->insert(['uid_new' => $key, 'content_new' => $val, 'time_new' => time() + $time]);
-        else
-            $this->PHPShopOrm->update(['content_new' => $val], ['uid' => '="' . $key . '"']);
-    }
-
 }
 
-class Nocached {
+class DeliveryWidgetNocached {
 
     public function __construct() {
         

@@ -3,7 +3,7 @@
 /**
  * Обработчик прайс-листов
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopShopCore
  */
 class PHPShopPrice extends PHPShopShopCore {
@@ -29,8 +29,7 @@ class PHPShopPrice extends PHPShopShopCore {
 
         // Навигация хлебные крошки
         $this->navigation(false, __('Прайс-лист'));
-
-        $this->checkXLS();
+        $this->set('onlinePrice', 'hide d-none');
     }
 
     /**
@@ -298,14 +297,5 @@ class PHPShopPrice extends PHPShopShopCore {
         // Подключаем шаблон
         $this->parseTemplate($this->getValue('templates.price_page_list'));
     }
-
-    function checkXLS() {
-        if (!is_file('UserFiles/Files/price.xls')) {
-            $this->set('onlinePrice', 'hide d-none');
-        } else
-            $this->set('onlinePrice', 'price-page-list');
-    }
-
 }
-
 ?>

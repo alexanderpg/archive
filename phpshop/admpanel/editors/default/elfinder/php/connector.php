@@ -162,7 +162,7 @@ $opts = array(
       
             'winHashFix' => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
             'uploadDeny' => array('all'), // All Mimetypes not allowed to upload
-            'uploadAllow' => array("image/webp", "image/x-webp", 'image/png', 'image/jpeg', 'image/gif', "application/x-shockwave-flash", "application/zip", "application/rar", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf", "application/x-rar", "video/mp4", "application/mp4", "image/svg+xml", "application/pdf", "application/svg+xml","text/plain"),
+            'uploadAllow' => array("image/webp", "image/x-webp", 'image/png', 'image/jpeg', 'image/gif', "application/x-shockwave-flash", "application/zip", "application/rar", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf", "application/x-rar", "video/mp4", "application/mp4", "image/svg+xml", "application/pdf", "application/svg+xml","text/plain","video/quicktime"),
             'uploadOrder' => array('deny', 'allow'), // allowed Mimetype `image` and `text/plain` only
             'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
         ),

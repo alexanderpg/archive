@@ -168,10 +168,10 @@
                                 <tr>
                                     <td
                                         style="color: #646464;font-family: Helvetica, sans-serif; font-size: 15px;line-height: 24px; ">
-                                        <p>	Email: @mail@ <br>
-	                                        {Сообщение}: @content@ <br>
-                                            {Имя}: @name@ <br>
-                                            {Телефон}: @tel@ <br>
+                                        <p>	Email: @user_mail@ <br>
+	                                        {Сообщение}: @user_content@ <br>
+                                            {Имя}: @user_name@ <br>
+                                            {Телефон}: @user_tel@ <br>
                                             {Дата}: @date@ <br>
                                         </p>
                                     </td>

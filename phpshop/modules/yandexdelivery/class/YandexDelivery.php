@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с Яндекс Доставкой API 2.0
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopModules
  * @todo https://yandex.ru/support2/delivery-profile/ru/modules/widgets
  */
@@ -212,22 +212,22 @@ class YandexDelivery {
         $response = $this->request('/api/b2b/platform/pickup-points/list', $request);
         return $response['points'][0]['id'];
     }
-    
+
     /**
      *  Определение сроков доставки
      */
     public function getApproxDeliveryDays($data) {
 
         $request = [
-            'station_id'=>$this->STATION_ID,
+            'station_id' => $this->STATION_ID,
             'self_pickup_id' => $data->delivery_variant_id,
             'last_mile_policy' => 'self_pickup',
-            'send_unix'=>true
+            'send_unix' => true
         ];
-        
+
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => static::BASE_URL . '/api/b2b/platform/offers/info?'.http_build_query($request),
+            CURLOPT_URL => static::BASE_URL . '/api/b2b/platform/offers/info?' . http_build_query($request),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => [
                 "Authorization: Bearer " . $this->TOKEN,
@@ -239,7 +239,7 @@ class YandexDelivery {
 
         curl_close($curl);
         $result = json_decode($response, true);
-        
+
         return $result['offers'];
     }
 
@@ -287,6 +287,15 @@ class YandexDelivery {
         $dimensions = $this->getDefaultDimensions();
 
         $dimensions['weight'] = $data->weight;
+
+        if (!empty($data->length))
+            $dimensions['length'] = $data->length;
+
+        if (!empty($data->height))
+            $dimensions['height'] = $data->height;
+
+        if (!empty($data->width))
+            $dimensions['width'] = $data->width;
 
         $order_lines = [];
         foreach ($data->products as $product) {
@@ -407,17 +416,45 @@ class YandexDelivery {
         return $result['request_id'];
     }
 
+    public function getDimensions($cart) {
+
+        $max_dimensions = 0;
+
+        if (is_array($cart))
+            foreach ($cart as $prod) {
+
+                $PHPShopProduct = new PHPShopProduct($prod['id']);
+                $length = (int) $PHPShopProduct->getParam('length');
+                $height = (int) $PHPShopProduct->getParam('height');
+                $width = (int) $PHPShopProduct->getParam('width');
+                $dimensions = $length + $height + $width;
+
+                if ($dimensions > $max_dimensions) {
+                    $max_dimensions = $dimensions;
+                    $max_product = [
+                        'length' => $length,
+                        'height' => $height,
+                        'width' => $width
+                    ];
+                }
+            }
+
+        return $max_product;
+    }
+
     public function setDataFromOrderEdit($data) {
 
         $order = unserialize($data['orders']);
         $yandexlivery_data = unserialize($data['yadelivery_order_data']);
 
+        $dimensions = $this->getDimensions($order['Cart']['cart']);
         $def_dimensions = $this->getDefaultDimensions();
 
         if (empty($order['Cart']['weight']))
             $weight = $def_dimensions['weight'];
         else
             $weight = $order['Cart']['weight'];
+
         if (empty($data['fio']))
             $name = $order['Person']['name_person'];
         else
@@ -433,7 +470,12 @@ class YandexDelivery {
             $delivery_data->phone = '+7' . '(' . $matches[1] . ')' . $matches[2] . '-' . $matches[3] . '-' . $matches[4];
         }
 
+        // Габариты
         $delivery_data->weight = $weight;
+        $delivery_data->length = $dimensions['length'];
+        $delivery_data->height = $dimensions['height'];
+        $delivery_data->width = $dimensions['width'];
+        
         $delivery_data->email = $order['Person']['mail'];
         $delivery_data->address = PHPShopString::win_utf8($yandexlivery_data['address']);
         $delivery_data->delivery_variant_id = $yandexlivery_data['pvz_id'];

@@ -470,7 +470,7 @@ class PHPShopModules {
                     $user_func_result = $result;
 
                 // Выключаем таймер
-                $seconds = round(microtime(true) - $time, 6);
+                $seconds = substr(microtime(true) - $time, 0, 6);
 
                 // Время выполнения хука
                 $this->handlerDone[$class_name][$hook_function_name][$rout] = $seconds;

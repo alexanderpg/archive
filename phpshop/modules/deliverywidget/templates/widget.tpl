@@ -71,21 +71,9 @@
                     if (data)
                         $('.geolocation-delivery-list').html(data);
                 }
-            })
-        })
-
-        /*
-         $('#modal-delivery-city-select').on('show.bs.modal', function () {
-         
-         if ($(window).width() > 960)
-         {
-         $('#modal-delivery-city-select').css({
-         'position': 'absolute',
-         'top': '205px',
-         });
-         }
-         })*/
+            });
+        });
 
         $('.geolocation-delivery').trigger('updateDeliveryCity');
-    })
+    });
 </script>

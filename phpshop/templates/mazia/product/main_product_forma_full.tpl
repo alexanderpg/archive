@@ -152,6 +152,7 @@
                                         <a class="list-add-cart-btn text-capitalize" href="@yandexmarket_link@" target="_blank">{Купить в Яндекс.Маркете}</a>
                                     </div>
 
+                                    @deliverywidget@
 
                                 </div>
                             </div>

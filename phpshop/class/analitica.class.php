@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Библиотека аналитики Яндекс и Goggle. Вывод тегов OpenGraph.
+ * Библиотека аналитики Яндекс и Google. Вывод тегов OpenGraph.
  * @author PHPShop Software
- * @version 1.4
+ * @version 1.5
  * @package PHPShopClass
  */
 class PHPShopAnalitica {
@@ -12,6 +12,7 @@ class PHPShopAnalitica {
     var $code;
 
     public function __construct() {
+        global $PHPShopCache;
 
         $options = $GLOBALS['PHPShopSystem']->unserializeParam('admoption');
 
@@ -31,6 +32,11 @@ class PHPShopAnalitica {
         $this->google_enabled = $options['google_enabled'];
         $this->google_id = "UA-" . $options['google_id'];
         $this->analitics = $options['google_analitics'];
+        
+        // Отключение для ботов
+        if($PHPShopCache->checkBot() and $PHPShopCache->seo == 1){
+            $this->metrica_enabled = $this->google_enabled = false;
+        }
     }
 
     /**

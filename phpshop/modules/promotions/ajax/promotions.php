@@ -221,7 +221,7 @@ if ($_REQUEST['promocode'] != '*') {
                         endif;
                     }
                     //информация о товарах к которым применена скидка
-                    if ($info_prod_d_f != '') {
+                    if ($info_prod_d_f != '' and $GLOBALS['PHPShopBase']->codBase != 'utf-8') {
                         $info_prod_d = '<hr><b>Скидка применена для товаров:</b> ' . substr($info_prod_d_f, 0, strlen($info_prod_d_f) - 2);
                     }
 
@@ -451,9 +451,10 @@ $_SESSION['totalsummainput'] = $totalsummainput;
 
 // JSON 
 if ($_REQUEST['type'] == 'json') {
-    $_RESULT['mes'] = PHPShopString::win_utf8($_RESULT['mes']);
+    $_RESULT['mes'] = PHPShopString::win_utf8($_RESULT['mes'],true);
     $_RESULT['discountall'] = PHPShopString::win_utf8($_RESULT['discountall']);
     $_RESULT['mesclean'] = strip_tags($_RESULT['mes']);
 }
-echo json_encode($_RESULT);
-?>
+
+header("Content-Type: application/json");
+exit(json_encode($_RESULT));

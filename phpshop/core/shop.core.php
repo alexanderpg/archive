@@ -249,6 +249,8 @@ class PHPShopShop extends PHPShopShopCore {
      * Экшен выборки подробной информации при наличии переменной навигации UID
      */
     function UID() {
+        global $cache_key;
+
         $this->ajaxTemplate = 'product/main_product_forma_full_ajax.tpl';
 
         // Перехват модуля в начале функции
@@ -294,7 +296,7 @@ class PHPShopShop extends PHPShopShopCore {
 
         // Вес
         $this->set('productWeight', $row['weight']);
-        
+
         // Большая картинка для schema.org
         $this->set('productImg', $row['pic_big']);
 
@@ -364,25 +366,34 @@ class PHPShopShop extends PHPShopShopCore {
             // JSON для Аналитики
             if ($_REQUEST['ajax'] == 'json') {
 
-                $json = array(
+                $json = json_encode([
                     'id' => $row['id'],
                     'name' => PHPShopString::win_utf8($row['name'], true),
                     'uid' => PHPShopString::win_utf8($row['uid']),
                     'category' => PHPShopString::win_utf8($this->category_name),
                     'price' => str_replace(' ', '', $this->get('productPrice')),
                     'success' => 1
-                );
+                ]);
+
+                // Кэш
+                $this->PHPShopCache->set($cache_key, gzcompress($json));
 
                 header("Content-Type: application/json");
-                exit(json_encode($json));
+                exit($json);
+
                 // Быстрый просмотр   
             } else {
                 $disp = ParseTemplateReturn($this->ajaxTemplate);
                 if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system']))
                     $disp = $GLOBALS['PHPShopSeoPro']->AjaxCompile($disp);
 
+                $productview = PHPShopParser::replacedir($disp);
+
+                // Кэш
+                $this->PHPShopCache->set($cache_key, gzcompress($productview));
+
                 header('Content-type: text/html; charset=' . $GLOBALS['PHPShopLang']->charset);
-                exit(PHPShopParser::replacedir($disp));
+                exit($productview);
             }
         } else
             $this->add(ParseTemplateReturn($this->getValue('templates.main_product_forma_full')), true);
@@ -702,6 +713,7 @@ function sort_table($row) {
  * @param boolean $mode формат вывода данных раздела подкаталоги и данные основного раздела\данные категории с товаром
  */
 function CID_Product($category = null, $mode = false) {
+    global $cache_key;
 
     if (!empty($category))
         $this->category = intval($category);
@@ -742,7 +754,6 @@ function CID_Product($category = null, $mode = false) {
             $this->num_row = $this->num_row - $check_cell;
     }
 
-
     $this->dataArray = parent::getListInfoItem(false, false, false, __CLASS__, __FUNCTION__, $order['sql']);
 
     if (!is_array($this->dataArray)) {
@@ -755,12 +766,18 @@ function CID_Product($category = null, $mode = false) {
         if (isset($_POST['ajax'])) {
             if (isset($_POST['json'])) {
                 header('Content-type: application/json; charset=UTF-8');
-                exit(json_encode([
+
+                $json = json_encode([
                     'products' => PHPShopString::win_utf8(PHPShopText::h4($this->lang('empty_product_list'), 'empty_product_list')),
                     'pagination' => PHPShopString::win_utf8($this->get('productPageNav')),
-                ]));
+                ]);
+
+                // Кэш
+                $this->PHPShopCache->set($cache_key, gzcompress($json));
+                exit($json);
             }
             header('Content-type: text/html; charset=' . $GLOBALS['PHPShopLang']->charset);
+
             exit(PHPShopText::h4($this->lang('empty_product_list'), 'empty_product_list'));
         }
 
@@ -807,13 +824,18 @@ function CID_Product($category = null, $mode = false) {
 
         if (isset($_POST['json'])) {
             header('Content-type: application/json; charset=UTF-8');
-            exit(json_encode([
+
+            $json = json_encode([
                 'products' => PHPShopString::win_utf8(PHPShopParser::replacedir($this->separator . $grid)),
                 'pagination' => PHPShopString::win_utf8($this->get('productPageNav')),
                 'filter' => $this->update_filter($order['sql']),
                 'logic' => (int) $this->PHPShopSystem->getSerilizeParam('admoption.filter_logic'),
-                            /* 'sql' => $order['sql'] */
-            ]));
+                    /* 'sql' => $order['sql'] */
+            ]);
+
+            // Кэш
+            $this->PHPShopCache->set($cache_key, gzcompress($json));
+            exit($json);
         }
         header('Content-type: text/html; charset=' . $GLOBALS['PHPShopLang']->charset);
         exit(PHPShopParser::replacedir($this->separator . $grid));
@@ -840,6 +862,11 @@ function CID_Product($category = null, $mode = false) {
     if (isset($_REQUEST['ajaxfilter'])) {
 
         header('Content-type: text/html; charset=' . $GLOBALS['PHPShopLang']->charset);
+        $ajaxfilter = $PHPShopSort->display();
+
+        // Кэш
+        $this->PHPShopCache->set($cache_key, gzcompress($ajaxfilter));
+
         exit($PHPShopSort->display());
     }
 

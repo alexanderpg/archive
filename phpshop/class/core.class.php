@@ -4,7 +4,7 @@
  * Родительский класс ядра
  * Примеры использования размещены в папке phpshop/core/
  * @author PHPShop Software
- * @version 1.11
+ * @version 2.0
  * @package PHPShopClass
  */
 class PHPShopCore {
@@ -103,7 +103,7 @@ class PHPShopCore {
      * Конструктор
      */
     function __construct() {
-        global $PHPShopSystem, $PHPShopNav, $PHPShopModules;
+        global $PHPShopSystem, $PHPShopNav, $PHPShopModules, $PHPShopCache;
 
         if ($this->objBase) {
             $this->PHPShopOrm = new PHPShopOrm($this->objBase);
@@ -120,6 +120,9 @@ class PHPShopCore {
 
         if (strlen($this->page) == 0)
             $this->page = 1;
+        
+        // Кэш
+        $this->PHPShopCache = $PHPShopCache;
 
         // Определяем переменные
         $this->set('pageProduct', $this->SysValue['license']['product_name']);

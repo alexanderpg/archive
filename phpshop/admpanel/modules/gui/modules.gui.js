@@ -51,31 +51,6 @@ $().ready(function () {
 
     });
 
-    // Загрузка модуля
-    $('body').on('click', '.load-module', function () {
-        var file = prompt('URL');
-        if (file.length > 0) {
-
-            var data = [];
-            data.push({name: 'ajax', value: 1});
-            data.push({name: 'url', value: file});
-            $.ajax({
-                mimeType: 'text/html; charset=' + locale.charset,
-                url: '?path=modules.load&id=load',
-                type: 'post',
-                data: data,
-                dataType: "json",
-                async: false,
-                success: function (json) {
-                    if (json['success'] == 1) {
-                        showAlertMessage(json['result']);
-                    } else
-                        showAlertMessage(json['result'], true, true);
-                }
-            });
-        }
-    });
-
     // Выключение из настроек модуля
     $(".select-action .off").on('click', function (event) {
         event.preventDefault();

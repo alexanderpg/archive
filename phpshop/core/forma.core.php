@@ -3,7 +3,7 @@
 /**
  * Обработчик формы сообщения с сайта
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopCore
  */
 class PHPShopForma extends PHPShopCore {
@@ -135,11 +135,11 @@ IP: '.$_SERVER['REMOTE_ADDR'];
         if (!empty($_POST['tema']) and ! empty($_POST['name']) and ! empty($_POST['content'])) {
             $subject = $_POST['tema'] . " - " . $this->PHPShopSystem->getValue('name');
 
-            $this->set('content', $_POST['content']);
-            $this->set('name', $_POST['name']);
-            $this->set('tel', $_POST['tel']);
+            $this->set('user_content', $_POST['content']);
+            $this->set('user_name', $_POST['name']);
+            $this->set('user_tel', $_POST['tel']);
             $this->set('date', date("d-m-y H:s a"));
-            $this->set('mail', $_POST['mail']);
+            $this->set('user_mail', $_POST['mail']);
 
             $PHPShopMail = new PHPShopMail($this->PHPShopSystem->getEmail(), $this->PHPShopSystem->getEmail(), $subject, null, true, true, array('replyto' => $_POST['mail']));
 

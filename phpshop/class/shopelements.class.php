@@ -4,7 +4,7 @@
  * Класс создания элементов товаров
  * Примеры использования размещены в папке phpshop/inc/
  * @author PHPShop Software
- * @version 1.5
+ * @version 1.6
  * @package PHPShopClass
  */
 class PHPShopProductElements extends PHPShopElements {
@@ -86,7 +86,7 @@ class PHPShopProductElements extends PHPShopElements {
         // HTML опции верстки
         $this->setHtmlOption(__CLASS__);
     }
-
+     
     function __call($name, $arguments) {
         if ($name == __CLASS__) {
             self::__construct();

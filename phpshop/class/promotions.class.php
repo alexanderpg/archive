@@ -17,12 +17,15 @@ class PHPShopPromotions {
      * Конструктор
      */
     function __construct() {
+        global $PHPShopValutaArray;
+
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['promotion']);
         $PHPShopOrm->debug = false;
         $where['enabled'] = '="1"';
         $this->promotionslist = $PHPShopOrm->select(array('*'), $where, array('order' => 'id'), array('limit' => 1000), __CLASS__, __FUNCTION__);
 
         $this->cart = new PHPShopCart();
+        $this->currency = $PHPShopValutaArray->getArray();
     }
 
     /**
@@ -225,7 +228,8 @@ class PHPShopPromotions {
      * @return array
      */
     function getPrice($row) {
-        
+        global $PHPShopSystem;
+
         // Получаем информацию о скидках по действующим промоакциям
         $discount_info = $this->promotion_get_discount($row);
 
@@ -240,11 +244,24 @@ class PHPShopPromotions {
             $isNeedCount = $this->promotion_check_cart((int) $discount_info['num_check'], $this->getCntPromoProdsInCart((int) $discount_info['id']));
         }
 
-        $system = new PHPShopSystem();
         $discount = $discount_info['percent'];
         $discountsum = $discount_info['sum'];
+
+        // Учет валюты товара
+        if (!empty($row['baseinputvaluta'])) {
+
+            // Если валюта отличается от базовой
+            if ($row['baseinputvaluta'] !== $PHPShopSystem->getParam('dengi')) {
+
+                // Приводим скидку в базовую валюту
+                if ($this->currency[$row['baseinputvaluta']]['kurs'] > 0) {
+                    $discountsum = $discountsum * $this->currency[$row['baseinputvaluta']]['kurs'];
+                }
+            }
+        }
+
         $status = $discount_info['status'];
-        $priceColumn = $system->getPriceColumn();
+        $priceColumn = $PHPShopSystem->getPriceColumn();
         if (empty($row[$priceColumn])) {
             $priceColumn = 'price';
         }
@@ -254,7 +271,6 @@ class PHPShopPromotions {
 
             // Скидка
             if ($status == 0) {
-
                 $priceDiscount[] = $row[$priceColumn] - ($row[$priceColumn] * $discount);
                 $priceDiscount[] = $row[$priceColumn] - $discountsum;
                 $priceDiscounItog = min($priceDiscount);
@@ -283,7 +299,7 @@ class PHPShopPromotions {
             if ($discount_info['hidePrice'] == 1) {
                 $productPriceNew = 0;
             }
-
+            
             return array('price' => $productPrice, 'price_n' => $productPriceNew, 'label' => $discount_info['label'], 'num_check' => $discount_info['num_check'], 'id' => $discount_info['id']);
         }
     }

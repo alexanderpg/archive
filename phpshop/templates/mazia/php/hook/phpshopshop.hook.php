@@ -166,18 +166,18 @@ function template_parent($obj, $dataArray, $rout) {
 
                             // Общий склад
                             if ($obj->PHPShopSystem->getSerilizeParam('admoption.sklad_sum_enabled') == 1)
-                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'] . PHPShopText::br();
 
                             foreach ($warehouse as $store_id => $store_name) {
                                 if (isset($itemsData['items' . $store_id])) {
-                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'] . PHPShopText::br();
                                 }
                             }
                         } else
                             $items = $obj->PHPShopBase->SysValue['lang']['product_on_sklad'] . " " . $val['items'] . " " . $val['ed_izm'];
                     } else
                         $items = null;
-                    $obj->set('parentItems',$items);
+                    $obj->set('parentItems', $items);
 
                     if ((float) $size_color_array[$val['id']]['price_n'] > 0)
                         $obj->set('parentPriceOld', $size_color_array[$val['id']]['price_n']);
@@ -400,12 +400,12 @@ function sortсattemplatehook($value, $n, $title, $vendor) {
             PHPShopParser::set('podcatalogIcon', $p[4]);
             PHPShopParser::set('podcatalogName', $text);
 
-  
+
             // SEO ссылка
-            if (!empty($p[5])){
+            if (!empty($p[5])) {
                 PHPShopParser::set('podcatalogId', $PHPShopSeoPro->getCID());
-                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true,['.html' => '.html/filters/' . $p[5]]);
-            }else{
+                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html/filters/' . $p[5]]);
+            } else {
                 PHPShopParser::set('podcatalogId', $PHPShopNav->getId());
                 $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html?v[' . $n . ']=' . $p[1]]);
             }
@@ -436,9 +436,9 @@ function template_image_gallery($obj, $array) {
         // Сортировка
         foreach ($data as $k => $v) {
 
-            if ($v['name'] == $array['pic_big'])
+            if ($v['name'] == $array['pic_big'] and ( in_array(pathinfo($v['name'], PATHINFO_EXTENSION), ['mp4', 'mov'])) and $v['num'] != 1) {
                 $sort_data[0] = $v;
-            else
+            } else
                 $sort_data[$s] = $v;
 
             $s++;
@@ -447,10 +447,10 @@ function template_image_gallery($obj, $array) {
         ksort($sort_data);
 
         foreach ($sort_data as $k => $row) {
-            
-            if($i>10)
+
+            if ($i > 10)
                 continue;
-            
+
             $name = $row['name'];
             $name_s = str_replace(".", "s.", $name);
             $name_bigstr = str_replace(".", "_big.", $name);
@@ -462,28 +462,49 @@ function template_image_gallery($obj, $array) {
             if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $name_s)) {
                 $name_s = $name;
             }
-            
-            if($i == 1)
-                $active = 'active show';
-            else $active=null;
 
-            $heroSlider .= '<div class="tab-pane fade '.$active.'" id="tab-'.$i.'">
+            // Поддержка Webp
+            if (method_exists($obj, 'setImage') and ! in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+                $name = $obj->setImage($name);
+                $name_s = $obj->setImage($name_s);
+            }
+
+            if ($i == 1)
+                $active = 'active show';
+            else
+                $active = null;
+
+            // Видео
+            if (in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+                $heroSlider .= '<div class="tab-pane fade ' . $active . '" id="tab-' . $i . '">
+                               <div class="product-img">
+                                  <div class="embed-responsive embed-responsive-4by3"><video class="embed-responsive-item" src="' . $name . '" controls></video></div>
+                                </div>
+                            </div>';
+
+                $heroSliderNav .= '<a class="' . $active . '" data-toggle="pill" href="#tab-' . $i . '">
+                                  <img src="images/video.jpg" alt="" style="max-height:70px">
+                              </a>';
+            }
+            // Изображение
+            else {
+                $heroSlider .= '<div class="tab-pane fade ' . $active . '" id="tab-' . $i . '">
                                <div class="product-img">
                                   <a class="popup-image" href="' . $name . '"><img src="' . $name . '" class="w-100" alt=""></a>
                                 </div>
                             </div>';
-            
-            $heroSliderNav .= '<a class="'.$active.'" data-toggle="pill" href="#tab-'.$i.'">
-                                  <img src="' . $name_s . '" alt="" width="80" height="80">
+                $heroSliderNav .= '<a class="' . $active . '" data-toggle="pill" href="#tab-' . $i . '">
+                                  <img src="' . $name_s . '" alt="" style="max-height:70px">
                               </a>';
+            }
 
             $i++;
         }
 
-            
+
         $obj->set('productFotoList', $heroSlider);
         $obj->set('productHeroSliderNav', $heroSliderNav);
-        $obj->set('productSliderOneImage', sprintf('<img class="img-fluid" src="%s" alt="%s" title="%s"/>', !empty($array['pic_big']) ? $array['pic_big'] : $data[0]['name'],$alt, $alt));
+        $obj->set('productSliderOneImage', sprintf('<img class="img-fluid" src="%s" alt="%s" title="%s"/>', !empty($array['pic_big']) ? $array['pic_big'] : $data[0]['name'], $alt, $alt));
         return true;
     }
 }
@@ -493,7 +514,7 @@ function template_image_gallery($obj, $array) {
  */
 function template_odnotip($obj, $data, $rout) {
 
-    if($rout == 'START'){
+    if ($rout == 'START') {
         $obj->odnotip_setka_num = 6;
     }
 }

@@ -19,7 +19,7 @@ function tab_menu() {
        <li class="' . @$menu_active_servers . '"><a href="?path=system.servers">'.__('Витрины').'</a></li> 
        <li class="' . @$menu_active_warehouse .$hideCatalog. '"><a href="?path=system.warehouse">'.__('Склады').'</a></li>
        <li class="' . @$menu_active_dialog . '"><a href="?path=system.dialog">'.__('Диалоги').'</a></li>
-       <li class="' . @$menu_active_integration . '"><a href="?path=system.integration">'.__('Интеграция').'</a></li>     
+       <li class="' . @$menu_active_integration . '"><a href="?path=system.integration">'.__('Интеграции').'</a></li>     
        <li class="' . @$menu_active_yandexcloud . '"><a href="?path=system.yandexcloud">'.__('Yandex Cloud').'</a></li>     
        <li class="' . @$menu_active_locale . '"><a href="?path=system.locale">'.__('Локализация').'</a></li>     
        <li class="' . @$menu_active_service . '"><a href="?path=system.service">'.__('Обслуживание').'</a></li>     

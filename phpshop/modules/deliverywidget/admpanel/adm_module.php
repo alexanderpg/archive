@@ -12,6 +12,16 @@ function actionUpdate() {
     return $action;
 }
 
+// Обновление версии модуля
+function actionBaseUpdate() {
+    global $PHPShopModules, $PHPShopOrm;
+    $PHPShopOrm->clean();
+    $option = $PHPShopOrm->select();
+    $new_version = $PHPShopModules->getUpdate($option['version']);
+    $PHPShopOrm->clean();
+    $PHPShopOrm->update(array('version_new' => $new_version));
+}
+
 // Функция очистки кеша
 function actionClean() {
     global $PHPShopModules;
@@ -29,35 +39,25 @@ function actionClean() {
 function actionStart() {
     global $PHPShopGUI, $PHPShopOrm, $TitlePage, $select_name;
 
-    $PHPShopGUI->action_button['Очистить кеш'] = [
-        'name' => __('Очистить кеш'),
-        'locale' => true,
-        'action' => 'cleanID',
-        'class' => 'btn btn-default btn-sm navbar-btn',
-        'type' => 'submit',
-        'icon' => 'glyphicon glyphicon-erase'
-    ];
-    $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Очистить кеш', 'Сохранить и закрыть']);
-
     // Выборка
     $data = $PHPShopOrm->select();
 
-    if (class_exists('Memcached')) {
+    if ($data['cache'] != 2)
+        $PHPShopGUI->action_button['Очистить кеш'] = [
+            'name' => __('Очистить кеш'),
+            'locale' => true,
+            'action' => 'cleanID',
+            'class' => 'btn btn-default btn-sm navbar-btn',
+            'type' => 'submit',
+            'icon' => 'glyphicon glyphicon-erase'
+        ];
+    $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Очистить кеш', 'Сохранить и закрыть']);
 
-        $cache = new Memcached();
-        $cache->addServer($data['server'], $data['port']);
-        $cache->set("test_key", "Hello Memcached", 60); // 60 секунд
-        $cache->get("test_key");
 
-        if ($cache->getResultCode() == Memcached::RES_SUCCESS) {
-            $check = '<span class="glyphicon glyphicon-ok text-success"></span>';
-            $disabled = false;
-        } else {
-            $check = '<span class="glyphicon glyphicon-remove text-danger"></span>';
-            $disabled = 'disabled="disabled"';
-        }
+
+    if (class_exists('Memcached') or class_exists('Memcache')) {
+        $disabled = false;
     } else {
-        $check = '<span class="glyphicon glyphicon-remove text-danger"></span>';
         $disabled = 'disabled="disabled"';
     }
 
@@ -65,17 +65,15 @@ function actionStart() {
                 ['База данных MySQL', 0, $data['cache']],
                 ['Сервер кеширования Memcached', 1, $data['cache'], $disabled],
                 ['Без кеша', 2, $data['cache']],
-                    ], 250));
+                    ], 300));
 
-    $Tab1 .= $PHPShopGUI->setField("Адрес сервера кеширования", $PHPShopGUI->setInputText($check, 'server_new', $data['server'], 250, false, false, false, '127.0.0.1'));
-    $Tab1 .= $PHPShopGUI->setField("Порт сервера кеширования", $PHPShopGUI->setInputText($check, 'port_new', (int) $data['port'], 100, false, false, false, '11211'));
     $Tab1 .= $PHPShopGUI->setField("Вес по умолчанию:", $PHPShopGUI->setInputText('гр', 'weight_new', (int) $data['weight'], 100));
     $Tab1 .= $PHPShopGUI->setField("Почтовый индекс города отправителя:", $PHPShopGUI->setInputText(false, 'index_from_new', (int) $data['index_from'], 100));
     $Tab1 .= $PHPShopGUI->setField("Кол-во дней хранения кеша:", $PHPShopGUI->setInputText(false, 'time_new', (int) $data['time'], 50, false, false, false, '1'));
 
     // Форма регистрации
     $Tab3 = $PHPShopGUI->setPay(false, false, $data['version'], true);
-    
+
     // Инструкция
     $Tab2 = $PHPShopGUI->loadLib('tab_info', $data, '../modules/' . $_GET['id'] . '/admpanel/');
 

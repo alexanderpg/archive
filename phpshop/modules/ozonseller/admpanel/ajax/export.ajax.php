@@ -37,7 +37,7 @@ if (!empty($_POST['stop'])) {
         'export_ozon_id' => '=0',
     ];
 
-    if (!empty($_SESSION['ozon_error']) and is_array($_SESSION['ozon_error']) and count($_SESSION['ozon_error'])>0)
+    if (!empty($_SESSION['ozon_error']) and is_array($_SESSION['ozon_error']) and count($_SESSION['ozon_error']) > 0)
         $where['id'] = ' NOT IN (' . implode(',', $_SESSION['ozon_error']) . ')';
 
     $data = $PHPShopOrm->getOne(array('*'), $where);
@@ -90,7 +90,13 @@ if (is_array($data)) {
                     // —сылки
                     $er['description'] = preg_replace("~(http|https|ftp|ftps)://(.*?)(\s|\n|[,.?!](\s|\n)|$)~", '<a href="$1://$2" target="_blank">[ссылка]</a>$3', $er['description']);
                     $error .= ($k + 1) . ' - ' . PHPShopString::utf8_win1251($er['description']) . '<br>';
+
+                    // Ћимит
+                    if ($er['code'] == 'TOTAL_CREATE_LIMIT_EXCEEDED') {
+                        $PHPShopOrm->update(['export_ozon_task_status_new' => null, 'export_ozon_task_id_new' => 0], ['id' => '=' . (int) $data['id']]);
+                    }
                 }
+
 
                 $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status']], ['id' => '=' . (int) $data['id']]);
 

@@ -1690,18 +1690,18 @@ $(document).ready(function () {
 
      // Настройки https://previews.customer.envatousercontent.com/files/263390663/tns_options_example.html
     if ($('#productSlider').length > 0) {
-        if ($('.heroSlide img').attr('src').indexOf('no_photo.png') + 1) {
-            var src = $('.heroSlide img').attr('src');
+        if ($('.heroSlide .slider-img').attr('src').indexOf('no_photo.png') + 1) {
+            var src = $('.heroSlide .slider-img').attr('src');
             TouchNSwipe.remove("productSlider");
             $('#productSlider').append('<img  src="' + src + '" style="width: 100%;max-width: 480px;"/>');
         } else {
-            $('.heroSlide img').each(function (index, element) {
+            $('.heroSlide .slider-img').each(function (index, element) {
                 $(element).removeClass('hide');
             });
 
             var tns = TouchNSwipe.get('productSlider');
             tns.slider.on(ElemZoomSlider.INDEX_CHANGE, function (event) {
-                $(event.currentTarget.getSlideElemAt(event.currentTarget._index)).find('img').removeClass('hide');
+                $(event.currentTarget.getSlideElemAt(event.currentTarget._index)).find('.slider-img').removeClass('hide');
             });
         }
     }

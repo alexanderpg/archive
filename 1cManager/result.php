@@ -4,7 +4,7 @@
  * Автономная синхронизация номенклатуры из 1С и CML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 4.4
+ * @version 4.5
  */
 // Авторизация
 include_once("login.php");
@@ -579,7 +579,7 @@ class ReadCsv1C extends PHPShopReadCsvNative {
 
             if ($this->ObjSystem->getSerilizeParam("1c_option.update_price") == 1 and $CsvToArray[7] != "")
                 $sql .= "price='" . $CsvToArray[7] . "', "; // цена 1
-            
+
             if (!empty($CsvToArray[0]))
                 $sql .= "uid='" . $CsvToArray[0] . "', "; // артикул
 
@@ -619,7 +619,14 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                 $enabled = 1;
             }
 
+            // Картинки
             if (!empty($CsvToArray[3])) {
+
+                // Расширение
+                if (strstr($CsvToArray[3], '#')) {
+                    $this->ImageSrc = explode("#", $CsvToArray[3])[1];
+                    $CsvToArray[3] = explode("#", $CsvToArray[3])[0];
+                }
 
                 if (!empty($_GET['cml']))
                     $last_id = $this->getIdForImagesExternalCode($CsvToArray[17]);
@@ -916,9 +923,18 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                     $sql .= "items='" . $CsvToArray[6] . "', ";
             }
 
-            if (!empty($CsvToArray[3]))
+            // Картинки
+            if (!empty($CsvToArray[3])) {
+
+                // Расширение
+                if (strstr($CsvToArray[3], '#')) {
+                    $this->ImageSrc = explode("#", $CsvToArray[3])[1];
+                    $CsvToArray[3] = explode("#", $CsvToArray[3])[0];
+                }
+
                 $sql .= "pic_small='" . $this->ImagePlus($CsvToArray[3]) . "_1s." . $this->ImageSrc . "',
             pic_big='" . $this->ImagePlus($CsvToArray[3]) . "_1." . $this->ImageSrc . "',";
+            }
 
             // Подчиненные товары
             if ($this->ObjSystem->getSerilizeParam("1c_option.update_option") == 1) {

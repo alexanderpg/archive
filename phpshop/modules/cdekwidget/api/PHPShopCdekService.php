@@ -18,6 +18,7 @@ PHPShopObj::loadClass("array");
 PHPShopObj::loadClass("product");
 PHPShopObj::loadClass("promotions");
 PHPShopObj::loadClass("string");
+PHPShopObj::loadClass("cache");
 
 $PHPShopBase = new PHPShopBase("../../../../phpshop/inc/config.ini");
 $PHPShopValutaArray = new PHPShopValutaArray();
@@ -118,17 +119,24 @@ if (method_exists('PHPShopCdekService', $action)) {
 
 
     if ($action == 'getPVZ') {
-        
-        // Ôאיכ ךורא
-        $cach = 'pvz.json';
-        if (file_exists($cach) and filemtime($cach) > date("U", strtotime("-1 day"))) {
-            echo file_get_contents($cach);
+
+        $file='pvz.json';
+        $cache_key = md5(str_replace("www.", "", getenv('SERVER_NAME')) . $file).'.json';
+        $PHPShopCache = new PHPShopCache($cache_key);
+
+        $PHPShopFileCache = new PHPShopFileCache($PHPShopCache->time);
+        $PHPShopFileCache->dir = "/UserFiles/Cache/static/";
+
+        $content = $PHPShopFileCache->get($cache_key);
+
+        if (!empty($content)) {
+            echo gzuncompress($content);
         } else {
             ob_start();
             PHPShopCdekService::$action($_REQUEST);
-            $tmp = ob_get_clean();
-            file_put_contents($cach, $tmp);
-            echo $tmp;
+            $content = ob_get_clean();
+            $PHPShopFileCache->set($cache_key, gzcompress($content, $PHPShopCache->level));
+            echo $content;
         }
     } else
         PHPShopCdekService::$action($_REQUEST);

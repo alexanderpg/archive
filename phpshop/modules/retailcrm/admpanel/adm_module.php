@@ -68,10 +68,10 @@ function actionStart() {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
         }
 
-        $deliveryTypes[] = array(PHPShopString::win_utf8("Не выбрано", true), "", false);
+        $deliveryTypes[] = array(__("Не выбрано"), "", false);
         if ($response->isSuccessful()) {
             foreach ($response->deliveryTypes as $code => $params) {
-                $deliveryTypes[] = array($params["name"], $params["code"], false);
+                $deliveryTypes[] = array(Tools::iconvArray($params["name"], "UTF-8", "WINDOWS-1251"), $params["code"], false);
             }
         } else {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
@@ -79,6 +79,7 @@ function actionStart() {
 
         $deliveryOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['delivery']);
         $delivery = $deliveryOrm->select(array('*'), array('is_folder' => "=''"));
+        
 
         foreach ($delivery as $del) {
             $tmpDeliveryTypes = $deliveryTypes;
@@ -91,9 +92,7 @@ function actionStart() {
                 }
             }
 
-            $field1 .= $PHPShopGUI->setField($del["city"], $PHPShopGUI->setSelect('delivery[' . $del["id"] . ']', $tmpDeliveryTypes), 1, null, null, 'control-label', false);
-			
-			
+            $field1 .= $PHPShopGUI->setField($del["city"], $PHPShopGUI->setSelect('delivery[' . $del["id"] . ']', $tmpDeliveryTypes),1, null, null, 'control-label', false);
         }
 
         $tab2 .= $PHPShopGUI->setCollapse('Способы доставки', $field1);
@@ -105,10 +104,10 @@ function actionStart() {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
         }
 
-        $paymentTypes[] = array(PHPShopString::win_utf8("Не выбрано", true), "", false);
+        $paymentTypes[] = array(__("Не выбрано"), "", false);
         if ($response->isSuccessful()) {
             foreach ($response->paymentTypes as $code => $params) {
-                $paymentTypes[] = array($params["name"], $params["code"], false);
+                $paymentTypes[] = array(Tools::iconvArray($params["name"], "UTF-8", "WINDOWS-1251"), $params["code"], false);
             }
         } else {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
@@ -129,7 +128,7 @@ function actionStart() {
                 }
             }
 
-            $field2 .= $PHPShopGUI->setField($paymentValue["name"], $PHPShopGUI->setSelect('payment[' . $paymentValue["id"] . ']', $tmpPaymentTypes), 1, null, null, 'control-label', false);
+            $field2 .= $PHPShopGUI->setField($paymentValue["name"], $PHPShopGUI->setSelect('payment[' . $paymentValue["id"] . ']', $tmpPaymentTypes),1, null, null, 'control-label', false);
         }
 
         $tab2 .= $PHPShopGUI->setCollapse('Способы оплаты', $field2);
@@ -140,7 +139,7 @@ function actionStart() {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
         }
 
-        $statuses[] = array(PHPShopString::win_utf8("Не выбрано", true), "", false);
+        $statuses[] = array(__("Не выбрано"), "", false);
         if ($response->isSuccessful()) {
             foreach ($response->statuses as $code => $params) {
                 $statuses[] = array(Tools::iconvArray($params["name"], "UTF-8", "WINDOWS-1251"), $params["code"], false);
@@ -153,7 +152,7 @@ function actionStart() {
         $status = $statusesOrm->select(array('*'));
 
         $field3 = "";
-        array_unshift($status, array("id" => "new", "name" => PHPShopString::win_utf8("Новый заказ", true)));
+        array_unshift($status, array("id" => "new", "name" => __("Новый заказ")));
         foreach ($status as $statusValue) {
             $tmpStatuses = $statuses;
             if (isset($value["status"][$statusValue["id"]])) {
@@ -165,7 +164,7 @@ function actionStart() {
                 }
             }
 
-            $field3 .= $PHPShopGUI->setField($statusValue["name"], $PHPShopGUI->setSelect('status[' . $statusValue["id"] . ']', $tmpStatuses), 1, null, null, 'control-label', false);
+            $field3 .= $PHPShopGUI->setField($statusValue["name"], $PHPShopGUI->setSelect('status[' . $statusValue["id"] . ']', $tmpStatuses),1, null, null, 'control-label', false);
         }
 
 

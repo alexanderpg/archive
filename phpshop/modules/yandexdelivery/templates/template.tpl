@@ -27,6 +27,7 @@
 
                 <!-- Код виджета -->
                 <script>
+                    
                     (function(w) {
                         function startWidget() {
 
@@ -35,34 +36,31 @@
                             var station = $('input[name="yandexdelivery_station"]').val();
 
                             w.YaDelivery.createWidget({
-                                containerId: 'delivery-widget',   // Идентификатор HTML-элемента (контейнера), в котором будет отображаться виджет
+                                containerId: 'delivery-widget',
                                 params: {
-                                    city: city,               // Город отображаемый на карте при запуске
-                                    // Размеры виджета
+                                    city: city,
                                     size:{
-                                        "height": "500px",        // Высота
-                                        "width": "100%"           // Ширина
+                                        "height": "500px",
+                                        "width": "100%"
                                     },
-                                    source_platform_station: station, // Станция отгрузки
-                                    physical_dims_weight_gross: weight, // Вес отправления
-                                    delivery_price: (price) => "от " +price + " руб",     // Стоимость доставки
+                                    source_platform_station: station,
+                                    physical_dims_weight_gross: weight,
+                                    delivery_price: (price) => "от " +price + " руб",
                                  
-                                    show_select_button: true,     // Отображение кнопки выбора ПВЗ (false - скрыть кнопку, true - показать кнопку)
+                                    show_select_button: true,
                                     filter: {
-                                        // Тип способа доставки
                                         type: [
-                                            "pickup_point",       // Пункт выдачи заказа
-                                            "terminal"            // Постамат
+                                            "pickup_point",
+                                            "terminal"
                                         ],
-                                        //is_yandex_branded: true, // Тип пункта выдачи заказа (false - Партнерские ПВЗ, true - ПВЗ Яндекса)
-                                        // Способ оплаты
                                         payment_methods: [
-                                            "already_paid",       // Доступен для доставки предоплаченных заказов
+                                            "already_paid"
                                         ]
                                     }
                                 },
                             });
                         }
+                        
                         w.YaDelivery
                             ? startWidget()
                             : document.addEventListener('YaNddWidgetLoad', startWidget);

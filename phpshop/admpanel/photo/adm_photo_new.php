@@ -116,14 +116,14 @@ function actionStart() {
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setField("Размещение", $tree_select) .
             $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['name'], "name_new", false, array('load' => true, 'server' => true, 'url' => true, 'multi' => false)), 1, 'Загрузите сюда фото. Превью фото будет создано автоматически.') .
-            $PHPShopGUI->setField("Описание", $PHPShopGUI->setTextarea("info_new", $data['info'],true,300)) .
+            $PHPShopGUI->setField("Описание", $PHPShopGUI->setTextarea("info_new", $data['info'], true, 300)) .
             $PHPShopGUI->setField("Сортировка", $PHPShopGUI->setInputText("№", "num_new", $data['num'], 150));
 
     $SelectValue[] = array('Вывод в каталоге', 1, $data['enabled']);
     $SelectValue[] = array('Заблокировать', 0, $data['enabled']);
 
     $Tab1 .= $PHPShopGUI->setField("Опции вывода:", $PHPShopGUI->setSelect("enabled_new", $SelectValue));
-    
+
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1);
 
     // Запрос модуля на закладку
@@ -171,7 +171,7 @@ function fotoAdd() {
     // Копируем от пользователя
     if (!empty($_FILES['file']['name'])) {
         $_FILES['file']['ext'] = PHPShopSecurity::getExt($_FILES['file']['name']);
-        if (in_array($_FILES['file']['ext'], array('gif', 'png', 'jpg', 'jpeg'))) {
+        if (in_array($_FILES['file']['ext'], array('gif', 'png', 'jpg', 'jpeg','webp','mp4', 'mov'))) {
             if (move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . $path . $_FILES['file']['name'])) {
                 $file = $_SERVER['DOCUMENT_ROOT'] . $path . $_FILES['file']['name'];
                 $file_name = $_FILES['file']['name'];
@@ -198,77 +198,61 @@ function fotoAdd() {
 
     if (!empty($file)) {
 
-        // Маленькое изображение (тумбнейл)
-        $thumb = new PHPThumb($file);
-        $thumb->setOptions(array('jpegQuality' => $width_kratko));
-
-        // Адаптивность
-        if (!empty($img_adaptive))
-            $thumb->adaptiveResize($img_tw, $img_th);
-        else
-            $thumb->resize($img_tw, $img_th);
-
-        // Исходное название
-        if ($PHPShopSystem->ifSerilizeParam('admoption.image_save_name')) {
-            $name_s = $path_parts['filename'] . 's.' . strtolower($thumb->getFormat());
-            $name = $path_parts['filename'] . '.' . strtolower($thumb->getFormat());
-            $name_big = $path_parts['filename'] . '_big.' . strtolower($thumb->getFormat());
-
-            if (!empty($image_save_source)) {
-                $file_big = $_SERVER['DOCUMENT_ROOT'] . $path . $name_big;
-                @copy($file, $file_big);
-            }
-        } else {
-            $name_s = 'img' . $_POST['category_new'] . '_' . $RName . 's.' . strtolower($thumb->getFormat());
-            $name = 'img' . $_POST['category_new'] . '_' . $RName . '.' . strtolower($thumb->getFormat());
-            $name_big = 'img' . $_POST['category_new'] . '_' . $RName . '_big.' . strtolower($thumb->getFormat());
+        // Видео
+        if (in_array($path_parts['extension'], array('mp4', 'mov'))) {
+            $name = 'vid' . $_POST['category_new'] . '_' . $RName . '.' . strtolower($path_parts['extension']);
+            $name_s = '';
+            @copy($file, $_SERVER['DOCUMENT_ROOT'] . $path . $name);
         }
 
+        // Изображение
+        else {
 
-        $thumb->save($_SERVER['DOCUMENT_ROOT'] . $path . $name_s);
+            // Маленькое изображение (тумбнейл)
+            $thumb = new PHPThumb($file);
+            $thumb->setOptions(array('jpegQuality' => $width_kratko));
 
-        // Большое изображение
-        $thumb = new PHPThumb($file);
-        $thumb->setOptions(array('jpegQuality' => $width_podrobno));
+            // Адаптивность
+            if (!empty($img_adaptive))
+                $thumb->adaptiveResize($img_tw, $img_th);
+            else
+                $thumb->resize($img_tw, $img_th);
 
-        // Адаптивность
-        if (!empty($img_adaptive))
-            $thumb->adaptiveResize($img_w, $img_h);
-        else
-            $thumb->resize($img_w, $img_h);
+            // Исходное название
+            if ($PHPShopSystem->ifSerilizeParam('admoption.image_save_name')) {
+                $name_s = $path_parts['filename'] . 's.' . strtolower($thumb->getFormat());
+                $name = $path_parts['filename'] . '.' . strtolower($thumb->getFormat());
+                $name_big = $path_parts['filename'] . '_big.' . strtolower($thumb->getFormat());
 
-
-
-        $watermark = $PHPShopSystem->getSerilizeParam('admoption.watermark_image');
-        $watermark_text = $PHPShopSystem->getSerilizeParam('admoption.watermark_text');
-
-        // Ватермарк
-        if ($PHPShopSystem->ifSerilizeParam('admoption.watermark_big_enabled')) {
-
-            // Image
-            if (!empty($watermark) and file_exists($_SERVER['DOCUMENT_ROOT'] . $watermark))
-                $thumb->createWatermark($_SERVER['DOCUMENT_ROOT'] . $watermark, $PHPShopSystem->getSerilizeParam('admoption.watermark_right'), $PHPShopSystem->getSerilizeParam('admoption.watermark_bottom'));
-            // Text
-            elseif (!empty($watermark_text))
-                $thumb->createWatermarkText($watermark_text, $PHPShopSystem->getSerilizeParam('admoption.watermark_text_size'), $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/font/' . $PHPShopSystem->getSerilizeParam('admoption.watermark_text_font') . '.ttf', $PHPShopSystem->getSerilizeParam('admoption.watermark_right'), $PHPShopSystem->getSerilizeParam('admoption.watermark_bottom'), $PHPShopSystem->getSerilizeParam('admoption.watermark_text_color'), $PHPShopSystem->getSerilizeParam('admoption.watermark_text_alpha'), 0);
-        }
-
-        $thumb->save($_SERVER['DOCUMENT_ROOT'] . $path . $name);
-
-        // Исходное изображение
-        if (!empty($image_save_source)) {
-
-            if (!$PHPShopSystem->ifSerilizeParam('admoption.image_save_name')) {
-                $file_big = $_SERVER['DOCUMENT_ROOT'] . $path . $name_big;
-                @copy($file, $file_big);
+                if (!empty($image_save_source)) {
+                    $file_big = $_SERVER['DOCUMENT_ROOT'] . $path . $name_big;
+                    @copy($file, $file_big);
+                }
+            } else {
+                $name_s = 'img' . $_POST['category_new'] . '_' . $RName . 's.' . strtolower($thumb->getFormat());
+                $name = 'img' . $_POST['category_new'] . '_' . $RName . '.' . strtolower($thumb->getFormat());
+                $name_big = 'img' . $_POST['category_new'] . '_' . $RName . '_big.' . strtolower($thumb->getFormat());
             }
+
+
+            $thumb->save($_SERVER['DOCUMENT_ROOT'] . $path . $name_s);
+
+            // Большое изображение
+            $thumb = new PHPThumb($file);
+            $thumb->setOptions(array('jpegQuality' => $width_podrobno));
+
+            // Адаптивность
+            if (!empty($img_adaptive))
+                $thumb->adaptiveResize($img_w, $img_h);
+            else
+                $thumb->resize($img_w, $img_h);
+
+
+            $watermark = $PHPShopSystem->getSerilizeParam('admoption.watermark_image');
+            $watermark_text = $PHPShopSystem->getSerilizeParam('admoption.watermark_text');
 
             // Ватермарк
-            if ($PHPShopSystem->ifSerilizeParam('admoption.watermark_source_enabled')) {
-
-                $thumb = new PHPThumb($file_big);
-                $thumb->setOptions(array('jpegQuality' => $width_podrobno));
-                $thumb->setWorkingImage($thumb->getOldImage());
+            if ($PHPShopSystem->ifSerilizeParam('admoption.watermark_big_enabled')) {
 
                 // Image
                 if (!empty($watermark) and file_exists($_SERVER['DOCUMENT_ROOT'] . $watermark))
@@ -276,8 +260,34 @@ function fotoAdd() {
                 // Text
                 elseif (!empty($watermark_text))
                     $thumb->createWatermarkText($watermark_text, $PHPShopSystem->getSerilizeParam('admoption.watermark_text_size'), $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/font/' . $PHPShopSystem->getSerilizeParam('admoption.watermark_text_font') . '.ttf', $PHPShopSystem->getSerilizeParam('admoption.watermark_right'), $PHPShopSystem->getSerilizeParam('admoption.watermark_bottom'), $PHPShopSystem->getSerilizeParam('admoption.watermark_text_color'), $PHPShopSystem->getSerilizeParam('admoption.watermark_text_alpha'), 0);
+            }
 
-                $thumb->save($file_big);
+            $thumb->save($_SERVER['DOCUMENT_ROOT'] . $path . $name);
+
+            // Исходное изображение
+            if (!empty($image_save_source)) {
+
+                if (!$PHPShopSystem->ifSerilizeParam('admoption.image_save_name')) {
+                    $file_big = $_SERVER['DOCUMENT_ROOT'] . $path . $name_big;
+                    @copy($file, $file_big);
+                }
+
+                // Ватермарк
+                if ($PHPShopSystem->ifSerilizeParam('admoption.watermark_source_enabled')) {
+
+                    $thumb = new PHPThumb($file_big);
+                    $thumb->setOptions(array('jpegQuality' => $width_podrobno));
+                    $thumb->setWorkingImage($thumb->getOldImage());
+
+                    // Image
+                    if (!empty($watermark) and file_exists($_SERVER['DOCUMENT_ROOT'] . $watermark))
+                        $thumb->createWatermark($_SERVER['DOCUMENT_ROOT'] . $watermark, $PHPShopSystem->getSerilizeParam('admoption.watermark_right'), $PHPShopSystem->getSerilizeParam('admoption.watermark_bottom'));
+                    // Text
+                    elseif (!empty($watermark_text))
+                        $thumb->createWatermarkText($watermark_text, $PHPShopSystem->getSerilizeParam('admoption.watermark_text_size'), $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/font/' . $PHPShopSystem->getSerilizeParam('admoption.watermark_text_font') . '.ttf', $PHPShopSystem->getSerilizeParam('admoption.watermark_right'), $PHPShopSystem->getSerilizeParam('admoption.watermark_bottom'), $PHPShopSystem->getSerilizeParam('admoption.watermark_text_color'), $PHPShopSystem->getSerilizeParam('admoption.watermark_text_alpha'), 0);
+
+                    $thumb->save($file_big);
+                }
             }
         }
 

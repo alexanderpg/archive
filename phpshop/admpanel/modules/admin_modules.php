@@ -80,21 +80,10 @@ function actionStart() {
         'url' => '#'
     );
 
-    if ($PHPShopBase->Rule->CheckedRules('modules', 'remove')) {
-        $PHPShopInterface->action_button['Загрузить'] = array(
-            'name' => '',
-            'action' => '',
-            'class' => 'btn btn-default btn-sm navbar-btn load-module',
-            'type' => 'button',
-            'icon' => 'glyphicon glyphicon-plus',
-            'tooltip' => 'data-toggle="tooltip" data-placement="left" title="' . __('Загрузить модуль') . '"'
-        );
-    }
-
     $PHPShopInterface->action_title['manual'] = 'Инструкция';
 
     if ($_SESSION['mod_limit'] > 5)
-        $PHPShopInterface->setActionPanel($TitlePage, array('Отключить выбранные', 'Включить выбранные'), array('Загрузить'));
+        $PHPShopInterface->setActionPanel($TitlePage, array('Отключить выбранные', 'Включить выбранные'));
     else
         $PHPShopInterface->setActionPanel($TitlePage, false);
 
@@ -358,8 +347,8 @@ function actionStart() {
         0 => [
             'pro' => 15,
             'template' => 8,
-            'seo' => 5,
-            'delivery' => 12,
+            'seo' => 4,
+            'delivery' => 10,
             'chat' => 7,
             'crm' => 6,
             'marketplaces' => 7,
@@ -373,7 +362,7 @@ function actionStart() {
         1 => [
             'pro' => 3,
             'template' => 8,
-            'seo' => 5,
+            'seo' => 4,
             'delivery' => 2,
             'chat' => 7,
             'crm' => 2,
@@ -384,7 +373,7 @@ function actionStart() {
         ],
         2 => [
             'template' => 5,
-            'seo' => 4,
+            'seo' => 3,
             'delivery' => 2,
             'chat' => 7,
             'crm' => 1,

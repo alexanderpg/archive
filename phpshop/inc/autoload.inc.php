@@ -141,4 +141,3 @@ $PHPShopShowcaseElement->init('showcaseMenu');
 
 // RSS грабер новостей
 new PHPShopRssParser();
-?>

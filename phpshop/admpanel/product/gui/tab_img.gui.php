@@ -103,8 +103,18 @@ function tab_img($data) {
             $img = str_replace(array('.png', '.jpg', '.gif', '.jpeg', '.webp'), array('s.png', 's.jpg', 's.gif', 's.jpeg', 's.webp'), $row['name']);
             if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $img))
                 $img = $row['name'];
+            
+            // Видео
+            if (in_array($path_parts['extension'], array('mp4','mov'))) {
+                $img_file = '<video style="max-width:220px;max-height:220px;" src="'. $img . '" controls=""></video>';
+                $main = 'hide';
+            }
+            // Изображение
+            else {
+                $img_file = '<img data-id="' . $row['id'] . '" title="' . $row['info'] . '" alt="' . $row['info'] . '" style="max-width:220px;max-height:220px;" src="' . $img . '"/>';
+            }
 
-            $img_list .= '<div class="col-md-3 col-sm-4 col-xs-12 data-row col-panel"><div class="panel panel-default"><div class="panel-heading" title="' . $path_parts['basename'] . '"><a href="' . $row['name'] . '" target="_blank">' . $basename . '</a><span class="glyphicon glyphicon-remove pull-right btn btn-default btn-xs img-delete" data-id="' . $row['id'] . '" data-toggle="tooltip" data-main="' . $main . '" data-placement="top" title="' . __('Удалить') . '"></span><span class="pull-right">&nbsp;</span><span class="glyphicon glyphicon-heart pull-right btn ' . $main . ' btn-xs img-main" data-path="' . $row['name'] . '" data-path-s="' . $img . '"  data-toggle="tooltip" data-placement="top" title="' . __('Главное превью товара') . '"></span><span class="pull-right">&nbsp;</span>' . $select . '</div><div class="panel-body text-center"><a href="#" class="setAlt" data-id="' . $row['id'] . '" data-alt="' . $row['info'] . '"><img data-id="' . $row['id'] . '" title="' . $row['info'] . '" alt="' . $row['info'] . '" style="max-width:220px;max-height:220px;" src="' . $img . '"></a></div><div class="panel-footer ' . $parent_style . '">' . __('Подтип') . ': ' . $select_option . '</div></div></div>';
+            $img_list .= '<div class="col-md-3 col-sm-4 col-xs-12 data-row col-panel"><div class="panel panel-default"><div class="panel-heading" title="' . $path_parts['basename'] . '"><a href="' . $row['name'] . '" target="_blank">' . $basename . '</a><span class="glyphicon glyphicon-remove pull-right btn btn-default btn-xs img-delete" data-id="' . $row['id'] . '" data-toggle="tooltip" data-main="' . $main . '" data-placement="top" title="' . __('Удалить') . '"></span><span class="pull-right">&nbsp;</span><span class="glyphicon glyphicon-heart pull-right btn ' . $main . ' btn-xs img-main" data-path="' . $row['name'] . '" data-path-s="' . $img . '"  data-toggle="tooltip" data-placement="top" title="' . __('Главное превью товара') . '"></span><span class="pull-right">&nbsp;</span>' . $select . '</div><div class="panel-body text-center"><a href="#" class="setAlt" data-id="' . $row['id'] . '" data-alt="' . $row['info'] . '">'.$img_file.'</a></div><div class="panel-footer ' . $parent_style . '">' . __('Подтип') . ': ' . $select_option . '</div></div></div>';
 
             if ($i == $row_num) {
                 $img_list .= '</div>';
@@ -120,10 +130,10 @@ function tab_img($data) {
 
     $img_add = $PHPShopGUI->setIcon(false, "img_new", false, array('load' => true, 'server' => true, 'url' => true, 'multi' => true,'search'=>true), $img_width);
 
-    $disp = $PHPShopGUI->setCollapse('Добавить изображение', $img_add);
+    $disp = $PHPShopGUI->setCollapse('Добавить изображение или видео', $img_add);
 
     if (!empty($img_list))
-        $disp .= $PHPShopGUI->setCollapse('Дополнительные изображения', $img_list);
+        $disp .= $PHPShopGUI->setCollapse('Дополнительные изображения и видео', $img_list);
 
     return $disp;
 }

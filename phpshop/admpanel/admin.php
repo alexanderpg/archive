@@ -317,7 +317,7 @@ if (!empty($_COOKIE['fullscreen'])) {
                                     <li><a href="?path=system.servers"><?php _e('Витрины'); ?></a></li>
                                     <li class="<?php echo $hideCatalog; ?>"><a href="?path=system.warehouse"><?php _e('Склады'); ?></a></li>
                                     <li><a href="?path=system.dialog"><?php _e('Диалоги'); ?></a></li>
-                                    <li><a href="?path=system.integration"><?php _e('Интеграция'); ?></a>
+                                    <li><a href="?path=system.integration"><?php _e('Интеграции'); ?></a>
                                     <li><a href="?path=system.yandexcloud"><span class="glyphicon glyphicon-star"></span> <?php _e('Yandex Cloud'); ?></a></li>
 
                                     <li><a href="?path=system.locale"><?php _e('Локализация'); ?></a></li>

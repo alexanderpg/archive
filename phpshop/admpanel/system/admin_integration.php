@@ -52,10 +52,10 @@ function actionStart() {
         );
 
     // VK ID
-    if (empty($hideSite)){
-        $get_token='https://oauth.vk.com/authorize?client_id='.$option['vk_id'].'&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=video,offline&response_type=token&v=5.52';
+    if (empty($hideSite)) {
+        $get_token = 'https://oauth.vk.com/authorize?client_id=' . $option['vk_id'] . '&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=video,offline&response_type=token&v=5.52';
         $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('VK ID', $PHPShopGUI->setField('ID приложения', $PHPShopGUI->setInputText(false, 'option[vk_id]', $option['vk_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://id.vk.com/about/business/go" target="_blank">Кабинет разработчика</a>')) .
-                $PHPShopGUI->setField('Токен доступа', $PHPShopGUI->setTextarea('option[vk_id_token]', $option['vk_id_token'], false, 300, '100') . $PHPShopGUI->setHelp('Используется для передачи отзывов из группы VK. Получить <a href="'.$get_token.'" id="client_token" target="_blank">Персональный токен</a>')).
+                $PHPShopGUI->setField('Токен доступа', $PHPShopGUI->setTextarea('option[vk_id_token]', $option['vk_id_token'], false, 300, '100') . $PHPShopGUI->setHelp('Используется для передачи отзывов из группы VK. Получить <a href="' . $get_token . '" id="client_token" target="_blank">Персональный токен</a>')) .
                 $PHPShopGUI->setField('Сервисный ключ', $PHPShopGUI->setInputText(false, 'option[vk_id_apikey]', $option['vk_id_apikey'], 300)) .
                 $PHPShopGUI->setField("Включить VK ID", $PHPShopGUI->setCheckbox('option[vk_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью VK ID на сайте', $option['vk_id_enabled'])), 'in', true
         );
@@ -80,7 +80,7 @@ function actionStart() {
     );
 
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Подсказки DaData.ru', $PHPShopGUI->setField("Подсказки", $PHPShopGUI->setCheckbox('option[dadata_enabled]', 1, 'Включить подсказки DaData.ru', $option['dadata_enabled'])) .
-            $PHPShopGUI->setField("Публичный ключ", $PHPShopGUI->setInputText(null, "option[dadata_token]", $option['dadata_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://dadata.ru" target="_blank">DaData.ru</a>'))
+            $PHPShopGUI->setField("Публичный ключ", $PHPShopGUI->setInputText(null, "option[dadata_token]", $option['dadata_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://dadata.ru/?ref=199104" target="_blank">DaData.ru</a>'))
     );
 
     if (empty($hideCatalog)) {
@@ -103,16 +103,50 @@ function actionStart() {
 
     // Telegram
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Telegram', $PHPShopGUI->setField("Новостной бот", $PHPShopGUI->setCheckbox('option[telegram_news_enabled]', 1, 'Включить передачу новостей из группы', $option['telegram_news_enabled'])) .
-            $PHPShopGUI->setField("Анонс", $PHPShopGUI->setInputText("первые", "option[telegram_news_delim]", $option['telegram_news_delim'], 200, 'символов')) .
+            $PHPShopGUI->setField("Анонс", $PHPShopGUI->setInputText("первые", "option[telegram_news_delim]", $option['telegram_news_delim'], 200, __('символов'))) .
             $PHPShopGUI->setField("API-ключ", $PHPShopGUI->setInputText(null, "option[telegram_news_token]", $option['telegram_news_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://docs.phpshop.ru/stranicy/novosti#zagruzka-novostei-iz-telegram" target="_blank">Инструкция</a>')));
 
     // VK Reviews
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Отзывы Вконтакте',
-    $PHPShopGUI->setField("Отзывы", $PHPShopGUI->setCheckbox('option[vk_reviews_enabled]', 1, 'Включить передачу отзывов из группы', $option['vk_reviews_enabled'])).
-    $PHPShopGUI->setField("Код подтверждения", $PHPShopGUI->setInputText(null, "option[vk_reviews_confirmation]", $option['vk_reviews_confirmation'], 300)) .
-    $PHPShopGUI->setField("Ключ подтверждения", $PHPShopGUI->setInputText(null, "option[vk_reviews_secret]", $option['vk_reviews_secret'], 300)) .
-    $PHPShopGUI->setField("API-ключ", $PHPShopGUI->setInputText(null, "option[vk_reviews_token]", $option['vk_reviews_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://docs.phpshop.ru/nastroiky/dialog#vkontakte" target="_blank">Инструкция</a>'))
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Отзывы Вконтакте', $PHPShopGUI->setField("Отзывы", $PHPShopGUI->setCheckbox('option[vk_reviews_enabled]', 1, 'Включить передачу отзывов из группы', $option['vk_reviews_enabled'])) .
+            $PHPShopGUI->setField("Код подтверждения", $PHPShopGUI->setInputText(null, "option[vk_reviews_confirmation]", $option['vk_reviews_confirmation'], 300)) .
+            $PHPShopGUI->setField("Ключ подтверждения", $PHPShopGUI->setInputText(null, "option[vk_reviews_secret]", $option['vk_reviews_secret'], 300)) .
+            $PHPShopGUI->setField("API-ключ", $PHPShopGUI->setInputText(null, "option[vk_reviews_token]", $option['vk_reviews_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://docs.phpshop.ru/nastroiky/dialog#vkontakte" target="_blank">Инструкция</a>'))
     );
+
+    // Memcached
+    if (class_exists('Memcached') or class_exists('Memcache')) {
+
+        if (empty($option['memcached_server']))
+            $option['memcached_server'] = '127.0.0.1';
+
+        if (empty($option['memcached_port']))
+            $option['memcached_port'] = '11211';
+        
+        $test = "PHPShop";
+
+        if (class_exists('Memcached')) {
+            $cache = new Memcached();
+            $cache->addServer($option['memcached_server'], $option['memcached_port']);
+            $cache->set("test_key", $test, 60);
+            
+        } else if (class_exists('Memcache')) {
+            $cache = new Memcache();
+            $cache->addServer($option['memcached_server'], $option['memcached_port']);
+            $cache->set("test_key", $test, MEMCACHE_COMPRESSED, 60);
+        }
+
+        if ($test == $cache->get("test_key")) {
+            $check = '<span class="glyphicon glyphicon-ok text-success"></span>';
+            $disabled = false;
+        } else {
+            $check = '<span class="glyphicon glyphicon-remove text-danger"></span>';
+            $disabled = 'disabled="disabled"';
+        }
+
+        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Сервер кеширования Memcached', $PHPShopGUI->setField("Адрес", $PHPShopGUI->setInputText($check, 'option[memcached_server]', $option['memcached_server'], 250, false, false, false, '127.0.0.1')) .
+                $PHPShopGUI->setField("Порт", $PHPShopGUI->setInputText($check, 'option[memcached_port]', (int) $option['memcached_port'], 100, false, false, false, '11211'))
+        );
+    }
 
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Новостная лента', $PHPShopGUI->setField("RSS", $PHPShopGUI->setCheckbox('option[rss_graber_enabled]', 1, 'Загружать новости из внешних RSS каналов', $option['rss_graber_enabled']) . $PHPShopGUI->setHelp('Новостные каналы управляются в  разделе <a href="?path=news.rss">RSS каналы</a>'))
     );

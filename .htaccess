@@ -79,3 +79,7 @@ Deny From All
 Order Deny,Allow
 Deny From All
 </files>
+
+# Запрет доступа к кэшу
+RewriteCond %{REQUEST_URI} ^(/UserFiles/Cache(.*))
+RewriteRule .* - [F]

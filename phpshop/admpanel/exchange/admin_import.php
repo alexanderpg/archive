@@ -845,7 +845,7 @@ function csv_update($data) {
                                 $path_parts = pathinfo($img);
 
                                 // Сохранение в webp
-                                if ($PHPShopSystem->ifSerilizeParam('admoption.image_webp_save') and $path_parts['extension'] != 'webp') {
+                                if ($PHPShopSystem->ifSerilizeParam('admoption.image_webp_save') and $path_parts['extension'] != 'webp' and $path_parts['extension'] != 'mp4' and $path_parts['extension'] != 'mov') {
 
                                     $thumb = new PHPThumb($_SERVER['DOCUMENT_ROOT'] . $img);
                                     $thumb->setFormat('WEBP');
@@ -862,31 +862,35 @@ function csv_update($data) {
                             $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
                             $PHPShopOrmImg->insert(array('parent_new' => intval($row['id']), 'name_new' => $img, 'num_new' => $k));
 
-                            $file = $_SERVER['DOCUMENT_ROOT'] . $img;
+                            // Изображение
+                            if(!in_array($path_parts['extension'], array('mp4', 'mov'))) {
+                                
+                                $file = $_SERVER['DOCUMENT_ROOT'] . $img;
                             $name = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $file);
 
-                            if (!file_exists($name) and file_exists($file)) {
+                                if (!file_exists($name) and file_exists($file)) {
 
-                                // Генерация тубнейла 
-                                if (!empty($_POST['export_imgproc'])) {
-                                    $thumb = new PHPThumb($file);
-                                    $thumb->setOptions(array('jpegQuality' => $width_kratko));
-                                    $thumb->resize($img_tw, $img_th);
-                                    $thumb->save($name);
-                                } else
-                                    copy($file, $name);
-                            }
+                                    // Генерация тубнейла 
+                                    if (!empty($_POST['export_imgproc'])) {
+                                        $thumb = new PHPThumb($file);
+                                        $thumb->setOptions(array('jpegQuality' => $width_kratko));
+                                        $thumb->resize($img_tw, $img_th);
+                                        $thumb->save($name);
+                                    } else
+                                        copy($file, $name);
+                                }
 
-                            // Главное изображение
-                            if ($k == 0 and ! empty($file)) {
+                                // Главное изображение
+                                if ($k == 0 and ! empty($file)) {
 
-                                $row['pic_big'] = $img;
+                                    $row['pic_big'] = $img;
 
-                                // Главное превью
-                                if ($_POST['export_imgload'] == 2 and empty($row['pic_small'])) {
-                                    $row['pic_small'] = $img;
-                                } else if ($_POST['export_imgload'] == 1 and isset($_POST['export_imgproc'])) {
-                                    $row['pic_small'] = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $img);
+                                    // Главное превью
+                                    if ($_POST['export_imgload'] == 2 and empty($row['pic_small'])) {
+                                        $row['pic_small'] = $img;
+                                    } else if ($_POST['export_imgload'] == 1 and isset($_POST['export_imgproc'])) {
+                                        $row['pic_small'] = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $img);
+                                    }
                                 }
                             }
                         } else
@@ -1327,6 +1331,12 @@ function actionSave() {
                             $images = implode(",", (array) $item->picture);
                         } else
                             $images = (string) $item->picture;
+
+                        // Видео
+                        if (is_array((array) $item->video)) {
+                            $images .= ',' . implode(",", (array) $item->video);
+                        } else
+                            $images .= ',' . (string) $item->video;
 
                         // Старая цена
                         if (isset($item->oldprice[0]))

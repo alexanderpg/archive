@@ -60,7 +60,7 @@ class PHPShopElements {
      * Конструктор
      */
     function __construct() {
-        global $PHPShopSystem, $PHPShopNav, $PHPShopModules;
+        global $PHPShopSystem, $PHPShopNav, $PHPShopModules, $PHPShopCache;
 
         if ($this->objBase) {
             $this->PHPShopOrm = new PHPShopOrm($this->objBase);
@@ -75,6 +75,9 @@ class PHPShopElements {
         $this->LoadItems = &$GLOBALS['LoadItems'];
         $this->PHPShopModules = &$PHPShopModules;
         $this->webp = $this->PHPShopSystem->getSerilizeParam('admoption.image_webp');
+
+        // Кэш
+        $this->PHPShopCache = $PHPShopCache;
     }
 
     function __call($name, $arguments) {
@@ -173,6 +176,16 @@ class PHPShopElements {
 
         if (!in_array($this->SysValue['nav']['path'], $this->disp_format)) {
 
+            // Кэш
+            if ($this->PHPShopCache->mod == 2 and $this->PHPShopCache->valid_element($method_name)) {
+                $cache_key = md5(str_replace("www.", "", getenv('SERVER_NAME')) . $method_name);
+                $cache = $this->PHPShopCache->get($cache_key);
+                if (!empty($cache)) {
+                    $this->set($method_name, $cache);
+                    return true;
+                }
+            }
+
             // Если переменная не определена модулем
             if (!empty($flag) and $this->isAction($method_name))
                 $this->set($method_name, call_user_func(array(&$this, $method_name)), true);
@@ -183,8 +196,12 @@ class PHPShopElements {
                 elseif ($this->isAction("index"))
                     $this->set($method_name, call_user_func(array(&$this, 'index')));
                 else
-                    $this->setError("index", "метод не существует");
+                    $this->setError("index", "method does not exist");
             }
+
+            // Кэш
+            if (($this->PHPShopCache->mod == 2) and $this->PHPShopCache->valid_element($method_name) and ! empty($this->get($method_name)))
+                $this->PHPShopCache->set($cache_key, $this->get($method_name), false, $method_name);
         }
     }
 

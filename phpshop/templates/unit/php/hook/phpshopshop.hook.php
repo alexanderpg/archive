@@ -414,7 +414,6 @@ function template_image_gallery($obj, $array) {
     $data = $PHPShopOrm->select(array('*'), array('parent' => '=' . $array['id']), array('order' => 'num'), array('limit' => 100));
     $i = 0;
     $s = 1;
-    $productTitle = str_replace(array('"', "'"), '', $array['name']);
 
     // Нет данных в галерее
     if (!is_array($data) and ! empty($array['pic_big']))
@@ -425,9 +424,9 @@ function template_image_gallery($obj, $array) {
         // Сортировка
         foreach ($data as $k => $v) {
 
-            if ($v['name'] == $array['pic_big'])
+            if ($v['name'] == $array['pic_big'] and ( in_array(pathinfo($v['name'], PATHINFO_EXTENSION), ['mp4', 'mov'])) and $v['num'] != 1) {
                 $sort_data[0] = $v;
-            else
+            } else
                 $sort_data[$s] = $v;
 
             $s++;
@@ -436,6 +435,7 @@ function template_image_gallery($obj, $array) {
         ksort($sort_data);
 
         foreach ($sort_data as $k => $row) {
+
             $name = $row['name'];
             $name_s = str_replace(".", "s.", $name);
             $name_bigstr = str_replace(".", "_big.", $name);
@@ -445,34 +445,40 @@ function template_image_gallery($obj, $array) {
 
             $alt = str_replace('"', '', $row['info']);
 
-            // Подбор исходного изображения
-            if (!$obj->PHPShopSystem->ifSerilizeParam('admoption.image_save_source') or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $name_bigstr))
-                $name_bigstr = $name;
-
-            if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $name_s)) {
-                $name_s = $name;
-            }
-
             // Поддержка Webp
-            if (method_exists($obj, 'setImage')) {
+            if (method_exists($obj, 'setImage') and ! in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
                 $name = $obj->setImage($name);
                 $name_s = $obj->setImage($name_s);
                 $name_bigstr = $obj->setImage($name_bigstr);
             }
 
-            $bxslider .= '<div><a class href="#"><img src="' . $name . '" title="' . $alt . '" alt="' . $alt . '" /></a></div>';
-            $bxsliderbig .= '<li><a class href=\'#\'><img src=\'' . $name_bigstr . '\' title=\'' . $alt . '\' alt=\'' . $alt . '\'></a></li>';
-            $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\'  title=\'' . $alt . '\' alt=\'' . $alt . '\' src=\'' . $name_s . '\' data-big-image="' . $name . '"></a>';
+            // Подбор исходного изображения
+            if (!$obj->PHPShopSystem->ifSerilizeParam('admoption.image_save_source') or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $name_bigstr))
+                $name_bigstr = $name;
+            if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $name_s))
+                $name_s = $name;
+
+            // Видео
+            if (in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+                $bxslider .= '<div><div class="embed-responsive embed-responsive-4by3"><video class="embed-responsive-item" src="'.$name.'" controls></video></div></div>';
+                $bxsliderbig .= '<li><div class=\'embed-responsive embed-responsive-16by9\'><video class=\'embed-responsive-item\' src=\''.$name.'\' controls style=\'max-height:500px\'></video></div></li>';
+                $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' alt=\'\' title=\'\' src=\'images/video.jpg\' data-big-image=\'\'images/video.jpg\'\'></a>';
+            }
+            // Изображение
+            else {
+                $bxslider .= '<div><a class href="#"><img src="' . $name . '" title="' . $alt . '" alt="' . $alt . '" /></a></div>';
+                $bxsliderbig .= '<li><a class href=\'#\'><img src=\'' . $name_bigstr . '\' title=\'' . $alt . '\' alt=\'' . $alt . '\'></a></li>';
+                $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' alt=\'\' title=\'\' src=\'' . $name_s . '\' data-big-image=\'' . $name . '\'></a>';
+            }
+
             $i++;
         }
-
 
         if ($i < 2)
             $bxpager = null;
 
-        $obj->set('productFotoList', '<img itemprop="image" content="http://' . $_SERVER['SERVER_NAME'] . $array['pic_big'] . '" class="bxslider-pre" alt="' . $array['name'] . '" src="' . $array['pic_big'] . '" /><div class="bxslider hide bigslider">' . $bxslider . '</div><div class="bx-pager">' . $bxpager . '</div>');
+        $obj->set('productFotoList', '<img class="bxslider-pre" itemprop="image"  src="' . $name_s . '" title="' . $array['name'] . '" alt="' . $array['name'] . '" /><div class="bxslider hide">' . $bxslider . '</div><div class="bx-pager">' . $bxpager . '</div>');
         $obj->set('productFotoListBig', '<ul class="bxsliderbig" data-content="' . $bxsliderbig . '" data-page="' . $bxpager . '"></ul><div class="bx-pager-big">' . $bxpager . '</div>');
-        $obj->set('productSliderOneImage', sprintf('<img class="one-image-slider" src="%s" alt="%s" title="%s"/>', !empty($array['pic_big']) ? $array['pic_big'] : $data[0]['name'], $productTitle, $productTitle));
         return true;
     }
 }

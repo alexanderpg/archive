@@ -10,4 +10,4 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_hit_system` (
 
 INSERT INTO `phpshop_modules_hit_system` VALUES (1, 20, 3, 0,'1.1');
 
-ALTER TABLE `phpshop_products` ADD `hit` enum('0','1') DEFAULT '0';
+ALTER TABLE `phpshop_products` ADD `hit` enum('0','1') DEFAULT '0', ADD INDEX(`hit`);

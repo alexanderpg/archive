@@ -12,13 +12,14 @@ function actionStart() {
 
     $PHPShopCategoryArray = new PHPShopPhotoCategoryArray();
     $CategoryArray = $PHPShopCategoryArray->getArray();
-    
-    if(empty($_GET['cat']))
-        $_GET['cat']=null;
+
+    if (empty($_GET['cat']))
+        $_GET['cat'] = null;
 
     if (!empty($CategoryArray[$_GET['cat']]['name']))
         $catname = " / " . $CategoryArray[$_GET['cat']]['name'];
-    else $catname=null;
+    else
+        $catname = null;
 
     $PHPShopInterface->action_select['Предпросмотр'] = array(
         'name' => 'Предпросмотр',
@@ -26,8 +27,8 @@ function actionStart() {
         'action' => 'front enabled',
         'target' => '_blank'
     );
-    
-    
+
+
     $PHPShopInterface->action_select['Редактировать каталог'] = array(
         'name' => 'Редактировать каталог',
         'url' => '?path=' . $_GET['path'] . '&id=' . intval($_GET['cat'])
@@ -55,7 +56,7 @@ function actionStart() {
     );
 
 
-    $PHPShopInterface->setActionPanel($TitlePage . $catname, array('Новый каталог', 'Редактировать каталог', 'Предпросмотр', '|', 'Удалить выбранные'), array('Добавить фото'),false);
+    $PHPShopInterface->setActionPanel($TitlePage . $catname, array('Новый каталог', 'Редактировать каталог', 'Предпросмотр', '|', 'Удалить выбранные'), array('Добавить фото'), false);
     $PHPShopInterface->setCaption(
             array(null, "3%"), array("Иконка", "10%"), array("Название", "60%"), array("", "7%"), array("Статус" . "", "7%", array('align' => 'right'))
     );
@@ -76,11 +77,19 @@ function actionStart() {
     $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'id DESC'), array('limit' => 1000));
     if (is_array($data))
         foreach ($data as $row) {
+            if (!empty($row['name'])) {
 
-            if (!empty($row['name']))
-                $icon = '<img src="' . str_replace(".", "s.", $row['name']) . '" onerror="imgerror(this)" class="media-object" lowsrc="./images/no_photo.gif">';
-            else
+                // Видео
+                if (in_array(pathinfo($row['name'], PATHINFO_EXTENSION), array('mp4', 'mov'))) {
+                    $icon = '<video style="max-width:50px;max-height:50px;" src="' . $row['name'] . '" controls=""></video>';
+                }
+                // Изображение
+                else {
+                    $icon = '<img src="' . str_replace(".", "s.", $row['name']) . '" onerror="imgerror(this)" class="media-object" lowsrc="./images/no_photo.gif">';
+                }
+            } else {
                 $icon = '<img class="media-object" src="./images/no_photo.gif">';
+            }
 
             // Enabled
             if (empty($row['enabled']))
@@ -113,28 +122,28 @@ function actionStart() {
 
     $tree = '<table class="table table-hover">
          <tr class="treegrid-0">
-           <td><a href="?path=' . $_GET['path'] . '">'.__('Все фотогалереи').'</a></td>
+           <td><a href="?path=' . $_GET['path'] . '">' . __('Все фотогалереи') . '</a></td>
 	</tr>';
     if (!empty($tree_array[0]['sub']) and is_array($tree_array[0]['sub']))
         foreach ($tree_array[0]['sub'] as $k => $v) {
             $check = treegenerator(@$tree_array[$k], $k);
             if (empty($check))
-                $tree.='<tr class="treegrid-' . $k . ' data-tree">
+                $tree .= '<tr class="treegrid-' . $k . ' data-tree">
 		<td><a href="?path=' . $_GET['path'] . '&cat=' . $k . '">' . $v . '</a></td>
 	</tr>';
             else
-                $tree.='<tr class="treegrid-' . $k . ' data-tree">
+                $tree .= '<tr class="treegrid-' . $k . ' data-tree">
 		<td><a href="#" class="treegrid-parent" data-parent="treegrid-' . $k . '">' . $v . '</a></td>
 	</tr>';
-            $tree.=$check;
+            $tree .= $check;
         }
-    $tree.='
+    $tree .= '
 </table>
   <script>
     var cat="' . intval($_GET['cat']) . '";
     </script>';
 
-    $sidebarleft[] = array('title' => 'Категории', 'content' => $tree, 'title-icon' => '<span class="glyphicon glyphicon-plus addNewElement" data-toggle="tooltip" data-placement="top" title="'.__('Добавить каталог').'"></span>');
+    $sidebarleft[] = array('title' => 'Категории', 'content' => $tree, 'title-icon' => '<span class="glyphicon glyphicon-plus addNewElement" data-toggle="tooltip" data-placement="top" title="' . __('Добавить каталог') . '"></span>');
     $PHPShopInterface->setSidebarLeft($sidebarleft, 3);
 
     $PHPShopInterface->Compile(3);
@@ -150,15 +159,15 @@ function treegenerator($array, $parent) {
             $check = treegenerator(@$tree_array[$k], $k);
 
             if (empty($check))
-                $tree.='<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
+                $tree .= '<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
 		<td><a href="?path=' . $_GET['path'] . '&cat=' . $k . '">' . $v . '</a></td>
 	</tr>';
             else
-                $tree.='<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
+                $tree .= '<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
 		<td><a href="#" class="treegrid-parent" data-parent="treegrid-' . $k . '">' . $v . '</a></td>
 	</tr>';
 
-            $tree.=$check;
+            $tree .= $check;
         }
     }
     return $tree;

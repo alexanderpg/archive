@@ -3,7 +3,7 @@
 /**
  * Библиотека YML
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopClass
  */
 class PHPShopYml {
@@ -226,7 +226,12 @@ class PHPShopYml {
 
         if (is_array($images))
             foreach ($images as $image) {
-                $xml .= '<picture>' . $image . '</picture>';
+            
+                // Видео
+                if(in_array(pathinfo($image, PATHINFO_EXTENSION), ['mp4', 'mov']))
+                  $xml .= '<video>' . $image . '</video>';
+                // Изображение
+                else $xml .= '<picture>' . $image . '</picture>';
             }
 
         return $xml;

@@ -469,9 +469,11 @@ class PHPShopUserElement extends PHPShopElements {
         unset($_SESSION['UsersBan']);
         unset($_COOKIE['UserLogin']);
         unset($_COOKIE['UserPassword']);
+        unset($_COOKIE['UserChecked']);
 
         setcookie("UserLogin", '', time() + 60 * 60 * 24 * 30, "/", $_SERVER['SERVER_NAME'], 0);
         setcookie("UserPassword", '', time() + 60 * 60 * 24 * 30, "/", $_SERVER['SERVER_NAME'], 0);
+        setcookie("UserChecked", '', time() + 60 * 60 * 24 * 30, "/", $_SERVER['SERVER_NAME'], 0);
 
         $url_user = str_replace("?logout=true", "", $_SERVER['REQUEST_URI']);
         header("Location: " . $url_user);
@@ -1845,7 +1847,7 @@ class PHPShopBannerElement extends PHPShopElements {
 /**
  * Элемент фото галерея
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopElements
  */
 class PHPShopPhotoElement extends PHPShopElements {
@@ -1913,15 +1915,29 @@ class PHPShopPhotoElement extends PHPShopElements {
         if (is_array($dataArray))
             foreach ($dataArray as $row) {
 
-                $name_s = str_replace(".", "s.", $row['name']);
-                $this->set('photoIcon', $name_s);
-                $this->set('photoInfo', $row['info']);
-                $this->set('photoImg', $row['name']);
+                // Видео
+                if (in_array(pathinfo($row['name'], PATHINFO_EXTENSION), array('mp4', 'mov'))) {
+                    $this->set('photoVideo', $row['name']);
+                    $this->set('photoInfo', $row['info']);
 
-                if (PHPShopParser::checkFile('photo/photo_list_forma.tpl'))
-                    $dis .= ParseTemplateReturn('photo/photo_element_preview.tpl');
-                else
-                    $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_preview.tpl', true);
+                    if (PHPShopParser::checkFile('photo/photo_element_preview_video.tpl'))
+                        $dis .= ParseTemplateReturn('photo/photo_element_preview_video.tpl');
+                    else
+                        $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_preview_video.tpl', true);
+                }
+                // Изображение
+                else {
+                    $name_s = str_replace(".", "s.", $row['name']);
+                    $this->set('photoIcon', $name_s);
+                    $this->set('photoInfo', $row['info']);
+                    $this->set('photoImg', $row['name']);
+
+                    if (PHPShopParser::checkFile('photo/photo_element_preview.tpl'))
+                        $dis .= ParseTemplateReturn('photo/photo_element_preview.tpl');
+                    else
+                        $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_preview.tpl', true);
+                }
+
             }
         return $dis;
     }
@@ -2111,6 +2127,8 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
+
 
 
 

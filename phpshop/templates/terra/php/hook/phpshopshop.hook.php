@@ -96,12 +96,12 @@ function sortсattemplatehook($value, $n, $title, $vendor) {
             PHPShopParser::set('podcatalogIcon', $p[4]);
             PHPShopParser::set('podcatalogName', $text);
 
-  
+
             // SEO ссылка
-            if (!empty($p[5])){
+            if (!empty($p[5])) {
                 PHPShopParser::set('podcatalogId', $PHPShopSeoPro->getCID());
-                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true,['.html' => '.html/filters/' . $p[5]]);
-            }else{
+                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html/filters/' . $p[5]]);
+            } else {
                 PHPShopParser::set('podcatalogId', $PHPShopNav->getId());
                 $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html?v[' . $n . ']=' . $p[1]]);
             }
@@ -187,7 +187,7 @@ function template_parent($obj, $dataArray, $rout) {
                     $obj->set('parentId', $val['id']);
                     $obj->set('parentPrice', $val['price']);
                     $obj->set('parentImage', $size_color_array[$val['id']]['image']);
-                    
+
                     // Дополнительнеы склады
                     if ($obj->PHPShopSystem->isDisplayWarehouse()) {
                         $warehouse = [];
@@ -224,18 +224,18 @@ function template_parent($obj, $dataArray, $rout) {
 
                             // Общий склад
                             if ($obj->PHPShopSystem->getSerilizeParam('admoption.sklad_sum_enabled') == 1)
-                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'] . PHPShopText::br();
 
                             foreach ($warehouse as $store_id => $store_name) {
                                 if (isset($itemsData['items' . $store_id])) {
-                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'] . PHPShopText::br();
                                 }
                             }
                         } else
                             $items = $obj->PHPShopBase->SysValue['lang']['product_on_sklad'] . " " . $val['items'] . " " . $val['ed_izm'];
                     } else
                         $items = null;
-                    $obj->set('parentItems',$items);
+                    $obj->set('parentItems', $items);
 
                     if ((float) $size_color_array[$val['id']]['price_n'] > 0)
                         $obj->set('parentPriceOld', $size_color_array[$val['id']]['price_n']);
@@ -342,8 +342,8 @@ function sorttemplatehook($value, $n, $title, $vendor) {
     $limit = 5;
     $disp = null;
     $num = 0;
-    
-        if (empty($GLOBALS['filter_count']))
+
+    if (empty($GLOBALS['filter_count']))
         $GLOBALS['filter_count'] = 1;
 
     if (is_array($value)) {
@@ -415,22 +415,21 @@ function template_image_gallery($obj, $array) {
         // Сортировка
         foreach ($data as $k => $v) {
 
-            if ($v['name'] == $array['pic_big'])
+            if ($v['name'] == $array['pic_big'] and ( in_array(pathinfo($v['name'], PATHINFO_EXTENSION), ['mp4', 'mov'])) and $v['num'] != 1) {
                 $sort_data[0] = $v;
-            else
+            } else
                 $sort_data[$s] = $v;
 
             $s++;
         }
-
         ksort($sort_data);
 
         foreach ($sort_data as $k => $row) {
             $name = $row['name'];
             $name_s = str_replace(".", "s.", $name);
             $name_bigstr = str_replace(".", "_big.", $name);
-            
-                        if (empty($row['info']))
+
+            if (empty($row['info']))
                 $row['info'] = $array['name'];
 
             $alt = str_replace('"', '', $row['info']);
@@ -442,15 +441,25 @@ function template_image_gallery($obj, $array) {
                 $name_s = $name;
 
             // Поддержка Webp
-            if (method_exists($obj, 'setImage')) {
+            if (method_exists($obj, 'setImage') and ! in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
                 $name = $obj->setImage($name);
                 $name_s = $obj->setImage($name_s);
                 $name_bigstr = $obj->setImage($name_bigstr);
             }
 
-            $bxslider .= '<div><a class href="' . $name_bigstr . '" data-lightbox="product_img"><img src="' . $name . '" title="' . $alt . '" alt="' . $alt . '" /></a></div>';
-            $bxsliderbig .= '<li><a class href="' . $name_bigstr . '" data-lightbox="product_img"><img src=\'' . $name . '\' title=\'' . $alt . '\' alt=\'' . $alt . '\'></a></li>';
-            $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' title=\'' . $alt . '\' alt=\'' . $alt . '\' src=\'' . $name_s . '\' data-big-image="' . $name . '"></a>';
+            // Видео
+            if (in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+                $bxslider .= '<div><div class="embed-responsive embed-responsive-4by3"><video class="embed-responsive-item" src="' . $name . '" controls></video></div></div>';
+                $bxsliderbig .= '<li><div class=\'embed-responsive embed-responsive-16by9\'><video class=\'embed-responsive-item\' src=\'' . $name . '\' controls style=\'max-height:500px\'></video></div></li>';
+                $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' alt=\'\' title=\'\' src=\'images/video.jpg\' data-big-image=\'\'images/video.jpg\'\'></a>';
+            }
+            // Изображение
+            else {
+                $bxslider .= '<div><a class href="' . $name_bigstr . '" data-lightbox="product_img"><img src="' . $name . '" title="' . $alt . '" alt="' . $alt . '" /></a></div>';
+                $bxsliderbig .= '<li><a class href="' . $name_bigstr . '" data-lightbox="product_img"><img src=\'' . $name . '\' title=\'' . $alt . '\' alt=\'' . $alt . '\'></a></li>';
+                $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' title=\'' . $alt . '\' alt=\'' . $alt . '\' src=\'' . $name_s . '\' data-big-image="' . $name . '"></a>';
+            }
+
             $i++;
         }
 

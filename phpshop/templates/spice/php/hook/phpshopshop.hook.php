@@ -404,9 +404,9 @@ function template_image_gallery($obj, $array) {
         // Сортировка
         foreach ($data as $k => $v) {
 
-            if ($v['name'] == $array['pic_big'])
+            if ($v['name'] == $array['pic_big'] and ( in_array(pathinfo($v['name'], PATHINFO_EXTENSION), ['mp4', 'mov'])) and $v['num'] != 1) {
                 $sort_data[0] = $v;
-            else
+            } else
                 $sort_data[$s] = $v;
 
             $s++;
@@ -415,14 +415,22 @@ function template_image_gallery($obj, $array) {
         ksort($sort_data);
 
         foreach ($sort_data as $k => $row) {
+
             $name = $row['name'];
             $name_s = str_replace(".", "s.", $name);
             $name_bigstr = str_replace(".", "_big.", $name);
-            
-                        if (empty($row['info']))
+
+            if (empty($row['info']))
                 $row['info'] = $array['name'];
 
             $alt = str_replace('"', '', $row['info']);
+
+            // Поддержка Webp
+            if (method_exists($obj, 'setImage') and ! in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+                $name = $obj->setImage($name);
+                $name_s = $obj->setImage($name_s);
+                $name_bigstr = $obj->setImage($name_bigstr);
+            }
 
             // Подбор исходного изображения
             if (!$obj->PHPShopSystem->ifSerilizeParam('admoption.image_save_source') or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $name_bigstr))
@@ -430,25 +438,26 @@ function template_image_gallery($obj, $array) {
             if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $name_s))
                 $name_s = $name;
 
-            // Поддержка Webp
-            if (method_exists($obj, 'setImage')) {
-                $name = $obj->setImage($name);
-                $name_s = $obj->setImage($name_s);
-                $name_bigstr = $obj->setImage($name_bigstr);
+            // Видео
+            if (in_array(pathinfo($name, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+                $bxslider .= '<div><div class="embed-responsive embed-responsive-4by3"><video class="embed-responsive-item" src="'.$name.'" controls></video></div></div>';
+                $bxsliderbig .= '<li><div class=\'embed-responsive embed-responsive-16by9\'><video class=\'embed-responsive-item\' src=\''.$name.'\' controls style=\'max-height:500px\'></video></div></li>';
+                $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' alt=\'\' title=\'\' src=\'images/video.jpg\' data-big-image=\'\'images/video.jpg\'\'></a>';
+            }
+            // Изображение
+            else {
+                $bxslider .= '<div><a class href="#"><img src="' . $name . '" title="' . $alt . '" alt="' . $alt . '" /></a></div>';
+                $bxsliderbig .= '<li><a class href=\'#\'><img src=\'' . $name_bigstr . '\' title=\'\' alt=\'\'></a></li>';
+                $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' alt=\'\' title=\'\' src=\'' . $name_s . '\' data-big-image=\'' . $name . '\'></a>';
             }
 
-            $bxslider .= '<div><a class href="#"><img src="' . $name . '" title="' . $alt . '" alt="' . $alt . '" /></a></div>';
-            $bxsliderbig .= '<li><a class href=\'#\'><img src=\'' . $name_bigstr . '\' title=\'' . $alt . '\' alt=\'' . $alt . '\'></a></li>';
-            $bxpager .= '<a data-slide-index=\'' . $i . '\' href=\'\'><img class=\'img-thumbnail\' title=\'' . $alt . '\' alt=\'' . $alt . '\' src=\'' . $name_s . '\' data-big-image="' . $name . '"></a>';
             $i++;
         }
-
 
         if ($i < 2)
             $bxpager = null;
 
-
-        $obj->set('productFotoList', '<img itemprop="image" content="http://' . $_SERVER['SERVER_NAME'] . $array['name_s'] . '" class="bxslider-pre" alt="' . $array['name'] . '" title="' . $array['name'] . '" src="' . @$array['name_s'] . '" /><div class="bxslider hide">' . $bxslider . '</div><div class="bx-pager">' . $bxpager . '</div>');
+        $obj->set('productFotoList', '<img class="bxslider-pre" itemprop="image"  src="' . $name_s . '" title="' . $array['name'] . '" alt="' . $array['name'] . '" /><div class="bxslider hide">' . $bxslider . '</div><div class="bx-pager">' . $bxpager . '</div>');
         $obj->set('productFotoListBig', '<ul class="bxsliderbig" data-content="' . $bxsliderbig . '" data-page="' . $bxpager . '"></ul><div class="bx-pager-big">' . $bxpager . '</div>');
         return true;
     }

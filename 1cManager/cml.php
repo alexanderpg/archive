@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.7
+ * @version 3.8
  */
 class CommerceMLLoader {
 
@@ -444,29 +444,30 @@ class CommerceMLLoader {
                 }
 
                 // Свойства
-                foreach ($xml->Классификатор->Свойства[0] as $item) {
+                if (isset($xml->Классификатор->Свойства))
+                    foreach ($xml->Классификатор->Свойства[0] as $item) {
 
-                    // Справочник 2.08
-                    if (isset($item->ВариантыЗначений)) {
-                        foreach ($item->ВариантыЗначений->Справочник as $directory) {
+                        // Справочник 2.08
+                        if (isset($item->ВариантыЗначений)) {
+                            foreach ($item->ВариантыЗначений->Справочник as $directory) {
 
-                            if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
-                                $directory_array[(string) $directory->ИдЗначения[0]] = (string) $directory->Значение[0];
+                                if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
+                                    $directory_array[(string) $directory->ИдЗначения[0]] = (string) $directory->Значение[0];
+                            }
                         }
-                    }
-                    // Справочник 2.04
-                    elseif (isset($item->ТипыЗначений)) {
+                        // Справочник 2.04
+                        elseif (isset($item->ТипыЗначений)) {
 
-                        foreach ($item->ТипыЗначений[0]->ТипЗначений[0]->ВариантыЗначений[0]->ВариантЗначения as $directory) {
+                            foreach ($item->ТипыЗначений[0]->ТипЗначений[0]->ВариантыЗначений[0]->ВариантЗначения as $directory) {
 
-                            if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
-                                $directory_array[(string) $directory->Ид[0]] = (string) $directory->Значение[0];
+                                if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
+                                    $directory_array[(string) $directory->Ид[0]] = (string) $directory->Значение[0];
+                            }
                         }
-                    }
 
-                    if (!in_array(PHPShopString::utf8_win1251((string) $item->Наименование[0]), $sort_ignore))
-                        $properties_array[(string) $item->Ид[0]] = (string) $item->Наименование[0];
-                }
+                        if (!in_array(PHPShopString::utf8_win1251((string) $item->Наименование[0]), $sort_ignore))
+                            $properties_array[(string) $item->Ид[0]] = (string) $item->Наименование[0];
+                    }
 
                 // Загрузка дополнительных полей справочника из МойСклад
                 /*
@@ -499,7 +500,7 @@ class CommerceMLLoader {
 
                 // Товары
                 foreach ($xml->Каталог->Товары[0] as $item) {
-                    
+
                     $description = $weight = $length = $width = $height = null;
 
                     // Краткое описание и габариты
@@ -553,14 +554,30 @@ class CommerceMLLoader {
                             $properties[] = [$properties_array[(string) $req->Ид[0]], (string) $req->Значение[0]];
 
                             // Габариты из характеристик
-                            if (stristr($properties_array[(string) $req->Ид], 'Вес') and empty($weight))
-                                $weight_prop = round((string) $req->Значение) * 1000;
-                            if (stristr($properties_array[(string) $req->Ид], 'Длина') and empty($length))
-                                $length_prop = '#' . round((string) $req->Значение);
-                            if (stristr($properties_array[(string) $req->Ид], 'Ширина') and empty($width))
-                                $width_prop = '#' . round((string) $req->Значение);
-                            if (stristr($properties_array[(string) $req->Ид], 'Высота') and empty($height))
-                                $height_prop = '#' . round((string) $req->Значение);
+                            if (stristr($properties_array[(string) $req->Ид], 'Вес') and empty($weight)) {
+                                $weight_prop = (string) $req->Значение;
+                                if (strpos($weight_prop, ','))
+                                    $weight_prop = str_replace(',', '.', $weight_prop);
+                                $weight_prop = round($weight_prop) * 1000;
+                            }
+                            if (stristr($properties_array[(string) $req->Ид], 'Длина') and empty($length)) {
+                                $length_prop = (string) $req->Значение;
+                                if (strpos($length_prop, ','))
+                                    $length_prop = str_replace(',', '.', $length_prop);
+                                $length_prop = '#' . round($length_prop);
+                            }
+                            if (stristr($properties_array[(string) $req->Ид], 'Ширина') and empty($width)) {
+                                $width_prop = (string) $req->Значение;
+                                if (strpos($width_prop, ','))
+                                    $width_prop = str_replace(',', '.', $width_prop);
+                                $width_prop = '#' . round($width_prop);
+                            }
+                            if (stristr($properties_array[(string) $req->Ид], 'Высота') and empty($height)) {
+                                $height_prop = (string) $req->Значение;
+                                if (strpos($height_prop, ','))
+                                    $height_prop = str_replace(',', '.', $height_prop);
+                                $height_prop = '#' . round($height_prop);
+                            }
                         }
 
                         if (empty($weight) and ! empty($weight_prop))
@@ -588,10 +605,12 @@ class CommerceMLLoader {
 
                             if ((string) $i == '@attributes')
                                 continue;
+                            
+                            $ext = pathinfo($img, PATHINFO_EXTENSION);
 
-                            $new_name = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.jpg';
-                            $new_name_s = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . 's.jpg';
-                            $new_name_big = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '_big.jpg';
+                            $new_name = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.'.$ext;
+                            $new_name_s = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . 's.'.$ext;
+                            $new_name_big = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '_big.'.$ext;
 
                             // Тубнейл
                             $thumb = new PHPThumb(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img);
@@ -610,6 +629,10 @@ class CommerceMLLoader {
                                 copy(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img, $this->exchange_image_path . $this->image_result_path . $new_name_big);
 
                             $image = $this->image_result_path . 'img' . $this->crc32((string) $item->Ид[0]);
+                            
+                            if($ext != 'jpg')
+                                $image.='#'.$ext;
+                            
                             $image_count++;
                         }
                     }
@@ -711,7 +734,7 @@ class CommerceMLLoader {
             else if (isset($xml->ПакетПредложений->Предложения) or $_GET['filename'] = 'offers.xml') {
 
                 // Обработка измененных данных
-                if (!empty($this->exchange_change) and isset($xml->ИзмененияПакетаПредложений) ) {
+                if (!empty($this->exchange_change) and isset($xml->ИзмененияПакетаПредложений)) {
                     unset($xml);
                     $xml = simplexml_load_string(str_replace(['ИзмененияПакетаПредложений'], ['ПакетПредложений'], file_get_contents('./goods/' . $_GET['filename'])));
                 }

@@ -1,43 +1,30 @@
 <?php
-/**
- * GZIP сжатие
- */
 
-ob_start();
-ob_implicit_flush(0);
-function CheckCanGzip(){
-    if (headers_sent() || connection_aborted()){
-        return 0;
-    }
-   if (strpos($_SERVER["HTTP_ACCEPT_ENCODING"],'x-gzip') !== false) return "x-gzip";
-   if (strpos($_SERVER["HTTP_ACCEPT_ENCODING"],'gzip') !== false) return "gzip";
-    return 0;
+/**
+ * Сжатие и кэш
+ */
+$cache_key = md5(str_replace("www.", "", getenv('SERVER_NAME')) . parse_url($_SERVER['REQUEST_URI'])['path']);
+$PHPShopCache = new PHPShopCache($cache_key);
+$PHPShopCache->init();
+
+// URL
+if ($PHPShopCache->valid_url() and $PHPShopCache->mod == 1) {
+    $cache = $PHPShopCache->display($cache_key);
 }
-/* $level = compression level 0-9, 0=none, 9=max */
-function GzDocOut($level,$debug){
-    $ENCODING = CheckCanGzip();
-    if ($ENCODING){
-        if ($debug) print "<!-- Use compress $ENCODING -->";
-        $Contents = ob_get_contents();
-        ob_end_clean();
-        if ($debug){
-            $s = "<center><font style='color:#C0C0C0;font-size:9px;font-family:tahoma'>Not compress length: ".strlen($Contents)."; ";
-            $s .= "Compressed length: ".strlen(gzcompress($Contents,$level))."</font></center>";
-            $Contents .= $s;
-        }
-        header("Content-Encoding: $ENCODING");
-        print "\x1f\x8b\x08\x00\x00\x00\x00\x00";
-        $Size = strlen($Contents);
-        $Crc = crc32($Contents);
-        $Contents = gzcompress($Contents,$level);
-        $Contents = substr($Contents, 0, strlen($Contents) - 4);
-        print $Contents;
-        print pack('V',$Crc);
-        print pack('V',$Size);
-        exit;
-    }else{
-        ob_end_flush();
-        exit;
-    }
+// AJAX
+elseif(!$PHPShopCache->valid_url() and count($_POST) > 0 and $PHPShopCache->mod == 1) {
+    $cache_key = md5(str_replace("www.", "", getenv('SERVER_NAME')) . $_SERVER['REQUEST_URI'] . http_build_query($_POST));
+
+    if (isset($_POST['json']))
+        header('Content-type: application/json; charset=UTF-8');
+
+    $cache = $PHPShopCache->display($cache_key);
 }
-?>
+
+if (!empty($cache)) {
+    
+    echo $cache;
+    echo $PHPShopCache->debug();
+    
+    $PHPShopCache->gzip(false);
+}

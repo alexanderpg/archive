@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS `phpshop_1c_docs`;
 CREATE TABLE IF NOT EXISTS `phpshop_1c_docs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1412,4 +1411,15 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_log` (
   `status` varchar(255) NOT NULL,
   `type` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
+
+CREATE TABLE IF NOT EXISTS `phpshop_cache` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(64) NOT NULL,
+  `content` text NOT NULL,
+  `time` int(11) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  `size` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;

@@ -142,7 +142,7 @@ function template_parent($obj, $dataArray, $rout) {
                     $obj->set('parentId', $val['id']);
                     $obj->set('parentPrice', $val['price']);
                     $obj->set('parentImage', $size_color_array[$val['id']]['image']);
-                    
+
                     // Дополнительнеы склады
                     if ($obj->PHPShopSystem->isDisplayWarehouse()) {
                         $warehouse = [];
@@ -179,18 +179,18 @@ function template_parent($obj, $dataArray, $rout) {
 
                             // Общий склад
                             if ($obj->PHPShopSystem->getSerilizeParam('admoption.sklad_sum_enabled') == 1)
-                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'] . PHPShopText::br();
 
                             foreach ($warehouse as $store_id => $store_name) {
                                 if (isset($itemsData['items' . $store_id])) {
-                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'] . PHPShopText::br();
                                 }
                             }
                         } else
                             $items = $obj->PHPShopBase->SysValue['lang']['product_on_sklad'] . " " . $val['items'] . " " . $val['ed_izm'];
                     } else
                         $items = null;
-                    $obj->set('parentItems',$items);
+                    $obj->set('parentItems', $items);
 
                     if ((float) $size_color_array[$val['id']]['price_n'] > 0)
                         $obj->set('parentPriceOld', $size_color_array[$val['id']]['price_n']);
@@ -350,12 +350,12 @@ function sortсattemplatehook($value, $n, $title, $vendor) {
             PHPShopParser::set('podcatalogIcon', $p[4]);
             PHPShopParser::set('podcatalogName', $text);
 
-  
+
             // SEO ссылка
-            if (!empty($p[5])){
+            if (!empty($p[5])) {
                 PHPShopParser::set('podcatalogId', $PHPShopSeoPro->getCID());
-                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true,['.html' => '.html/filters/' . $p[5]]);
-            }else{
+                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html/filters/' . $p[5]]);
+            } else {
                 PHPShopParser::set('podcatalogId', $PHPShopNav->getId());
                 $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html?v[' . $n . ']=' . $p[1]]);
             }
@@ -445,11 +445,14 @@ function template_image_gallery($obj, $array) {
         $data[] = array('name' => sprintf('phpshop/templates/%s/images/no_photo.png', SkinName));
     }
 
+    // Сортировка
     foreach ($data as $k => $v) {
-        if ($v['name'] == $array['pic_big'])
+
+        if ($v['name'] == $array['pic_big'] and ( in_array(pathinfo($v['name'], PATHINFO_EXTENSION), ['mp4', 'mov'])) and $v['num'] != 1) {
             $sort_data[0] = $v;
-        else
+        } else
             $sort_data[$s] = $v;
+
         $s++;
     }
 
@@ -472,16 +475,31 @@ function template_image_gallery($obj, $array) {
         }
 
         // Поддержка Webp
-        if (method_exists($obj, 'setImage')) {
+        if (method_exists($obj, 'setImage') and ! in_array(pathinfo($big, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
             $small = $obj->setImage($small);
             $big = $obj->setImage($big);
         }
 
-        $slides .= sprintf('<div class="%s" data-elem="slide" data-options="thumb:%s">
+        // Видео
+        if (in_array(pathinfo($big, PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+            $small = "images/video.jpg";
+            $big = $original;
+            $slides .= sprintf('<div class="%s" data-elem="slide" data-options="thumb:%s">
+               <video class="slider-img hide" src="%s" controls/></div>', $index === 0 ? 'heroSlide' : '', $big, $big, $alt, $alt);
+            $thumbs .= sprintf('<div class="bigThumb" style="background-image:url(\'%s\')" data-elem="thumb" data-big-image="%s" 
+                  data-options="sliderId:productSlider; index:%s; "> </div>', $small, $big, $index);
+            
+        }
+        // Изображение
+        else {
+            $slides .= sprintf('<div class="%s" data-elem="slide" data-options="thumb:%s">
                          <img src="%s" data-elem="bg" alt="%s" title="%s" class="slider-img hide">
                      </div>', $index === 0 ? 'heroSlide' : '', $small, $big, $alt, $alt);
-        $thumbs .= sprintf('<div class="bigThumb" style="background-image:url(\'%s\')" data-elem="thumb" data-big-image="%s" 
+            $thumbs .= sprintf('<div class="bigThumb" style="background-image:url(\'%s\')" data-elem="thumb" data-big-image="%s" 
                   data-options="sliderId:productSlider; index:%s; offCss:{className:bigThumb off}; onCss:{className:bigThumb on}"> </div>', $small, $big, $index);
+        }
+
+
 
         $controls .= sprintf('<div class="buttonThumb" data-elem="thumb" data-options="sliderId:productSlider; index:%s;"> </div>', $index);
         $index++;
@@ -493,7 +511,7 @@ function template_image_gallery($obj, $array) {
     $obj->set('productSliderSlides', $slides);
     $obj->set('productSliderThumbs', $thumbs);
     $obj->set('productSliderControls', $controls);
-    $obj->set('productSliderOneImage', sprintf('<img class="one-image-slider" src="%s" alt="%s" title="%s"/>', !empty($array['pic_big']) ? $array['pic_big'] : $data[0]['name'],$alt, $alt));
+    $obj->set('productSliderOneImage', sprintf('<img class="one-image-slider" src="%s" alt="%s" title="%s"/>', !empty($array['pic_big']) ? $array['pic_big'] : $data[0]['name'], $alt, $alt));
 
     return true;
 }

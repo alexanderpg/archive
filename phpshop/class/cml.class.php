@@ -2,7 +2,7 @@
 
 /**
  * Библиотека работы с CommerceML
- * @version 1.9
+ * @version 2.0
  * @package PHPShopClass
  * https://v8.1c.ru/tekhnologii/obmen-dannymi-i-integratsiya/standarty-i-formaty/protokol-obmena-s-saytom/
  * https://dev.1c-bitrix.ru/api_help/sale/xml/contragents.php
@@ -325,13 +325,12 @@ class PHPShopCommerceML {
                         $adr_info .= ", время доставки: " . $row['delivtime'];
                     if ($row['dop_info'])
                         $adr_info .= ', ' . str_replace(['&', '<', '>'], '', $row['dop_info']);
-
-
+                    
                     $xml .= '
 	<Документ>
                 <Ид>' . $row['id'] . '</Ид>
 		<Номер>' . $row['uid'] . '</Номер>
-		<Дата>' . PHPShopDate::get($row['datas'], false, true) . 'T' . date("H:i:s") . '</Дата>
+		<Дата>' . PHPShopDate::get($row['datas'], false, true)  . '</Дата>
                 <Время>' . date("H:i:s") . '</Время>
                 <Комментарий>' . html_entity_decode($status['maneger']) . '[Номер документа на сайте: ' . $row['uid'] . ']</Комментарий>
 		<ХозОперация>Заказ товара</ХозОперация>

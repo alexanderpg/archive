@@ -171,18 +171,18 @@ function template_parent($obj, $dataArray, $rout) {
 
                             // Общий склад
                             if ($obj->PHPShopSystem->getSerilizeParam('admoption.sklad_sum_enabled') == 1)
-                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'] . PHPShopText::br();
 
                             foreach ($warehouse as $store_id => $store_name) {
                                 if (isset($itemsData['items' . $store_id])) {
-                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'] . PHPShopText::br();
                                 }
                             }
                         } else
                             $items = $obj->PHPShopBase->SysValue['lang']['product_on_sklad'] . " " . $val['items'] . " " . $val['ed_izm'];
                     } else
                         $items = null;
-                    $obj->set('parentItems',$items);
+                    $obj->set('parentItems', $items);
 
                     if ((float) $size_color_array[$val['id']]['price_n'] > 0)
                         $obj->set('parentPriceOld', $size_color_array[$val['id']]['price_n']);
@@ -435,8 +435,6 @@ function template_image_gallery($obj, $array) {
     $s = 1;
     $heroSlider = $heroSliderNav = null;
 
-
-
     // Нет данных в галерее
     if (!is_array($data) and ! empty($array['pic_big']))
         $data[] = array('name' => $array['pic_big']);
@@ -446,8 +444,9 @@ function template_image_gallery($obj, $array) {
         // Сортировка
         foreach ($data as $k => $v) {
 
-            if ($v['name'] == $array['pic_big'])
+            if ($v['name'] == $array['pic_big'] and (in_array(pathinfo($v['name'],PATHINFO_EXTENSION), ['mp4', 'mov'])) and $v['num']!=1){
                 $sort_data[0] = $v;
+            }
             else
                 $sort_data[$s] = $v;
 
@@ -474,13 +473,21 @@ function template_image_gallery($obj, $array) {
             }
 
             // Поддержка Webp
-            if (method_exists($obj, 'setImage')) {
+            if (method_exists($obj, 'setImage') and !in_array(pathinfo($name,PATHINFO_EXTENSION), ['mp4', 'mov'])) {
                 $name = $obj->setImage($name);
                 $name_s = $obj->setImage($name_s);
             }
 
-            $heroSlider .= '<div class="js-slide"><img class="img-fluid rounded-lg" src="' . $name . '" alt="' . $alt . '" title="' . $alt . '"></div>';
-            $heroSliderNav .= '<div class="js-slide p-1" data-big-image="' . $name . '"><a class="js-slick-thumb-progress d-block avatar avatar-circle border p-1 mx-auto" href="javascript:;"><img class="avatar-img" src="' . $name_s . '" alt="' . $alt . '" title="' . $alt . '"></a></div>';
+            // Видео
+            if (in_array(pathinfo($name,PATHINFO_EXTENSION), ['mp4', 'mov'])) {
+                $heroSlider .= '<div class="js-slide embed-responsive embed-responsive-4by3"><video class="embed-responsive-item" src="'.$name.'" controls></video></div>';
+                $heroSliderNav .= '<div class="js-slide p-1" data-big-image="' . $name . '"><a class="js-slick-thumb-progress d-block avatar avatar-circle border p-1 mx-auto" href="javascript:;"><img class="avatar-img" src="images/video.jpg" alt="' . $alt . '" title="' . $alt . '"></a></div>';
+            } 
+            // Изображение
+            else {
+                $heroSlider .= '<div class="js-slide"><img class="img-fluid rounded-lg" src="' . $name . '" alt="' . $alt . '" title="' . $alt . '"></div>';
+                $heroSliderNav .= '<div class="js-slide p-1" data-big-image="' . $name . '"><a class="js-slick-thumb-progress d-block avatar avatar-circle border p-1 mx-auto" href="javascript:;"><img class="avatar-img" src="' . $name_s . '" alt="' . $alt . '" title="' . $alt . '"></a></div>';
+            }
 
             $i++;
         }
