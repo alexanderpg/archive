@@ -182,7 +182,7 @@ class PHPShopPages extends PHPShopObj {
      */
     function __construct($objID) {
         $this->objID = $objID;
-        $this->objBase = $GLOBALS['SysValue']['base']['table_name11'];
+        $this->objBase = $GLOBALS['SysValue']['base']['page'];
         parent::__construct();
     }
 

@@ -85,11 +85,8 @@
             <a class="btn btn-default @hideCatalog@" href="/pricemail/UID_@productUid@.html">@productBestPrice@</a>
 
             <div class="clearfix"></div>
-            <br>
-            <div class="option-block">
-                @sticker_size@ @sticker_shipping@
-            </div>
-
+            
+            @deliverywidget@
 
         </div>
     </div>

@@ -4,13 +4,14 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.6
+ * @version 3.7
  */
 class CommerceMLLoader {
 
     private static $session_name = "CommerceMLLoader";
     private static $upload1c = 'upload/';
     var $result_path = 'sklad/';
+    var $log_path = 'log/';
     var $exchange_path = '';
     var $cleanup_import_directory = true;
     var $cleanup_time = 3600;
@@ -38,6 +39,7 @@ class CommerceMLLoader {
         $this->exchange_sort_ignore = $PHPShopSystem->getSerilizeParam("1c_option.exchange_sort_ignore");
         $this->exchange_clean = $PHPShopSystem->getSerilizeParam("1c_option.exchange_clean");
         $this->exchange_product_ignore = $PHPShopSystem->getSerilizeParam("1c_option.exchange_product_ignore");
+        $this->exchange_change = $PHPShopSystem->getSerilizeParam("1c_option.exchange_change");
 
         // Параметры ресайзинга
         $this->img_tw = $PHPShopSystem->getSerilizeParam('admoption.img_tw');
@@ -359,7 +361,7 @@ class CommerceMLLoader {
         }
     }
 
-    private static function cleanup_import_directory($path) {
+    public static function cleanup_import_directory($path) {
         $elements = scandir($path);
         foreach ($elements as $element) {
             if (in_array($element, array('.', '..')))
@@ -430,7 +432,6 @@ class CommerceMLLoader {
             $this->product_array = [];
             $this->product_array[] = array("Артикул", "Наименование", "Краткое описание", "Имя картинки", "Подробное описание", "Кол-во картинок", "Остаток", "Цена1", "Цена2", "Цена3", "Цена4", "Цена5", "Вес", "Ед.измерения", "ISO", "Category ID", "Parent", "Внешний код", "Характеристика", "Значение");
 
-
             // import.xml
             if (isset($xml->Классификатор->Группы) or $_GET['filename'] == 'import.xml') {
 
@@ -498,6 +499,8 @@ class CommerceMLLoader {
 
                 // Товары
                 foreach ($xml->Каталог->Товары[0] as $item) {
+                    
+                    $description = $weight = $length = $width = $height = null;
 
                     // Краткое описание и габариты
                     if (isset($item->ЗначенияРеквизитов[0])) {
@@ -513,21 +516,20 @@ class CommerceMLLoader {
                             }
 
                             if ($req->Наименование == 'Длина') {
-                                $length = '#' . (string) round($req->Значение);
+                                $length = '#' . round((string) $req->Значение);
                             }
 
                             if ($req->Наименование == 'Ширина') {
-                                $width = '#' . (string) round($req->Значение);
+                                $width = '#' . round((string) $req->Значение);
                             }
 
                             if ($req->Наименование == 'Высота') {
-                                $height = '#' . (string) round($req->Значение);
+                                $height = '#' . round((string) $req->Значение);
                             }
                         }
 
                         $weight .= $length . $width . $height;
-                    } else
-                        $description = $weight = $length = $width = $height = null;
+                    }
 
 
                     // Подробное описание
@@ -538,6 +540,7 @@ class CommerceMLLoader {
 
                     // Свойства
                     $properties = [];
+                    $weight_prop = $length_prop = $width_prop = $height_prop = null;
                     if (isset($item->ЗначенияСвойств[0])) {
                         foreach ($item->ЗначенияСвойств[0] as $req) {
 
@@ -548,7 +551,20 @@ class CommerceMLLoader {
                                 $req->Значение[0] = $directory_array[(string) $req->ИдЗначения[0]];
 
                             $properties[] = [$properties_array[(string) $req->Ид[0]], (string) $req->Значение[0]];
+
+                            // Габариты из характеристик
+                            if (stristr($properties_array[(string) $req->Ид], 'Вес') and empty($weight))
+                                $weight_prop = round((string) $req->Значение) * 1000;
+                            if (stristr($properties_array[(string) $req->Ид], 'Длина') and empty($length))
+                                $length_prop = '#' . round((string) $req->Значение);
+                            if (stristr($properties_array[(string) $req->Ид], 'Ширина') and empty($width))
+                                $width_prop = '#' . round((string) $req->Значение);
+                            if (stristr($properties_array[(string) $req->Ид], 'Высота') and empty($height))
+                                $height_prop = '#' . round((string) $req->Значение);
                         }
+
+                        if (empty($weight) and ! empty($weight_prop))
+                            $weight = $weight_prop . $length_prop . $width_prop . $height_prop;
                     }
 
                     // Категория
@@ -694,12 +710,11 @@ class CommerceMLLoader {
             // offers.xml
             else if (isset($xml->ПакетПредложений->Предложения) or $_GET['filename'] = 'offers.xml') {
 
-                // Только изменения
-                /*
-                  if (isset($xml->ИзмененияПакетаПредложений)) {
-                  unset($xml);
-                  $xml = simplexml_load_string(str_replace(['ИзмененияПакетаПредложений'], ['ПакетПредложений'], file_get_contents('./goods/' . $_GET['filename'])));
-                  } */
+                // Обработка измененных данных
+                if (!empty($this->exchange_change) and isset($xml->ИзмененияПакетаПредложений) ) {
+                    unset($xml);
+                    $xml = simplexml_load_string(str_replace(['ИзмененияПакетаПредложений'], ['ПакетПредложений'], file_get_contents('./goods/' . $_GET['filename'])));
+                }
 
                 // Блокировка обновления товаров
                 if (!empty($this->exchange_product_ignore)) {
@@ -1098,7 +1113,7 @@ class CommerceMLLoader {
     private function log($type, $mode, $response) {
 
         if (!empty($this->exchange_log)) {
-            $file = './log/cml_' . date("d_m_y") . '.log';
+            $file = $this->log_path . '/cml_' . date("d_m_y") . '.log';
 
             if (isset($_GET['filename']))
                 $filename .= '&filename=' . $_GET['filename'];

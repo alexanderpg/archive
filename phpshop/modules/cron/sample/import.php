@@ -5,7 +5,7 @@
  * Для включения поменяйте значение enabled на true
  */
 // Включение для SSH Cron
-$enabled = true;
+$enabled = false;
 
 $_classPath = "../../../";
 include($_classPath . "class/obj.class.php");

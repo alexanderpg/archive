@@ -657,6 +657,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_newsletter` (
   `template` int(11) DEFAULT '0',
   `date` int(11) DEFAULT '0',
   `servers` INT(11) DEFAULT '0',
+  `recipients` text NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;

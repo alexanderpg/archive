@@ -44,15 +44,27 @@ $count = 0;
 include_once dirname(__FILE__) . '/../class/Avito.php';
 $Avito = new Avito();
 
-$products = $PHPShopOrm->getList(['*'], ['export_avito' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
-if (is_array($products) and count($products) > 0) {
+// Отправка по 200 товаров
+function AvitoSendLimit($start, $end) {
+    global $PHPShopOrm,$Avito,$count;
 
-    // Склад
-    $count = $Avito->updateStocks($products);
+    $products = $PHPShopOrm->getList(['*'], ['export_avito' => "='1'"], ['order' => 'datas desc'], ['limit' => $start.','.$end]);
+    if (is_array($products) and count($products) > 0) {
 
-    // Цены
-    foreach ($products as $product)
-        $Avito->updatePrices($product);
+        // Склад
+        $count += $Avito->updateStocks($products);
+
+        // Цены
+        foreach ($products as $product)
+            $Avito->updatePrices($product);
+    }
+    
 }
+
+AvitoSendLimit(0,200);
+AvitoSendLimit(200,200);
+AvitoSendLimit(400,200);
+AvitoSendLimit(600,200);
+AvitoSendLimit(800,200);
 
 echo "Данные отправлены для " . $count . " товаров";

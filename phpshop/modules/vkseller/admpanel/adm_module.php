@@ -212,6 +212,8 @@ function actionStart() {
 
     if ($data['model'] === 'API') {
         $Tab1 .= $PHPShopGUI->setField('API key', $PHPShopGUI->setTextarea('token_new', $data['token'], false, '100%', '100') . $PHPShopGUI->setHelp('Получить <a href="../modules/vkseller/token.php?client_id=" id="client_token" target="_blank">Персональный ключ</a>'));
+        $Tab1 .= $PHPShopGUI->setField('Токен обновления', $PHPShopGUI->setTextarea('refresh_token_new', $data['refresh_token'], false, '100%', '100'));
+        $Tab1 .= $PHPShopGUI->setField("ID устройства", $PHPShopGUI->setInputText(null, "device_id_new", $data['device_id'], '100%'));
         $Tab1 .= $PHPShopGUI->setField("ID приложения", $PHPShopGUI->setInputText(null, "client_id_new", $data['client_id'], '100%'));
         $Tab1 .= $PHPShopGUI->setField("Защищенный ключ приложения", $PHPShopGUI->setInputText(null, "client_secret_new", $data['client_secret'], '100%'));
         $Tab1 .= $PHPShopGUI->setField("ID сообщества", $PHPShopGUI->setInputText('public', "owner_id_new", $data['owner_id'], '100%'));

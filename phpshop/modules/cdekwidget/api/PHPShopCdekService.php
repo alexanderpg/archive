@@ -55,8 +55,9 @@ class PHPShopCdekService extends ISDEKservice {
             $cityTo = static::sendToCity($data['shipment']['cityTo']);
             if ($cityTo && $cityTo['code'] === 200) {
                 $pretendents = json_decode($cityTo['result']);
-                if ($pretendents && isset($pretendents->geonames)) {
-                    $data['shipment']['cityToId'] = $pretendents->geonames[0]->id;
+
+                if ($pretendents) {
+                    $data['shipment']['cityToId'] = $pretendents[0]->code;
                 }
             }
         }
@@ -112,7 +113,7 @@ if (method_exists('PHPShopCdekService', $action)) {
     include_once '../class/CDEKWidget.php';
     $CDEKWidget = new CDEKWidget();
 
-    if ($action == 'getCity')
+    if ($action == 'getCity' or $action == 'calc')
         $_SESSION['cdek_token'] = $CDEKWidget->getToken();
 
 

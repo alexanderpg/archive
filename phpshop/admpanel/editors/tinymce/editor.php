@@ -59,7 +59,7 @@ class Editor {
         },
         theme: 'modern',
         file_browser_callback : elFinderBrowser,
-        relative_urls : false,
+        relative_urls : true,
         remove_script_host : true,
         browser_spellcheck: true,
         language: '".$GLOBALS['PHPShopLang']->code."',

@@ -5,7 +5,7 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с VK Товары API
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopModules
  * @todo https://dev.vk.com/method/market
  */
@@ -22,7 +22,7 @@ class VkSeller {
     const GET_USER = 'users.get';
     const GET_PRODUCT_LIST = 'market.get';
     const GET_PRODUCT = 'market.getById';
-    const VERSION = "5.140";
+    const VERSION = "5.199";
 
     public $api_key;
 
@@ -50,7 +50,12 @@ class VkSeller {
         $this->client_id = $this->options['client_id'];
         $this->owner_id = $this->options['owner_id'];
         $this->client_secret = $this->options['client_secret'];
+
         $this->access_token = $this->options['token'];
+        $this->device_id = $this->options['device_id'];
+        $this->refresh_token = $this->options['refresh_token'];
+        $this->token_time = $this->options['token_time'];
+
         $this->status_import = $this->options['status_import'];
         $this->delivery = $this->options['delivery'];
 
@@ -75,15 +80,36 @@ class VkSeller {
     }
 
     public function getCode() {
-        header('Location: https://oauth.vk.com/authorize?client_id=' . $this->client_id . '&display=page&redirect_uri=' . $this->ssl . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] . '&scope=offline,market,photos&response_type=code&v=' . VERSION);
+
+        $verifier_bytes = random_bytes(64);
+        $code_verifier = rtrim(strtr(base64_encode($verifier_bytes), "+/", "-_"), "=");
+        $challenge_bytes = hash("sha256", $code_verifier, true);
+        $code_challenge = rtrim(strtr(base64_encode($challenge_bytes), "+/", "-_"), "=");
+        $scope = "market photos";
+        $state = substr($code_verifier, 0, 32);
+
+        $_SESSION['code_verifier'] = $code_verifier;
+
+        header('Location: https://id.vk.com/authorize?response_type=code&client_id=' . $this->client_id . '&scope=' . $scope . '&redirect_uri=' . $this->ssl . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] . '&state=' . $state . '&code_challenge=' . $code_challenge . '&code_challenge_method=S256');
     }
 
-    public function getToken($code) {
-        $api = 'https://oauth.vk.com/access_token?client_id=' . $this->client_id . '&client_secret=' . $this->client_secret . '&redirect_uri=' . $this->ssl . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] . '&code=' . $code;
+    public function getToken() {
+
+        $api = 'https://id.vk.com/oauth2/auth';
 
         $ch = curl_init();
         $header = [
-            'Content-Type: application/json'
+            'Content-Type: application/x-www-form-urlencoded',
+        ];
+
+        $params = [
+            'grant_type' => 'authorization_code',
+            'client_id' => $this->client_id,
+            'code_verifier' => $_SESSION['code_verifier'],
+            'device_id' => $_GET['device_id'],
+            'code' => $_GET['code'],
+            'redirect_uri' => $this->ssl . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'],
+            'state' => $_GET['state']
         ];
 
         curl_setopt($ch, CURLOPT_URL, $api);
@@ -91,10 +117,70 @@ class VkSeller {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+        if (!empty($params)) {
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params, '', '&'));
+        }
+
         $result = curl_exec($ch);
         curl_close($ch);
+        $json = json_decode($result, true);
+        return $json;
+    }
 
-        return json_decode($result, true);
+    /**
+     *  Обновление токена
+     */
+    private function updateToken() {
+
+        // 1 час
+        if (time() - $this->token_time > 600) {
+
+            $verifier_bytes = random_bytes(64);
+            $code_verifier = rtrim(strtr(base64_encode($verifier_bytes), "+/", "-_"), "=");
+            $state = substr($code_verifier, 0, 32);
+
+            $api = 'https://id.vk.com/oauth2/auth';
+
+            $ch = curl_init();
+            $header = [
+                'Content-Type: application/x-www-form-urlencoded',
+            ];
+
+            $params = [
+                'grant_type' => 'refresh_token',
+                'client_id' => $this->client_id,
+                'device_id' => $this->device_id,
+                'refresh_token' => $this->refresh_token,
+                'state' => $state
+            ];
+
+            curl_setopt($ch, CURLOPT_URL, $api);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+            if (!empty($params)) {
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params, '', '&'));
+            }
+
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            $json = json_decode($result, true);
+
+            // Обновление refresh_token
+            if (!empty($json['access_token'])) {
+                $PHPShopOrm = new PHPShopOrm('phpshop_modules_vkseller_system');
+                $PHPShopOrm->update(['token_new' => $json['access_token'],'refresh_token_new' => $json['refresh_token'],'token_time_new'=>time()]);
+                $this->access_token = $json['access_token'];
+            }
+        }
+
+        return $this->access_token;
     }
 
     /**
@@ -473,6 +559,8 @@ class VkSeller {
      * @return array
      */
     public function request($method, $params = [], $version = false) {
+        
+        $this->updateToken();
 
         $api = self::API_URL;
         $ch = curl_init();

@@ -11,14 +11,7 @@ function addOzonsellerProductTab($data) {
     $tab = $PHPShopGUI->setField(null, $PHPShopGUI->setCheckbox('export_ozon_new', 1, 'Включить экспорт в OZON', $data['export_ozon']));
     $tab .= $PHPShopGUI->setInput("hidden", "export_ozon_task_id", $data['export_ozon_task_id']);
 
-    // Дата загрузки 
-    if ($data['export_ozon_task_id'] > 1680000000)
-        $date = PHPShopDate::get($data['export_ozon_task_id'], true);
-    else
-        $date = null;
-
-
-    $status = ['imported' => '<span class="text-success">' . __('Загружен') . ' ' . $date . '</span>', 'failed' => '<a class="text-warning" href="?path=modules.dir.ozonseller.product&uid=' . $data['id'] . '" target="_blank">' . __('Ошибка') . '</a>', 'pending' => '<span class="text-muted">' . __('В ожидании') . '</span>'];
+    $status = ['imported' => '<span class="text-success">' . __('Загружен') . '</span>', 'failed' => '<a class="text-warning" href="?path=modules.dir.ozonseller.product&uid=' . $data['id'] . '" target="_blank">' . __('Ошибка') . '</a>', 'pending' => '<span class="text-muted">' . __('В ожидании') . '</span>'];
 
     if (!empty($data['export_ozon_task_status']))
         $tab .= $PHPShopGUI->setField('Статус товара', $PHPShopGUI->setText($status[$data['export_ozon_task_status']]));
@@ -81,7 +74,8 @@ function OzonsellerSave() {
             if (!empty($task_id) and empty($error)) {
 
                 // Проверка статуса выгрузки
-                $info = $OzonSeller->sendProductsInfo($data)['result']['items'][0];
+                $ProductsInfo = $OzonSeller->sendProductsInfo($data);
+                $info = $ProductsInfo['result']['items'][0];
 
                 // Товар выгрузился
                 if (!empty($info['product_id'])) {
@@ -112,6 +106,11 @@ function OzonsellerSave() {
 
                     $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status']], ['id' => '=' . (int) $data['id']]);
                 }
+                // Неверный task_id
+                elseif (!empty($ProductsInfo['code'])) {
+                    $error = $ProductsInfo['message'];
+                    $PHPShopOrm->update(['export_ozon_task_status_new' => null, 'export_ozon_task_id_new' => 0], ['id' => '=' . (int) $data['id']]);
+                }
                 // В ожидании
                 elseif ($info['status'] == 'pending') {
                     $error = __('Товар поставлен в очередь на запись, сервис OZON временно занят. Требуется повторное отправление данных для завершения выгрузки.');
@@ -134,7 +133,7 @@ function OzonsellerSave() {
                 $data['sku_ozon'] = $OzonSeller->getProduct($data['export_ozon_id'])['items'][0]['sources'][0]['sku'];
 
                 if (!empty($data['sku_ozon']))
-                     $PHPShopOrm->update(['sku_ozon_new' => $data['sku_ozon']], ['id' => '=' . $data['id']]);
+                    $PHPShopOrm->update(['sku_ozon_new' => $data['sku_ozon']], ['id' => '=' . $data['id']]);
             }
 
             // Штрихкод

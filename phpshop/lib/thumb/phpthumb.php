@@ -987,7 +987,7 @@ class PHPThumb extends PHPThumbLibrary {
         $format = ($format !== null) ? strtoupper($format) : $this->format;
 
         if (!in_array($format, $validFormats)) {
-            throw new InvalidArgumentException("Invalid format type specified in save function: {$format}");
+           // throw new InvalidArgumentException("Invalid format type specified in save function: {$format}");
         }
 
         // make sure the directory is writeable

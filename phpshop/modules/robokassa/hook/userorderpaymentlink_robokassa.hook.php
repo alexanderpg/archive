@@ -104,7 +104,7 @@ function userorderpaymentlink_mod_robokassa_hook($obj, $PHPShopOrderFunction) {
             else
                 $return = PHPShopText::form($payment_forma, 'pay', 'post', 'https://auth.robokassa.kz/Merchant/Index.aspx');
         } elseif ($PHPShopOrderFunction->getSerilizeParam('orders.Person.order_metod') == 10020)
-            $return = ', Заказ обрабатывается менеджером';
+            $return = $option['title_sub'];
 
     return $return;
 }

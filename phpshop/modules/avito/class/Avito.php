@@ -543,7 +543,7 @@ class Avito {
         ]);
 
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($parameters));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, PHPShopString::json_safe_encode($parameters));
 
         $result = curl_exec($ch);
         $status = curl_getinfo($ch);

@@ -125,6 +125,8 @@ function actionStart() {
         foreach ($product_info['photos'] as $img)
             if (!empty($img['sizes'][9]['url']))
                 $icon .= '<div class="pull-left" style="padding:3px">' . $PHPShopGUI->setIcon($img['sizes'][9]['url'], "images[]", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true)) . '</div>';
+            elseif (!empty($img['sizes'][7]['url']))
+                $icon .= '<div class="pull-left" style="padding:3px">' . $PHPShopGUI->setIcon($img['sizes'][7]['url'], "images[]", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true)) . '</div>';
     } else
         $icon = $PHPShopGUI->setIcon('./images/no_photo.gif', "pic", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true));
 
@@ -266,18 +268,16 @@ function actionSave() {
         foreach ($_POST['images'] as $k => $img) {
             if (!empty($img)) {
 
-                $path_parts = pathinfo($img);
-
-                $path_parts['basename'] = $_POST['rowID'] . '_' . $path_parts['basename'];
+                $img_name = $action. '_' .$_POST['rowID'] . '.' . pathinfo(parse_url($img)['path'])['extension'];
 
                 // Файл загружен
-                if (downloadFile($img, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . $path_parts['basename']))
+                if (downloadFile($img, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . $img_name))
                     $img_load++;
                 else
                     continue;
 
                 // Новое имя
-                $img = $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . $path_parts['basename'];
+                $img = $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . $img_name;
 
                 // Запись в фотогалерее
                 $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);

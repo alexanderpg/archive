@@ -5,7 +5,7 @@ $().ready(function() {
 
     // Автоматизация рассылки
     if ($('#bot_result').length) {
-
+        
         $(window).bind("beforeunload", function() {
             return "Are you sure you want to exit? Please complete sign up or the app will get deleted.";
         });

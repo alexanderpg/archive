@@ -1,19 +1,54 @@
 <p id="vkid_button"></p>
-<script src="https://unpkg.com/@vkid/sdk@<2.0.0/dist-sdk/umd/index.js"></script>
-<script>
+<div>
+    <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+    <script type="text/javascript">
+        if ('VKIDSDK' in window) {
+            const VKID = window.VKIDSDK;
 
-    const VKID = window.VKIDSDK;
+            VKID.Config.init({
+                app: @vk_app@,
+                        redirectUrl: 'https://@vk_redirect_uri@',
+                responseMode: VKID.ConfigAuthMode.Callback,
+                source: VKID.ConfigSource.LOWCODE,
+                scope: 'email phone'
+            });
 
-    VKID.Config.set({
-        app: @vk_app@,
-        redirectUrl: 'https://@vk_redirect_uri@',
-        state: '@php echo urlencode($_SERVER["REQUEST_URI"]); php@'
-    });
+            const oAuth = new VKID.OAuthList();
 
-    const oneTap = new VKID.OneTap();
-    const container = document.getElementById('vkid_button');
-    if (container) {
-        oneTap.render({container: container, scheme: VKID.Scheme.LIGHT, lang: VKID.Languages.RUS});
-    }
+            oAuth.render({
+                container: document.getElementById('vkid_button'),
+                oauthList: [
+                    'vkid',
+                    'ok_ru',
+                    'mail_ru'
+                ]
+            })
+                    .on(VKID.WidgetEvents.ERROR, vkidOnError)
+                    .on(VKID.OAuthListInternalEvents.LOGIN_SUCCESS, function (payload) {
+                        const code = payload.code;
+                        const deviceId = payload.device_id;
 
-</script>
+                        VKID.Auth.exchangeCode(code, deviceId)
+                                .then(vkidOnSuccess)
+                                .catch(vkidOnError);
+                    });
+
+            function vkidOnSuccess(data) {
+                // Обработка полученного результата
+                $.ajax({
+                    url: 'https://@vk_redirect_uri@?access_token=' + data.access_token,
+                    type: "GET",
+                    async: false,
+                    success: function () {
+                        location.reload();
+                    }
+                });
+
+            }
+
+            function vkidOnError(error) {
+                // Обработка ошибки
+            }
+        }
+    </script>
+</div>

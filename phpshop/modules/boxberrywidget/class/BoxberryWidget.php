@@ -22,22 +22,21 @@ class BoxberryWidget {
         $this->format = (int) $system->getSerilizeParam('admoption.price_znak');
     }
 
-        /**
+    /**
      * @param $orderId
      * @throws Exception
      */
-    public function getOrderById($orderId)
-    {
+    public function getOrderById($orderId) {
         $orm = new PHPShopOrm('phpshop_orders');
 
         $order = $orm->getOne(array('*'), array('id' => "='" . (int) $orderId . "'"));
-        if(!$order) {
+        if (!$order) {
             throw new \Exception('Заказ не найден');
         }
 
         return $order;
     }
-    
+
     /**
      * @param array $request
      * @throws Exception
@@ -49,11 +48,11 @@ class BoxberryWidget {
         $cart = unserialize($order['orders']);
         $cart['Cart']['dostavka'] = (float) $request['cost'];
         $sum = $cart['Cart']['sum'] + $cart['Cart']['dostavka'];
-        
-        $status = unserialize($order['status']);
-        $status['maneger']=PHPShopString::utf8_win1251($request['info']);
 
-        $orm->update(['boxberry_pvz_id_new' => $request['pvz'], 'orders_new' => serialize($cart), 'status_new'=>serialize($status), 'sum_new' => $sum], ['id' => "='" . $order['id'] . "'"]);
+        $status = unserialize($order['status']);
+        $status['maneger'] = PHPShopString::utf8_win1251($request['info']);
+
+        $orm->update(['boxberry_pvz_id_new' => $request['pvz'], 'orders_new' => serialize($cart), 'status_new' => serialize($status), 'sum_new' => $sum], ['id' => "='" . $order['id'] . "'"]);
     }
 
     public function isPvzDelivery($deliveryId) {
@@ -119,9 +118,9 @@ class BoxberryWidget {
             $weight = 5;
         else
             $weight = $order['Cart']['weight'];
-        
-        if($this->option['paid'] == 1)
-            $data['paid']=1;
+
+        if ($this->option['paid'] == 1)
+            $data['paid'] = 1;
 
         $this->parameters = array(
             'order_id' => $data['uid'],
@@ -220,7 +219,7 @@ class BoxberryWidget {
      * @return float
      * @throws Exception
      */
-    public function getCourierPrice($zip, $weight, $depth, $height, $width) {
+    public function getCourierPrice($zip, $weight, $depth, $height, $width, $delivery_period = false) {
         if ($zip === null || strlen($zip) !== 6) {
             throw new \Exception(__('Неверно введен индекс получателя!'));
         }
@@ -239,18 +238,23 @@ class BoxberryWidget {
             'zip' => $zip
                 )
         );
-
+        
         $fee = $this->option['fee'];
 
-        if (empty($fee)) {
-            return round($request['price'], $this->format);
-        }
+        if (!empty($fee)) {
+            if ((int) $this->option['fee_type'] == 1) {
+                $price = round($request['price'] + ($request['price'] * $fee / 100), $this->format);
+            } else
+                $price = round($request['price'] + $fee, $this->format);
+        } else
+            $price = round($request['price'], $this->format);
 
-        if ((int) $this->option['fee_type'] == 1) {
-            return round($request['price'] + ($request['price'] * $fee / 100), $this->format);
-        }
+        if (!empty($delivery_period))
+            $return = ['price' => $price, 'delivery' => $request['delivery_period']];
+        else
+            $return = $price;
 
-        return round($request['price'] + $fee, $this->format);
+        return $return;
     }
 
     /**
@@ -262,7 +266,7 @@ class BoxberryWidget {
         $request = $this->requestGet('ZipCheck', $data);
 
         if ((int) $request[0]['ExpressDelivery'] !== 1) {
-            throw new \Exception(__('Доставка по данному индексу не возможна.'));
+            //throw new \Exception(__('Доставка по данному индексу не возможна.'));
         }
     }
 

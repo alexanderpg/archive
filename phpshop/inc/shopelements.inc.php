@@ -1,6 +1,41 @@
 <?php
 
 /**
+ * Элемент выбора витрины
+ * @author PHPShop Software
+ * @version 1.0
+ * @package PHPShopElements
+ */
+class PHPShopShowcaseElement extends PHPShopElements {
+
+    /**
+     * Конструктор
+     */
+    public function __construct() {
+        parent::__construct();
+    }
+
+    public function index() {
+
+        if (defined("HostID") or defined("HostMain")) {
+            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['servers']);
+            $data = $PHPShopOrm->getList(array('*'), array('enabled' => "='1'"), array('order' => 'name'));
+            $dis = null;
+            if (is_array($data))
+                foreach ($data as $row) {
+                    $this->set('ShowcaseName', $row['name']);
+                    $this->set('ShowcaseHost', $row['host']);
+                    $dis .= $this->parseTemplate($this->getValue('templates.showcase_menu_element'));
+                }
+
+            $this->set('ShowcaseList', $dis);
+            return $this->parseTemplate($this->getValue('templates.showcase_menu'));
+        }
+    }
+
+}
+
+/**
  * Виджет чата
  * @author PHPShop Software
  * @version 1.3

@@ -132,6 +132,8 @@
                     </a>                                   
                 </div>
                 @ComEndNotice@ 
+                
+                @deliverywidget@
 
             </div>
 

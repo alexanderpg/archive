@@ -278,6 +278,8 @@
                     <div class="product-sklad" id="items">@productSklad@</div>
                     <a class="best-price" href="/pricemail/UID_@productUid@.html">@productBestPrice@</a>
                 </div>
+                
+                @deliverywidget@
             </div>
 
             <div class="promo-info">@promotionInfo@</div>

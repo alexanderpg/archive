@@ -132,8 +132,12 @@
                     </a>                                   
                 </div>
                 @ComEndNotice@ 
+                
+                
 
             </div>
+            
+            @deliverywidget@
 
         </div>
         <!-- Right Ends -->

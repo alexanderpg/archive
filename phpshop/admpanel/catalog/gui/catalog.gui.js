@@ -596,7 +596,16 @@ $().ready(function () {
                 $(this).attr('data-edit') === 'price3_new' ||
                 $(this).attr('data-edit') === 'price4_new' ||
                 $(this).attr('data-edit') === 'price5_new' ||
-                $(this).attr('data-edit') === 'price_yandex_dbs_new' ||
+                $(this).attr('data-edit') === 'price_megamarket_new' ||
+                $(this).attr('data-edit') === 'price_ozon_new' ||
+                $(this).attr('data-edit') === 'price_wb_new' ||
+                $(this).attr('data-edit') === 'price_yandex_new' ||
+                $(this).attr('data-edit') === 'price_yandex_2_new' ||
+                $(this).attr('data-edit') === 'price_yandex_3_new' ||
+                $(this).attr('data-edit') === 'price_avito_new' ||
+                $(this).attr('data-edit') === 'price_google_new' ||
+                $(this).attr('data-edit') === 'price_cdek_new' ||
+                $(this).attr('data-edit') === 'price_aliexpress_new' ||
                 $(this).attr('data-edit') === 'price_sbermarket_new'
                 ) {
             $(this).attr('old-value', $(this).val());
@@ -612,7 +621,16 @@ $().ready(function () {
                 elem.attr('data-edit') === 'price3_new' && Number(elem.attr('old-value')) > 0 ||
                 elem.attr('data-edit') === 'price4_new' && Number(elem.attr('old-value')) > 0 ||
                 elem.attr('data-edit') === 'price5_new' && Number(elem.attr('old-value')) > 0 ||
-                elem.attr('data-edit') === 'price_yandex_dbs_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_megamarket_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_ozon_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_wb_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_yandex_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_yandex_2_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_yandex_3_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_avito_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_google_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_cdek_new' && Number(elem.attr('old-value')) > 0 ||
+                elem.attr('data-edit') === 'price_aliexpress_new' && Number(elem.attr('old-value')) > 0 ||
                 elem.attr('data-edit') === 'price_sbermarket_new' && Number(elem.attr('old-value')) > 0
                 ) {
             // Если новая цена на 20% меньше - выводим предупреждение, иначе - редактируем сразу

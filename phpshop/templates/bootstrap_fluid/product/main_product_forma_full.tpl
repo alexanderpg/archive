@@ -83,13 +83,7 @@
                 <button class="btn btn-default addToWishList" data-uid="@productUid@">{Отложить}</button>
             </div>               
 
-
-            <br>
-            <div class="option-block">
-                @sticker_size@ @sticker_shipping@
-            </div>
-
-
+            @deliverywidget@
 
         </div>
     </div>

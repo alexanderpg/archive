@@ -147,9 +147,9 @@ if (is_array($data))
 
         $info = '<div class="text-muted">' . $datas . '<span class="glyphicon ' . $ico . ' pull-right" style="color:' . $status_array[$row['statusi']]['color'] . '"></span></div>' .
                 PHPShopString::win_utf8($type) .
-                '<div>' . $row['tel'] . '</div>' .
+                '<div>' . PHPShopString::win_utf8($row['tel']) . '</div>' .
                 '<div>' . PHPShopString::win_utf8($row['fio']) . '</div>' .
-                '<div>' . @$row['mail'] . '</div>' .
+                '<div>' . PHPShopString::win_utf8($row['mail']) . '</div>' .
                 $sum;
 
         $ajax[$status_array_name[$row['statusi']]['name']]['item'][] = array(
@@ -171,4 +171,3 @@ if (is_array($ajax))
 
 header("Content-Type: application/json");
 exit(json_encode($AJAX));
-?>

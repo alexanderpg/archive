@@ -13,6 +13,7 @@ PHPShopObj::loadClass("order");
 PHPShopObj::loadClass("modules");
 PHPShopObj::loadClass("lang");
 
+
 $PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini",true,true);
 
 $YandexDelivery = new YandexDelivery();
@@ -24,5 +25,5 @@ if(empty($weight))
 
 $data->weight = $weight;
 $data->delivery_variant_id = $_POST['delivery_variant_id'];
-
+$YandexDelivery->options['paid'] = 1;
 echo $YandexDelivery->getApproxDeliveryPrice($data);

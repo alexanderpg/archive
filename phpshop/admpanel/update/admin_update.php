@@ -46,6 +46,10 @@ function actionUpdate() {
 
         // Обновление БД модулей
         $PHPShopUpdate->updateModules();
+        
+        $_SESSION['update_check']--;
+        if($_SESSION['update_check'] < 1)
+            unset($_SESSION['update_check']);
     }
     
     // Проверка обновлений

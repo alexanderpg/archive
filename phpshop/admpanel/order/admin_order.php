@@ -67,6 +67,12 @@ function actionStart() {
         'action' => 'edit-select',
         'class' => 'disabled'
     );
+    
+    $PHPShopInterface->action_select['Скопировать E-mail выбранных'] = array(
+        'name' => 'Скопировать E-mail выбранных',
+        'action' => 'copy-mail-select',
+        'class' => 'disabled'
+    );
 
     $PHPShopInterface->action_select['Настройка'] = array(
         'name' => 'Настройка полей',
@@ -100,7 +106,7 @@ function actionStart() {
         'tooltip' => 'data-toggle="tooltip" data-placement="left" title="' . __('Канбан доска') . '" '
     );
 
-    $PHPShopInterface->setActionPanel($TitlePage, array('Настройка', 'Редактировать выбранные', 'CSV', '|', 'Удалить выбранные'), array('Настройка', 'Добавить заказ', 'Канбан'));
+    $PHPShopInterface->setActionPanel($TitlePage, array('Настройка', 'Редактировать выбранные', 'CSV', 'Скопировать E-mail выбранных', '|', 'Удалить выбранные'), array('Настройка', 'Добавить заказ', 'Канбан'));
 
     // Настройка полей
     if (!empty($_COOKIE['check_memory'])) {

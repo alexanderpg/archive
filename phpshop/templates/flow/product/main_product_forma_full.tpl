@@ -156,9 +156,11 @@
             </div>
             <!-- Модуль услуги -->
             @productservices_list@
-
+            
             <!-- Вывод стикера Аккордеон для карточки товара -->
             @sticker_accordion@
+            
+            @deliverywidget@
 
             <div class="mb-4 @elementCartHide@ @hideCatalog@">
                 <button type="button" class="btn btn-block btn-primary btn-pill transition-3d-hover addToCartFull" data-num="1" data-uid="@productUid@">@flowProductSale@</button>

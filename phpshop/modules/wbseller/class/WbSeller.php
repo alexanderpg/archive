@@ -3,14 +3,14 @@
 /**
  * Библиотека работы с Wildberries Seller API
  * @author PHPShop Software
- * @version 2.1
+ * @version 2.2
  * @package PHPShopModules
- * @todo https://openapi.wb.ru/
+ * @todo https://openapi.wildberries.ru/
  */
 class WbSeller {
 
     const GET_PRODUCT_LIST = 'https://content-api.wildberries.ru/content/v2/get/cards/list';
-    const GET_PRODUCT_PRICE = 'https://discounts-prices-api.wb.ru/api/v2/list/goods/filter';
+    const GET_PRODUCT_PRICE = 'https://discounts-prices-api.wildberries.ru/api/v2/list/goods/filter';
     const GET_PARENT_TREE = 'https://content-api.wildberries.ru/content/v1/object/parent/all';
     const GET_TREE = 'https://content-api.wildberries.ru/content/v2/object/all';
     const GET_TREE_ATTRIBUTE = 'https://content-api.wildberries.ru/content/v2/object/charcs/';
@@ -18,8 +18,8 @@ class WbSeller {
     const IMPORT_MEDIA = 'https://content-api.wildberries.ru/content/v3/media/save';
     const GET_WAREHOUSE_LIST = 'https://marketplace-api.wildberries.ru/api/v3/warehouses';
     const UPDATE_PRODUCT_STOCKS = 'https://marketplace-api.wildberries.ru/api/v3/stocks/';
-    const UPDATE_PRODUCT_PRICES = 'https://discounts-prices-api.wb.ru/api/v2/upload/task';
-    const UPDATE_PRODUCT_PRICES_SIZE = 'https://discounts-prices-api.wb.ru/api/v2/upload/task/size';
+    const UPDATE_PRODUCT_PRICES = 'https://discounts-prices-api.wildberries.ru/api/v2/upload/task';
+    const UPDATE_PRODUCT_PRICES_SIZE = 'https://discounts-prices-api.wildberries.ru/api/v2/upload/task/size';
     const GET_ORDER_LIST = 'https://marketplace-api.wildberries.ru/api/v3/orders';
     const GET_ORDER_NEW = 'https://marketplace-api.wildberries.ru/api/v3/orders/new';
 

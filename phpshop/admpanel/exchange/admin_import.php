@@ -824,8 +824,9 @@ function csv_update($data) {
                             $img = '/UserFiles/Image/' . $img;
 
                         // Проверка изображния
-                        $checkImage = checkImage($img, $row['id'], $row['parent_enabled']);
+                        $checkImage = checkImage($img, $row['id'], $row['parent']);
                         $img_save = $checkImage['img'];
+
 
                         // Создаем новую
                         if (empty($checkImage['check'])) {
@@ -1376,11 +1377,24 @@ function actionSave() {
                             $external_code = null;
                         }
 
+                        // Наименование
+                        if (!empty((string) $item->name[0])) {
+                            $name = $item->name[0];
+                        } else if (!empty((string) $item->model[0]) and (string) $item->attributes()->type == "vendor.model") {
+                            $name = $item->model[0];
+                        }
+
                         // Подтипы
                         if (!empty((string) $item->attributes()->group_id)) {
 
                             $parent_enabled = 1;
                             $sort = null;
+
+                            // Картинки
+                            if (is_array((array) $item->picture)) {
+                                $images = (string) $item->picture[0];
+                            } else
+                                $images = (string) $item->picture;
 
                             if (!empty((string) $item->param[0]))
                                 $parent = PHPShopString::utf8_win1251((string) $item->param[0]);
@@ -1392,16 +1406,19 @@ function actionSave() {
                             if (!is_array($yml_array[(string) $item->attributes()->group_id])) {
 
                                 // Название
-                                $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251((string) $item->name[0]))));
+                                $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251($name))));
 
-                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, 0, (string) $item->attributes()->id, '', $oldprice, $length, $width, $height];
+                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, 0, null, '', $oldprice, $length, $width, $height];
                             } else {
 
                                 // Список подтипов
-                                $yml_array[(string) $item->attributes()->group_id][13] .= ',' . (string) $item->attributes()->id;
+                                if (!empty((string) $item->vendorCode[0]))
+                                    $yml_array[(string) $item->attributes()->group_id][13] .= ',' . $uid;
+                                else
+                                    $yml_array[(string) $item->attributes()->group_id][13] .= ',' . (string) $item->attributes()->id;
 
                                 // Картинка
-                                $yml_array[(string) $item->attributes()->group_id][3] .= ',' . $images;
+                                $yml_array[(string) $item->attributes()->group_id][2] .= ',' . $images;
 
                                 // Минимальная цена
                                 if ($yml_array[(string) $item->attributes()->group_id][6] > (string) $item->price[0])
@@ -1414,11 +1431,7 @@ function actionSave() {
                         }
 
 
-
-
-
-
-                        $yml_array[$uid] = [$uid, PHPShopString::utf8_win1251((string) $item->name[0]), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height, $external_code];
+                        $yml_array[$uid] = [$uid, PHPShopString::utf8_win1251($name), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height, $external_code];
                     }
 
                     if (empty($GLOBALS['exchanges_cron']))
@@ -1942,13 +1955,11 @@ function actionStart() {
                 foreach ($select_value as $k => $v) {
 
                     if ($GLOBALS['PHPShopBase']->codBase == 'utf-8') {
-                       
+
                         if ($v[1] == $p or ( strstr($v[0], '@') and strstr($p, '@')))
                             $v[2] = 'selected';
                         else
                             $v[2] = null;
-                        
-                        
                     } else {
                         if ($v[0] == $p or ( strstr($v[0], '@') and strstr($p, '@')))
                             $v[2] = 'selected';

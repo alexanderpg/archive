@@ -11,8 +11,8 @@ function actionStart() {
 
     // Выборка
     $data = array();
-    $PHPShopGUI->field_col = 3;
-    $data = $PHPShopGUI->valid($data,'name','content','servers');
+    $PHPShopGUI->field_col = 4;
+    $data = $PHPShopGUI->valid($data, 'name', 'content', 'servers');
 
     $PHPShopGUI->action_button['Сохранить и отправить'] = array(
         'name' => 'Сохранить и отправить',
@@ -47,9 +47,9 @@ function actionStart() {
     $oFCKeditor->Value = $data['content'];
 
     // Содержание закладки 1
-    $Tab1=$PHPShopGUI->setField("Тема", $PHPShopGUI->setInput("text.requared", "name_new", $data['name']));
+    $Tab1 = $PHPShopGUI->setField("Тема", $PHPShopGUI->setInput("text.requared", "name_new", $data['name']));
 
- 
+
     // Новости
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['news']);
     $data_page = $PHPShopOrm->select(array('*'), false, array('order' => 'id desc'), array('limit' => 10));
@@ -61,18 +61,22 @@ function actionStart() {
             $value[] = array($val['zag'] . ' &rarr;  ' . $val['datas'], $val['id'], false);
         }
 
-    $Tab1.=$PHPShopGUI->setField('Содержание из новости', $PHPShopGUI->setSelect('template', $value, '100%', false, false, false, false, false, false));
-    $Tab1 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/','100%'));
-    
-    $Tab1= $PHPShopGUI->setCollapse('Информация',$Tab1);
-    
-    $Tab1.=$PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI(). $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail') . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
+    $Tab1 .= $PHPShopGUI->setField('Содержание из новости', $PHPShopGUI->setSelect('template', $value, '100%', false, false, false, false, false, false));
+    $Tab1 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/', '100%'));
+
+    $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1);
+
+    $Tab3 .= $PHPShopGUI->setTextarea('recipients_new', $data['recipients'], true, false, '200px', 'Укажите e-mail получателей рассылки через запятую или оставьте это поле пустым для рассылки всем пользователям');
+
+    $Tab1 .= $PHPShopGUI->setCollapse('Точечная рассылка', $Tab3);
+
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail') . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
-    
+
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1,true,false,true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("submit", "saveID", "ОК", "right", 70, "", "but", "actionInsert.news.create");

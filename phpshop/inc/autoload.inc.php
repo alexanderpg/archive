@@ -135,6 +135,10 @@ $PHPShopUserElement = new PHPShopUserElement();
 $PHPShopUserElement->init('wishlist');
 $PHPShopUserElement->init('usersDisp');
 
+// Меню витрин
+$PHPShopShowcaseElement = new PHPShopShowcaseElement();
+$PHPShopShowcaseElement->init('showcaseMenu');
+
 // RSS грабер новостей
 new PHPShopRssParser();
 ?>

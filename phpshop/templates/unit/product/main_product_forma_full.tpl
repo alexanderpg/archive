@@ -126,6 +126,8 @@
                     </div>
                     <a href="" data-toggle="modal" data-target="#forma" class="link d-flex align-items-center "><span class="icons icons-info"></span>{Задать вопрос по продукту}</a>
                     <div class="clearfix"></div>
+                    
+                    @deliverywidget@
                 </div>
             </div>
         </div>

@@ -139,7 +139,7 @@ function modulesMenu() {
             $db_podmenu = $podmenu = null;
             $db = $menu_array["adminmenu"];
 
-            if (!empty($_SESSION['support']) and $_SESSION['support'] < $menu_array['sign'])
+            if (!empty($_SESSION['support']) and $_SESSION['support'] < @$menu_array['sign'])
                 continue;
 
             if (!empty($menu_array['pro']) and empty($_SESSION['mod_pro']))

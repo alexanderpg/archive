@@ -13,7 +13,7 @@ function actionStart() {
     // Выборка
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['newsletter']);
     $data = $PHPShopOrm->select(array('*'), array('id' => '=' . intval($_GET['id'])));
-    $PHPShopGUI->field_col = 3;
+    $PHPShopGUI->field_col = 4;
 
 
     // Нет данных
@@ -45,11 +45,11 @@ function actionStart() {
     // Редактор 1
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('content_new');
-    $oFCKeditor->Height = '300';
+    $oFCKeditor->Height = '550';
     $oFCKeditor->Value = $data['content'];
 
     // Содержание закладки 1
-    $Tab1 = $PHPShopGUI->setField("Тема", $PHPShopGUI->setInput("text.requared", "name_new", $data['name']));
+    $Tab1 .= $PHPShopGUI->setField("Тема", $PHPShopGUI->setInput("text.requared", "name_new", $data['name']));
 
     // Новости
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['news']);
@@ -64,7 +64,6 @@ function actionStart() {
 
     $Tab1 .= $PHPShopGUI->setField('Содержание из новости', $PHPShopGUI->setSelect('template', $value, '100%', false, false, false, false, false, false));
     $Tab1 .= $PHPShopGUI->setField('Лимит рассылок', $PHPShopGUI->setInputText(null, 'send_limit', '0,300', 150), 1, 'Пользователям c 1 по 300');
-    $Tab1 .= $PHPShopGUI->setField("Тестовое сообщение", $PHPShopGUI->setCheckbox('test', 1, __('Отправить тестовое сообщение ') . ' ' . $PHPShopSystem->getEmail(), 1, false, false));
     $Tab1 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/', '100%', false));
 
     if (empty($_POST['time_limit']))
@@ -75,14 +74,19 @@ function actionStart() {
 
     $Tab2 = $PHPShopGUI->setField('Сообщений в рассылке', $PHPShopGUI->setInputText(null, 'message_limit', $_POST['message_limit'], 150), 1, 'Задается хостингом');
     $Tab2 .= $PHPShopGUI->setField('Временной интервал', $PHPShopGUI->setInputText(null, 'time_limit', $_POST['time_limit'], 150, __('минут')), 1, 'Задается хостингом');
-    $Tab2 .= $PHPShopGUI->setField("Помощник", $PHPShopGUI->setCheckbox('smart', 1, __('Умная рассылка для соблюдения правила ограничений на хостинге'), 0, false, false));
+    $Tab2 .= $PHPShopGUI->setField("Помощник", $PHPShopGUI->setCheckbox('smart', 1, __('Умная рассылка для обхода ограничений'), 0, false, false));
+
+    $Tab3 = $PHPShopGUI->setField("Тестовое сообщение", $PHPShopGUI->setCheckbox('test', 1, __('Отправить тестовое сообщение ') . ' ' . $PHPShopSystem->getEmail(), 1, false, false));
+
+    $Tab3 .= $PHPShopGUI->setTextarea('recipients_new', $data['recipients'], true, false, '200px', 'Укажите e-mail получателей рассылки через запятую или оставьте это поле пустым для рассылки всем пользователям');
 
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1);
 
     $Tab1 .= $PHPShopGUI->setCollapse('Автоматизация', $Tab2);
 
-    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI(). $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail')  . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
+    $Tab1 .= $PHPShopGUI->setCollapse('Точечная рассылка', $Tab3);
 
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail') . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
 
 
     // Запрос модуля на закладку
@@ -208,7 +212,7 @@ function actionUpdate($option = false) {
 
     // Тест
     if (!empty($_POST['test'])) {
-        
+
         if (!empty($_POST['saveID'])) {
             PHPShopParser::set('user', $_SESSION['logPHPSHOP']);
             PHPShopParser::set('email', $from);
@@ -224,7 +228,6 @@ function actionUpdate($option = false) {
                     $error++;
             }
         }
-        
     } else {
 
         // Автоматизация
@@ -245,7 +248,14 @@ function actionUpdate($option = false) {
         // Рассылка пользователям
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['shopusers']);
         $PHPShopOrm->debug = false;
-        $where['sendmail'] = "='1'";
+
+        // Точечная рассылка
+        if (!empty($_POST['recipients_new'])) {
+            $recipients = explode(",", $_POST['recipients_new']);
+            if (is_array($recipients))
+                $where['mail'] = " IN ('" . implode("','", $recipients) . "')";
+        } else
+            $where['sendmail'] = "='1'";
 
         // Мультибаза
         if ($_POST['servers_new'] == 1000)
@@ -282,8 +292,16 @@ function actionUpdate($option = false) {
     // Автоматизация
     if (!empty($_POST['smart']) and empty($_POST['test'])) {
 
+        // Точечная рассылка
+        if (!empty($_POST['recipients_new'])) {
+            $recipients = explode(",", $_POST['recipients_new']);
+            if (is_array($recipients))
+                $where = "where mail IN ('" . implode("','", $recipients) . "')";
+        } else
+            $where = "where sendmail='1'";
+
         // Всего пользователей
-        $total = $PHPShopBase->getNumRows('shopusers', "where sendmail='1'");
+        $total = $PHPShopBase->getNumRows('shopusers', $where);
 
         $bar = round($_POST['message_limit'] * 100 / $total);
         $action = true;
@@ -300,6 +318,19 @@ function actionUpdate($option = false) {
 
     if (empty($option)) {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['newsletter']);
+
+        // Чистка дубликатов
+        if (!empty($_POST['recipients_new'])) {
+            $recipients = explode(",", $_POST['recipients_new']);
+            if (is_array($recipients)){
+                
+                foreach($recipients as $mail)
+                    $recipients_clean[$mail]=$mail;
+
+                $_POST['recipients_new'] = implode(",", $recipients_clean);
+            }
+        }
+
         $action = $PHPShopOrm->update($_POST, array('id' => '=' . $_POST['rowID']));
     }
 

@@ -1,0 +1,200 @@
+<?php
+
+/**
+ * Доставка
+ */
+session_start();
+$_classPath = "../../../";
+include($_classPath . "class/obj.class.php");
+PHPShopObj::loadClass("base");
+PHPShopObj::loadClass("order");
+PHPShopObj::loadClass("modules");
+PHPShopObj::loadClass("array");
+PHPShopObj::loadClass("orm");
+PHPShopObj::loadClass("product");
+PHPShopObj::loadClass("system");
+PHPShopObj::loadClass("string");
+PHPShopObj::loadClass("cart");
+PHPShopObj::loadClass("security");
+PHPShopObj::loadClass("user");
+PHPShopObj::loadClass("lang");
+
+$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, true);
+$PHPShopSystem = new PHPShopSystem();
+$PHPShopLang = new PHPShopLang(array('locale' => $_SESSION['lang'], 'path' => 'shop'));
+
+// Модули
+$PHPShopModules = new PHPShopModules($_classPath . "modules/");
+$PHPShopModules->checkInstall('deliverywidget');
+
+// Настройки модуля
+require_once($_classPath . "modules/deliverywidget/class/Deliverycache.php");
+$DeliveryWidget =  new DeliveryWidget();
+$option = $DeliveryWidget->option;
+        
+if (class_exists('Memcached') and $option['cache'] == 1) {
+    $cache = new Memcached();
+} else {
+    
+    if ($option['cache'] == 0) {
+        $cache = new Mysqlcached();
+    } else
+        $cache = new Nocached();
+}
+
+$cache->addServer($option['server'], $option['port']);
+
+if (empty($_GET['city']) or empty($_GET['productId']))
+    exit;
+else {
+    $city = (string) $_GET['city'];
+    $productId = (int) $_GET['productId'];
+}
+
+$product = new PHPShopProduct($productId);
+$weight = $product->getParam('weight') ?: $option['weight'];
+
+$cache_key = md5($city) . '_' . $weight;
+$prices = json_decode($cache->get($cache_key), true);
+
+if (empty($prices)) {
+    $cityFromIndex = $option['index_from'];
+    $cityToIndex = $DeliveryWidget->suggestCity($city);
+
+    // Если не смог определить индекс конечного города то не возвращаем ничего
+    if (empty($cityToIndex)) {
+        exit;
+    }
+
+    // CDEK
+    if (!empty($PHPShopModules->ModValue['base']['cdekwidget'])) {
+        include_once($_classPath . 'modules/cdekwidget/class/CDEKWidget.php');
+        $CDEKWidget = new CDEKWidget();
+        $shipment = [
+            'type' => 'pickup',
+            'cityTo' => $city,
+            'cityFrom' => iconv('cp1251', 'UTF-8', $CDEKWidget->option['city_from']),
+            'cityFromId' => $CDEKWidget->option['city_from_code'],
+            'goods' => $CDEKWidget->getCart([
+                [
+                    'num' => 1,
+                    'id' => $productId,
+                    'weight' => $product->getParam('weight'),
+                ],
+            ])
+        ];
+
+        $query = [
+            'isdek_action' => 'calc',
+            'shipment' => $shipment,
+        ];
+
+        $url = $_SERVER['SERVER_NAME'] . '/phpshop/modules/cdekwidget/api/PHPShopCdekService.php?' . http_build_query($query);
+        $result = $DeliveryWidget->get($url);
+
+        $sdek_price = $result['result']['price'];
+        $sdek_days = [
+            $result['result']['deliveryPeriodMin'],
+            $result['result']['deliveryPeriodMax'],
+        ];
+    }
+
+    // Почта 1 класс
+    if (!empty($PHPShopModules->ModValue['base']['pochta'])) {
+        $url = 'tariff.pochta.ru/v2/calculate/tariff/delivery?json&object=47030&from=' . $cityFromIndex . '&to=' . $cityToIndex . '&weight=' . $weight;
+
+        $result = $DeliveryWidget->get($url);
+        $pochta_price = ceil($result['paymoneynds'] / 100);
+        $pochta_days = [
+            $result['delivery']['min'],
+            $result['delivery']['max'],
+        ];
+    }
+
+    // Яндекс.Доставка
+    if (!empty($PHPShopModules->ModValue['base']['yandexdelivery'])) {
+        include_once($_classPath . "modules/yandexdelivery/class/YandexDelivery.php");
+        $yandexDelivery = new YandexDelivery();
+        $yandexDelivery->options['paid'] = 1;
+        $data = new YandexDeliveryOrderData();
+        $data->weight = $weight;
+        $data->address = $city;
+        $data->delivery_variant_id = $yandexDelivery->getStation($data->address);
+
+        $yandex_price = $yandexDelivery->getApproxDeliveryPrice($data);
+        $yandex_days = $yandexDelivery->getApproxDeliveryDays($data);
+
+        $origin = new DateTimeImmutable(date("Y-m-d", $yandex_days[0]['from']));
+        $target = new DateTimeImmutable(date("Y-m-d", end($yandex_days)['to']));
+
+        $interval = $origin->diff($target);
+        $yandex_day = $interval->format('%a');
+    }
+
+    // Boxberry
+    if (!empty($PHPShopModules->ModValue['base']['boxberrywidget'])) {
+        require_once($_classPath . "modules/boxberrywidget/class/BoxberryWidget.php");
+        $item = $CDEKWidget->getCart([
+                    [
+                        'num' => 1,
+                        'id' => $productId,
+                        'weight' => $product->getParam('weight'),
+                    ],
+                ])[0];
+
+        $boxberry = new BoxberryWidget();
+        $result = $boxberry->getCourierPrice($cityToIndex, $weight, $item['length'], $item['height'], $item['width'], true);
+
+        $boxberry_price = $result['price'];
+        $boxberry_days = $result['delivery'];
+    }
+
+    $prices = [
+        'sdek' => $sdek_price,
+        'sdek_days' => $sdek_days,
+        'pochta' => $pochta_price,
+        'pochta_days' => $pochta_days,
+        'yandex' => $yandex_price,
+        'yandex_days' => $yandex_day,
+        'boxberry' => $boxberry_price,
+        'boxberry_days' => $boxberry_days,
+    ];
+
+    // Сохранение кеша
+    $cache->set($cache_key, json_encode($prices), $option['time'] * 60 * 60 * 24);
+}
+
+if (is_array($prices)) {
+    $disp = null;
+    
+    if (!empty($prices['sdek'])) {
+        PHPShopParser::set('delivery_name', __('СДЭК'));
+        PHPShopParser::set('delivery_days', $DeliveryWidget->printDays($prices['sdek_days']));
+        PHPShopParser::set('delivery_price', __('от'). ' '.$prices['sdek'] .' руб');
+        $disp .= PHPShopParser::file($GLOBALS['SysValue']['templates']['deliverywidget']['delivery'], true, false, true);
+    }
+    
+    if (!empty($prices['pochta'])) {
+        PHPShopParser::set('delivery_name', __('Почта 1 класс'));
+        PHPShopParser::set('delivery_days', $DeliveryWidget->printDays($prices['pochta_days']));
+        PHPShopParser::set('delivery_price',  __('от'). ' '.$prices['pochta'] .' руб');
+        $disp .= PHPShopParser::file($GLOBALS['SysValue']['templates']['deliverywidget']['delivery'], true, false, true);
+    }
+    
+    if (!empty($prices['yandex'])) {
+        PHPShopParser::set('delivery_name', __('Яндекс.Доставка'));
+        PHPShopParser::set('delivery_days', $DeliveryWidget->printDays($prices['yandex_days']));
+        PHPShopParser::set('delivery_price',  __('от'). ' '.$prices['yandex'] .' руб');
+        $disp .= PHPShopParser::file($GLOBALS['SysValue']['templates']['deliverywidget']['delivery'], true, false, true);
+    }
+    
+    if (!empty($prices['boxberry'])) {
+        PHPShopParser::set('delivery_name', __('Boxberry'));
+        PHPShopParser::set('delivery_days', $DeliveryWidget->printDays($prices['boxberry_days']));
+        PHPShopParser::set('delivery_price',  __('от'). ' '.$prices['boxberry'] .' руб');
+        $disp .= PHPShopParser::file($GLOBALS['SysValue']['templates']['deliverywidget']['delivery'], true, false, true);
+    }
+
+
+    echo $disp;
+}

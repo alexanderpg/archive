@@ -98,20 +98,19 @@ class YandexDelivery {
      * Наценка для доставки
      * @return int
      */
-    public function getAddPrice($request) {
+    public function getAddPrice($pricing_total) {
 
-
-        $fee = $this->option['fee'];
+        $fee = $this->options['fee'];
 
         if (empty($fee)) {
-            return round($request['pricing_total'], $this->format);
+            return 0;
         }
 
-        if ((int) $this->option['fee_type'] == 1) {
-            return round($request['pricing_total'] + ($request['pricing_total'] * $fee / 100), $this->format);
+        if ((int) $this->options['fee_type'] == 1) {
+            return round($pricing_total * $fee / 100, $this->format);
         }
 
-        return round($request['pricing_total'] + $fee, $this->format);
+        return round($fee, $this->format);
     }
 
     public function getDefaultDimensions() {
@@ -199,6 +198,51 @@ class YandexDelivery {
         return $result;
     }
 
+    /**
+     * Определение населенного пункта
+     */
+    public function getStation($city) {
+
+        $geo_id = $this->request('/api/b2b/platform/location/detect', ['location' => $city])['variants'][0]['geo_id'];
+        $request = [
+            'geo_id' => $geo_id,
+            'type' => 'pickup_point'
+        ];
+
+        $response = $this->request('/api/b2b/platform/pickup-points/list', $request);
+        return $response['points'][0]['id'];
+    }
+    
+    /**
+     *  Определение сроков доставки
+     */
+    public function getApproxDeliveryDays($data) {
+
+        $request = [
+            'station_id'=>$this->STATION_ID,
+            'self_pickup_id' => $data->delivery_variant_id,
+            'last_mile_policy' => 'self_pickup',
+            'send_unix'=>true
+        ];
+        
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => static::BASE_URL . '/api/b2b/platform/offers/info?'.http_build_query($request),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer " . $this->TOKEN,
+                "content-type: application/json"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        $result = json_decode($response, true);
+        
+        return $result['offers'];
+    }
+
     public function getApproxDeliveryPrice(YandexDeliveryOrderData $data) {
 
         if ($this->options['paid'] == 1) {
@@ -207,9 +251,8 @@ class YandexDelivery {
             $payment_method = 'card_on_receipt';
         }
 
-
-        $response = $this->request('/api/b2b/platform/pricing-calculator', [
-            'client_price' => 0,
+        $request = [
+            'client_price' => (int) ($data->total_price * 100),
             'destination' => [
                 'platform_station_id' => $data->delivery_variant_id,
             ],
@@ -220,9 +263,16 @@ class YandexDelivery {
             'tariff' => 'self_pickup',
             'total_assessed_price' => (int) ($data->total_price * 100),
             'total_weight' => (int) ($data->weight),
-        ]);
+        ];
 
-        //$this->log($response, null, '/api/b2b/platform/pricing-calculator', null);
+        $response = $this->request('/api/b2b/platform/pricing-calculator', $request);
+
+        $log = [
+            'request' => $request,
+            'response' => $response
+        ];
+
+        //$this->log($log, null, '/api/b2b/platform/pricing-calculator', null);
 
         $pricing_total = explode(' ', (int) $response['pricing_total'])[0];
 
@@ -299,7 +349,6 @@ class YandexDelivery {
                     'platform_id' => $this->STATION_ID,
                 ],
             ],
-            
         ];
 
         $result = $this->request('/api/b2b/platform/offers/create?send_unix=true', $params);

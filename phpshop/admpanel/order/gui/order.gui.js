@@ -3,6 +3,33 @@ var TABLE_EVENT = true;
 var ajax_path = "./order/ajax/";
 
 $().ready(function () {
+    
+    // Копировать IE-mail с выбранными
+    $(".select-action .copy-mail-select").on('click', function (event) {
+        event.preventDefault();
+
+        if ($('#data input[name="items"]:checkbox:checked').length) {
+            var data = '';
+            $('#data input[name="items"]:checkbox:checked').each(function () {
+                if (this.value != 'all')
+                    data += $(this).attr('data-select') + ',';
+            });
+
+            var $tmp = $("<textarea>");
+            $("body").append($tmp);
+            $tmp.val(data.substring(0, data.length - 1)).select();
+            document.execCommand("copy");
+            $tmp.remove();
+
+            $.MessageBox({
+                buttonDone: locale.close,
+                message: locale.copy
+            });
+
+
+        } else
+            alert(locale.select_no);
+    });
 
     // Поиск пользователя
     $(".search_user").on('input', function () {

@@ -37,6 +37,7 @@ if (PHPShopString::is_mobile()) {
     $memory['shopusers.option']['discount'] = 1;
     $memory['shopusers.option']['action'] =0;
     $memory['shopusers.option']['date'] = 1;
+    $memory['shopusers.option']['tel'] =0;
     $PHPShopInterface->mobile=true;
 } else {
     $memory['shopusers.option']['name'] = 1;
@@ -46,7 +47,7 @@ if (PHPShopString::is_mobile()) {
     $memory['shopusers.option']['discount'] = 1;
     $memory['shopusers.option']['date'] = 1;
     $memory['shopusers.option']['action'] =1;
-    
+    $memory['shopusers.option']['tel'] =1; 
 }
 
 
@@ -86,7 +87,7 @@ if (is_array($data))
         }
 
         $PHPShopInterface->setRow(
-                $row['id'], array('name' => $row['name'], 'link' => '?path=shopusers&id=' . $row['id'], 'align' => 'left', 'sort' => 'name', 'class' => $enabled,'view' => intval($memory['shopusers.option']['name'])), array('name' => $row['login'], 'sort' => 'login', 'link' => 'mailto:' . $row['login'], 'class' => $enabled,'view' => intval($memory['shopusers.option']['mail'])), array('name' => $PHPShopUserStatusArray[$row['status']]['name'], 'sort' => 'status','view' => intval($memory['shopusers.option']['status'])), array('name' => $discount_td, 'sort' => 'cumulative_discount','view' => intval($memory['shopusers.option']['discount'])), array('name' => '<span class="hide">' . $row['datas'] . '</span>' . PHPShopDate::get($row['datas']), 'sort' => 'datas','view' => intval($memory['shopusers.option']['date'])), array('action' => array('edit', 'order', '|', 'delete', 'id' => $row['id']), 'align' => 'center','view' => intval($memory['shopusers.option']['menu'])), array('view' => intval($memory['shopusers.option']['action']),'status' => array('enable' => $row['enabled'], 'align' => 'right', 'sort' => 'enabled', 'caption' => array('Выкл', 'Вкл'))));
+                ['id'=>$row['id'],'select'=>$row['mail']], array('name' => $row['name'], 'link' => '?path=shopusers&id=' . $row['id'], 'align' => 'left', 'sort' => 'name', 'class' => $enabled,'view' => intval($memory['shopusers.option']['name'])), array('name' => $row['login'], 'sort' => 'login', 'link' => 'mailto:' . $row['login'], 'class' => $enabled,'view' => intval($memory['shopusers.option']['mail'])),array('name' => $row['tel'], 'sort' => 'tel', 'class' => $enabled,'view' => intval($memory['shopusers.option']['tel'])), array('name' => $PHPShopUserStatusArray[$row['status']]['name'], 'sort' => 'status','view' => intval($memory['shopusers.option']['status'])), array('name' => $discount_td, 'sort' => 'cumulative_discount','view' => intval($memory['shopusers.option']['discount'])), array('name' => '<span class="hide">' . $row['datas'] . '</span>' . PHPShopDate::get($row['datas']), 'sort' => 'datas','view' => intval($memory['shopusers.option']['date'])), array('action' => array('edit', 'order', '|', 'delete', 'id' => $row['id']), 'align' => 'center','view' => intval($memory['shopusers.option']['menu'])), array('view' => intval($memory['shopusers.option']['action']),'status' => array('enable' => $row['enabled'], 'align' => 'right', 'sort' => 'enabled', 'caption' => array('Выкл', 'Вкл'))));
     }
 
 

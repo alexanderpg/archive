@@ -529,6 +529,8 @@ body.modal-open{
     height: auto;
 }
 
+.geolocation-delivery {margin-top: 0px; margin-bottom: 20px}
+
 @media (max-width: 767px) {
     .modal-nowBuy{
         left: 10px;

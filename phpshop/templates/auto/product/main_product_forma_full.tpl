@@ -179,6 +179,8 @@
             <div class="mb-4 @php __hide('wbseller_link'); php@">
                 <a class="btn btn-block btn-soft-success btn-pill transition-3d-hover" href="@wbseller_link@" target="_blank">{ упить в} Wildberries</a>
             </div>
+            
+            @deliverywidget@
 
         </div>
         <!-- End Product Description -->

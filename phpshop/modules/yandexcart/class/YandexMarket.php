@@ -95,11 +95,6 @@ class YandexMarket {
         $insert['vendor_name_new'] = $product_info['vendor'];
         $insert['vendor_code_new'] = $product_info['vendorCode'];
         $insert['country_of_origin_new'] = $product_info['manufacturerCountriese'][0];
-
-
-        // Категория
-        //$insert['category_new'] = (new PHPShopOrm($GLOBALS['SysValue']['base']['categories']))->getOne(['id,name'], ['category_ozonseller' => '="' . $product_info['category_id'] . '"'])['id'];
-
         $insert['items_new'] = 1;
         $insert['enabled_new'] = 1;
 

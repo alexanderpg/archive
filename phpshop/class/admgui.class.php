@@ -2284,12 +2284,18 @@ class PHPShopInterface extends PHPShopGUI {
             if ($key == 0 && $this->checkbox_action) {
                 $id = $val;
                 $jsort[] = null;
+                
+                if(is_array($val)){
+                    $id=$val['id'];
+                    $select=$val['select'];
+                }
+                else $id=$select=$val;
 
                 // ajax
                 if (!$this->mobile)
-                    $ajax_array[] = '<input type="checkbox" value="' . $val . '" name="items" data-id="' . $val . '"><span class="data-row-order">' . $key . '</span><span class="hide">' . $val . '</span>';
+                    $ajax_array[] = '<input type="checkbox" value="' . $id . '" name="items" data-id="' . $id . '" data-select="' . $select . '"><span class="data-row-order">' . $key . '</span><span class="hide">' . $id . '</span>';
 
-                $CODE .= '<td class="hidden-xs"><input type="checkbox" value="' . $val . '" name="items" data-id="' . $val . '"><span class="data-row-order">' . $key . '</span><span class="hide">' . $val . '</span></td>';
+                $CODE .= '<td class="hidden-xs"><input type="checkbox" value="' . $id . '" name="items" data-id="' . $id . '" data-select="' . $select . '"><span class="data-row-order">' . $key . '</span><span class="hide">' . $id . '</span></td>';
             } else {
                 // Дополнительные настройки
                 if (is_array($val)) {

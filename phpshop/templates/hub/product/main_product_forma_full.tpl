@@ -154,6 +154,8 @@
                     <div class="pricemail-wrapper">
                         <a class="btn btn-cart" href="/pricemail/UID_@productUid@.html">@productBestPrice@</a>
                     </div>
+                    
+                    @deliverywidget@
                 </div>
             </div>
         </div>

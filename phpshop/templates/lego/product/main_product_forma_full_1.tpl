@@ -11,8 +11,6 @@
         margin: 0 auto;
     }
 
-
-
     @media (max-width: 767px) {
         .row {
             margin: 0;
@@ -167,6 +165,8 @@
                     <div class="product-sklad" id="items">@productSklad@</div>
                     <a class="best-price" href="/pricemail/UID_@productUid@.html">@productBestPrice@</a>
                 </div>
+                
+                @deliverywidget@
             </div>
 
             <div class="odnotipListWrapper"></div>

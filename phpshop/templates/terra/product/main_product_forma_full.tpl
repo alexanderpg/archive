@@ -61,6 +61,8 @@
                             </a>                                   
                         </div>
                         @ComEndNotice@ 
+                        
+                        
                     </div>
                     <div class="col-md-6 col-sm-12 col-xs-12">
                         <div class="product-features features">
@@ -104,6 +106,8 @@
                 </div>
 
                 <div class="available @hideCatalog@" id="items">@productSklad@</div>
+                
+                @deliverywidget@
 
                 <div class="product-tabs">
                     <ul class="nav nav-tabs">

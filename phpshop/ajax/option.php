@@ -54,6 +54,12 @@ if (!empty($parent)) {
         $where['uid'] = ' IN ("' . @implode('","', $parent_array_true) . '")';
     }
 
+    if (empty($_REQUEST['size']))
+        unset($where['parent']);
+
+    if (empty($_REQUEST['color']))
+        unset($where['parent2']);
+
     $PHPShopParentProductArray = new PHPShopProductArray($where);
 }
 
