@@ -225,7 +225,7 @@ class PHPShopPromotions {
      * @return array
      */
     function getPrice($row) {
-
+        
         // Получаем информацию о скидках по действующим промоакциям
         $discount_info = $this->promotion_get_discount($row);
 

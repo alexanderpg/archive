@@ -181,6 +181,17 @@
                                                 <a href="tel:@telNum2@"><li class="nav-item small text-muted mb-0"><span itemprop="telephone">@telNum2@</span></li></a>
                                                 <li class="nav-item small text-muted mb-0">@workingTime@</li>
                                                 <li class="nav-item small text-muted mb-0" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress"><span itemprop="streetAddress">@streetAddress@</span></li>
+                                                <li class="nav-item small text-muted mb-0">                            
+                                                    <!-- Социальные сети -->
+                                                    <ul class="list-inline">
+                                                        <li class="list-inline-item @php __hide('vk'); php@"><a class="btn btn-xs btn-icon btn-soft-primary" title="ВКонтакте" href="@vk@" target="_blank"><em class="fab fa-vk" aria-hidden="true"></em></a></li>
+                                                        <li class="list-inline-item @php __hide('telegram'); php@"><a class="btn btn-xs btn-icon btn-soft-primary" title="Telegram" href="@telegram@" target="_blank"> <em class="fab fa-telegram" aria-hidden="true"></em></a></li>
+                                                        <li class="list-inline-item @php __hide('odnoklassniki'); php@"><a class="btn btn-xs btn-icon btn-soft-primary" title="Одноклассники" href="@odnoklassniki@" target="_blank"> <em class="fab fa-odnoklassniki" aria-hidden="true"></em></a></li>
+                                                        <li class="list-inline-item @php __hide('youtube'); php@"><a class="btn btn-xs btn-icon btn-soft-primary" title="Youtube" href="@youtube@" target="_blank"><em class="fab fa-youtube" aria-hidden="true"></em></a></li>
+                                                        <li class="list-inline-item  @php __hide('whatsapp'); php@"><a class="btn btn-xs btn-icon btn-soft-primary" title="WhatsApp" href="@whatsapp@" target="_blank"><em class="fab fa-whatsapp" aria-hidden="true"></em></a></li>
+                                                    </ul>
+                                                    <!-- / Социальные сети -->
+                                                </li>
                                                 <li class="nav-item">@sticker_footer_icon@</li>
                                                 <li>@button@</li>
                                             </ul>

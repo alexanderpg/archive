@@ -36,7 +36,7 @@ function actionStart() {
         $catname = '  &rarr;  <span id="catname">' . $CategoryArray[$_GET['cat']]['name'] . '</span>';
     elseif (!empty($CategoryArray[$_GET['sub']]['name']))
         $catname = '  &rarr;  <span id="catname">' . $CategoryArray[$_GET['sub']]['name'] . '</span>';
-    elseif (isset($_GET['where']))
+    elseif (isset($_GET['where']) and !empty($_GET['where']['name']))
         $catname = '  &rarr;  <span id="catname">' . __('Поиск') . '</span>';
     else
         $catname = '  &rarr;  <span id="catname">' . __('Новые товары') . '</span>';

@@ -3,7 +3,7 @@
 /**
  * Родительский класс ядра вывода товаров
  * @author PHPShop Software
- * @version 1.9
+ * @version 2.0
  * @package PHPShopClass
  */
 class PHPShopShopCore extends PHPShopCore {
@@ -783,8 +783,13 @@ class PHPShopShopCore extends PHPShopCore {
             $this->set('productPrice', $productPrice);
             $this->set('productPriceOld', PHPShopText::strike($productPriceNew . " " . $this->currency, $this->format));
 
+            $priceColumn = $this->PHPShopSystem->getPriceColumn();
+            if (empty($row[$priceColumn])) {
+                $priceColumn = 'price';
+            }
+
             // Метка % скидки
-            $this->set('productLabelDiscount', '-' . ceil(($row['price_n'] - $row['price']) * 100 / $row['price_n']) . '%');
+            $this->set('productLabelDiscount', '-' . ceil(($row['price_n'] - $row[$priceColumn]) * 100 / $row['price_n']) . '%');
         }
 
         // Проверка на нулевую цену 

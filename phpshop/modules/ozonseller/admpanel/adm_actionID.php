@@ -40,7 +40,8 @@ function actionStart() {
         }
 
         // Товары
-        $products = $OzonSeller->getProductInfoList(null, $ids)['result']['items'];
+        $products = $OzonSeller->getProductInfoList(null, $ids)['items'];
+
     }
 
         // Знак рубля
@@ -53,7 +54,7 @@ function actionStart() {
         foreach ($products as $row) {
 
             if (!empty($row['primary_image']))
-                $icon = '<img src="' . $row['primary_image'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
+                $icon = '<img src="' . $row['primary_image'][0] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
             else
                 $icon = mull;
             
@@ -67,10 +68,8 @@ function actionStart() {
             else
                 $uid = null;
             
-            $sku = $row['sku'];
-            if(empty($sku))
-                $sku=$row['fbo_sku'];
-            
+            $sku = $row['sources'][0]['sku'];
+
             // Цены
             $price = (float)$row['marketing_price'].$currency.'<br><strike>'.(float)$row['price'].'</strike>';
 

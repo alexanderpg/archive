@@ -365,7 +365,7 @@ function actionStart() {
             $PHPShopGUI->setField("Telegram", $PHPShopGUI->setInputText(null, "bank[telegram]", $bank['telegram'], 350, false, false, false, 'адрес страницы')) .
             $PHPShopGUI->setField("Одноклассники", $PHPShopGUI->setInputText(null, "bank[odnoklassniki]", $bank['odnoklassniki'], 350, false, false, false, 'адрес страницы')) .
             $PHPShopGUI->setField("WhatsApp", $PHPShopGUI->setInputText(null, "bank[whatsapp]", $bank['whatsapp'], 350, false, false, false, 'адрес страницы')) .
-            $PHPShopGUI->setField("Youtube", $PHPShopGUI->setInputText(null, "bank[youtube]", $bank['youtube'], 350, false, false, false, 'адрес страницы')).
+            $PHPShopGUI->setField("Rutube", $PHPShopGUI->setInputText(null, "bank[youtube]", $bank['youtube'], 350, false, false, false, 'адрес страницы')).
             $PHPShopGUI->setField("Формат ввода телефона", $PHPShopGUI->setInputText(null, "option[user_phone_mask]", $option['user_phone_mask'], 300) .
             $PHPShopGUI->setCheckbox('option[user_phone_mask_enabled]', 1, 'Отключить маску ввода телефона', $option['user_phone_mask_enabled']), 1, 'Формат: (999) 999-9999') .
             $PHPShopGUI->setField("Защита от ботов", $PHPShopGUI->setCheckbox('option[user_captcha_enabled]', 1, 'Отключить проверочную картинку для защиты от ботов', $option['user_captcha_enabled'])).

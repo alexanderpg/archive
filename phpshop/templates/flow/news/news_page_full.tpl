@@ -1,4 +1,4 @@
-<div class="page-title d-none">@newsZag@</div> 
+<h1 class="page-title d-none">@newsZag@</h1> 
 
 @productPageDis@
 

@@ -9,8 +9,8 @@ function actionUpdate() {
 
     if (empty($_POST['enabled_new']))
         $_POST['enabled_new'] = 0;
-    if (!empty($_POST['last_execute_new']))
-        $_POST['used_new'] = 0;
+
+    $_POST['used_new'] = 0;
 
     // Мультибаза
     if (is_array($_POST['servers'])) {
@@ -67,14 +67,14 @@ function actionStart() {
         $work[] = array('Карта сайта', 'phpshop/modules/sitemap/cron/sitemap_generator.php');
         $work[] = array('Карта сайта SSL', 'phpshop/modules/sitemap/cron/sitemap_generator.php?ssl');
     }
-    
+
     // Учет модуля SiteMap Pro
     if (!empty($GLOBALS['SysValue']['base']['sitemappro']['sitemappro_system'])) {
         $work[] = array("|");
         $work[] = array('Большая карта сайта', 'phpshop/modules/sitemappro/cron/sitemap_generator.php');
         $work[] = array('Большая карта сайта SSL', 'phpshop/modules/sitemappro/cron/sitemap_generator.php?ssl');
     }
-    
+
     // Учет модуля VisualCart
     if (!empty($GLOBALS['SysValue']['base']['visualcart']['visualcart_system'])) {
         $work[] = array("|");
@@ -85,41 +85,41 @@ function actionStart() {
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges']);
     $exchanges_data = $PHPShopOrm->select(array('*'), false, array('order' => 'id DESC'), array("limit" => "1000"));
     if (is_array($exchanges_data)) {
-        
+
         foreach ($exchanges_data as $row) {
 
             if ($row['type'] == 'import')
                 $import[] = array($row['name'], 'phpshop/modules/cron/sample/import.php?id=' . $row['id']);
             elseif ($row['type'] == 'export')
-                $export[] = array($row['name'], 'phpshop/modules/cron/sample/export.php?id=' . $row['id'].'&file=export_'.md5($row['name']));
+                $export[] = array($row['name'], 'phpshop/modules/cron/sample/export.php?id=' . $row['id'] . '&file=export_' . md5($row['name']));
         }
-        
+
         if (is_array($import))
             $work[] = array('Импорт данных', $import);
 
         if (is_array($export))
             $work[] = array('Экспорт данных', $export);
     }
-    
+
     $Tab1 = $PHPShopGUI->setField("Название задачи:", $PHPShopGUI->setInput("text.requared", "name_new", $data['name']));
     $Tab1 .= $PHPShopGUI->setField("Запускаемый файл:", $PHPShopGUI->setInputArg(array('type' => "text.requared", 'name' => "path_new", 'size' => '70%', 'float' => 'left', 'placeholder' => 'phpshop/modules/cron/sample/testcron.php', 'value' => $data['path'])) . '&nbsp;' . $PHPShopGUI->setSelect('work', $work, '29%', true, false, false, false, false, false, false, 'selectpicker', '$(\'input[name=path_new]\').val(this.value);'));
-    
+
     parse_str($data['path'], $path);
 
-    if(!empty($path['file'])){
-        
-        $file='./csv/'.$path['file'];
-        
-        if(file_exists($file.'.xml'))
-                $file_ext='.xml';
-        else if(file_exists($file.'.csv'))
-                $file_ext='.csv';
-        
-    $Tab1 .= $PHPShopGUI->setField("Файл выгрузки", $PHPShopGUI->setLink($file.$file_ext,$path['file'].$file_ext), false, false, false, 'text-right');
+    if (!empty($path['file'])) {
+
+        $file = './csv/' . $path['file'];
+
+        if (file_exists($file . '.xml'))
+            $file_ext = '.xml';
+        else if (file_exists($file . '.csv'))
+            $file_ext = '.csv';
+
+        $Tab1 .= $PHPShopGUI->setField("Файл выгрузки", $PHPShopGUI->setLink($file . $file_ext, $path['file'] . $file_ext), false, false, false, 'text-right');
     }
-    
+
     $Tab1 .= $PHPShopGUI->setField("Статус", $PHPShopGUI->setCheckbox("enabled_new", 1, "Включить", $data['enabled']));
-    $Tab1 .= $PHPShopGUI->setField("Кол-во запусков в день", $PHPShopGUI->setInputText(null,'execute_day_num_new', (int)$data['execute_day_num'], 70));
+    $Tab1 .= $PHPShopGUI->setField("Кол-во запусков в день", $PHPShopGUI->setInputText(null, 'execute_day_num_new', (int) $data['execute_day_num'], 70));
     $Tab1 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
 
 

@@ -13,7 +13,13 @@ class AvitoHome extends BaseAvitoXml implements AvitoPriceInterface {
     public static function getXml($product) {
 
         $xml = '<Ad>';
-        $xml .= sprintf('<Id>%s</Id>', $product['id']);
+
+        // Ключ обновления
+        if (Avito::getOption('type') == 1)
+            $xml .= sprintf('<Id>%s</Id>', $product['id']);
+        else
+            $xml .= sprintf('<Id>%s</Id>', $product['uid']);
+
         $xml .= sprintf('<Category>%s</Category>', $product['category']);
         $xml .= sprintf('<AdType>%s</AdType>', $product['ad_type']);
         $xml .= sprintf('<GoodsType>%s</GoodsType>', $product['type']);
@@ -62,7 +68,7 @@ class AvitoHome extends BaseAvitoXml implements AvitoPriceInterface {
         $xml .= sprintf('<Condition>%s</Condition>', $product['condition']);
         $xml .= sprintf('<ManagerName>%s</ManagerName>', PHPShopString::win_utf8(Avito::getOption('manager')));
         $xml .= sprintf('<ContactPhone>%s</ContactPhone>', PHPShopString::win_utf8(Avito::getOption('phone')));
-        
+
         if (!empty(Avito::getOption('latitude')) and ! empty(Avito::getOption('longitude'))) {
             $xml .= sprintf('<Latitude>%s</Latitude>', PHPShopString::win_utf8(Avito::getOption('latitude')));
             $xml .= sprintf('<Longitude>%s</Longitude>', PHPShopString::win_utf8(Avito::getOption('longitude')));

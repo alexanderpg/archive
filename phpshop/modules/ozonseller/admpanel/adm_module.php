@@ -90,7 +90,7 @@ function actionUpdate() {
     // Корректировка пустых значений
     $PHPShopOrm->updateZeroVars('link_new', 'create_products_new','log_new');
 
-    // Складs
+    // Склады
     if (is_array($_POST['warehouse'])) {
 
 

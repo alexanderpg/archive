@@ -15,7 +15,12 @@ class AvitoSpare extends BaseAvitoXml implements AvitoPriceInterface {
         $tier = unserialize($product['tiers']);
 
         $xml = '<Ad>';
-        $xml .= sprintf('<Id>%s</Id>', $product['id']);
+        
+         // Ключ обновления
+        if (Avito::getOption('type') == 1) 
+           $xml .= sprintf('<Id>%s</Id>', $product['id']);
+        else $xml .= sprintf('<Id>%s</Id>', $product['uid']);
+        
         $xml .= sprintf('<ListingFee>%s</ListingFee>', $product['listing_fee']);
 
         if (strstr($product['type'], " / "))

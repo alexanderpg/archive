@@ -48,10 +48,13 @@ function setProducts_yandexcart_hook($obj, $data) {
             if (!empty($data['val']['color']))
                 $add .= '<param name="Цвет">' . $data['val']['color'] . '</param>';
         }
+        
+        
 
         // Oldprice
         if (!empty($data['val']['oldprice']))
-            $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . $data['val']['price'] . '</price><oldprice>' . $data['val']['oldprice'] . '</oldprice>', $data['xml']);
+            $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . (int) $obj->YandexMarket->getPrice($data['val'], $_GET['campaign']) . '</price><oldprice>' . (int) $obj->YandexMarket->getOldPrice($data['val'], $_GET['campaign']). '</oldprice>', $data['xml']);
+        else $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . (int) $obj->YandexMarket->getPrice($data['val'], $_GET['campaign']) . '</price>', $data['xml']);
 
         // description template
         if (!empty($obj->yandex_module_options['description_template'])) {
@@ -63,10 +66,6 @@ function setProducts_yandexcart_hook($obj, $data) {
                      . ']]></description>', $data['xml']
             );
         }
-
-        $price = (int) $obj->YandexMarket->getPrice($data['val'], $_GET['campaign']);
-
-        $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . $price . '</price>', $data['xml']);
 
         // Доставка
         if ($data['val']['delivery'] == 1)

@@ -46,7 +46,7 @@ function actionStart() {
 
     $PHPShopGUI->field_col = 4;
 
-    $product_info = $OzonSeller->getProductAttribures([$_GET['id']])['result'][0];
+    $product_info = $OzonSeller->getProductAttribures($_GET['id'])['result'][0];
 
     if (!empty($product_info['id']))
         $PHPShopGUI->action_button['Загрузить товар'] = array(
@@ -124,7 +124,7 @@ function actionStart() {
     if (is_array($product_info['images']) and count($product_info['images']) > 0) {
         $icon = null;
         foreach ($product_info['images'] as $img)
-            $icon .= $PHPShopGUI->setIcon($img['file_name'], "images[]", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true));
+            $icon .= $PHPShopGUI->setIcon($img, "images[]", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true));
     } else
         $icon = $PHPShopGUI->setIcon('./images/no_photo.gif', "pic", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true));
 
@@ -147,7 +147,7 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Сортировка', $PHPShopGUI->setInputText('&#8470;', 'num_new', 0, 150));
 
     // Цена
-    $product_price = $OzonSeller->getProductPrices($product_info['id'])['result']['items'][0]['price'];
+    $product_price = $OzonSeller->getProductPrices($product_info['id'])['items'][0]['price'];
 
     $Tab1 .= $PHPShopGUI->setField("Цена", $PHPShopGUI->setInputText(null, 'price_new', (float) $product_price['price'], 150));
     $Tab1 .= $PHPShopGUI->setField("Старая цена", $PHPShopGUI->setInputText(null, 'price_n_new', (float) $product_price['old_price'], 150));
@@ -184,16 +184,17 @@ function actionStart() {
             $attribute[$sort_ozon_value['id']] = PHPShopString::utf8_win1251($sort_ozon_value['name'],true);
         }
     }
+    
 
     $Tab_sort = null;
     if (is_array($product_info['attributes']))
         foreach ($product_info['attributes'] as $attributes) {
-            if (!empty($attribute[$attributes['attribute_id']]) and ! empty($attributes['values'][0]['dictionary_value_id'])) {
+            if (!empty($attribute[$attributes['id']]) and ! empty($attributes['values'][0]['dictionary_value_id'])) {
                 unset($value_new);
                 $value_new[] = [__('Ничего не выбрано'), 0];
                 $value_new[] = array(PHPShopString::utf8_win1251($attributes['values'][0]['value']), PHPShopString::utf8_win1251($attributes['values'][0]['value']), PHPShopString::utf8_win1251($attributes['values'][0]['value']));
 
-                $Tab_sort .= $PHPShopGUI->setField($attribute[$attributes['attribute_id']], $PHPShopGUI->setSelect('vendor_array[' . $attributes['attribute_id'] . ']', $value_new, '100%', false, false, false, false, 1, false, false, 'selectpicker'));
+                $Tab_sort .= $PHPShopGUI->setField($attribute[$attributes['id']], $PHPShopGUI->setSelect('vendor_array[' . $attributes['id'] . ']', $value_new, '100%', false, false, false, false, 1, false, false, 'selectpicker'));
             }
         }
 

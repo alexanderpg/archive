@@ -11,8 +11,14 @@ include_once dirname(__DIR__) . '/Xml/AvitoPriceInterface.php';
 class AvitoAppliance extends BaseAvitoXml implements AvitoPriceInterface {
 
     public static function getXml($product) {
+
         $xml = '<Ad>';
-        $xml .= sprintf('<Id>%s</Id>', $product['id']);
+        
+         // Ключ обновления
+        if (Avito::getOption('type') == 1) 
+           $xml .= sprintf('<Id>%s</Id>', $product['id']);
+        else $xml .= sprintf('<Id>%s</Id>', $product['uid']);
+        
         $xml .= sprintf('<Category>%s</Category>', $product['category']);
         $xml .= sprintf('<GoodsType>%s</GoodsType>', $product['type']);
         $xml .= sprintf('<Title>%s</Title>', $product['name']);

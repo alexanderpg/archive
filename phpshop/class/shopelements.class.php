@@ -4,7 +4,7 @@
  * Класс создания элементов товаров
  * Примеры использования размещены в папке phpshop/inc/
  * @author PHPShop Software
- * @version 1.4
+ * @version 1.5
  * @package PHPShopClass
  */
 class PHPShopProductElements extends PHPShopElements {
@@ -299,7 +299,8 @@ class PHPShopProductElements extends PHPShopElements {
         // Промоакции
         $promotions = $this->PHPShopPromotions->getPrice($row);
         if (is_array($promotions)) {
-            $row['price'] = $promotions['price'];
+            $priceColumn = $this->PHPShopSystem->getPriceColumn();
+            $row[$priceColumn] = $promotions['price'];
             $row['price_n'] = $promotions['price_n'];
             $row['promo_label'] = $promotions['label'];
         }
@@ -331,6 +332,7 @@ class PHPShopProductElements extends PHPShopElements {
         } else
             $this->set('productSklad', '');
 
+        // Цена
         $price = $this->price($row, false, false);
 
         // Расчет минимальной и максимальной цены
@@ -349,6 +351,7 @@ class PHPShopProductElements extends PHPShopElements {
             $this->set('productBonus', $bonus);
 
         // Форматирование
+        $this->set('productSchemaPrice', $price);
         $price = number_format($price, $this->format, '.', ' ');
 
         // Если товар на складе
@@ -368,21 +371,22 @@ class PHPShopProductElements extends PHPShopElements {
         else {
             $this->set('productPriceRub', $this->lang('sklad_mesage'));
             $this->set('productOutStock', $this->lang('sklad_mesage'));
-            $this->set('productSklad', '');
             $this->set('ComStartNotice', '');
             $this->set('ComEndNotice', '');
             $this->set('elementCartHide', 'hide hidden d-none');
             $this->set('ComStartCart', PHPShopText::comment('<'));
             $this->set('ComEndCart', PHPShopText::comment('>'));
             $this->set('productNotice', $this->lang('product_notice'));
-            $this->set('elementCartHide', 'hide hidden d-none');
             $this->set('elementNoticeHide', null);
             $this->set('elementCartOptionHide', 'hide hidden d-none');
-            $this->set('productPriceOld', null);
+            $this->set('productSklad', '');
+            $this->set('productPriceOld', '');
+            $this->set('productLabelDiscount', '');
         }
 
         // Если нет новой цены
         if (empty($row['price_n'])) {
+
             $this->set('productPrice', $price);
             $this->set('productLabelDiscount', $this->lang('specprod'));
             $this->set('productPriceOld', null);
@@ -392,17 +396,31 @@ class PHPShopProductElements extends PHPShopElements {
         else {
             $productPrice = $price;
             $productPriceNew = $this->price($row, true, false);
+ 
             $this->set('productPrice', $productPrice);
             $this->set('productPriceOld', PHPShopText::strike($productPriceNew . " " . $this->currency, $this->format));
 
+            $priceColumn = $this->PHPShopSystem->getPriceColumn();
+            if (empty($row[$priceColumn])) {
+                $priceColumn = 'price';
+            }
+
             // Метка % скидки
-            $this->set('productLabelDiscount', '-' . ceil(($row['price_n'] - $row['price']) * 100 / $row['price_n']) . '%');
+            $this->set('productLabelDiscount', '-' . ceil(($row['price_n'] - $row[$priceColumn]) * 100 / $row['price_n']) . '%');
         }
 
         // Проверка на нулевую цену 
         if (empty($row['price'])) {
             $this->set('ComStartCart', PHPShopText::comment('<'));
             $this->set('ComEndCart', PHPShopText::comment('>'));
+
+
+            $this->set('elementCartHide', 'hide hidden d-none');
+
+            $this->set('productPrice', null);
+            $this->set('productPriceRub', null);
+            $this->set('productValutaName', null);
+            $this->set('productPriceOld', null);
         }
 
         // Проверка подтипа
@@ -427,14 +445,13 @@ class PHPShopProductElements extends PHPShopElements {
             $this->set('ComStartCart', PHPShopText::comment('<'));
             $this->set('ComEndCart', PHPShopText::comment('>'));
             $this->set('productPrice', null);
-            $this->set('productValutaName', null);
             $this->set('productPriceRub', null);
-            $this->set('elementCartHide', 'hide hidden d-none');
+            $this->set('productValutaName', null);
             $this->set('elementCartOptionHide', 'hide hidden d-none');
+            $this->set('elementCartHide', 'hide hidden d-none');
             $this->set('parentLangFrom', null);
             $this->set('productPriceOld', null);
         }
-
 
         // Промоакции лейблы
         if (!empty($row['promo_label'])) {
@@ -472,10 +489,12 @@ class PHPShopProductElements extends PHPShopElements {
         }
 
         // Если есть новая цена
-        if (empty($newprice))
+        if (empty($newprice)) {
             $price = $row['price'];
-        else
+        } else {
             $price = $row['price_n'];
+            $row['price2'] = $row['price3'] = $row['price4'] = $row['price5'] = null;
+        }
 
         // Промоакции
         if ($promo) {
@@ -620,7 +639,7 @@ function product_grid($dataArray, $cell, $template = false, $line = true, $mod =
 
             $this->set('productUid', $row['id']);
             $this->set('catalog', $this->lang('catalog'));
-            
+
             $this->set('previewSorts', $this->getPreviewSorts($dataArray, $row));
 
             // Подключение функции вывода средней оценки товара из отзывов пользователей

@@ -78,7 +78,7 @@ function actionStart() {
 
             if (empty($product)) {
                 $product_info = $OzonSeller->getProductAttribures($row['offer_id'], 'offer_id')['result'][0];
-                $image = $product_info['images'][0]['file_name'];
+                $image = $product_info['primary_image'];
                 $link = 'https://www.ozon.ru/product/' .$row['sku'];
             } else{
                 $image = $product['pic_small'];

@@ -41,7 +41,7 @@ function actionStart() {
     if (is_array($data))
         foreach ($data as $row) {
 
-            $PHPShopInterface->setRow(array('name' => $row['p_name'] . '/' . $row['f_name']), array('name' => '<span class="btn btn-default btn-xs"><span class="glyphicon glyphicon-play "></span> '.__('Выполнить').'</span>', 'align' => 'left', 'link' => '../../1cManager/result.php?date=' . $row['p_name'] . '&log=' . $_SESSION['logPHPSHOP'] . '&pas=' . $pass_crm . '&files=' . trim($row['f_name']) . '&create=true&'.$create_category, 'target' => '_blank'), PHPShopDate::get($row['datas'], true), array('name' => $row['time'], 'align' => 'center'));
+            $PHPShopInterface->setRow(array('name' => $row['p_name'] . '/' . $row['f_name']), array('name' => '<span class="btn btn-default btn-xs"><span class="glyphicon glyphicon-play "></span> '.__('Выполнить').'</span>', 'align' => 'left', 'link' => '../../1cManager/result.php?date=' . $row['p_name'] . '&log=' . $_SESSION['logPHPSHOP'] . '&pas=' . $pass_crm . '&files=' . trim($row['f_name']) . '&create=true&'.$create_category.'&cml=true', 'target' => '_blank'), PHPShopDate::get($row['datas'], true), array('name' => $row['time'], 'align' => 'center'));
         }
 
     if (isset($_GET['date_start']))

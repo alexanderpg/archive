@@ -2,8 +2,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                 <div class="h4 modal-title">{Быстрый заказ}</div>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
             </div>
             <form method="post" name="ajax-form" action="@ShopDir@/oneclick/" data-modal="oneClickModal@productUid@">
                 <div class="modal-body">
@@ -37,8 +37,8 @@
 </div>
 
     <div class="mb-4">
-	      <div class="mb-4">
+
             <button data-toggle="modal" data-target="#oneClickModal@productUid@"  type="button" class="list-add-cart-btn light-hover-btn border-0">{Быстрый заказ}</button><script>$(document).ready($('#oneClickModal@productUid@').appendTo($('body')));</script>
-    </div>
+
 
           </div>

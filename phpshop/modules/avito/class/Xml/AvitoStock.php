@@ -11,9 +11,13 @@ include_once dirname(__DIR__) . '/Xml/AvitoPriceInterface.php';
 class AvitoStock extends BaseAvitoXml implements AvitoPriceInterface {
 
     public static function getXml($product) {
-        
+
         if ($product['items'] < 0)
             $product['items'] = 0;
+
+        // Ключ обновления
+        if (Avito::getOption('type') == 2)
+            $product['id'] = $product['uid'];
 
         $xml = '<item>
         <id>' . $product['id'] . '</id>

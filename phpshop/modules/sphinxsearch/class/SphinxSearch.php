@@ -3,7 +3,7 @@
 /**
  * Áèáëèîòåêà ğàáîòû ñ ïîèñêîì Sphinx
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopModules
  * @todo https://pushorigin.ru/sphinx/attrs
  * @todo http://chakrygin.ru/2013/07/sphinx-search.html
@@ -199,7 +199,47 @@ class SphinxSearch {
         }
     }
 
+    // Ñèíîíèìû
+    public function synonyms($query) {
+
+        $synonyms = self::getOption('synonyms');
+        $synonyms = trim($synonyms);
+
+        if (!empty($synonyms)) {
+
+            if (strpos($synonyms, "\r\n")) {
+                $eol = "\r\n";
+            } elseif (strpos($synonyms, "\n")) {
+                $eol = "\n";
+            } else {
+                $eol = "\r";
+            }
+
+            $synonyms = explode($eol, $synonyms);
+
+            if (is_array($synonyms)) {
+                foreach ($synonyms as $synonym) {
+
+                    $words = explode(",", $synonym);
+
+                    if (is_array($words))
+                        $synonym_array[$words[0]] = $words[1];
+                }
+
+
+                if (is_array($synonym_array)) {
+                    foreach ($synonym_array as $search => $replace) {
+                        $query = str_ireplace($search, $replace, $query);
+                    }
+                }
+            }
+        }
+
+        return $query;
+    }
+
     public function query($query, $sort, $from, $size, $categories) {
+
 
         if ($this->link_db)
             $result = mysqli_query($this->link_db, "SELECT * FROM productsIndex WHERE MATCH('" . PHPShopString::win_utf8($query) . "') ORDER BY $sort WEIGHT() DESC LIMIT 1000");
@@ -232,19 +272,19 @@ class SphinxSearch {
 
         return ['product' => $product, 'total' => $total, 'count' => $count, 'categories' => $category];
     }
-    
+
     public function query_categories($query) {
 
         if ($this->link_db)
-            $result = mysqli_query($this->link_db, "SELECT * FROM categoriesIndex WHERE MATCH('" . PHPShopString::win_utf8($query) . "') ORDER BY WEIGHT() DESC LIMIT ".(int)self::getOption('ajax_search_categories_cnt'));
+            $result = mysqli_query($this->link_db, "SELECT * FROM categoriesIndex WHERE MATCH('" . PHPShopString::win_utf8($query) . "') ORDER BY WEIGHT() DESC LIMIT " . (int) self::getOption('ajax_search_categories_cnt'));
 
         if ($result)
             while ($row = mysqli_fetch_array($result)) {
-                $categories[]=[
-                    'name'=> PHPShopString::utf8_win1251($row['name']),
-                    'id'=>$row['id']];
+                $categories[] = [
+                    'name' => PHPShopString::utf8_win1251($row['name']),
+                    'id' => $row['id']];
             }
-            
+
         return $categories;
     }
 
@@ -283,7 +323,7 @@ class SphinxSearch {
      *  Ïîèñê ïî èìåíàì êàòåãîğèé
      */
     function searchCategories($query, $obj) {
-        
+
         $data = $this->query_categories($query);
         return $obj->product_grid($data, 1, 'search/search_ajax_catalog_forma.tpl', $obj->line);
     }

@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с Яндекс.Маркет API
  * @author PHPShop Software
- * @version 1.6
+ * @version 1.8
  * @package PHPShopClass
  * @subpackage RestApi
  * @todo https://yandex.ru/dev/market/partner-marketplace-cd/doc/dg/reference/post-campaigns-id-offer-mapping-entries-updates.html
@@ -757,10 +757,46 @@ class YandexMarket {
         return null;
     }
 
+    public function getOldPrice($product, $campaign_num) {
+
+        $options = unserialize($this->options['options']);
+        $format = $this->system->getSerilizeParam('admoption.price_znak');
+        $price = $product['oldprice'];
+
+        if (empty($campaign_num)) {
+
+            // Наценка %
+            if (isset($options['price_fee']) && (float) $options['price_fee'] > 0)
+                $fee = (float) $options['price_fee'];
+            else
+                $fee = $this->system->getValue('percent');
+
+            $markup = $options['price_markup'];
+        } else {
+
+            // Наценка %
+            if (isset($options['price_fee_' . $campaign_num]) && (float) $options['price_fee_' . $campaign_num] > 0)
+                $fee = (float) $options['price_fee_' . $campaign_num];
+            else
+                $fee = $this->system->getValue('percent');
+
+            $markup = $options['price_markup_' . $campaign_num];
+        }
+
+        // Наценка руб.
+        $price = $price + (int) $markup;
+
+        // Наценка %
+        $price = ($price + (($price * $fee) / 100));
+
+        $price = round($price, (int) $format);
+
+        return $price;
+    }
+
     public function getPrice($product, $campaign_num) {
         global $PHPShopValutaArray;
 
-        $promotions = new PHPShopPromotions();
         $options = unserialize($this->options['options']);
 
         // Колонка цен
@@ -772,47 +808,63 @@ class YandexMarket {
         $defaultCurrency = $this->system->getValue('dengi');
         $format = $this->system->getSerilizeParam('admoption.price_znak');
 
-        // Наценка %
-        if (isset($options['price_fee']) && (float) $options['price_fee'] > 0)
-            $fee = (float) $options['price_fee'];
-        else
-            $fee = $this->system->getValue('percent');
-
+        // Валюты
+        $PHPShopValutaArray = new PHPShopValutaArray();
         $PHPShopValutaArr = $PHPShopValutaArray->getArray();
 
         $price = $product[$column];
 
         // Промоакции
+        $promotions = new PHPShopPromotions();
         $promotions = $promotions->getPrice($product);
         if (is_array($promotions)) {
             $price = $promotions['price'];
         }
 
         // Отдельное поле цены
-        if (empty($campaign_num))
+        if (empty($campaign_num)) {
             $price_yandex = $product['price_yandex'];
-        else
+
+            // Наценка %
+            if (isset($options['price_fee']) && (float) $options['price_fee'] > 0)
+                $fee = (float) $options['price_fee'];
+            else
+                $fee = $this->system->getValue('percent');
+
+            $markup = $options['price_markup'];
+        } else {
             $price_yandex = $product['price_yandex_' . $campaign_num];
 
-        if (!empty($price_yandex))
+            // Наценка %
+            if (isset($options['price_fee_' . $campaign_num]) && (float) $options['price_fee_' . $campaign_num] > 0)
+                $fee = (float) $options['price_fee_' . $campaign_num];
+            else
+                $fee = $this->system->getValue('percent');
+
+            $markup = $options['price_markup_' . $campaign_num];
+        }
+
+
+        if (!empty($price_yandex)) {
+
             $price = $price_yandex;
+            $currency = $product['baseinputvaluta'];
 
-        $currency = $product['baseinputvaluta'];
+            // Если валюта отличается от базовой
+            if ($currency !== $defaultCurrency) {
+                $vkurs = $PHPShopValutaArr[$currency]['kurs'];
 
-        //Если валюта отличается от базовой
-        if ($currency !== $defaultCurrency) {
-            $vkurs = $PHPShopValutaArr[$currency]['kurs'];
+                // Если курс нулевой или валюта удалена
+                if (empty($vkurs))
+                    $vkurs = 1;
 
-            // Если курс нулевой или валюта удалена
-            if (empty($vkurs))
-                $vkurs = 1;
-
-            // Приводим цену в базовую валюту
-            $price = $price / $vkurs;
+                // Приводим цену в базовую валюту
+                $price = $price / $vkurs;
+            }
         }
 
         // Наценка руб.
-        $price = $price + (int) $options['price_markup'];
+        $price = $price + (int) $markup;
 
         // Наценка %
         $price = ($price + (($price * $fee) / 100));
@@ -908,14 +960,14 @@ class YandexMarket {
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
                 'Content-Type: application/json',
-                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
+      
             ]);
         // API-Key
         else
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 sprintf('Api-Key: %s', $this->options['auth_token_2']),
                 'Content-Type: application/json',
-                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
+
             ]);
 
         curl_setopt($ch, CURLOPT_POST, true);
@@ -941,14 +993,12 @@ class YandexMarket {
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
                 'Content-Type: application/json',
-                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
             ]);
         // API-Key
         else
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 sprintf('Api-Key: %s', $this->options['auth_token_2']),
                 'Content-Type: application/json',
-                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
             ]);
 
         curl_setopt($ch, CURLOPT_POST, true);

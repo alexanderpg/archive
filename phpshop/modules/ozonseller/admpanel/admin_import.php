@@ -60,10 +60,10 @@ function actionStart() {
                 
             } else {
                 
-                $data[$products_list['product_id']] = $OzonSeller->getProduct($products_list['product_id'])['result'];
+                $data[$products_list['product_id']] = $OzonSeller->getProduct($products_list['product_id'])['items'][0];
                 
                 $data[$products_list['product_id']]['status'] = 'wait';
-                $data[$products_list['product_id']]['link'] ='?path=modules.dir.ozonseller.import&id='.$products_list['product_id'].'&type_id='.$data[$products_list['product_id']]['type_id'].'&sku='.$data[$products_list['product_id']]['sku'];
+                $data[$products_list['product_id']]['link'] ='?path=modules.dir.ozonseller.import&id='.$products_list['product_id'].'&type_id='.$data[$products_list['product_id']]['type_id'].'&sku='.$data[$products_list['product_id']]['sources'][0]['sku'];
 
                 // Категория
                 $category = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $data[$products_list['product_id']]['category_id']]);
@@ -84,7 +84,7 @@ function actionStart() {
                 continue;
 
             if (!empty($row['primary_image']))
-                $icon = '<img src="' . $row['primary_image'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
+                $icon = '<img src="' . $row['primary_image'][0] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
             else
                $icon=null;
 

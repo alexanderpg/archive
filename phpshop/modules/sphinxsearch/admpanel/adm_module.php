@@ -167,12 +167,17 @@ searchd
 
 
     $PHPShopGUI->setEditor('ace', true);
-    $oFCKeditor = new Editor('cinfig', true);
+    $oFCKeditor = new Editor('config', true);
     $oFCKeditor->Height = '520';
     $oFCKeditor->ToolbarSet = 'Normal';
     $oFCKeditor->Value = $config;
 
     $Tab2 = $PHPShopGUI->setCollapse('sphinx.conf', $oFCKeditor->AddGUI());
+
+    $Tab3 = '<div class="form-group form-group-sm"><div class="col-sm-12" style="padding-left: 20px;padding-right: 20px;">
+                ' . $PHPShopGUI->setTextarea('synonyms_new', $data['synonyms'], true, '100%', 300, 'Через запятую слово и синоним. Каждая новая пара с новой строки. Например:<br> томат, помидор <br> 
+                            ryzen, райзен') .
+            '</div></div>';
 
     $info = '
     <h4>Подключение Sphinx на хостинге Beget</h4>
@@ -215,12 +220,12 @@ searchd
     </ol> 
 ';
 
-    $Tab3 = $PHPShopGUI->setInfo($info);
+    $Tab4 = $PHPShopGUI->setInfo($info);
 
-    $Tab4 = $PHPShopGUI->setPay($serial = false, false, $data['version'], true);
+    $Tab5 = $PHPShopGUI->setPay($serial = false, false, $data['version'], true);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(["Основное", $Tab1, true], ["Инструкция", $Tab3], ["Конфигурация", $Tab2], ["О Модуле", $Tab4]);
+    $PHPShopGUI->setTab(["Основное", $Tab1, true],["Конфигурация", $Tab2], ["Синонимы", $Tab3],  ["Инструкция", $Tab4],  ["О Модуле", $Tab5]);
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .

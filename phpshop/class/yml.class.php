@@ -3,7 +3,7 @@
 /**
  * Библиотека YML
  * @author PHPShop Software
- * @version 1.5
+ * @version 1.7
  * @package PHPShopClass
  */
 class PHPShopYml {
@@ -442,6 +442,7 @@ class PHPShopYml {
                     "price_yandex" => round($row['price_yandex'], (int) $this->format),
                     "price_yandex_2" => round($row['price_yandex_2'], (int) $this->format),
                     "price_yandex_3" => round($row['price_yandex_3'], (int) $this->format),
+                    "baseinputvaluta"=>$row['baseinputvaluta'],
                     "items1" => $row['items1'],
                     "items2" => $row['items2'],
                     "items3" => $row['items3'],
@@ -574,6 +575,7 @@ class PHPShopYml {
             "price_yandex" => round($row['price_yandex'], (int) $this->format),
             "price_yandex_2" => round($row['price_yandex_2'], (int) $this->format),
             "price_yandex_3" => round($row['price_yandex_3'], (int) $this->format),
+            "baseinputvaluta"=>$row['baseinputvaluta'],
             "items1" => $row['items1'],
             "items2" => $row['items2'],
             "items3" => $row['items3'],
@@ -755,9 +757,13 @@ function setProducts() {
         if (isset($_GET['retailcrm'])) {
             $retailQuantity = sprintf(' quantity="%s"', $val['items']);
         }
+        
+        if($val['items'] == 0 or $val['sklad'] == 1)
+            $available = 'false';
+        else $available = 'true';
 
         $xml = '
-<offer id="' . $val['id'] . '" available="true" ' . $group_id . $type . $retailQuantity . '>
+<offer id="' . $val['id'] . '" available="'.$available.'" ' . $group_id . $type . $retailQuantity . '>
  <url>' . $this->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . $url . '.html' . $group_postfix . '</url>
       <price>' . $val['price'] . '</price>';
 

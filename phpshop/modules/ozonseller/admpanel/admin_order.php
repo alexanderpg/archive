@@ -81,7 +81,7 @@ function actionStart() {
 
             if (empty($prod)) {
                 $product_info = $OzonSeller->getProductAttribures($product['offer_id'], 'offer_id')['result'][0];
-                $image = $product_info['images'][0]['file_name'] ;
+                $image = $product_info['primary_image'] ;
                 $link = 'https://www.ozon.ru/product/' . $product['sku'];
                 $prod['name']=PHPShopString::utf8_win1251($row['products'][0]['name']);
                 $uid = '<div class="text-muted">' . __('Àðò') . ' ' . PHPShopString::utf8_win1251($product['offer_id']) . '</div>';

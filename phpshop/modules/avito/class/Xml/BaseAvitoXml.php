@@ -16,7 +16,6 @@ class BaseAvitoXml {
 
     /** @var PHPShopSystem */
     private $PHPShopSystem;
-    private $ssl = 'http://';
     private $categories = [];
     private $xmlPriceId;
     private $categoriesForPath = [];
@@ -27,11 +26,11 @@ class BaseAvitoXml {
         $this->xmlPriceId = $xmlPriceId;
         $this->PHPShopSystem = new PHPShopSystem();
 
-        // SSL
-        if (isset($_GET['ssl']))
-            $this->ssl = 'https://';
-
         $this->Avito = new Avito();
+        
+        $this->fee_type = $this->Avito->options['fee_type'];
+        $this->fee = $this->Avito->options['fee'];
+        $this->price = $this->Avito->options['price'];
 
         // Пароль
         if (!empty(Avito::getOption('password')))
@@ -65,7 +64,7 @@ class BaseAvitoXml {
     }
 
     public function getProducts($getAll = false) {
-        
+
         // Исходное изображение
         $image_source = $this->PHPShopSystem->ifSerilizeParam('admoption.image_save_source');
         $result = array();
@@ -84,7 +83,7 @@ class BaseAvitoXml {
             'category' => ' IN (' . implode(',', array_keys($this->categories)) . ')'
         );
 
-        if ($getAll){
+        if ($getAll) {
             unset($where['export_avito']);
             unset($where['items']);
         }
@@ -126,15 +125,34 @@ class BaseAvitoXml {
             if ($product['items'] < 1)
                 $product['items'] = 0;
 
+            // price columns
+            if (!empty($product['price_avito'])) {
+                $price = $product['price_avito'];
+            } elseif (!empty($product['price' . (int) $this->price])) {
+                $price = $product['price' . (int) $this->price];
+            }
+            else $price = $product['price'];
+
+            $price = $this->getProductPrice($price, $product['baseinputvaluta']);
+
+            if ($this->fee > 0) {
+                if ($this->fee_type == 1) {
+                    $price = $price - ($price * $this->fee / 100);
+                } else {
+                    $price = $price + ($price * $this->fee / 100);
+                }
+            }
+
             $result[$product['id']] = array(
                 "id" => $product['id'],
+                "uid" => $product['uid'],
                 "category" => PHPShopString::win_utf8($this->categories[$product['category']]['category']),
                 "type" => PHPShopString::win_utf8($this->categories[$product['category']]['type']),
                 "subtype" => PHPShopString::win_utf8($this->categories[$product['category']]['subtype']),
                 "subtype_id" => $this->categories[$product['category']]['subtype_avito'],
                 "name" => str_replace(array('&#43;', '&#43'), '+', $product['name']),
                 "images" => $images,
-                "price" => $this->getProductPrice($product),
+                "price" => $price,
                 "description" => $product['description'],
                 "prod_seo_name" => $product['prod_seo_name'],
                 "condition" => PHPShopString::win_utf8($product['condition_avito']),
@@ -167,7 +185,7 @@ class BaseAvitoXml {
      * @param array $product
      * @return float
      */
-    private function getProductPrice($product) {
+    private function getProductPrice($price, $baseinputvaluta) {
         $PHPShopPromotions = new PHPShopPromotions();
         $PHPShopValuta = new PHPShopValutaArray();
         $currencies = $PHPShopValuta->getArray();
@@ -176,24 +194,24 @@ class BaseAvitoXml {
         $format = $this->PHPShopSystem->getSerilizeParam('admoption.price_znak');
 
         // Промоакции
-        $promotions = $PHPShopPromotions->getPrice($product['price']);
+        $promotions = $PHPShopPromotions->getPrice($price);
         if (is_array($promotions)) {
-            $product['price'] = $promotions['price'];
+            $price = $promotions['price'];
         }
 
         //Если валюта отличается от базовой
-        if ($product['baseinputvaluta'] !== $defvaluta) {
-            $vkurs = $currencies[$product['baseinputvaluta']]['kurs'];
+        if ($baseinputvaluta !== $defvaluta) {
+            $vkurs = $currencies[$baseinputvaluta]['kurs'];
 
             // Если курс нулевой или валюта удалена
             if (empty($vkurs))
                 $vkurs = 1;
 
             // Приводим цену в базовую валюту
-            $product['price'] = $product['price'] / $vkurs;
+            $price = $price / $vkurs;
         }
 
-        return round($product['price'] + (($product['price'] * $percent) / 100), (int) $format);
+        return round($price + (($price * $percent) / 100), (int) $format);
     }
 
     /**

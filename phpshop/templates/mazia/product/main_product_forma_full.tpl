@@ -129,8 +129,28 @@
                                     <!-- Вывод стикера Аккордеон для карточки товара -->
                                     @sticker_accordion@
 
-                                    <!-- Модуль Купить в 1 клик 
-                                    @oneclick@ --> 
+                                    <!-- Модуль Купить в 1 клик --> 
+                                    @oneclick@ 
+
+                                    <!-- Модуль Vkseller -->
+                                    <div class="mb-4 @php __hide('vkseller_link'); php@">
+                                        <a class="list-add-cart-btn text-capitalize" href="@vkseller_link@" target="_blank">{Купить в ВКонтакте}</a>
+                                    </div>
+
+                                    <!-- Модуль Ozonseller -->
+                                    <div class="mb-4 @php __hide('ozonseller_link'); php@">
+                                        <a class="list-add-cart-btn text-capitalize" href="@ozonseller_link@" target="_blank">{Купить в} OZON</a>
+                                    </div>
+
+                                    <!-- Модуль Wbseller -->
+                                    <div class="mb-4 @php __hide('wbseller_link'); php@">
+                                        <a class="list-add-cart-btn text-capitalize" href="@wbseller_link@" target="_blank">{Купить в} Wildberries</a>
+                                    </div>
+
+                                    <!-- Модуль Yandexcart -->
+                                    <div class="mb-4 @php __hide('yandexmarket_link'); php@">
+                                        <a class="list-add-cart-btn text-capitalize" href="@yandexmarket_link@" target="_blank">{Купить в Яндекс.Маркете}</a>
+                                    </div>
 
 
                                 </div>
@@ -170,14 +190,14 @@
                                 <div class="single-product-tab-content">
 
                                     <div id="commentList"></div>
-                <!--<a class="comment-more hide-click link-underline" href="#">{Показать еще}</a><br>-->
-                <a href="#" class="generic-btn black-hover-btn" data-toggle="modal" data-target="#reviewModal">{Оставить отзыв}</a>
+                                    <!--<a class="comment-more hide-click link-underline" href="#">{Показать еще}</a><br>-->
+                                    <a href="#" class="generic-btn black-hover-btn" data-toggle="modal" data-target="#reviewModal">{Оставить отзыв}</a>
 
-                <script type="text/javascript">
-                    $(document).ready(function () {
-                        commentList('@productUid@', 'list');
-                    });
-                </script>
+                                    <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            commentList('@productUid@', 'list');
+                                        });
+                                    </script>
 
                                 </div>
                             </div>

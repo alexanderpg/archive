@@ -5,7 +5,7 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с Ozon Seller API
  * @author PHPShop Software
- * @version 2.6
+ * @version 2.9
  * @package PHPShopModules
  * @todo https://docs.ozon.ru/api/seller/#tag/Environment
  */
@@ -24,15 +24,15 @@ class OzonSeller {
     const GET_WAREHOUSE_LIST = '/v1/warehouse/list';
     const UPDATE_PRODUCT_STOCKS = '/v2/products/stocks';
     const GET_PRODUCT_LIST = '/v2/product/list';
-    const GET_PRODUCT = '/v2/product/info';
+    const GET_PRODUCT = '/v3/product/info/list'; // 25.12.2024
     const GET_PRODUCT_DESCRIPTION = "/v1/product/info/description";
-    const GET_PRODUCT_ATTRIBUTES = '/v3/products/info/attributes';
-    const GET_PRODUCT_PRICES = '/v4/product/info/prices';
+    const GET_PRODUCT_ATTRIBUTES = '/v4/product/info/attributes'; // 25.12.2024
+    const GET_PRODUCT_PRICES = '/v5/product/info/prices'; // 8.01.2025
     const UPDATE_PRODUCT_PRICES = '/v1/product/import/prices';
     const ADD_PRODUCT_BARCODE = '/v1/barcode/add';
     const GET_ACTIONS = '/v1/actions';
     const GET_ACTIONS_PRODUCT = '/v1/actions/products';
-    const GET_PRODUCT_INFO_LIST = '/v2/product/info/list';
+    const GET_PRODUCT_INFO_LIST = '/v3/product/info/list'; // 25.12.2024
     const DEACTIVATE_ACTIONS_PRODUCT = '/v1/actions/products/deactivate';
 
     public $api_key;
@@ -190,7 +190,7 @@ class OzonSeller {
         $insert['enabled_new'] = 1;
 
         // Цена
-        $product_price = $this->getProductPrices($product_info['id'])['result']['items'][0]['price'];
+        $product_price = $this->getProductPrices($product_info['id'])['items'][0]['price'];
         $insert['price_new'] = $product_price['price'];
         $insert['price_n_new'] = $product_price['old_price'];
 
@@ -231,7 +231,7 @@ class OzonSeller {
         if (is_array($mediaFiles)) {
             foreach ($mediaFiles as $k => $image) {
 
-                $img = $image['file_name'];
+                $img = $image;
 
                 if (!empty($img) and ! stristr($img, '.mp4')) {
 
@@ -647,7 +647,7 @@ class OzonSeller {
     public function getProduct($product_id) {
 
         $params = [
-            'product_id' => $product_id,
+            'product_id' => [$product_id],
         ];
 
         $result = $this->request(self::GET_PRODUCT, $params);

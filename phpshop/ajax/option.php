@@ -9,7 +9,7 @@ session_start();
 $_classPath = "../";
 include($_classPath . "class/obj.class.php");
 PHPShopObj::loadClass("base");
-$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, false);
+$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, true);
 PHPShopObj::loadClass("array");
 PHPShopObj::loadClass("orm");
 PHPShopObj::loadClass("product");

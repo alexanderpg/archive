@@ -158,7 +158,7 @@ function actionStart() {
         $value_user_status[] = array($value['name'], $value['id'], $sel);
     }
 
-    $Tab1 .= $PHPShopGUI->setCollapse('Условия', $PHPShopGUI->setField('Статус покупателя', $PHPShopGUI->setSelect('statuses[]', $value_user_status, '100%', false, false, false, '300', false, true)) .
+    $Tab1 .= $PHPShopGUI->setCollapse('Условия', $PHPShopGUI->setField('Статус покупателя', $PHPShopGUI->setSelect('statuses[]', $value_user_status, '100%')) .
             $PHPShopGUI->setField('Категории', $PHPShopGUI->setHelp('Выберите категории товаров и/или укажите ID товаров для акции.') .
                     $PHPShopGUI->setCheckbox("categories_check_new", 1, "Учитывать категории товара", $data['categories_check']) . '<br>' .
                     $PHPShopGUI->setCheckbox("categories_all", 1, "Выбрать все категории?", 0) . '<br>' .

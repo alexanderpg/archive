@@ -22,18 +22,23 @@ function words_sphinxsearch_hook($obj, $request, $route) {
         (int) $_REQUEST['cat'] > 0 ? $category = (int) $_REQUEST['cat'] : $category = 0;
         if (empty($pole))
             $pole = 1;
+        
+        // Синонмы
+        $_REQUEST['words'] = $SphinxSearch->synonyms($_REQUEST['words']);
+        
         $query = PHPShopSecurity::true_search(trim($_REQUEST['words']));
         $obj->set('productValutaName', $obj->currency());
 
         if (isset($_REQUEST['ajax'])) {
             header('Content-type: text/html; charset=' . $GLOBALS['PHPShopLang']->charset);
-            exit($SphinxSearch->searchAjax($_REQUEST['words'], $obj, (int) SphinxSearch::getOption('ajax_search_products_cnt')));
+           
+            exit($SphinxSearch->searchAjax($query, $obj, (int) SphinxSearch::getOption('ajax_search_products_cnt')));
         }
 
         // Категория поиска
         $obj->category_select();
 
-        if (empty($_REQUEST['words'])) {
+        if (empty($query)) {
             $obj->parseTemplate($obj->getValue('templates.search_page_list'));
             return true;
         }

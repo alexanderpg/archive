@@ -198,10 +198,11 @@ function actionStart() {
                 continue;
             }
 
-            if (is_array($val['value']))
-                $sort_name = PHPShopString::utf8_win1251($val['value'][0], true);
-            else
-                $sort_name = PHPShopString::utf8_win1251($val, true);
+            if (is_array($val['value']) and !empty($val['value'][0]))
+                $sort_name = PHPShopString::utf8_win1251((string)$val['value'][0], true);
+            elseif(!is_array($val['value']) and !empty($val['value']))
+                $sort_name = PHPShopString::utf8_win1251((string)$val['value'], true);
+            else $sort_name=null;
 
 
             $value_new[] = [__('Ничего не выбрано'), 0];

@@ -227,7 +227,7 @@ function actionAdvanceSearch() {
     $searchforma .= $PHPShopInterface->setField('Категория', viewCatalog('where[category]', $query['where']['category']));
     $searchforma .= $PHPShopInterface->setField('Вывод', $PHPShopInterface->setCheckbox('where[spec]', 1, 'Спец.', intval($query['where']['spec'])) .
             $PHPShopInterface->setCheckbox('where[newtip]', 1, 'Новинка', intval($query['where']['newtip'])) .
-            $PHPShopInterface->setCheckbox('where[sklad]', 1, 'Под заказ', intval($query['where']['sklad'])) .
+            $PHPShopInterface->setCheckbox('where[sklad]', 1, 'Нет в наличии', intval($query['where']['sklad'])) .
             $PHPShopInterface->setCheckbox('where[enabled]', 0, 'Не выводить', intval($query['where']['enabled'])));
     $value_search[] = array(__('Вхождение фразы'), 'reg', 'reg');
     $value_search[] = array(__('Точное сопадение'), 'eq', '');

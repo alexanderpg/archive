@@ -281,7 +281,7 @@
                             <a class="social-button header-top-link @php __hide('vk'); php@" title="ВКонтакте" href="@vk@" target="_blank"><em class="fa fa-vk" aria-hidden="true"></em></a>
                             <a class="social-button header-top-link @php __hide('telegram'); php@" title="Telegram" href="@telegram@" target="_blank"> <em class="fa fa-telegram" aria-hidden="true"></em></a>
                             <a class="social-button header-top-link @php __hide('odnoklassniki'); php@" title="Одноклассники" href="@odnoklassniki@" target="_blank"> <em class="fa fa-odnoklassniki" aria-hidden="true"></em></a>
-                            <a class="social-button header-top-link @php __hide('youtube'); php@" title="Youtube" href="@youtube@" target="_blank"><em class="fa fa-youtube" aria-hidden="true"></em></a>
+                            <a class="social-button header-top-link @php __hide('youtube'); php@" title="Rutube" href="@youtube@" target="_blank"><em class="fa fa-youtube-play" aria-hidden="true"></em></a>
                             <a class="social-button header-top-link @php __hide('whatsapp'); php@" title="WhatsApp" href="@whatsapp@" target="_blank"><em class="fa fa-whatsapp" aria-hidden="true"></em></a>
                             <!-- / Социальные сети -->
                         </div>

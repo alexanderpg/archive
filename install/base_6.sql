@@ -730,6 +730,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_orders` (
   `bonus_plus` int(11) DEFAULT '0',
   `date` int(11) DEFAULT '0',
   `company` int(11) DEFAULT '0',
+  KEY `seller` (`seller`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `uid` (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;

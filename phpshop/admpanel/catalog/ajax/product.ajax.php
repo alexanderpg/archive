@@ -222,8 +222,8 @@ if ($PHPShopSystem->ifSerilizeParam('admoption.rule_enabled', 1)) {
 }
 
 // import id
-if(!empty($_GET['import']))
-    $where['import_id']='="'.PHPShopSecurity::TotalClean($_GET['import']).'"';
+if (!empty($_GET['import']))
+    $where['import_id'] = '="' . PHPShopSecurity::TotalClean($_GET['import']) . '"';
 
 // Поиск на странице JSON
 if (!empty($_GET['search']['value'])) {
@@ -313,9 +313,9 @@ if (is_array($data))
             if (!empty($row['spec']))
                 $PHPShopInterface->productTableRowLabels[] = '<a class="label label-success" title="' . __('Спецпредложение') . '" href="?path=catalog' . $postfix . '&where[spec]=1">' . __('С') . '</a> ';
 
-            // Под заказ
+            // Отсутствует
             if (!empty($row['sklad']))
-                $PHPShopInterface->productTableRowLabels[] = '<a class="label label-success" title="' . __('Под заказ') . '" href="?path=catalog' . $postfix . '&where[sklad]=1">' . __('О') . '</a> ';
+                $PHPShopInterface->productTableRowLabels[] = '<a class="label label-success" title="' . __('Отсутствует') . '" href="?path=catalog' . $postfix . '&where[sklad]=1">' . __('О') . '</a> ';
 
             // Перехват модуля
             $PHPShopModules->setAdmHandler(__FILE__, 'labels', $row);
@@ -503,7 +503,10 @@ elseif (isset($_GET['where']))
 else
     $catname = __('Новые товары');
 
-$PHPShopInterface->_AJAX["catname"] = PHPShopString::win_utf8($catname) . ' [' . $total['count'] . ']';
+if (empty($_GET['search']['value']))
+    $PHPShopInterface->_AJAX["catname"] = PHPShopString::win_utf8($catname) . ' [' . $total['count'] . ']';
+else
+    $PHPShopInterface->_AJAX["catname"] =PHPShopString::win_utf8(__('Поиск')) . ' "' .PHPShopSecurity::true_search($_GET['search']['value']) . '"';
 
 if (!empty($total['count'])) {
     $PHPShopInterface->_AJAX["recordsFiltered"] = $total['count'];

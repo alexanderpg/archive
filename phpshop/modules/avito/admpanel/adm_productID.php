@@ -18,10 +18,20 @@ function addAvitoProductTab($data) {
         $subtype_avito = $PHPShopCategory->getParam('subtype_avito');
     }
 
+        // Валюты
+    $PHPShopValutaArray = new PHPShopValutaArray();
+    $valuta_array = $PHPShopValutaArray->getArray();
+    if (is_array($valuta_array))
+        foreach ($valuta_array as $val) {
+            if ($data['baseinputvaluta'] == $val['id']) {
+                $valuta_def_name = $val['code'];
+            }
+        }
 
     $tab = $PHPShopGUI->setField('Экспорт в Авито', $PHPShopGUI->setCheckbox('export_avito_new', 1, '', $data['export_avito']));
-
+    $tab .= $PHPShopGUI->setField('Цена Авито', $PHPShopGUI->setInputText(null, 'price_avito_new', $data['price_avito'], 150, $valuta_def_name), 2);
     $tab .= $PHPShopGUI->setField("Название товара:", $PHPShopGUI->setInput('text', 'name_avito_new', $data['name_avito']));
+    $tab .= $PHPShopGUI->setField("Авито ID:", $PHPShopGUI->setInput('text', 'export_avito_id_new', $data['export_avito_id']));
     $tab .= $PHPShopGUI->setField('Состояние товара', $PHPShopGUI->setSelect('condition_avito_new', Avito::getConditions($data['condition_avito'])), 1, 'Тег <condition>');
     $tab .= $PHPShopGUI->setField('Вариант платного размещения', $PHPShopGUI->setSelect('listing_fee_avito_new', Avito::getListingFee($data['listing_fee_avito'])), 1, 'Тег <ListingFee>');
     $tab .= $PHPShopGUI->setField('Платная услуга', $PHPShopGUI->setSelect('ad_status_avito_new', Avito::getAdStatuses($data['ad_status_avito'])), 1, 'Тег <AdStatus>');
@@ -82,7 +92,7 @@ function addAvitoProductTab($data) {
         $tab .= $PHPShopGUI->setField("Тип автоусилителя", $PHPShopGUI->setSelect('tiers[AmplifierType]', Avito::SpareAudioAmplifierType(isset($tiers['AmplifierType']) ? $tiers['AmplifierType'] : null)));
         $tab .= $PHPShopGUI->setField("Количество каналов", $PHPShopGUI->setSelect('tiers[ChannelsNumber]', Avito::SpareAudioChannelsNumber(isset($tiers['ChannelsNumber']) ? $tiers['ChannelsNumber'] : null)));
         $tab .= $PHPShopGUI->setField("Номинальная мощность на канал (4 Ом), Вт", $PHPShopGUI->setInput('text', 'tiers[RMSfour]', isset($tiers['RMSfour']) ? $tiers['RMSfour'] : null, false, 100));
-         $tab .= $PHPShopGUI->setField("Номинальная мощность на канал (2 Ом), Вт", $PHPShopGUI->setInput('text', 'tiers[RMStwo]', isset($tiers['RMStwo']) ? $tiers['RMStwo'] : null, false, 100));
+        $tab .= $PHPShopGUI->setField("Номинальная мощность на канал (2 Ом), Вт", $PHPShopGUI->setInput('text', 'tiers[RMStwo]', isset($tiers['RMStwo']) ? $tiers['RMStwo'] : null, false, 100));
     }
 
     // Шины, диски и колёса
@@ -166,8 +176,24 @@ function avitoUpdate() {
     }
 }
 
+function avitoSave() {
+    global $PHPShopOrm;
+
+    // Обновление цен и остатков
+    include_once dirname(__FILE__) . '/../class/Avito.php';
+    $Avito = new Avito();
+    $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
+
+    $products = $PHPShopOrm->getOne(['*'], ['export_avito' => "='1'", 'id' => '=' . $_POST['rowID']]);
+    if (is_array($products) and count($products) > 0) {
+        $Avito->updateStocks([$products]);
+        $Avito->updatePrices($products);
+    }
+}
+
 $addHandler = array(
     'actionStart' => 'addAvitoProductTab',
     'actionDelete' => false,
+    'actionSave' => 'avitoSave',
     'actionUpdate' => 'avitoUpdate'
 );

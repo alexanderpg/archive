@@ -87,7 +87,7 @@ function OzonsellerSave() {
                 if (!empty($info['product_id'])) {
 
                     // SKU для ссылки на товар OZON
-                    $data['sku_ozon'] = $OzonSeller->getProduct($info['product_id'])['result']['sku'];
+                    $data['sku_ozon'] = $OzonSeller->getProduct($info['product_id'])['items'][0]['sources'][0]['sku'];
 
                     // Передача штрихкода
                     if (!empty($data['barcode_ozon']) and ! empty($data['sku_ozon']))
@@ -131,9 +131,7 @@ function OzonsellerSave() {
 
             // SKU для ссылки на товар OZON
             if (empty($data['sku_ozon'])) {
-
-                $getProduct = $OzonSeller->getProduct($data['export_ozon_id'])['result'];
-                $data['sku_ozon'] = $getProduct['sku'];
+                $data['sku_ozon']= $OzonSeller->getProduct($data['export_ozon_id'])['items'][0]['sources'][0]['sku'];
             }
 
             // Штрихкод
