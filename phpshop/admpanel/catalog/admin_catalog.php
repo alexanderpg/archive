@@ -184,13 +184,6 @@ function getTableCaption() {
 
     // Режим каталога
     if ($PHPShopSystem->getParam("shop_type") == 1) {
-        $memory['catalog.option']['price'] = 0;
-        $memory['catalog.option']['price2'] = 0;
-        $memory['catalog.option']['price3'] = 0;
-        $memory['catalog.option']['price4'] = 0;
-        $memory['catalog.option']['price5'] = 0;
-        $memory['catalog.option']['price_n'] = 0;
-        $memory['catalog.option']['price_purch'] = 0;
         $memory['catalog.option']['item'] = 0;
     }
 

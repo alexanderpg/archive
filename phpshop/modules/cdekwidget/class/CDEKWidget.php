@@ -131,7 +131,7 @@ class CDEKWidget {
         $cart = unserialize($order['orders']);
 
         if ($this->option['paid'] == 1)
-            $order['paid'] == 1;
+            $order['paid'] = 1;
 
         if ($this->isOrderSend($cdek_data['status'])) {
             return;
@@ -323,9 +323,8 @@ class CDEKWidget {
         PHPShopParser::set('cdek_ymap_key', $yandex_apikey);
         PHPShopParser::set('cdek_admin', 1);
         PHPShopParser::set('russia_only', (int) $this->option['russia_only']);
-        PHPShopParser::set('cdek_scripts', '<script type="text/javascript" src="../modules/cdekwidget/js/widjet.min.js" charset="utf-8"/></script><script type="text/javascript" src="../modules/cdekwidget/js/cdekwidget.js" /></script>');
-
-        PHPShopParser::set('cdek_popup', ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true), true);
+        PHPShopParser::set('cdek_scripts', '<script type="text/javascript" src="../modules/cdekwidget/js/widjet.js" charset="utf-8"/></script><script type="text/javascript" src="../modules/cdekwidget/js/cdekwidget.js" /></script>');
+        $GLOBALS['modalExternalModules']=ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true);
 
         return ParseTemplateReturn($template, true);
     }
@@ -464,7 +463,7 @@ class CDEKWidget {
         return json_decode($result, true);
     }
 
-    private function getToken() {
+    public function getToken() {
         if ($this->isTest) {
             $domain = $this->testDomain;
             $account = self::TEST_ACCOUNT;
@@ -491,6 +490,7 @@ class CDEKWidget {
         $token = json_decode($result, true);
 
         $this->token = $token['access_token'];
+        return $this->token;
     }
 
     private function getDimension($field, $productId, $parent = null) {

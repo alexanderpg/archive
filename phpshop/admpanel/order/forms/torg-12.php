@@ -80,7 +80,7 @@ $datas = $row['datas'];
 $ouid = $row['uid'];
 $order = unserialize($row['orders']);
 $status = unserialize($row['status']);
-$nds = $LoadItems['System']['nds'];
+$nds = $PHPShopOrder->getParam('nds');
 $dis = $weight = $adr_info = null ;
 $sum=$num=$this_nds_summa=$total_summa_nds=$total_summa_nds_taxe=$total_summa=0;
 if (is_array($order['Cart']['cart']))

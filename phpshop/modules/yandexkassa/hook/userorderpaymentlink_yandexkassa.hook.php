@@ -22,12 +22,13 @@ function userorderpaymentlink_mod_yandexkassa_hook($obj, $PHPShopOrderFunction) 
 
                 if(!empty($payment['confirmation']['confirmation_url'])) {
                     header('Location: ' . $payment['confirmation']['confirmation_url']);
+                    return true;
                 } else {
                     $return = __('Ошибка регистрации платежа, обратитесь к администратору');
                 }
             } else {
                 
-                $return = PHPShopText::a('?order_info=' . $PHPShopOrderFunction->objRow['uid'] . '&kassaPay=1#Order', $YandexKassa->options['title'], false, false, 14, false, 'btn btn-primary');
+                $return = PHPShopText::a("//" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'].'&kassaPay=1#Order', $YandexKassa->options['title'], false, false, 14, false, 'btn btn-primary');
             }
 
         } elseif (YandexKassa::isYandexKassaPaymentMethod((int) $PHPShopOrderFunction->getSerilizeParam('orders.Person.order_metod'))) {

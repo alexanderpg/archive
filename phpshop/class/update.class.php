@@ -152,7 +152,7 @@ class PHPShopUpdate {
         if (!$this->islocal()) {
 
             if (!$this->user_ftp_stream = ftp_connect($this->_user_ftp_host)) {
-                $this->log('Не удаётся соедиться с сервером ' . $this->_user_ftp_host, 'warning', 'remove');
+                $this->log('Не удаётся соединиться с сервером ' . $this->_user_ftp_host, 'warning', 'remove');
                 return false;
             }
 

@@ -54,12 +54,13 @@ function runOrder($ouid, $type) {
                     "region" => isset($order["state"]) ? $order["state"] : "",
                     "city" => isset($order["city"]) ? $order["city"] : "",
                     "street" => isset($order["street"]) ? $order["street"] : "",
-                    "building" => !empty($persone["building"]) ? $persone["building"] : $persone["corpus"],
+                    /*"building" => !empty($persone["building"]) ? $persone["building"] : $persone["corpus"],*/
+                    "building" => isset($order["house"]) ? $order["house"] : "",
                     "flat" => !empty($order["flat"]) ? $order["flat"] : $persone["appartment"],
                     "intercomCode" => isset($persone["domofon"]) ? $persone["domofon"] : "",
                     "floor" => is_int($persone["floor"]) ? $persone["floor"] : "",
                     "block" => is_int($persone["entrance"]) ? $persone["entrance"] : "",
-                    "house" => isset($order["house"]) ? $order["house"] : "",
+                    /*"house" => isset($order["house"]) ? $order["house"] : "",*/
                     "metro" => isset($persone["metro"]) ? $persone["metro"] : "",
                     "notes" => ($persone["elevator"] > 0) ? "Этаж: " . $persone["elevator"] : "",
                 )

@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Access-Control-Allow-Origin: *');
 error_reporting(0);
 
@@ -85,29 +86,37 @@ class ISDEKservice
 	protected static function getCityByName($name,$single=true){
 	    $arReturn = array();
         $result = self::sendToCity($name);
+
+
+
         if ($result && $result['code'] == 200) {
             $result = json_decode($result['result']);
-            if (!isset($result->geonames)) {
+
+            //var_dump($result);
+
+            if (!isset($result)) {
                 $arReturn = array('error' => 'No cities found');
             } else {
                 if($single) {
                     $arReturn = array(
-                        'id'      => $result->geonames[0]->id,
-                        'city'    => $result->geonames[0]->cityName,
-                        'region'  => $result->geonames[0]->regionName,
-                        'country' => $result->geonames[0]->countryName
+                        'id'      => $result[0]->code,
+                        'city'    => explode(", ",$result[0]->full_name)[0],
+                        'region'  => explode(", ",$result[0]->full_name)[1],
+                        'country' => 'Россия'
                     );
                 } else {
                     $arReturn['cities'] = array();
-                    foreach ($result->geonames as $city){
+                    foreach ($result as $city){
                         $arReturn['cities'][] = array(
-                            'id' => $city->id,
-                            'city' => $city->cityName,
-                            'region' => $city->regionName,
-                            'country' => $city->countryName
+                            'id' => $city->code,
+                            'city' => explode(", ",$result[0]->full_name)[0],
+                            'region' => explode(", ",$result[0]->full_name)[1],
+                            'country' => 'Россия'
                         );
                     }
                 }
+
+
             }
         } else {
             $arReturn = array('error' => 'Wrong answer code from server : ' . $result['code']);
@@ -117,9 +126,13 @@ class ISDEKservice
     }
 
     public static function getCityByAddress($address){
-        $arReturn = array();
-        $arStages = array('country'=>false,'region'=>false,'subregion'=>false);
-        $arAddress = explode(',',$address);
+		$arAddress = explode(' ',$address);
+
+		$cdekCity = self::getCityByName(trim(end($arAddress)),false);
+		return ['city'=>$cdekCity['cities'][0]];
+
+
+		/* Старый код*/
 
         $ind = 0;
         // finging country in address
@@ -159,7 +172,19 @@ class ISDEKservice
         }
         // finding city
         $cityName = trim($arAddress[$ind]);
-        $cdekCity = self::getCityByName($cityName,false);
+
+
+        $cdekCity = self::getCityByName('Москва',false);
+
+		if(is_array($cdekCity['cities']))
+		foreach($cdekCity['cities'] as $cities){
+              $c['id']=(string)$cities['id'];
+			  $c['city']=(string)$cities['city'];
+			  $c['region']=(string)$cities['region'];
+			  $c['country']=(string)$cities['country'];
+			  $city[]=$c;
+		}
+		return ['city'=>$city[0]];
 
         if($cdekCity['error']){
             foreach(self::getCityDef() as $placeLbl){
@@ -269,6 +294,7 @@ class ISDEKservice
                 $arReturn['error'] = 'Undefined city';
             }
         }
+
         return $arReturn;
     }
 
@@ -492,13 +518,15 @@ class ISDEKservice
 
 	protected static function sendToCity($data)
 	{
-		$result = self::client(
-			'http://api.cdek.ru/city/getListByTerm/json.php?q=' . urlencode($data)
-		);
+		$headers = array(
+            'Authorization: Bearer ' .$_SESSION['cdek_token'],
+            'Content-Type: application/json'
+        );
+		$result = self::client('http://api.cdek.ru/v2/location/suggest/cities?name=' . urlencode($data).'&country_code=RU',false,$headers);
 		return $result;
 	}
 
-	protected static function client($where, $data = false)
+	protected static function client($where, $data = false, $headers = false)
 	{
 		if (!function_exists('curl_init')) {
 			self::toAnswer(array('error' => 'No php CURL-library installed on server'));
@@ -510,6 +538,12 @@ class ISDEKservice
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+		// Авторизация по токену
+        if(!empty($headers) and is_array($headers)){
+          curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		}
+
 		if ($data) {
 			curl_setopt($ch, CURLOPT_POST, TRUE);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -564,6 +598,7 @@ class ISDEKservice
 				'H_POSTAMAT'   => 'Постаматы СДЭК',
 				'H_SUPPORT' => 'Служба поддержки',
 				'H_QUESTIONS' => 'Если у вас есть вопросы, можете<br> задать их нашим специалистам',
+				'H_STREET' => 'Поиск улицы',
 
                 'ADDRESS_WRONG'   => 'Невозможно определить выбранное местоположение. Уточните адрес из выпадающего списка в адресной строке.',
                 'ADDRESS_ANOTHER' => 'Ознакомьтесь с новыми условиями доставки для выбранного местоположения.'

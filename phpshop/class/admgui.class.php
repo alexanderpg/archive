@@ -174,7 +174,7 @@ class PHPShopGUI {
         if (empty($option['view']))
             $dis .= '
         <div class="col-md-10 col-xs-10">
-          <p><span class="remove glyphicon glyphicon-remove-sign ' . $icon_hide . '" data-return="' . $id . '" data-toggle="tooltip" data-placement="top" title="' . $this->__('Удалить эту запись') . '"></span> ' . $name . '</p><input type="hidden" name="' . $id . '" value="' . $data . '">
+          <p><span class="remove glyphicon glyphicon-remove-sign ' . $icon_hide . '" data-return="' . $id . '" data-toggle="tooltip" data-placement="top" title="' . __('Удалить эту запись') . '"></span> ' . $name . '</p><input type="hidden" name="' . $id . '" value="' . $data . '">
             <div class="btn-group btn-group-sm" role="group" aria-label="...">
               ' . $add . '
            </div>
@@ -221,7 +221,7 @@ class PHPShopGUI {
 
         if (empty($option['view']))
             $dis = '
-             <p><span class="remove glyphicon glyphicon-remove-sign ' . $icon_hide . '" data-return="' . $id . '" data-toggle="tooltip" data-placement="top" title="Удалить эту запись"></span> ' . $name . '</p><input type="hidden" name="' . $id . '" id="' . $id . '" value="' . $data . '" >
+             <p><span class="remove glyphicon glyphicon-remove-sign ' . $icon_hide . '" data-return="' . $id . '" data-toggle="tooltip" data-placement="top" title="'.__('Удалить эту запись').'"></span> ' . $name . '</p><input type="hidden" name="' . $id . '" id="' . $id . '" value="' . $data . '" >
                <div class="btn-group btn-group-sm" role="group" aria-label="...">
                  ' . $add . '
               </div>

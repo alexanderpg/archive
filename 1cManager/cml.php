@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.5
+ * @version 3.6
  */
 class CommerceMLLoader {
 
@@ -787,32 +787,68 @@ class CommerceMLLoader {
                             $parent_array[$p[0]]['price'] = $parent_price1;
                         }
 
+
                         // Наименьшая цена 2
-                        if (empty($parent_array[$p[0]]['price2'])) {
+                        if (empty($parent_array[$p[0]]['price2']) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price2'] = $parent_price2;
                         } else if ($parent_array[$p[0]]['price2'] > $parent_price2 and ! empty($parent_price2) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price2'] = $parent_price2;
                         }
 
                         // Наименьшая цена 3
-                        if (empty($parent_array[$p[0]]['price3'])) {
+                        if (empty($parent_array[$p[0]]['price3']) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price3'] = $parent_price3;
                         } else if ($parent_array[$p[0]]['price3'] > $parent_price3 and ! empty($parent_price3) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price3'] = $parent_price3;
                         }
 
                         // Наименьшая цена 4
-                        if (empty($parent_array[$p[0]]['price4'])) {
+                        if (empty($parent_array[$p[0]]['price4']) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price4'] = $parent_price4;
                         } else if ($parent_array[$p[0]]['price4'] > $parent_price4 and ! empty($parent_price4) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price4'] = $parent_price4;
                         }
 
                         // Наименьшая цена 5
-                        if (empty($parent_array[$p[0]]['price5'])) {
+                        if (empty($parent_array[$p[0]]['price5']) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price5'] = $parent_price5;
                         } else if ($parent_array[$p[0]]['price5'] > $parent_price5 and ! empty($parent_price5) and ! empty((int) $item->Количество[0])) {
                             $parent_array[$p[0]]['price5'] = $parent_price5;
+                        }
+
+                        // Наименьшая цена 1 без остатка
+                        if (empty($parent_array[$p[0]]['price_no_items'])) {
+                            $parent_array[$p[0]]['price_no_items'] = $parent_price1;
+                        } else if ($parent_array[$p[0]]['price_no_items'] > $parent_price1 and ! empty($parent_price1)) {
+                            $parent_array[$p[0]]['price_no_items'] = $parent_price1;
+                        }
+
+                        // Наименьшая цена 2 без остатка
+                        if (empty($parent_array[$p[0]]['price2_no_items'])) {
+                            $parent_array[$p[0]]['price2_no_items'] = $parent_price2;
+                        } else if ($parent_array[$p[0]]['price2_no_items'] > $parent_price2 and ! empty($parent_price2)) {
+                            $parent_array[$p[0]]['price2_no_items'] = $parent_price2;
+                        }
+
+                        // Наименьшая цена 3 без остатка
+                        if (empty($parent_array[$p[0]]['price3_no_items'])) {
+                            $parent_array[$p[0]]['price3_no_items'] = $parent_price3;
+                        } else if ($parent_array[$p[0]]['price3_no_items'] > $parent_price3 and ! empty($parent_price3)) {
+                            $parent_array[$p[0]]['price3_no_items'] = $parent_price3;
+                        }
+
+                        // Наименьшая цена 4 без остатка
+                        if (empty($parent_array[$p[0]]['price4_no_items'])) {
+                            $parent_array[$p[0]]['price4_no_items'] = $parent_price4;
+                        } else if ($parent_array[$p[0]]['price4_no_items'] > $parent_price4 and ! empty($parent_price4)) {
+                            $parent_array[$p[0]]['price4_no_items'] = $parent_price4;
+                        }
+
+                        // Наименьшая цена 5 без остатка
+                        if (empty($parent_array[$p[0]]['price5_no_items'])) {
+                            $parent_array[$p[0]]['price5_no_items'] = $parent_price5;
+                        } else if ($parent_array[$p[0]]['price5_no_items'] > $parent_price5 and ! empty($parent_price5)) {
+                            $parent_array[$p[0]]['price5_no_items'] = $parent_price5;
                         }
 
                         // Валюта
@@ -889,6 +925,8 @@ class CommerceMLLoader {
                     // Внешние коды цены
                     if (!empty($this->exchange_price1)) {
 
+                        $price1 = $price2 = $price3 = $price4 = $price5 = 0;
+
                         if (isset($item->Цены)) {
                             foreach ($item->Цены->Цена as $prices) {
 
@@ -940,9 +978,28 @@ class CommerceMLLoader {
                         foreach ($parent_array as $id => $prod) {
 
                             // Подтипы
-                            if (!empty($prod['ids'])) {
+                            if (!empty($prod['ids']))
                                 $parent = substr($prod['ids'], 0, strlen($prod['ids']) - 1);
-                            }
+
+                            // Цена 1 без остатка
+                            if (empty($prod['price']) and ! empty($prod['price_no_items']))
+                                $prod['price'] = $prod['price_no_items'];
+
+                            // Цена 2 без остатка
+                            if (empty($prod['price2']) and ! empty($prod['price2_no_items']))
+                                $prod['price2'] = $prod['price2_no_items'];
+
+                            // Цена 3 без остатка
+                            if (empty($prod['price3']) and ! empty($prod['price3_no_items']))
+                                $prod['price3'] = $prod['price3_no_items'];
+
+                            // Цена 4 без остатка
+                            if (empty($prod['price4']) and ! empty($prod['price4_no_items']))
+                                $prod['price4'] = $prod['price4_no_items'];
+
+                            // Цена 5 без остатка
+                            if (empty($prod['price5']) and ! empty($prod['price5_no_items']))
+                                $prod['price5'] = $prod['price5_no_items'];
 
                             // Форматирование цены 2.04
                             if (!strpos($prod['price'], '.'))

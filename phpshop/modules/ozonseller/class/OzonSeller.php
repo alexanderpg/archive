@@ -5,7 +5,7 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с Ozon Seller API
  * @author PHPShop Software
- * @version 2.9
+ * @version 3.0
  * @package PHPShopModules
  * @todo https://docs.ozon.ru/api/seller/#tag/Environment
  */
@@ -456,7 +456,8 @@ class OzonSeller {
                     $params['stocks'][$n] = [
                         'offer_id' => $info['offer_id'],
                         'stock' => (int) $product['items'],
-                        'warehouse_id' => $warehouse
+                        'warehouse_id' => $warehouse,
+                        'quant_size' => 1
                     ];
 
                     // OZON ID

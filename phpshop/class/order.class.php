@@ -51,7 +51,7 @@ class PHPShopOrderFunction extends PHPShopObj {
 
         // Валюта
         $this->getDefaultValutaObj();
-        
+
         $this->PHPShopModules = &$PHPShopModules;
     }
 
@@ -281,7 +281,7 @@ class PHPShopOrderFunction extends PHPShopObj {
         }
 
         // Перехват модуля
-        $hook = $this->setHook(__CLASS__, __FUNCTION__,$mysum);
+        $hook = $this->setHook(__CLASS__, __FUNCTION__, $mysum);
         if ($hook)
             $maxdiscount = $hook;
 
@@ -652,6 +652,8 @@ class PHPShopOrderFunction extends PHPShopObj {
      * Оповещение пользователя о новом статусе
      */
     private function sendStatusChangedMail() {
+        global $PHPShopGUI;
+
         $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
         $PHPShopSystem = new PHPShopSystem();
 
@@ -672,6 +674,14 @@ class PHPShopOrderFunction extends PHPShopObj {
         }
         PHPShopParser::set('account', $protocol . $_SERVER['SERVER_NAME'] . 'phpshop/forms/account/forma.html?orderId=' . $this->objID . '&tip=2&datas=' . $this->getParam('datas'));
         PHPShopParser::set('bonus', $this->getParam('bonus_plus'));
+
+        // Ссылка на оплату
+        $host = $GLOBALS['SysValue']['connect']['host'];
+        $dbname = $GLOBALS['SysValue']['connect']['dbase'];
+        $uname = $GLOBALS['SysValue']['connect']['user_db'];
+        $upass = $GLOBALS['SysValue']['connect']['pass_db'];
+        
+        PHPShopParser::set('pay', $protocol . $_SERVER['SERVER_NAME'] .'/pay/?orderID=' . $this->objID . '-' . md5($host . $dbname . $uname . $upass . $this->objID));
 
         $title = __('Cтатус заказа') . ' ' . $this->getParam('uid') . ' ' . __('поменялся на') . ' ' . $this->getStatus();
 
@@ -712,9 +722,9 @@ class PHPShopOrderFunction extends PHPShopObj {
             $PHPShopMail->sendMailNow($content);
         }
     }
-    
-     public function setHook($class_name, $function_name, $data = false, $rout = false) {
-        if (!empty($this->PHPShopModules)){
+
+    public function setHook($class_name, $function_name, $data = false, $rout = false) {
+        if (!empty($this->PHPShopModules)) {
             return $this->PHPShopModules->setHookHandler($class_name, $function_name, array(&$this), $data, $rout);
         }
     }

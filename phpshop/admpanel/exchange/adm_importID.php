@@ -129,10 +129,11 @@ function actionStart() {
     $Tab1 = $PHPShopGUI->setCollapse('Настройки', $Tab1);
 
     $name_col = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'];
+    
     foreach ($option['select_action'] as $k => $p) {
         if (empty($p))
             $p = '-';
-        $Tab2 .= $PHPShopGUI->setField('Колонка ' . $name_col[$k], $PHPShopGUI->setText($p));
+        $Tab2 .= $PHPShopGUI->setField('Колонка ' . $name_col[$k], $PHPShopGUI->setText($p,false,false,false));
     }
 
     $Tab2 = $PHPShopGUI->setCollapse('Сопоставление полей', $Tab2);

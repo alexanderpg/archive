@@ -106,18 +106,29 @@ class PHPShopCdekService extends ISDEKservice {
 
 PHPShopCdekService::initialize();
 $action = $_REQUEST['isdek_action'];
-
-if ($action == 'getCity') {
+header("Content-Type: application/json");
+if (method_exists('PHPShopCdekService', $action)) {
 
     include_once '../class/CDEKWidget.php';
     $CDEKWidget = new CDEKWidget();
 
-    $result = [
-        'id' => $CDEKWidget->option['city_from_code'],
-        'city' => PHPShopString::win_utf8($CDEKWidget->option['city_from'])
-    ];
-    echo json_encode($result);
-} else if (method_exists('PHPShopCdekService', $action)) {
-    PHPShopCdekService::$action($_REQUEST);
+    if ($action == 'getCity')
+        $_SESSION['cdek_token'] = $CDEKWidget->getToken();
+
+
+    if ($action == 'getPVZ') {
+        
+        // Ôאיכ ךורא
+        $cach = 'pvz.json';
+        if (file_exists($cach) and filemtime($cach) > date("U", strtotime("-1 day"))) {
+            echo file_get_contents($cach);
+        } else {
+            ob_start();
+            PHPShopCdekService::$action($_REQUEST);
+            $tmp = ob_get_clean();
+            file_put_contents($cach, $tmp);
+            echo $tmp;
+        }
+    } else
+        PHPShopCdekService::$action($_REQUEST);
 }
-?>

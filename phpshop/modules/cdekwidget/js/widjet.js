@@ -1051,6 +1051,7 @@ function ISDEKWidjet(params) {
 		binder: {},
 
 		calculate: function (forse=false) {
+		
 			if (this.cityFrom) {
 				var courier_idx = this.history.findIndex( (e) => (
 					e.code === parseInt(DATA.city.current) && e.type === 'courier') && e.weight === cargo.getWeight()
@@ -1678,8 +1679,9 @@ function ISDEKWidjet(params) {
                     DATA.address.fill(template.ui.addressSearch.getInput().val());
                     ipjq.getJSON(
                         widjet.options.get('servicepath'),
-                        {isdek_action: 'getCity', address: DATA.address.get()},
+                        {isdek_action: 'getCity', address: DATA.currentCityName},
                         function (data) {
+
 							if (typeof(data.error) === 'undefined') {
 								if (data.city.id === 63015) {
 									data.city.id = DATA.city.get()
@@ -1688,9 +1690,8 @@ function ISDEKWidjet(params) {
                                 if(DATA.city.get() == data.city.id){
                                     template.ui.addressSearch.hide();
 
-									var address = DATA.address.get();
-									var addressArray = address.split(',');
-									var addressClean = (addressArray[addressArray.length - 2].trim() + ', ' + addressArray[addressArray.length - 1].trim()).trim();
+									var address = DATA.currentCityName +', '+DATA.address.get();
+									var addressClean = DATA.currentCityName +', '+DATA.address.get();
 
                                     widjet.binders.trigger('onChooseAddress', {
                                         'id': 'courier',
@@ -1700,7 +1701,7 @@ function ISDEKWidjet(params) {
                                         'currency': CALCULATION.profiles.courier.currency,
                                         'term': CALCULATION.profiles.courier.term,
                                         'tarif': CALCULATION.profiles.courier.tarif,
-                                        'address' : DATA.address.get(),
+                                        'address' : address,
 										'cleanaddress': addressClean
                                     });
 
@@ -1873,7 +1874,7 @@ function ISDEKWidjet(params) {
 
                 if(widjet.options.get('detailAddress')) {
                     template.ymaps.map.events.add('click', template.ymaps.getClickAddress);
-                    var suggestView1 = new ymaps.SuggestView(IDS.get('cdek_courier_address_place').substr(1));
+                   // var suggestView1 = new ymaps.SuggestView(IDS.get('cdek_courier_address_place').substr(1));
                 }
             },
 

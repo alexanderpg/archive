@@ -68,10 +68,10 @@ function actionStart() {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
         }
 
-        $deliveryTypes[] = array("Не выбрано", "", false);
+        $deliveryTypes[] = array(PHPShopString::win_utf8("Не выбрано", true), "", false);
         if ($response->isSuccessful()) {
             foreach ($response->deliveryTypes as $code => $params) {
-                $deliveryTypes[] = array(Tools::iconvArray($params["name"], "UTF-8", "WINDOWS-1251"), $params["code"], false);
+                $deliveryTypes[] = array($params["name"], $params["code"], false);
             }
         } else {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
@@ -91,7 +91,9 @@ function actionStart() {
                 }
             }
 
-            $field1 .= $PHPShopGUI->setField($del["city"], $PHPShopGUI->setSelect('delivery[' . $del["id"] . ']', $tmpDeliveryTypes));
+            $field1 .= $PHPShopGUI->setField($del["city"], $PHPShopGUI->setSelect('delivery[' . $del["id"] . ']', $tmpDeliveryTypes), 1, null, null, 'control-label', false);
+			
+			
         }
 
         $tab2 .= $PHPShopGUI->setCollapse('Способы доставки', $field1);
@@ -103,10 +105,10 @@ function actionStart() {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
         }
 
-        $paymentTypes[] = array("Не выбрано", "", false);
+        $paymentTypes[] = array(PHPShopString::win_utf8("Не выбрано", true), "", false);
         if ($response->isSuccessful()) {
             foreach ($response->paymentTypes as $code => $params) {
-                $paymentTypes[] = array(Tools::iconvArray($params["name"], "UTF-8", "WINDOWS-1251"), $params["code"], false);
+                $paymentTypes[] = array($params["name"], $params["code"], false);
             }
         } else {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
@@ -127,7 +129,7 @@ function actionStart() {
                 }
             }
 
-            $field2 .= $PHPShopGUI->setField($paymentValue["name"], $PHPShopGUI->setSelect('payment[' . $paymentValue["id"] . ']', $tmpPaymentTypes));
+            $field2 .= $PHPShopGUI->setField($paymentValue["name"], $PHPShopGUI->setSelect('payment[' . $paymentValue["id"] . ']', $tmpPaymentTypes), 1, null, null, 'control-label', false);
         }
 
         $tab2 .= $PHPShopGUI->setCollapse('Способы оплаты', $field2);
@@ -138,7 +140,7 @@ function actionStart() {
             Tools::logger(array('error' => 'Ошибка соединения с RetailCRM'), "connect", 'Ошибка соединения с RetailCRM');
         }
 
-        $statuses[] = array("Не выбрано", "", false);
+        $statuses[] = array(PHPShopString::win_utf8("Не выбрано", true), "", false);
         if ($response->isSuccessful()) {
             foreach ($response->statuses as $code => $params) {
                 $statuses[] = array(Tools::iconvArray($params["name"], "UTF-8", "WINDOWS-1251"), $params["code"], false);
@@ -151,7 +153,7 @@ function actionStart() {
         $status = $statusesOrm->select(array('*'));
 
         $field3 = "";
-        array_unshift($status, array("id" => "new", "name" => "Новый заказ"));
+        array_unshift($status, array("id" => "new", "name" => PHPShopString::win_utf8("Новый заказ", true)));
         foreach ($status as $statusValue) {
             $tmpStatuses = $statuses;
             if (isset($value["status"][$statusValue["id"]])) {
@@ -163,7 +165,7 @@ function actionStart() {
                 }
             }
 
-            $field3 .= $PHPShopGUI->setField($statusValue["name"], $PHPShopGUI->setSelect('status[' . $statusValue["id"] . ']', $tmpStatuses));
+            $field3 .= $PHPShopGUI->setField($statusValue["name"], $PHPShopGUI->setSelect('status[' . $statusValue["id"] . ']', $tmpStatuses), 1, null, null, 'control-label', false);
         }
 
 

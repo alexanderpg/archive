@@ -29,7 +29,7 @@
     <a href="/shop/UID_@productUid@.html" class="caption">
         <div class="price-block">
 
-            <h4 class="new-price @hideCatalog@">@parentLangFrom@ @productPrice@ <span class="rubznak">@productValutaName@</span></h4>
+            <h4 class="new-price ">@parentLangFrom@ @productPrice@ <span class="rubznak">@productValutaName@</span></h4>
             <div class="h5 old-price">@productPriceOld@</div>
         </div>
         <div class="rating">

@@ -123,7 +123,7 @@ class PHPShopCompare extends PHPShopCore {
             }
 
         // Дополнение - сравнить по всем категориям
-        if (count($cats) > 1) { //Если больше двух каталогов
+        if (is_array($cats) and count($cats) > 1) { //Если больше двух каталогов
             $name = 'по всем категориям';
             if ((count($compare) > 1) && (count($compare) <= $limit)) {
                 if ($COMCID != "ALL") {
@@ -333,7 +333,7 @@ class PHPShopCompare extends PHPShopCore {
             }
 
         //Если нет товаров, показать пусто. ДОЛЖНО БЫТЬ ПОСЛЕДНЕЙ СТРОКОЙ
-        if (count($cats) == 0) {
+        if (is_array($cats)  and count($cats) == 0) {
             $disp = '<P><h5>' . __('Вы не выбрали товары для сравнения') . '!</h5></P>';
         }
 
@@ -358,7 +358,6 @@ class PHPShopCompare extends PHPShopCore {
         else
             $this->parseTemplate($this->getValue('templates.page_page_list'));
     }
-
 }
 
 ?>

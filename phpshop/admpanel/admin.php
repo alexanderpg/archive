@@ -36,7 +36,8 @@ if ($shop_type == 2) {
 elseif ($shop_type == 1) {
     $hideCatalog = 'hide';
     $brand_type = 'Catalog ';
-} else {
+} 
+else {
     $hideSite = $hideCatalog = $brand_type = null;
 }
 
@@ -379,9 +380,9 @@ if (!empty($_COOKIE['fullscreen'])) {
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user hidden-xs"></span> <span class="visible-xs"><?php _e('Администратор'); ?> <span class="caret"></span></span><span class="caret  hidden-xs"></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li class="dropdown-header"><?php
-                            _e('Вошел как');
-                            echo ' ' . $_SESSION['logPHPSHOP'];
-                            ?></li>
+                                        _e('Вошел как');
+                                        echo ' ' . $_SESSION['logPHPSHOP'];
+                                        ?></li>
                                     <li class="divider"></li>
                                     <li><a href="?path=users&id=<?php echo $_SESSION['idPHPSHOP']; ?>"><?php _e('Профиль'); ?></a></li>
                                     <li><a href="?path=users"><?php _e('Все администраторы'); ?></a></li>
@@ -559,7 +560,7 @@ if (!empty($_COOKIE['fullscreen'])) {
                         $order = $PHPShopBase->getNumRows('orders', "where statusi='0'");
                         ?>
 
-                        <a class="navbar-btn btn btn-sm btn-warning navbar-right hidden-xs hidden-sm hide" href="?path=order&where[statusi]=0"><?php _e('Заказы'); ?> <span class="badge" id="<?php echo $hideCatalog; ?>orders-check"><?php echo $order; ?></span>
+                        <a class="navbar-btn btn btn-sm btn-warning navbar-right hidden-xs hidden-sm hide" href="?path=order&where[statusi]=0"><?php _e('Заказы'); ?> <span class="badge" id="<?php echo $hideCatalog; ?>orders-check"><?php if(empty($hideCatalog)) echo $order; ?></span>
                         </a><audio id="play" src="images/message.mp3"></audio>
 
                         <?php
@@ -734,6 +735,10 @@ if (!empty($_COOKIE['fullscreen'])) {
         </div>
         <!--/ Modal product  -->
 
+        <!-- Modal external forms modules  -->
+        <?php if (!empty($modalExternalModules)) echo $modalExternalModules; ?>
+        <!--/ Modal external forms modules  -->
+
         <!-- Fixed mobile bar -->
         <div class="bar-padding-fix <?php echo $isMobile . $isFrame; ?>"> </div>
         <nav class="navbar navbar-statick navbar-fixed-bottom bar bar-tab visible-xs  <?php echo $isFrame; ?>" role="navigation">
@@ -790,4 +795,4 @@ if (!empty($_COOKIE['fullscreen'])) {
 </html><?php
 // Запись файла локализации [off]
 //writeLangFile();
-        ?>
+?>

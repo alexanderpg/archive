@@ -123,6 +123,7 @@ function actionStart() {
 
 // Синхронизация лицензии
 function actionLoadLic() {
+    global $PHPShopBase;
 
     // Удаление лицензии
     $licFile = PHPShopFile::searchFile('../../license/', 'getLicense', true);
@@ -139,14 +140,18 @@ function actionLoadLic() {
             if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
                 $protocol = 'https://';
             }
-
+            
             // Получение новой лицензии
             $url = $protocol . $License['License']['DomenLocked'];
             $сurl = curl_init();
-            curl_setopt_array($сurl, array(
+            curl_setopt_array($сurl, [
                 CURLOPT_URL => $url,
                 CURLOPT_RETURNTRANSFER => true,
-            ));
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS=>['action' => __FUNCTION__,'s'=>md5($PHPShopBase->SysValue['connect']['host'].$PHPShopBase->SysValue['connect']['dbase'].$PHPShopBase->SysValue['connect']['user_db'].$PHPShopBase->SysValue['connect']['pass_db'])]
+            ]);
             curl_exec($сurl);
             curl_close($сurl);
             return array("success" => $action);
@@ -162,4 +167,3 @@ $PHPShopGUI->getAction();
 
 // Вывод формы при старте
 $PHPShopGUI->setAction(null, 'actionStart', 'none');
-?>

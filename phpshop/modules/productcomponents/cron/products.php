@@ -44,8 +44,11 @@ $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
 $PHPShopOrm->debug = false;
 $productcomponents = $PHPShopOrm->getList(['*'], ['productcomponents_products' => ' != ""'], ['order' => 'datas desc'], ['limit' => 1000]);
 $count = 0;
+$logic = (new PHPShopOrm($PHPShopModules->getParam("base.productcomponents.productcomponents_system")))->select()['logic'];
+
 if (is_array($productcomponents)) {
     foreach ($productcomponents as $products) {
+
         $ids = explode(",", $products['productcomponents_products']);
 
         if (is_array($ids)) {
@@ -62,51 +65,64 @@ if (is_array($productcomponents)) {
             if (is_array($row)) {
                 foreach ($row as $data) {
 
-                    if ($data['baseinputvaluta'] != $products['baseinputvaluta']) {
-                        $data['price'] = $data['price'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
-                        $data['price2'] = $data['price2'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
-                        $data['price3'] = $data['price3'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
-                        $data['price4'] = $data['price4'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
-                        $data['price5'] = $data['price5'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
+                    // Цены
+                    if ($logic == 0 or $logic == 1) {
+
+                        if ($data['baseinputvaluta'] != $products['baseinputvaluta']) {
+                            $data['price'] = $data['price'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
+                            $data['price2'] = $data['price2'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
+                            $data['price3'] = $data['price3'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
+                            $data['price4'] = $data['price4'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
+                            $data['price5'] = $data['price5'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
+                        }
+
+                        $price += $data['price'];
+                        $price2 += $data['price2'];
+                        $price3 += $data['price3'];
+                        $price4 += $data['price4'];
+                        $price5 += $data['price5'];
                     }
 
-                    $price += $data['price'];
-                    $price2 += $data['price2'];
-                    $price3 += $data['price3'];
-                    $price4 += $data['price4'];
-                    $price5 += $data['price5'];
+                    // Склад
+                    if ($logic == 0 or $logic == 2) {
+                        if ($data['items'] < $items)
+                            $items = $data['items'];
 
-                    if ($data['items'] < $items)
-                        $items = $data['items'];
-
-                    if (empty($data['items']) or empty($data['enabled'])) {
-                        $items = 0;
-                        $enabled = 0;
+                        if (empty($data['items']) or empty($data['enabled'])) {
+                            $items = 0;
+                            $enabled = 0;
+                        }
                     }
                 }
             }
 
             // Скидка
-            $price = $price - ($price * $products['productcomponents_discount'] / 100);
-            $price2 = $price2 - ($price2 * $products['productcomponents_discount'] / 100);
-            $price3 = $price3 - ($price3 * $products['productcomponents_discount'] / 100);
-            $price4 = $price4 - ($price4 * $products['productcomponents_discount'] / 100);
-            $price5 = $price5 - ($price5 * $products['productcomponents_discount'] / 100);
+            if ($logic == 0 or $logic == 1) {
+                $price = $price - ($price * $products['productcomponents_discount'] / 100);
+                $price2 = $price2 - ($price2 * $products['productcomponents_discount'] / 100);
+                $price3 = $price3 - ($price3 * $products['productcomponents_discount'] / 100);
+                $price4 = $price4 - ($price4 * $products['productcomponents_discount'] / 100);
+                $price5 = $price5 - ($price5 * $products['productcomponents_discount'] / 100);
 
-            // Наценка
-            $price = $price + ($price * $products['productcomponents_markup'] / 100);
-            $price2 = $price2 + ($price2 * $products['productcomponents_markup'] / 100);
-            $price3 = $price3 + ($price3 * $products['productcomponents_markup'] / 100);
-            $price4 = $price4 + ($price4 * $products['productcomponents_markup'] / 100);
-            $price5 = $price5 + ($price5 * $products['productcomponents_markup'] / 100);
+                // Наценка
+                $price = $price + ($price * $products['productcomponents_markup'] / 100);
+                $price2 = $price2 + ($price2 * $products['productcomponents_markup'] / 100);
+                $price3 = $price3 + ($price3 * $products['productcomponents_markup'] / 100);
+                $price4 = $price4 + ($price4 * $products['productcomponents_markup'] / 100);
+                $price5 = $price5 + ($price5 * $products['productcomponents_markup'] / 100);
 
-            $update['price_new'] = $price;
-            $update['price2_new'] = $price2;
-            $update['price3_new'] = $price3;
-            $update['price4_new'] = $price4;
-            $update['price5_new'] = $price5;
-            $update['enabled_new'] = $enabled;
-            $update['items_new'] = $items;
+                $update['price_new'] = $price;
+                $update['price2_new'] = $price2;
+                $update['price3_new'] = $price3;
+                $update['price4_new'] = $price4;
+                $update['price5_new'] = $price5;
+            }
+
+
+            if ($logic == 0 or $logic == 2) {
+                $update['enabled_new'] = $enabled;
+                $update['items_new'] = $items;
+            }
 
             if ($PHPShopOrm->update($update, ['id' => '=' . (int) $products['id']]))
                 $count++;

@@ -37,6 +37,11 @@ function actionStart() {
     $data = $PHPShopOrm->select();
 
     $Tab1 = $PHPShopGUI->setField('Помощь в подборе товара', $PHPShopGUI->setCheckbox('product_search_new', 1, null, $data['product_search']));
+    
+        $export_value[]=['Цены и склад', 0, $data['logic']];
+    $export_value[]=['Цены', 1, $data['logic']];
+    $export_value[]=['Склад', 2, $data['logic']];
+    $Tab1 .= $PHPShopGUI->setField('Обновление данных', $PHPShopGUI->setSelect('logic_new', $export_value, false,true));
 
     $Info = '<p>Модуль позволяет рассчитывать цену и количество сборного товара на основе его комплектующих.</p>
         <h4>Настройка товара</h4>

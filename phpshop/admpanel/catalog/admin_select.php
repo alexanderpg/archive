@@ -893,13 +893,6 @@ function actionOption() {
     // Режим каталога
     $shop_type = (int) $PHPShopSystem->getParam("shop_type");
     if ($shop_type == 1) {
-        $memory['catalog.option']['price'] = 0;
-        $memory['catalog.option']['price2'] = 0;
-        $memory['catalog.option']['price3'] = 0;
-        $memory['catalog.option']['price4'] = 0;
-        $memory['catalog.option']['price5'] = 0;
-        $memory['catalog.option']['price_n'] = 0;
-        $memory['catalog.option']['price_purch'] = 0;
         $memory['catalog.option']['item'] = 0;
     }
 
@@ -910,13 +903,13 @@ function actionOption() {
             $PHPShopInterface->setCheckbox('name', 1, 'Название', $memory['catalog.option']['name']) .
             $PHPShopInterface->setCheckbox('uid', 1, 'Артикул', $memory['catalog.option']['uid']) .
             $PHPShopInterface->setCheckbox('id', 1, 'ID', $memory['catalog.option']['id']) .
-            $PHPShopInterface->setCheckbox('price', 1, 'Цена', $memory['catalog.option']['price'], $shop_type) .
-            $PHPShopInterface->setCheckbox('price2', 1, 'Цена 2', $memory['catalog.option']['price2'], $shop_type) .
-            $PHPShopInterface->setCheckbox('price3', 1, 'Цена 3', $memory['catalog.option']['price3'], $shop_type) . '<br>' .
-            $PHPShopInterface->setCheckbox('price4', 1, 'Цена 4', $memory['catalog.option']['price4'], $shop_type) .
-            $PHPShopInterface->setCheckbox('price5', 1, 'Цена 5', $memory['catalog.option']['price5'], $shop_type) .
-            $PHPShopInterface->setCheckbox('price_n', 1, 'Старая цена', $memory['catalog.option']['price_n'], $shop_type) .
-            $PHPShopInterface->setCheckbox('price_purch', 1, 'Закупочная цена', $memory['catalog.option']['price_purch'], $shop_type) .
+            $PHPShopInterface->setCheckbox('price', 1, 'Цена', $memory['catalog.option']['price']) .
+            $PHPShopInterface->setCheckbox('price2', 1, 'Цена 2', $memory['catalog.option']['price2']) .
+            $PHPShopInterface->setCheckbox('price3', 1, 'Цена 3', $memory['catalog.option']['price3']) . '<br>' .
+            $PHPShopInterface->setCheckbox('price4', 1, 'Цена 4', $memory['catalog.option']['price4']) .
+            $PHPShopInterface->setCheckbox('price5', 1, 'Цена 5', $memory['catalog.option']['price5']) .
+            $PHPShopInterface->setCheckbox('price_n', 1, 'Старая цена', $memory['catalog.option']['price_n']) .
+            $PHPShopInterface->setCheckbox('price_purch', 1, 'Закупочная цена', $memory['catalog.option']['price_purch']) .
             $PHPShopInterface->setCheckbox('status', 1, 'Статус', $memory['catalog.option']['status']) .
             $PHPShopInterface->setCheckbox('item', 1, 'Кол-во', $memory['catalog.option']['item'], $shop_type) . '<br>' .
             $PHPShopInterface->setCheckbox('menu', 1, 'Экшен меню', $memory['catalog.option']['menu']) .

@@ -30,11 +30,17 @@ function cdekAdminWidgetOnChoose(result)
         async: false,
         success: function (json) {
             if (json['success']) {
+                
+                /*
                 if (Number($.getUrlVar('tab')) !== 4) {
                     window.location.href += '&tab=4';
                 } else {
                     location.reload();
-                }
+                }*/
+                
+               location.reload();
+                
+                
             } else {
                 console.log(json['error'])
             }
@@ -71,6 +77,7 @@ $(document).ready(function () {
     }
 
     $('.cdek-change-address').on('click', function () {
+        
         cdekwidgetStart();
     });
 

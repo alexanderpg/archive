@@ -73,8 +73,10 @@ function treegenerator($array, $i, $curent, $dop_cat_array) {
 function actionStart() {
     global $PHPShopGUI, $PHPShopModules, $PHPShopOrm, $PHPShopSystem, $PHPShopBase, $hideCatalog;
 
-    // получаем ИД будущего создаваемого товара
+    // ID будущего создаваемого товара
     $newId = getLastID();
+    (new PHPShopOrm($GLOBALS['SysValue']['base']['foto']))->delete(array('parent' => '=' . (int) $newId));
+    unset($_SESSION['imgCopyID']);
 
     // Начальные данные
     $data = array();
@@ -305,7 +307,7 @@ function actionStart() {
 
     // Опции вывода
     $Tab_info .= $PHPShopGUI->setField('Опции вывода', $PHPShopGUI->setCheckbox('enabled_new', 1, 'Вывод в каталоге', $data['enabled']) . '<br>' .
-            $PHPShopGUI->setCheckbox('sklad_new', 1, 'Нет в наличии', $data['sklad']). '<br>' .
+            $PHPShopGUI->setCheckbox('sklad_new', 1, 'Нет в наличии', $data['sklad']) . '<br>' .
             $PHPShopGUI->setCheckbox('spec_new', 1, 'Спецпредложение', $data['spec']) . '<br>' .
             $PHPShopGUI->setCheckbox('newtip_new', 1, 'Новинка', $data['newtip']));
     $Tab_info .= $PHPShopGUI->setField('Сортировка', $PHPShopGUI->setInputText('&#8470;', 'num_new', $data['num'], 100));
@@ -345,17 +347,11 @@ function actionStart() {
     $Tab_price .= $PHPShopGUI->setField('Закупочная цена', $PHPShopGUI->setInputText(null, 'price_purch_new', $data['price_purch'], 150, $valuta_def_name));
 
     // Валюта
-    if (empty($hideCatalog))
-        $Tab_price .= $PHPShopGUI->setField('Валюта', $valuta_area);
+    $Tab_price .= $PHPShopGUI->setField('Валюта', $valuta_area);
 
+    $Tab1 .= $PHPShopGUI->setCollapse('Цены', $Tab_price, 'in', true, true, array('type' => 'price'));
+    $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_info_size);
 
-    // BID
-    //$Tab_yml .= $PHPShopGUI->setField('Ставка BID', $PHPShopGUI->setInputText(null, 'yml_bid_array[bid]', @$data['yml_bid_array']['bid'], 100));
-
-    if (empty($hideCatalog)) {
-        $Tab1 .= $PHPShopGUI->setCollapse('Цены', $Tab_price, 'in', true, true, array('type' => 'price'));
-        $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_info_size);
-    }
 
     $Tab_rating = $PHPShopGUI->setCollapse('Рейтинг', $Tab_rating, false);
 
@@ -498,7 +494,7 @@ function imgCopy($j, $n, $main) {
 
 
                 $PHPShopOrm->clean();
-                $PHPShopOrm->insert($insert);
+                $_SESSION['imgCopyID'][] = $PHPShopOrm->insert($insert);
             }
         }
 
@@ -510,11 +506,21 @@ function imgCopy($j, $n, $main) {
  * @return integer
  */
 function getLastID() {
+    global $PHPShopBase;
     $PHPShopOrm = new PHPShopOrm();
-    $PHPShopOrm->sql = 'SHOW TABLE STATUS LIKE "' . $GLOBALS['SysValue']['base']['products'] . '"';
-    $data = $PHPShopOrm->select();
-    if (is_array($data)) {
-        return $data[0]['Auto_increment'];
+
+    if (floatval(mysqli_get_server_info($PHPShopBase->link_db)) > 6) {
+
+        $row = $PHPShopOrm->getOne(array('id'), false, array('order' => 'id desc'));
+        $last = (int) $row['id'];
+        $last++;
+        return $last;
+    } else {
+        $PHPShopOrm->sql = 'SHOW TABLE STATUS LIKE "' . $GLOBALS['SysValue']['base']['products'] . '"';
+        $data = $PHPShopOrm->select();
+        if (is_array($data)) {
+            return $data[0]['Auto_increment'];
+        }
     }
 }
 
@@ -700,6 +706,14 @@ function actionInsert() {
     $PHPShopOrm->updateZeroVars('newtip_new', 'enabled_new', 'spec_new', 'yml_new');
     $PHPShopOrm->debug = false;
     $action = $PHPShopOrm->insert($_POST);
+
+    // Обновлние ID в фотогалереи нового товара
+    if (!empty($_SESSION['imgCopyID']) and is_array($_SESSION['imgCopyID'])) {
+        $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+        foreach ($_SESSION['imgCopyID'] as $imgID) {
+            $PHPShopOrmImg->update(array('parent_new' => $action), array('id' => '=' . (int) $imgID));
+        }
+    }
 
     // Ajax для подтипов
     if (isset($_POST['ajax'])) {

@@ -85,7 +85,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="product-page-price @hideCatalog@" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <div class="product-page-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                     <span class="new-price priceService" itemprop="price" content="@productSchemaPrice@">@productPrice@</span>
                     <span class="new-price rubznak" itemprop="priceCurrency" content="RUB">@productValutaName@</span>
                     <div class="old-price">@productPriceOld@ </div>

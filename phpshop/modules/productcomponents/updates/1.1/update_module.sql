@@ -1,0 +1,1 @@
+ALTER TABLE `phpshop_modules_productcomponents_system` ADD `logic` enum('0','1','2') default '0';

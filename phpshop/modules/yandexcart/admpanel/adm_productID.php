@@ -129,7 +129,8 @@ function addYandexCartOptions($data) {
 
 function YandexcartUpdate() {
     global $PHPShopOrm;
-    $PHPShopOrm->updateZeroVars('yml_2_new', 'yml_3_new');
+    if (!empty($_POST['name']))
+        $PHPShopOrm->updateZeroVars('yml_2_new', 'yml_3_new');
 }
 
 function YandexcartSave() {

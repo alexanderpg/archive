@@ -1,5 +1,7 @@
 <?php
 
+use Shuchkin\SimpleXLSXGen;
+
 $TitlePage = __("Экспорт данных");
 PHPShopObj::loadClass('sort');
 PHPShopObj::loadClass('array');
@@ -432,7 +434,7 @@ function actionSave() {
 
         $ext_file = 'xml';
     }
-     // Webmaster
+    // Webmaster
     else if ($_POST['export_format'] == 'webmaster') {
         PHPShopObj::loadClass("valuta");
         PHPShopObj::loadClass("promotions");
@@ -650,7 +652,7 @@ function actionSave() {
     }
 
     // Кодировка
-    if ($_POST['export_code'] == 'utf' and $_POST['export_format'] == 'csv') {
+    if (($_POST['export_code'] == 'utf' and $_POST['export_format'] == 'csv') or $_POST['export_format'] == 'xlsx') {
 
         if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
             $content = PHPShopString::win_utf8($csv_title, true) . $csv;
@@ -666,6 +668,36 @@ function actionSave() {
     }
 
     $result = PHPShopFile::write($sorce, $content);
+
+    // XLSX
+    if ($_POST['export_format'] == 'xlsx') {
+
+        require_once '../lib/simplexlsx/SimpleXLSXGen.php';
+
+        $handle = fopen($sorce, "r");
+        $i=0;
+        while ($data = fgetcsv($handle, 0, $delim)) {
+            
+            // Заголовок
+            if($i == 0){
+               foreach($data as $val)
+                   $title[]='<b><style bgcolor="#FFFF00">'.$val.'</style></b>';
+               $tmp_content[]=$title;
+               
+            }
+            else 
+                $tmp_content[]=$data;
+            
+            $i++;
+        }
+
+        if (empty($GLOBALS['exchanges_cron']))
+            $sorce = "./csv/export_" . $subpath[2] . "_" . date("d_m_y_His") . ".xlsx";
+        else
+            $sorce = '../../../admpanel/csv/export_" . $subpath[2] . "_" . date("d_m_y_His") . ".xlsx";';
+
+        SimpleXLSXGen::fromArray($tmp_content)->saveAs($sorce);
+    }
 
     if (empty($_REQUEST['file'])) {
         if ($gz) {
@@ -855,6 +887,7 @@ function actionStart() {
 
 
     if (empty($subpath[2])) {
+        $format_value[] = array('Excel (XLSX)', 'xlsx', $export_format);
         $format_value[] = array('Яндекс.Маркет (YML)', 'yml', $export_format);
         $format_value[] = array('Яндекс.Вебмастер (YML)', 'webmaster', $export_format);
         $format_value[] = array('Google (RSS)', 'rss', $export_format);
@@ -867,7 +900,7 @@ function actionStart() {
             $PHPShopGUI->setField('Полный путь для изображений', $PHPShopGUI->setCheckbox('export_imgpath', 1, null, @$memory[$_GET['path']]['export_imgpath']), 1, 'Добавляет к изображениям адрес сайта для формата Excel', $class) .
             $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 200), 1, 'Дополнительные изображения для формата Excel', $class) .
             $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 200)) .
-            $PHPShopGUI->setField('Формат файла', $PHPShopGUI->setSelect('export_format', $format_value, 200), 1, false, $class_xml) .
+            $PHPShopGUI->setField('Формат файла', $PHPShopGUI->setSelect('export_format', $format_value, 200, true), 1, false, $class_xml) .
             $PHPShopGUI->setField('GZIP сжатие', $PHPShopGUI->setCheckbox('export_gzip', 1, null, 0), 1, 'Сокращает размер создаваемого файла') .
             $PHPShopGUI->setField('Лимит строк', $PHPShopGUI->setInputText(null, 'export_limit', $export_limit, 200), 1, 'Запись c 1 по 10000');
 

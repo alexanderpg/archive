@@ -3,21 +3,21 @@
 /**
  * Парсинг YML файла в CSV
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopParser
  */
-
 if (empty($argv[0]))
     exit('Only PHP-CLI command line!');
 
 if (empty($argv[1]))
-    exit('Use the following command options: '.$argv[0].' "https://example.ru/file.xml" outfile');
+    exit('Use the following command options: ' . $argv[0] . ' "https://example.ru/file.xml" outfile');
 
 $file = $argv[1];
 
-if(!empty($argv[2]))
-    $postfix=$argv[2];
-else $postfix=null;
+if (!empty($argv[2]))
+    $postfix = $argv[2];
+else
+    $postfix = null;
 
 if (empty($_SERVER['DOCUMENT_ROOT'])) {
     $_classPath = realpath(dirname(__FILE__)) . "/../../../";
@@ -35,12 +35,23 @@ $start_time = $time[1] + $time[0];
 $xml = simplexml_load_file($file);
 
 // Товары
-$yml_array[0] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
+$yml_array[0] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Путь каталога", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
+
+// Каталоги
+foreach ($xml->shop[0]->categories[0]->category as $item) {
+    $category_array[(string) $item->attributes()->id] = [PHPShopString::utf8_win1251((string) $item[0]), (string) $item->attributes()->parentId];
+}
 
 foreach ($xml->shop[0]->offers[0]->offer as $item) {
 
     $warehouse = 0;
     $parent2 = $parent = '';
+
+    // Путь каталога
+    $category_path = createCategoryPath($category_array, (string) $item->categoryId[0]);
+    $category_path = substr($category_path, 1, strlen($category_path) - 1);
+    $category_path_array = explode("/", $category_path);
+    $category_path = implode("/", array_reverse($category_path_array));
 
     // Склад
     if (isset($item->count[0]))
@@ -136,22 +147,29 @@ foreach ($xml->shop[0]->offers[0]->offer as $item) {
     }
 
 
-    $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
+    $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
+}
+
+// Построение пути каталогов
+function createCategoryPath($category_array, $id, $path = null) {
+
+    if (isset($category_array[$id])) {
+        $path .= '/' . $category_array[$id][0];
+
+        if (isset($category_array[$category_array[$id][1]])) {
+            $path .= '/' . $category_array[$category_array[$id][1]][0];
+
+            $path .= createCategoryPath($category_array, $category_array[$category_array[$id][1]][0], $path);
+            return $path;
+        }
+
+        return $path;
+    }
 }
 
 // Сохранение
-$csv_file_prod = $_classPath.'admpanel/csv/'.$postfix.'product.yml.csv';
+$csv_file_prod = $_classPath . 'admpanel/csv/' . $postfix . 'product.yml.csv';
 PHPShopFile::writeCsv($csv_file_prod, $yml_array);
-unset($yml_array);
-
-$yml_array[0] = ['Id', 'Наименование', 'Родитель'];
-foreach ($xml->shop[0]->categories[0]->category as $item) {
-    $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0]), (string) $item->attributes()->parentId];
-}
-
-// Сохранение
-$csv_file_cat = $_classPath.'admpanel/csv/'.$postfix.'category.yml.csv';
-PHPShopFile::writeCsv($csv_file_cat, $yml_array);
 
 // Расход памяти
 if (function_exists('memory_get_usage')) {
@@ -165,4 +183,4 @@ $time = explode(' ', microtime());
 $seconds = ($time[1] + $time[0] - $start_time);
 $seconds = substr($seconds, 0, 6);
 
-echo "Done ~ ".$seconds." sec, ".$_MEM.", files: /phpshop/admpanel/csv/".$postfix."product.yml.csv, /phpshop/admpanel/csv/".$postfix."category.yml.csv";
+echo "Done ~ " . $seconds . " sec, " . $_MEM . ", files: /phpshop/admpanel/csv/" . $postfix . "product.yml.csv";

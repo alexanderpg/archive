@@ -121,7 +121,7 @@ class BoxberryWidget {
             $weight = $order['Cart']['weight'];
         
         if($this->option['paid'] == 1)
-            $data['paid']==1;
+            $data['paid']=1;
 
         $this->parameters = array(
             'order_id' => $data['uid'],

@@ -252,6 +252,12 @@ class PHPShopOneclick extends PHPShopCore {
         $insert['statusi_new'] = $this->system['status'];
         $insert['status_new'] = serialize(array("maneger" => __('Áûñòğûé çàêàç')));
         $insert['sum_new'] = $order['Cart']['sum'];
+        
+        // Ñîçäà¸ì íîâîãî ïîëüçîâàòåëÿ, èëè àâòîğèçóåì ñòàğîãî
+        PHPShopObj::importCore('users');
+        $PHPShopUsers = new PHPShopUsers();
+        $PHPShopUsers->stop_redirect = true;
+        $insert['user_new'] = $PHPShopUsers->add_user_from_order($mail, $name, $phone);
 
         // Çàïèñü â áàçó
         $orderId = $PHPShopOrm->insert($insert);

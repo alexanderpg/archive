@@ -269,8 +269,14 @@ function actionStart() {
     // Тип оплаты
     $payment_dropdown = $PHPShopGUI->setSelect('person[order_metod]', $payment_value, '100%');
 
+    // Ссылка на оплату
+    if ($PaymentArray[$order['Person']['order_metod']]['path'] == 'modules')
+        $Tab_pay = $PHPShopGUI->loadLib('tab_pay', $data);
+    else
+        $Tab_pay = null;
+
     // Информация об оплате
-    $sidebarright[] = array('title' => 'Информация об оплате', 'content' => $payment_dropdown);
+    $sidebarright[] = array('title' => 'Информация об оплате', 'content' => $payment_dropdown . $Tab_pay);
 
     // Печатные бланки
     $Tab_print = $PHPShopGUI->loadLib('tab_print', $data);
@@ -326,7 +332,6 @@ function actionStart() {
     if (is_array($PHPShopCompanyArray))
         $sidebarright[] = array('title' => 'Юридическое лицо', 'content' => $PHPShopGUI->setSelect('company_new', $company_value, '100%'));
 
-
     $sidebarright[] = array('title' => 'Печатные бланки', 'content' => $Tab_print, 'idelement' => 'letterheads');
 
     // Корзина
@@ -375,8 +380,9 @@ function actionStart() {
 
     // Вывод формы закладки
     if (!empty($data['user']))
-    $PHPShopGUI->setTab(array("Корзина", $PHPShopGUI->setCollapse(null, $Tab2)), array("Данные покупателя", $PHPShopGUI->setCollapse(null, $Tab3)), array("Заказы пользователя", $PHPShopGUI->setCollapse(null, $Tab4)), array("Документы", $PHPShopGUI->setCollapse(null, $Tab5)));
-    else $PHPShopGUI->setTab(array("Корзина", $PHPShopGUI->setCollapse(null, $Tab2)), array("Данные покупателя", $PHPShopGUI->setCollapse(null, $Tab3)));
+        $PHPShopGUI->setTab(array("Корзина", $PHPShopGUI->setCollapse(null, $Tab2)), array("Данные покупателя", $PHPShopGUI->setCollapse(null, $Tab3)), array("Заказы пользователя", $PHPShopGUI->setCollapse(null, $Tab4)), array("Документы", $PHPShopGUI->setCollapse(null, $Tab5)));
+    else
+        $PHPShopGUI->setTab(array("Корзина", $PHPShopGUI->setCollapse(null, $Tab2)), array("Данные покупателя", $PHPShopGUI->setCollapse(null, $Tab3)));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .

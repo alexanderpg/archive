@@ -38,7 +38,5 @@
     </tbody>
 </table>
 
-<script src="../modules/cdekwidget/js/cdekwidget.js"></script>
-@cdek_popup@
 <input type="hidden" name="cdek_order_id" value="@cdek_order_id@">
 <input type="hidden" id="dop_info" name="fakefield">

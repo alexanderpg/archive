@@ -145,7 +145,7 @@ function sort_table($obj, $row) {
                                 foreach ($arrayVendorValue[$idCategory]['id'] as $valueId) {
 
                                     if (!empty($arrayVendorValue[$idCategory]['seo_name'][$valueId]))
-                                        $arr[] = PHPShopText::a('/brand/' . $arrayVendorValue[$idCategory]['seo_name'][$valueId] . '.html', PHPShopText::span($arrayVendorValue[$idCategory]['name'][$valueId],'itemprop="value"'));
+                                        $arr[] = PHPShopText::a('/brand/' . $arrayVendorValue[$idCategory]['seo_name'][$valueId] . '.html', PHPShopText::span($arrayVendorValue[$idCategory]['name'][$valueId],'itemprop="value"'),$arrayVendorValue[$idCategory]['name'][$valueId]);
                                     else
                                         $arr[] = PHPShopText::a('/selection/?v[' . $idCategory . ']=' . $valueId, PHPShopText::span($arrayVendorValue[$idCategory]['name'][$valueId],'itemprop="value"'));
                                 }
@@ -153,7 +153,7 @@ function sort_table($obj, $row) {
                             } else if (isset($arrayVendorValue[$idCategory]['page'])) {
                                 $arr = array();
                                 foreach ($arrayVendorValue[$idCategory]['id'] as $valueId) {
-                                    $arr[] = PHPShopText::a('/page/' . PHPShopText::span($arrayVendorValue[$idCategory]['page'][$valueId],'itemprop="value"') . '.html', $arrayVendorValue[$idCategory]['name'][$valueId]);
+                                    $arr[] = PHPShopText::a('/page/' . $arrayVendorValue[$idCategory]['page'][$valueId] . '.html', $arrayVendorValue[$idCategory]['name'][$valueId]);
                                 }
                                 $sortValueName = implode(', ', $arr);
                             } else {

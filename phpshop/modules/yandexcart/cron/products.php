@@ -22,6 +22,7 @@ PHPShopObj::loadClass("parser");
 PHPShopObj::loadClass("text");
 PHPShopObj::loadClass("lang");
 PHPShopObj::loadClass("security");
+PHPShopObj::loadClass("valuta");
 
 $PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, true);
 $PHPShopSystem = new PHPShopSystem();

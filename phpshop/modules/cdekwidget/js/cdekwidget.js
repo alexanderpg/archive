@@ -30,17 +30,27 @@ function cdekwidgetWidget() {
 // Курьерская доставка выбор точного адреса доставки. Корзина
 function cdekwidgetonChooseAddress(result) {
     var info = locale.cdek.express_delivery + ': ' + result.address;
+    
+    $('input[name="cdek_type"]').val('courier');
+    $('input[name="cdekInfo"]').val(info);
+    $('#deliveryInfo').html(locale.cdek.express_delivery + ': ' + result.address);
+    
+    cdekwidgetOnChoose(result);
 
     $('input[name="cdek_type"]').val('courier');
     $('input[name="cdekInfo"]').val(info);
     $('#deliveryInfo').html(locale.cdek.express_delivery + ': ' + result.address);
 
-    cdekwidgetOnChoose(result);
 }
 
 // Доставка до ПВЗ. Корзина
 function cdekWidgetOnChoosePvz(result) {
     var info = locale.cdek.pickup_code + ': ' + result.id + ', ' + locale.cdek.city + ' ' + result.cityName + ', ' + locale.cdek.pickup_address + ' ' + result.PVZ.Address + ', ' + locale.cdek.pickup_phone + ' ' + result.PVZ.Phone;
+    
+    $('input[name="cdekInfo"]').val(info);
+    $('input[name="cdek_pvz_id"]').val(result.id);
+    $('input[name="cdek_type"]').val('pvz');
+    $('#deliveryInfo').html(locale.cdek.pickup + ': ' + result.PVZ.Address);
     
     cdekwidgetOnChoose(result);
 

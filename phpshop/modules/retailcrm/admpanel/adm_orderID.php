@@ -17,7 +17,7 @@ function addRetailTab($data) {
 
     if ($data['retail_status'] == 1) {
 
-        $Tab1 = $PHPShopGUI->setCheckbox("retail_status_new", 2, __("Отправить заказ в RetailCRM"), 0);
+        $Tab1 = $PHPShopGUI->setCheckbox("retail_status_new", 2, "Отправить заказ в RetailCRM", 0);
         $PHPShopGUI->addTab(array("RetailCRM", $Tab1, false, 101));
     }
 }

@@ -625,7 +625,6 @@ function csv_update($data) {
 
                     $row['title'] = PHPShopString::utf8_win1251($text);
                     $row['title_enabled'] = 1;
-                    
                 }
             }
 
@@ -652,7 +651,7 @@ function csv_update($data) {
                     $text = preg_replace("/\r|\n/", ' ', $text);
 
                     $row['descrip'] = PHPShopString::utf8_win1251($text);
-                    $row['descrip_enabled'] =  1;
+                    $row['descrip_enabled'] = 1;
                 }
             }
 
@@ -818,11 +817,11 @@ function csv_update($data) {
                 foreach ($data_img as $k => $img) {
                     if (!empty($img)) {
 
+                        $img = trim($img);
+
                         // Полный путь к изображениям
                         if (!empty($_POST['export_imgpath']))
                             $img = '/UserFiles/Image/' . $img;
-
-
 
                         // Проверка изображния
                         $checkImage = checkImage($img, $row['id'], $row['parent_enabled']);
@@ -1358,7 +1357,7 @@ function actionSave() {
 
                         // Бренд
                         if (isset($item->vendor[0]))
-                            $sort .= 'Бренд/' . (string) $item->vendor[0];
+                            $sort .= 'Бренд/' . PHPShopString::utf8_win1251((string) $item->vendor[0]);
 
                         // Штрихкод
                         if (!empty((string) $item->barcode[0]))
@@ -1368,12 +1367,12 @@ function actionSave() {
 
                         // Артикул
                         if (!empty((string) $item->vendorCode[0])) {
-                            $uid = (string) $item->vendorCode[0];
-                            
+                            $uid = PHPShopString::utf8_win1251((string) $item->vendorCode[0]);
+
                             // Внешний код
                             $external_code = (string) $item->attributes()->id;
                         } else {
-                            $uid = (string) $item->attributes()->id;
+                            $uid = PHPShopString::utf8_win1251((string) $item->attributes()->id);
                             $external_code = null;
                         }
 
@@ -1821,9 +1820,13 @@ function actionStart() {
             }
 
             if (!in_array($key, $key_stop)) {
-                $select_value[] = array(ucfirst($name), __(ucfirst($name)), false, $help);
 
-                // Ключ обнвления
+                if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+                    $select_value[] = array(ucfirst($name), $key, false, $help);
+                else
+                    $select_value[] = array(ucfirst($name), __(ucfirst($name)), false, $help);
+
+                // Ключ обновления
                 if ($key != 'id' and $key != 'uid' and $key != 'vendor' and $key != 'vendor_array') {
                     $key_value[] = array(ucfirst($name), $key, $export_key);
                 }
@@ -1893,7 +1896,7 @@ function actionStart() {
     $code_value[] = array('ANSI', 'ansi', $export_code);
     $code_value[] = array('UTF-8', 'utf', $export_code);
 
-    $code_extension[] = array(__('Автоматический'), 'auto', $export_extension);
+    $code_extension[] = array('Автоматический', 'auto', $export_extension);
     $code_extension[] = array('Excel (CSV)', 'csv', $export_extension);
     $code_extension[] = array('Яндекс (YML)', 'yml', $export_extension);
     $code_extension[] = array('Google (RSS)', 'rss', $export_extension);
@@ -1925,22 +1928,35 @@ function actionStart() {
             $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setSelect('export_imgload', $imgload_value, 250), 1, 'Загрузить изображения или использовать ссылки', $class) .
             $PHPShopGUI->setField('Действие для изображений', $PHPShopGUI->setSelect('export_imgfunc', $imgfunc_value, 250), 1, 'Заменить на новые или дополнить изображения', $class) .
             $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения для формата Excel', $class) .
-            $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 150)) .
-            $PHPShopGUI->setField('Тип файла', $PHPShopGUI->setSelect('export_extension', $code_extension, 150), 1, null, $yml) .
+            $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 150, true)) .
+            $PHPShopGUI->setField('Тип файла', $PHPShopGUI->setSelect('export_extension', $code_extension, 150, true), 1, null, $yml) .
             $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setSelect('export_key', $key_value, 150, true, false, true), 1, 'Изменение ключа обновления может привести к порче данных', $class) .
             $PHPShopGUI->setField('Проверка уникальности', $PHPShopGUI->setCheckbox('export_uniq', 1, null, @$memory[$_GET['path']]['export_uniq']), 1, 'Исключает дублирование данных при создании', $class);
 
     // Память
     if (is_array($_POST['select_action'])) {
+
         foreach ($_POST['select_action'] as $x => $p)
             if (is_array($select_value)) {
                 $select_value_pre = [];
                 foreach ($select_value as $k => $v) {
 
-                    if ($v[0] == $p or ( strstr($v[0], '@') and strstr($p, '@')))
-                        $v[2] = 'selected';
-                    else
-                        $v[2] = null;
+                    if ($GLOBALS['PHPShopBase']->codBase == 'utf-8') {
+                       
+                        if ($v[1] == $p or ( strstr($v[0], '@') and strstr($p, '@')))
+                            $v[2] = 'selected';
+                        else
+                            $v[2] = null;
+                        
+                        
+                    } else {
+                        if ($v[0] == $p or ( strstr($v[0], '@') and strstr($p, '@')))
+                            $v[2] = 'selected';
+                        else
+                            $v[2] = null;
+                    }
+
+
 
                     $select_value_pre[] = [$v[0], $v[1], $v[2], $v[3]];
                 }
