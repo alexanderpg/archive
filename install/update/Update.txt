@@ -1,0 +1,82 @@
+
+Update History Log
+------------------------------------------------------
+версия - PHPShop Enterprise 2.1.86
+дата - 10.09.2007                         
+------------------------------------------------------
+Выполните инструкции для вашей версии.
+Проверить номер версии можно в файле /phpshop/inc/config.ini
+или нажав клавишу F9 в пользовательской части.
+
+Если Вы не нашли своей версии, просьба сообщить в службу
+технической поддержки:
+E-mail: support@phpshop.ru
+ICQ: 297950623
+------------------------------------------------------
+
+
+Версия  2.1.79.xx - текущая
+******************************************************
+1. Заменить все файлы, кроме:
+   1. /UserFiles
+   2. /phpshop/inc/config.ini 
+   В нем скопировать доступ к базе, остальное все заменить.
+3. Добавить в таблицу phpshop_products в конец поле yml_bid_array tinyblob
+   4. Добавить в таблицу phpshop_products в конец поле parent_enabled enum('0','1')
+   5. Добавить в таблицу phpshop_products в конец поле parent varchar(255)
+   6. Добавить в таблицу phpshop_categories в конец поля:
+      `title` varchar(255) NOT NULL default '',
+      `title_enabled` enum('0','1','2') NOT NULL default '0',
+      `title_shablon` varchar(255) NOT NULL default '',
+      `descrip` varchar(255) NOT NULL default '',
+      `descrip_enabled` enum('0','1','2') NOT NULL default '0',
+      `descrip_shablon` varchar(255) NOT NULL default '',
+      `keywords` varchar(255) NOT NULL default '',
+      `keywords_enabled` enum('0','1','2') NOT NULL default '0',
+      `keywords_shablon` varchar(255) NOT NULL default ''
+      `skin` varchar(64) NOT NULL default '',
+      `skin_enabled` enum('0','1') NOT NULL default '0',
+      `order_by` enum('1','2','3') NOT NULL default '3',
+      `order_to` enum('1','2') NOT NULL default '1',
+   7. Добавить в таблицу phpshop_system в конец поля:
+      `title_shablon3` varchar(255) NOT NULL default '',
+      `descrip_shablon3` varchar(255) NOT NULL default '',
+      `keywords_shablon3` varchar(255) NOT NULL default ''
+   8. Добавить в таблицу phpshop_page в конец поля:
+       `title` varchar(255) NOT NULL default '',
+       `enabled` enum('0', '1') NOT NULL default '0',
+       `secure` enum('0', '1') NOT NULL default '0'
+   9. Добавить в таблицу phpshop_delivery в конец поля:
+       `price_null` float NOT NULL default '0',
+       `price_null_enabled` enum('0', '1') NOT NULL default '0'
+   10. Создать таблицу phpshop_order_status с полями:
+       `id` int(11) NOT NULL auto_increment,
+       `name` varchar(64) NOT NULL default '',
+       `color` varchar(64) NOT NULL default '',
+       `sklad_action` enum('0','1') NOT NULL default '0',
+        PRIMARY KEY  (`id`);
+   11. Добавить в таблицу phpshop_orders в конец поле:
+        `statusi` tinyint(11) NOT NULL default '0'
+   12. Добавить в таблицу phpshop_categoryes в конец поля:
+        `skin` VARCHAR( 64 ) NOT NULL,
+	`skin_enabled` enum('0','1') NOT NULL default '0';
+   13. Создать таблицу `phpshop_payment` 
+       `uid` int(11) NOT NULL default '0',
+       `name` varchar(255) NOT NULL default '',
+       `sum` float NOT NULL default '0',
+       `datas` int(11) NOT NULL default '0',
+      PRIMARY KEY  (`uid`),
+      KEY `order` (`uid`)
+14. Создать таблицу `phpshop_notice`
+  `id` int(11) NOT NULL auto_increment,
+  `user_id` int(11) NOT NULL default '0',
+  `product_id` int(11) NOT NULL default '0',
+  `datas_start` varchar(64) NOT NULL default '',
+  `datas` varchar(64) NOT NULL default '',
+  `enabled` enum('0','1') NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  KEY `product_id` (`product_id`),
+  KEY `user_id` (`user_id`) ;
+
+15.Обновить `phpshop_page_categories`
+   ALTER TABLE `phpshop_page_categories` CHANGE `parent_to` `parent_to` INT( 11 ) DEFAULT '0' NOT NULL;

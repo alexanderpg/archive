@@ -8,18 +8,12 @@ require("../enter_to_admin.php");
 require_once "../../lib/JsHttpRequest/JsHttpRequest.php";
 $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
-
-// Настройки
-$System=GetSystems();
-
-
 function ReturnSumma($sum,$disc){
 $kurs=GetKursOrder();
 $sum*=$kurs;
 $sum=$sum-($sum*$disc/100);
 return number_format($sum,"2",".","");
 }
-
 
 
 // Разбор корзины
@@ -44,31 +38,16 @@ $n=1;
 $n++;
 @$num+=$val['num'];
 @$sum+=$val['price']*$val['num'];
-//Определение и суммирование веса
- $goodid=$val['id'];
- $goodnum=$val['num'];
- $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
- $wresult=mysql_query($wsql);
- $wrow=mysql_fetch_array($wresult);
- $cweight=$wrow['weight']*$goodnum;
- if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
- $weight+=$cweight;
-
-
 }
-
-//Обнуляем вес товаров, если хотя бы один товар был без веса
-if ($zeroweight) {$weight=0;}
-
-
-$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum,$weight);
+$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum);
  $disCart.="
 <tr class=row3 onclick=\"miniWin('adm_order_deliveryID.php?deliveryId=".GetDelivery($PERSON['dostavka_metod'],"id")."&orderId=".$_REQUEST['uid']."',400,270,event)\" onmouseover=\"show_on('r".$n."')\" id=\"r".$n."\" onmouseout=\"show_out('r".$n."')\">
   <td style=\"padding:3\">$n</td>
   <td style=\"padding:3\"></td>
   <td style=\"padding:3\">Доставка - ".GetDelivery($PERSON['dostavka_metod'],"city")."</td>
   <td style=\"padding:3\">1</td>
-   <td style=\"padding:3\">".GetDeliveryPrice($PERSON['dostavka_metod'],$sum,$weight)."</td>
+   <td style=\"padding:3\">".GetDeliveryPrice($PERSON['dostavka_metod'],$sum)
+."</td>
   
 </tr>
 ";
@@ -98,30 +77,20 @@ return $disCart;
 }
 
 
-
-function GetProductInfo($productID,$cart){
-global $table_name2,$System;
-$sql="select * from $table_name2 where id=$productID";
+function GetProductInfo($productID){
+global $table_name2;
+$sql="select * from $table_name2 where id='$productID'";
 $result=mysql_query($sql);
 $row = mysql_fetch_array($result);
 $num=mysql_num_rows($result);
-$price=$row['price'];
-$price=($price+(($price*$System['percent'])/100));
-
-// Расчет кол-ва
-if($cart[$productID]['num']>0)
-$num++;
-  else $num=1;
-
-
 $cart=array(
 "id"=>$productID,
-"name"=>CleanStr($row['name']),
-"price"=>$price,
+"name"=>$row['name'],
+"price"=>$row['price'],
 "priceBox"=>$row['priceBox'],
 "numBox"=>$row['numBox'],
 "uid"=>$row['uid'],
-"num"=>$num);
+"num"=>"1");
 if($num!=0) return $cart;
   else return "False";
 }
@@ -170,13 +139,10 @@ switch($do){
       $result=mysql_query($sql);
 	  $row = mysql_fetch_array($result);
       $order=unserialize($row['orders']);
-	  $GetProductInfo=GetProductInfo($_REQUEST['xid'],$order['Cart']['cart']);
+	  $GetProductInfo=GetProductInfo($_REQUEST['xid']);
 	  if($GetProductInfo!="False"){
 	  $order['Cart']['cart'][$_REQUEST['xid']]=$GetProductInfo;
-	  $order['Cart']['num']++;
 	  $order['Cart']['sum']=UpdateSummaOrder($order['Cart']['cart']);
-	  
-
 	  $sql="UPDATE $table_name1
       SET
       orders='".serialize($order)."'

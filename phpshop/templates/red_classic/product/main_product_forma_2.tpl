@@ -53,16 +53,13 @@
 	<!-- Блок уведомить -->
 									</TD>
 								</tr>
-								<tr>
-								   <TD >
-								
-<img   src="images/shop/application_view_tile.gif" alt="Сравнить" border="0">
-    
+								<TR>
+									<TD>
+									<img src="images/shop/information.gif" alt="" border="0">
 									</TD>
-									<TD valign="middle">
-									<A href="javascript:AddToCompare(@productUid@)" class=b  title="Сравнить @productName@">Сравнить</A>
-                                    </TD>
-								</tr>
+									<TD valign="middle"><A href="/shop/UID_@productUid@.html" class="b"  title="@productName@"><u>@productInfo@</u></A>
+									</TD>
+								</TR>
 							</TABLE>
 						</TD>
 					</TR>

@@ -1,8 +1,8 @@
 <TABLE  border="0" cellpadding="0" cellspacing="0" class="style1">
 		
-			<TD colspan="2">
+			<TD>
 				<h1>@productName@</h1>
-		
+				</DIV>
 			</TD>
 		</TR>
 		<TR>
@@ -11,13 +11,12 @@
 			@productFotoList@
 			</div><br><br>
 @ComStart@
-@optionsDisp@
 <TABLE>
 								<TR>
 								<td>
 								<TABLE  BORDER=0 CELLPADDING=0 CELLSPACING=0>
 		<TR>
-		<TD  height="21" width="150" style="background:url(images/price_bg.gif) top left no-repeat;  padding-top:3px;padding-left:13px;">
+		<TD align="center" class="center">
 		<strong class=price > @productPrice@ @productValutaName@</strong><br>
 		<font class=black>@productPriceRub@</font><br>
 		<b>@productSklad@</b>
@@ -47,12 +46,12 @@
 									
 									<!-- Блок корзина -->
 	@ComStartCart@
-	<A href="javascript:AddToCart(@productId@)" class="b" title="@productSale@">@productSale@</A>
+	<A href="javascript:AddToCart(@productId@)" title="@productSale@">@productSale@</A>
 	@ComEndCart@
 	<!-- Блок корзина -->
 	<!-- Блок уведомить -->
 	@ComStartNotice@
-	<A href="/users/notice.html?productId=@productId@" class="b" title="@productNotice@">@productNotice@</A>
+	<A href="/users/notice.html?productId=@productId@" title="@productNotice@">@productNotice@</A>
 	@ComEndNotice@
 	<!-- Блок уведомить -->
 
@@ -81,16 +80,7 @@
 									<A href="/pricemail/UID_@productId@.html" class=b >Пожаловаться на цену</A>
 									</TD>
 								</tr>
-								<tr>
-								   <TD >
 								
-<img src="images/shop/application_view_tile.gif" alt="Сравнить" border="0">
-    
-									</TD>
-									<TD valign="middle">
-									<A href="javascript:AddToCompare(@productUid@)" class=b  title="Сравнить @productName@">Сравнить</A>
-                                    </TD>
-								</tr>
 							</TABLE>
 								
 								
@@ -100,50 +90,20 @@
 				@ComEnd@
 				@productParentList@
 			</TD>
+			<td valign="top">
+			@vendorDisp@
+			</td>
+		</TR>
+		<TR>
+			<TD style="TEXT-ALIGN: justify" colspan="2">
+			<br>
+			<p>@productDes@</p>
+			<p><br></p>
+			</TD>
 		</TR>
 	</TABLE>
-	<div class="tab-pane" id="tabPane1" style="margin-top: 20px">
-<script type="text/javascript">
-tp1 = new WebFXTabPane( document.getElementById( "tabPane1" ) );
-</script>
-<div class="tab-page" id="tabPage1">
-		<h2 class="tab">Описание</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage1" ) );</script>
-		
-		@productDes@
-		
-	</div>
- <div class="tab-page" id="tabPage6">
-		<h2 class="tab">Файлы</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage6" ) );</script>
-		
-		@productFiles@
-		
-	</div>
-	<div class="tab-page" id="tabPage2">
-		<h2 class="tab">Характеристики</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage2" ) );</script>
-		
-		@vendorDisp@
-		
-	</div>
-		<div class="tab-page" id="tabPage5">
-		<h2 class="tab">Оценки товара</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage5" ) );</script>
-		
-		@ratingfull@
-		
-	</div>
-	<div class="tab-page" id="tabPage3">
-		<h2 class="tab">Отзывы</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage3" ) );</script>
-		
-	
+	<div id="bg_catalog_1" style="padding-top:30px;">Комментарии пользователей</div>
+<div id="bglist"></div>
 <TEXTAREA id="message" style="WIDTH: 340px" rows="5" onkeyup="return countSymb();"></TEXTAREA>
 <DIV style="FONT-SIZE: 10px; MARGIN-BOTTOM: 5px">Максимальное количество символов: <SPAN id="count" style="WIDTH: 30px; COLOR: green; TEXT-ALIGN: center">0</SPAN>/&nbsp;&nbsp;&nbsp;500 </DIV>
 <DIV style="padding: 5px">
@@ -178,20 +138,9 @@ tp1 = new WebFXTabPane( document.getElementById( "tabPane1" ) );
 <input type="button"  value="Удалить" onclick="commentList('@productUid@','dell','1')" >
 <input type="hidden" id="commentEditId">
 </div>
-<div id="commentList" style="padding-top: 10px">
+	<div id="commentList" style="padding-top: 10px">
 </div>
+
 <script>
 setTimeout("commentList('@productUid@','list')",500);
 </script>
-		
-	</div>
-	<div class="tab-page" id="tabPage4">
-		<h2 class="tab">Статьи</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage4" ) );</script>
-		
-		@pagetemaDisp@
-		
-	</div>
-	
-</div>

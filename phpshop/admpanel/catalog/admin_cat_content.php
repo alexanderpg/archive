@@ -16,15 +16,11 @@ require("../language/".$Lang."/language.php");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?=$SysValue['Lang']['System']['charset']?>">
 <LINK href="../css/texts.css" type=text/css rel=stylesheet>
-<LINK href="../css/contextmenu.css" type=text/css rel=stylesheet>
-<script language="JavaScript" src="../java/contextmenu.js" type="text/javascript"></script>
-<script type="text/javascript" language="JavaScript1.2" src="../language/<? 
-echo $Lang;?>/language_windows.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../java/sorttable.js"></script>
-<SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 </head>
-<body style="background: threedface; color: windowtext;" topmargin="0" rightmargin="3" leftmargin="3"  onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)" >
+<body style="background: threedface; color: windowtext;" topmargin="0" rightmargin="3" leftmargin="3"  onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)">
 <table id="loader">
 <tr>
 	<td valign="middle" align="center">

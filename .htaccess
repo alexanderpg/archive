@@ -7,13 +7,11 @@
 #php_value memory_limit 100M
 #php_flag memory_limit 100M
 #php_flag session.use_trans_sid off
-#SecFilterEngine Off
 
 DirectoryIndex index.php
 Options -Indexes 
 
 AddDefaultCharset windows-1251
-AddType text/csv csv
 RewriteEngine On
 #Options FollowSymLinks
 #Options SymLinksIfOwnerMatch

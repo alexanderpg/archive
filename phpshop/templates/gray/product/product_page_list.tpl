@@ -7,9 +7,9 @@
   <div ><a href="/">Главная</a> / <A href="/shop/CID_@catalogId@.html" title="@catalogCat@">@catalogCat@</A> /  @catalogCategory@</div>
 </div>
 
-<p>
+<div>
 @DispCatNav@
-</p>
+</div>
 
 <div>
 @catalogContent@

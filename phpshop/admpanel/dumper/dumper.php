@@ -20,9 +20,6 @@
 | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,USA. |
 \***************************************************************************/
 
-
-
-
 // Путь и URL к файлам бекапа
 define('PATHDAMP', 'backup/');
 define('URL',  'backup/');
@@ -48,7 +45,8 @@ define('GS', 0);
 
 // Дальше ничего редактировать не нужно
 
-
+$is_safe_mode = ini_get('safe_mode') == '1' ? 1 : 0;
+if (!$is_safe_mode) set_time_limit(TIME_LIMIT);
 
 header("Expires: Tue, 1 Jul 2003 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -68,19 +66,11 @@ require("../connect.php");
 mysql_select_db("$dbase")or @die("Невозможно подсоединиться к базе");
 require("../enter_to_admin.php");
 
-
-
 // Языки
 $GetSystems=GetSystems();
 $option=unserialize($GetSystems['admoption']);
 $Lang=$option['lang'];
 require("../language/".$Lang."/language.php");
-
-
-if($SysValue['my']['time_limit_enabled']=="true"){
-$is_safe_mode = ini_get('safe_mode') == '1' ? 1 : 0;
-if (!$is_safe_mode) set_time_limit(TIME_LIMIT);
-}
 
 define('Lang', $Lang);
 
@@ -139,7 +129,6 @@ class dumper {
 	}
 
 	function backup() {
-		global $_REQUEST;
 		if (!isset($_POST)) {$this->main();}
 		set_error_handler("SXD_errorHandler");
 		$buttons = "<A ID=save HREF='' STYLE='display: none;' title=\"_blank\">Скачать файл</A> &nbsp; <INPUT ID=back TYPE=button  VALUE='Вернуться' DISABLED onClick=\"history.back();\" class=but>
@@ -225,11 +214,7 @@ class dumper {
 		}
 		$show = 10 + $tabinfo[0] / 50;
 		$info = $tabinfo[0] . $info;
-		
-		if($_REQUEST['upload_action'] == "upload_dump")
-			$name = "upload_dump";
-		else 
-			$name = $db . '_' . date("Y-m-d_H-i_").substr(uniqid(md5(date("U"))),0,8);
+		$name = $db . '_' . date("Y-m-d_H-i_").substr(uniqid(md5(date("U"))),0,8);
         $fp = $this->fn_open($name, "w");
 		echo tpl_l("Создание файла с резервной копией БД:<BR>\\n  -  {$this->filename}");
 		$this->fn_write($fp, "#SKD101|{$db}|{$tabs}|" . date("Y.m.d H:i:s") ."|{$info}\n\n");
@@ -456,7 +441,6 @@ class dumper {
 		if (GS) echo "<SCRIPT>document.getElementById('GS').src = 'http://sypex.net/gs.php?r={$this->tabs},{$this->records},{$this->size},{$this->comp},107';</SCRIPT>";
 
 		$this->fn_close($fp);
-		$_SESSION['base_update'] = "susses";
 	}
 
 	function main(){
@@ -747,109 +731,10 @@ HTML;
 
 function tpl_main(){
 global $SK,$SysValue;
-
-if(@$_REQUEST['upload_action'] == "upload_dump")
-return <<<HTML
-<FIELDSET onClick="document.skb.action[0].checked = 1;">
-<LEGEND>
-<INPUT TYPE=radio NAME=action VALUE=backup checked=checked>
-<INPUT TYPE=hidden NAME=upload_action VALUE=upload_dump>
-<span name=txtLang id=txtLang>Создание резервной копии БД</span>&nbsp;</LEGEND>
-<TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
-<TR>
-<TD WIDTH=35%><span name=txtLang id=txtLang>БД</span>:</TD>
-<TD WIDTH=65%><SELECT NAME=db_backup>
-{$SK->vars['db_backup']}
-</SELECT></TD>
-<input type=hidden NAME=comp_method value=1>	
-<input type=hidden NAME=comp_level value=7>	
-</TR>
-</TABLE>
-</FIELDSET>
-</SPAN>
-<div style="padding-top:30"><hr></div>
-<SCRIPT>
-document.skb.action[{$SK->SET['last_action']}].checked = 1;
-</SCRIPT>
-
-HTML;
-
-
-elseif(@$_REQUEST['upload_action'] == "upload_backup")
-
-return <<<HTML
-<FIELDSET onClick="document.skb.action[1].checked = 1;">
-<LEGEND>
-<INPUT TYPE=radio NAME=action VALUE=restore checked=checked>
-<INPUT TYPE=hidden NAME=upload_action VALUE=upload_backup>
-<span name=txtLang id=txtLang>Обновление базы данных </span>&nbsp;</LEGEND>
-<TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
-<TR>
-<TD><span name=txtLang id=txtLang>БД</span>:</TD>
-<TD><SELECT NAME=db_restore>
-{$SK->vars['db_restore']}
-</SELECT></TD>
-</TR>
-<TR>
-<TD WIDTH=35%><span name=txtLang id=txtLang>Файл</span>:</TD>
-<TD WIDTH=65%>
-<input type=hidden NAME=file value="base_update.sql.gz">
-Выполнить обновление базы данный из файла <strong>base_update.sql.gz</strong>
-
-</TD>
-</TR>
-</TABLE>
-</FIELDSET>
-</SPAN>
-<div style="padding-top:30"><hr></div>
-<SCRIPT>
-document.skb.action[{$SK->SET['last_action']}].checked = 1;
-</SCRIPT>
-
-HTML;
-
-
-elseif(@$_REQUEST['upload_action'] == "upload_backup_back")
-
-return <<<HTML
-<FIELDSET onClick="document.skb.action[1].checked = 1;">
-<LEGEND>
-<INPUT TYPE=radio NAME=action VALUE=restore checked=checked>
-<INPUT TYPE=hidden NAME=upload_action VALUE=upload_backup>
-<span name=txtLang id=txtLang>Обновление базы данных </span>&nbsp;</LEGEND>
-<TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
-<TR>
-<TD><span name=txtLang id=txtLang>БД</span>:</TD>
-<TD><SELECT NAME=db_restore>
-{$SK->vars['db_restore']}
-</SELECT></TD>
-</TR>
-<TR>
-<TD WIDTH=35%><span name=txtLang id=txtLang>Файл</span>:</TD>
-<TD WIDTH=65%>
-<input type=hidden NAME=file value="upload_backup.sql.gz">
-Выполнить обновление базы данный из файла <strong>upload_backup.sql.gz</strong>
-
-</TD>
-</TR>
-</TABLE>
-</FIELDSET>
-</SPAN>
-<div style="padding-top:30"><hr></div>
-<SCRIPT>
-document.skb.action[{$SK->SET['last_action']}].checked = 1;
-</SCRIPT>
-
-HTML;
-
-else
-
-
 return <<<HTML
 <FIELDSET onClick="document.skb.action[0].checked = 1;">
 <LEGEND>
 <INPUT TYPE=radio NAME=action VALUE=backup>
-<INPUT TYPE=hidden NAME=upload_action VALUE="">
 <span name=txtLang id=txtLang>Создание резервной копии БД</span>&nbsp;</LEGEND>
 <TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
 <TR>
@@ -902,8 +787,6 @@ document.skb.action[{$SK->SET['last_action']}].checked = 1;
 </SCRIPT>
 
 HTML;
-
-
 }
 
 function tpl_process($title){
@@ -1001,7 +884,7 @@ HTML;
 
 function SXD_errorHandler($errno, $errmsg, $filename, $linenum, $vars) {
 	if ($errno == 2048) return true;
-	//if (preg_match("/chmod\(\): Operation not permitted/", $errmsg)) return true;
+	if (preg_match("/chmod\(\): Operation not permitted/", $errmsg)) return true;
     $dt = date("Y.m.d H:i:s");
     $errmsg = addslashes($errmsg);
 

@@ -4,7 +4,7 @@ function Nav_links()// Навигация
 global $SysValue,$LoadItems;
 $p=$SysValue['nav']['id']; if(@!$p) $p=1;
 $num_row=$LoadItems['System']['num_row'];
-$num_page=NumFrom("table_name17"," where enabled='1' ");
+$num_page=NumFrom("table_name17","");
 $i=1;
 $num=$num_page/$num_row;
 while ($i<$num+1)
@@ -59,7 +59,7 @@ $num_ot=0;
 $q=0;
 while($q<$p)
   {
-  $sql="select * from ".$SysValue['base']['table_name17']." where enabled='1' order by num desc LIMIT $num_ot, $num_row ";
+  $sql="select * from ".$SysValue['base']['table_name17']." order by id desc LIMIT $num_ot, $num_row ";
   $q++;
   $num_ot=$num_ot+$num_row;
   }

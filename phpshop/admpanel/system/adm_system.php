@@ -21,7 +21,7 @@ require("../language/".$Lang."/language.php");
 <script type="text/javascript" src="../java/tabpane.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript">
-DoResize(<? echo $GetSystems['width_icon']?>,600,450);
+DoResize(<? echo $GetSystems['width_icon']?>,550,430);
 </script>
 
 </head>
@@ -156,6 +156,7 @@ $sql="select * from $table_name3";
 $result=mysql_query($sql);
 $row = mysql_fetch_array($result);
 	$num_row=$row['num_row'];
+	$num_row_adm=$row['num_row_adm'];
 	$dengi=$row['dengi'];
 	$percent=$row['percent'];
 	$title=$row['title'];
@@ -175,23 +176,8 @@ $row = mysql_fetch_array($result);
 	case(2): $row2="selected"; break;
 	case(3): $row3="selected"; break;
 	}
-	
-	switch($row['num_row_adm']){
-	case(1): $cowl="selected"; break;
-	case(2): $cow2="selected"; break;
-	case(3): $cow3="selected"; break;
-	}
-	
-	
-	
 	$width_icon =$row['width_icon'];
 	$option=unserialize($row['admoption']);
-	
-	switch($option['sklad_status']){
-	case(1): $sklad_statusl="selected"; break;
-	case(2): $sklad_status2="selected"; break;
-	case(3): $sklad_status3="selected"; break;
-	}
 	
 	if($option['message_enabled']==1) $message_enabled="checked";
 	 else $message_enabled="";
@@ -228,15 +214,6 @@ $row = mysql_fetch_array($result);
 	if($option['seller_enabled']==1) $seller_enabled="checked";
 	if($option['user_mail_activate']==1) $user_mail_activate="checked";
 	if($option['user_skin']==1) $user_skin="checked";
-	if($option['rss_graber_enabled']==1) $rss_graber_enabled="checked";
-	if($option['user_mail_activate_pre']==1) $user_mail_activate_pre="checked";
-	if($option['user_price_activate']==1) $user_price_activate="checked";
-	if($option['user_calendar']==1) $user_calendar="checked";
-	if($option['digital_product_enabled']==1) $digital_product_enabled="checked";
-	if($option['helper_enabled']==1) $helper_enabled="checked";
-	if($option['cloud_enabled']==1) $cloud_enabled="checked";
-	if($option['image_save_source']==1) $image_save_source="checked";
-	if($option['prevpanel_enabled']==1) $prevpanel_enabled="checked";
 	
 echo"
 <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"50\" id=\"title\">
@@ -334,20 +311,6 @@ tabPane.addTabPage( document.getElementById( \"vetrina\" ) );
 </select> шт.
 	  </td>
 	</tr>
-	<tr>
-	  <td align=right>
-	  <span name=txtLang id=txtLang>Каталогов в длину<br>
-	  для витрины главной страницы</span>:
-	  </td>
-	  <td align=left>
-	  <select name=num_cow_new>
-			<option value=1 $cowl>1</option>
-			<option value=2 $cow2>2</option>
-			<option value=3 $cow3>3</option>
-			<option value=4 $cow4>4</option>
-</select> шт.
-	  </td>
-	</tr>
 		<tr class=adm2>
 	  <td align=right>
 	  <span name=txtLang id=txtLang>Размер дочерних окон<br>
@@ -355,7 +318,7 @@ tabPane.addTabPage( document.getElementById( \"vetrina\" ) );
 	  </td>
 	  <td align=left>
 	  <input type=text name=width_icon_new size=3 value=\"$width_icon\"> %.
-	   <span name=txtLang id=txtLang style=\"border: 1px;border-style: inset; padding: 3px\">Использовать, если информация не умещается на странице</span>
+	   <span style=\"border: 1px;border-style: inset; padding: 3px\">Использовать, если информация не умещается на странице</span>
 	  </td>
 	</tr>
 	</table>
@@ -457,28 +420,12 @@ tabPane.addTabPage( document.getElementById( \"usage-page\" ) );
 	<table>
 	  <tr>
 	  <td align=right>
-	<span name=txtLang id=txtLang>
+	<span>
 	Минимальная сумма заказа
 	</span>:
 	  </td>
 	  <td align=left>
 	  <input type=text name=cart_minimum_new size=10 value=\"".$option['cart_minimum']."\">
-	  </td>
-	</tr> 
-	 <tr>
-	  <td align=right>
-	<span name=txtLang id=txtLang>
-	Статус товара при нулевом<br>
-	 кол-ве на складе
-	</span>:
-	  </td>
-	  <td align=left>
-	  <select name=sklad_status_new>
-	        <option value=1 $sklad_status1>игнорировать</option>
-			<option value=2 $sklad_status2>убирается с продаж</option>
-			<option value=3 $sklad_status3>нет в наличии</option>
-			
-</select>
 	  </td>
 	</tr> 
 	</table>
@@ -495,11 +442,12 @@ tabPane.addTabPage( document.getElementById( \"message\" ) );
 <table>
 <tr class=adm2>
 	  <td align=right>
-	<span name=txtLang id=txtLang>Всплывающие уведомления</span>
+	<span name=txtLang id=txtLang>Всплывающее уведомление <br>
+	о заказе</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"message_enabled_new\" $message_enabled>
-	  <span name=txtLang id=txtLang style=\"border: 1px;border-style: inset; padding: 3px\">Может приводить к замедлению работы администрирования</span>
+	  <span style=\"border: 1px;border-style: inset; padding: 3px\">Может приводить к замедлению работы администрирования</span>
 	  </td>
 	</tr>
 	<tr class=adm2>
@@ -544,7 +492,7 @@ tabPane.addTabPage( document.getElementById( \"message\" ) );
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"notice_enabled_new\" $notice_enabled>
-	   <span name=txtLang id=txtLang style=\"border: 1px;border-style: inset; padding: 3px\">Только для авторизованных пользователей</span>
+	   <span style=\"border: 1px;border-style: inset; padding: 3px\">Только для авторизованных пользователей</span>
 	  </td>
 	</tr> 
 	<tr class=adm2>
@@ -555,16 +503,6 @@ tabPane.addTabPage( document.getElementById( \"message\" ) );
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"update_enabled_new\" $update_enabled>
 
-	  </td>
-	</tr> 
-	<tr class=adm2>
-	  <td align=right>
-	<span name=txtLang id=txtLang>Иконка товара
-	 в навигации</span>
-	  </td>
-	  <td align=left>
-	  <input type=\"checkbox\" value=\"1\" name=\"prevpanel_enabled_new\" $prevpanel_enabled>
-Отображать иконку и описание в списке товаров
 	  </td>
 	</tr> 
 </table>
@@ -602,7 +540,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 <tr class=adm2>
 	  <td align=right>
-	<span>Visa, Mastercard (CyberPlat)</span>
+	<span name=txtLang id=txtLang>Visa, Mastercard (CyberPlat)</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_4_new\" $oplata_4>
@@ -611,7 +549,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 <tr class=adm2>
 	  <td align=right>
-	<span>ROBOXchange</span>
+	<span name=txtLang id=txtLang>ROBOXchange</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_5_new\" $oplata_5>
@@ -620,7 +558,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 	<tr class=adm2>
 	  <td align=right>
-	<span>WebMoney</span>
+	<span name=txtLang id=txtLang>WebMoney</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_6_new\" $oplata_6>
@@ -629,7 +567,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 	<tr class=adm2>
 	  <td align=right>
-	<span>Z-Payment</span>
+	<span name=txtLang id=txtLang>Z-Payment</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_7_new\" $oplata_7>
@@ -638,7 +576,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 	<tr class=adm2>
 	  <td align=right>
-	<span>Visa, Mastercard (PBC)</span>
+	<span name=txtLang id=txtLang>Visa, Mastercard (PBC)</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_8_new\" $oplata_8>
@@ -660,9 +598,17 @@ tabPane.addTabPage( document.getElementById( \"regim\" ) );
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"editor_enabled_new\" $editor_enabled>
- <span name=txtLang id=txtLang>* Включенный редактор влияет на скорость работы</span>
+ <span style=\"border: 1px;border-style: inset; padding: 3px\">Включенный редактор влияет на скорость работы</span>
 	  </td>
 	</tr>
+<!-- 	<tr>
+	  <td align=right>
+	<span name=txtLang id=txtLang>Режим продавцов</span>:
+	  </td>
+	  <td align=left>
+	  <input type=\"checkbox\" value=\"1\" name=\"seller_enabled_new\" $seller_enabled>
+	  </td>
+	</tr> -->
 	<tr>
 	  <td align=right>
 	<span name=txtLang id=txtLang>Режим Multibase</span>:
@@ -689,44 +635,6 @@ tabPane.addTabPage( document.getElementById( \"regim\" ) );
 	  <input type=text name=\"base_host_new\" size=30 value=\"".$option['base_host']."\">
 	  </td>
 	</tr>
-	<tr>
-	  <td align=right>
-	RSS Graber:
-	  </td>
-	  <td align=left>
-	 <input type=\"checkbox\" value=\"1\" name=\"rss_graber_enabled_new\" $rss_graber_enabled>
-	 * Копирование RSS каналов в новости
-	  </td>
-	</tr>
-		<tr>
-	  <td align=right>
-	Цифровые товары:
-	  </td>
-	  <td align=left>
-	 <input type=\"checkbox\" value=\"1\" name=\"digital_product_enabled_new\" $digital_product_enabled>
-	 * Поддержка продажи цифровых товаров (файлов)
-	  </td>
-	</tr>
-
-		<tr>
-	  <td align=right>
-	Интерактивная справка:
-	  </td>
-	  <td align=left>
-	 <input type=\"checkbox\" value=\"1\" name=\"helper_enabled_new\" $helper_enabled>
-	 * Интерактивная справка в панели админстратора
-	  </td>
-	</tr>
-
-
-	<tr>
-	<td><span name=txtLang id=txtLang>Календарь новостей</span>:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"user_calendar_new\" $user_calendar> * Опция сортировки новостей по датам</td>
-</tr>
-<tr>
-	<td><span name=txtLang id=txtLang>Облако тегов</span>:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"cloud_enabled_new\" $cloud_enabled> * Опция сортировки товаров по ключевым тегам</td>
-</tr>
 </table>
 </div>
 <div class=\"tab-page\" id=\"lang\" style=\"height:250px\">
@@ -752,23 +660,15 @@ tabPane.addTabPage( document.getElementById( \"user\" ) );
 <table>
 <tr>
 	<td><span name=txtLang id=txtLang>Активация через e-mail</span>:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"user_mail_activate_new\" $user_mail_activate> * Требуется предварительное подтверждение через e-mail</td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"user_mail_activate_new\" $user_mail_activate> </td>
 </tr>
 <tr>
-	<td>Ручная активация:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"user_mail_activate_pre_new\" $user_mail_activate_pre> * Активация администратором в ручном режиме</td>
-</tr>
-<tr>
-	<td>Регистрация для просмора цен:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"user_price_activate_new\" $user_price_activate> * Незарегистрированные пользователи не смогут видеть цен</td>
-</tr>
-<tr>
-	<td><span name=txtLang id=txtLang>Статус пользователя <br>после активации</span>:</td>
+	<td><span name=txtLang id=txtLang>Статус после активации</span>:</td>
 	<td>".GetUsersStatus($option['user_status'])." </td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>Смена дизайна</span>:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"user_skin_new\" $user_skin> * Опция смены дизайна на сайте</td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"user_skin_new\" $user_skin> </td>
 </tr>
 </table>
 
@@ -782,7 +682,7 @@ tabPane.addTabPage( document.getElementById( \"img\" ) );
 
 
 	<FIELDSET id=fldLayout>
-	<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>А</u>втоматическая нарезка изображений (Ресайзинг)</span>: </LEGEND>
+	<LEGEND id=lgdLayout><u>А</u>втоматическая нарезка изображений (Ресайзинг): </LEGEND>
 	<div style=\"padding:10\">
 	
 	<table>
@@ -850,7 +750,7 @@ tabPane.addTabPage( document.getElementById( \"img\" ) );
 <tr>
 
   <td colspan=2>
-  <input type=checkbox name=image_save_source_new value=1 $image_save_source> Сохранять исходное изображение при ресайзинге
+  Watermark: <input type=\"text\" style=\"width: 300px\" name=img_wm value=\"".$option['img_wm']."\">
   </td>
 </tr>
 </tr>
@@ -862,24 +762,10 @@ tabPane.addTabPage( document.getElementById( \"img\" ) );
 	
 </div>
 </FIELDSET>
-<br>
-<FIELDSET id=fldLayout>
-	<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Н</u>астройка параметров защиты изображений от копирования</span>: </LEGEND>
-	<div style=\"padding:10\">
-	
-	<BUTTON style=\"width: 200\" onclick=\"miniWin('adm_system_watermark.php',500,640)\">
-	<img src=\"../icon/photo_album.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\">
-	Настроить Watermark</BUTTON>
-	
-</div>
-</FIELDSET>
 </div>
 <hr>
 <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"50\" >
 <tr>
-    <td align=\"left\" style=\"padding:10\">
-    <BUTTON class=\"help\" onclick=\"helpWinParent('system')\">Справка</BUTTON>
-	</td>
 	<td align=\"right\" style=\"padding:10\">
 <input type=submit value=ОК class=but name=optionsSAVE>
 	<input type=submit name=btnLang value=Отмена class=but onClick=\"return onCancel();\">
@@ -900,59 +786,48 @@ if(CheckedRules($UserStatus["option"],1) == 1){
   session_register('skin');
   }
   
-$option=unserialize($GetSystems['admoption']);
-  
-  
-$option["prevpanel_enabled"]=$prevpanel_enabled_new;
-$option["sklad_status"]=$sklad_status_new;
-$option["helper_enabled"]=$helper_enabled_new;
-$option["cloud_enabled"]=$cloud_enabled_new;
-$option["digital_product_enabled"]=$digital_product_enabled_new;
-$option["user_calendar"]=$user_calendar_new;
-$option["user_price_activate"]=$user_price_activate_new;
-$option["user_mail_activate_pre"]=$user_mail_activate_pre_new;
-$option["rss_graber_enabled"]=$rss_graber_enabled_new;
-$option["image_save_source"]=$image_save_source_new;
-$option["img_wm"]=$img_wm;
-$option["img_w"]=$img_w;
-$option["img_h"]=$img_h;
-$option["img_tw"]=$img_tw;
-$option["img_th"]=$img_th;
-$option["width_podrobno"]=$width_podrobno;
-$option["width_kratko"]=$width_kratko;
-$option["message_enabled"]=$message_enabled_new;
-$option["message_time"]=$message_time_new;
-$option["desktop_enabled"]=$desktop_enabled_new;
-$option["desktop_time"]=$desktop_time_new;
-$option["oplata_1"]=$oplata_1_new;
-$option["oplata_2"]=$oplata_2_new;
-$option["oplata_3"]=$oplata_3_new;
-$option["oplata_4"]=$oplata_4_new;
-$option["oplata_5"]=$oplata_5_new;
-$option["oplata_6"]=$oplata_6_new;
-$option["oplata_7"]=$oplata_7_new;
-$option["oplata_8"]=$oplata_8_new;
-$option["seller_enabled"]=$seller_enabled_new;
-$option["base_enabled"]=$base_enabled_new;
-$option["sms_enabled"]=$sms_enabled_new;
-$option["notice_enabled"]=$notice_enabled_new;
-$option["update_enabled"]=$update_enabled_new;
-$option["base_id"]=$base_id_new;
-$option["base_host"]=$base_host_new;
-$option["lang"]=$lang_new;
-$option["sklad_enabled"]=$sklad_enabled_new;
-$option["price_znak"]=$price_znak_new;
-$option["user_mail_activate"]=$user_mail_activate_new;
-$option["user_status"]=$user_status_new;
-$option["user_skin"]=$user_skin_new;
-$option["cart_minimum"]=$cart_minimum_new;
-$option["editor_enabled"]=$editor_enabled_new;
+$option=array(
+"img_wm"=>$img_wm,
+"img_w"=>$img_w,
+"img_h"=>$img_h,
+"img_tw"=>$img_tw,
+"img_th"=>$img_th,
+"width_podrobno"=>$width_podrobno,
+"width_kratko"=>$width_kratko,
+"message_enabled"=>$message_enabled_new,
+"message_time"=>$message_time_new,
+"desktop_enabled"=>$desktop_enabled_new,
+"desktop_time"=>$desktop_time_new,
+"oplata_1"=>$oplata_1_new,
+"oplata_2"=>$oplata_2_new,
+"oplata_3"=>$oplata_3_new,
+"oplata_4"=>$oplata_4_new,
+"oplata_5"=>$oplata_5_new,
+"oplata_6"=>$oplata_6_new,
+"oplata_7"=>$oplata_7_new,
+"oplata_8"=>$oplata_8_new,
+"seller_enabled"=>$seller_enabled_new,
+"base_enabled"=>$base_enabled_new,
+"sms_enabled"=>$sms_enabled_new,
+"notice_enabled"=>$notice_enabled_new,
+"update_enabled"=>$update_enabled_new,
+"base_id"=>$base_id_new,
+"base_host"=>$base_host_new,
+"lang"=>$lang_new,
+"sklad_enabled"=>$sklad_enabled_new,
+"price_znak"=>$price_znak_new,
+"user_mail_activate"=>$user_mail_activate_new,
+"user_status"=>$user_status_new,
+"user_skin"=>$user_skin_new,
+"cart_minimum"=>$cart_minimum_new,
+"editor_enabled"=>$editor_enabled_new
+);
 $option_new=serialize($option);
 
 $sql="UPDATE $table_name3
 SET
 num_row='$num_row_new',
-num_row_adm='$num_cow_new',
+num_row_adm='$num_row_adm_new',
 dengi='$dengi_new',
 percent='$percent_new',
 skin='$skin_new',

@@ -47,14 +47,8 @@ function gzcompressfile($source,$level=false){
    } 
 
 
-$defvaluta=$System['dengi'];
-$formatPrice = unserialize($System['admoption']);
-$format=$formatPrice['price_znak'];
-
-
-
 if(@$catId == "ALL") $str="";
- elseif(is_numeric(@$catId)) $str=" and (category='$catId' or dop_cat LIKE '%#$catId#%')";
+ elseif(is_numeric(@$catId)) $str=" and category='$catId'";
 
 $sql="select * from ".$SysValue['base']['table_name2']." where enabled='1'".@$str;
 $result=mysql_query($sql);
@@ -67,8 +61,7 @@ while($row = mysql_fetch_array($result))
 	$price=($price+(($price*$System['percent'])/100));
 	$uid=$row['uid'];
 	$id=$row['id'];
-	$baseinputvaluta=$row['baseinputvaluta']; 	
-
+	
 	// Выборка из базы нужной колонки цены
 	if(session_is_registered('UsersStatus')){
     $GetUsersStatusPrice=GetUsersStatusPrice($_SESSION['UsersStatus']);
@@ -80,52 +73,22 @@ while($row = mysql_fetch_array($result))
 	   }
 	}
 
-
-
-//получаем исходную цену
-if ($baseinputvaluta) { //Если прислали баз. валюту
-	if ($baseinputvaluta!==$defvaluta) {//Если присланная валюта отличается от базовой
-		$sql2="select kurs from ".$SysValue['base']['table_name24']." where id=".$baseinputvaluta;
-		$result2=mysql_query($sql2);
-	        $row2 = mysql_fetch_array($result2);
-		$vkurs=$row2['kurs'];
-		$price=$price/$vkurs; //Приводим цену в базовую валюту
-
-
-
-		$price=number_format($price,$format,'.', ' ');
-	}
-} //Если прислали баз. валюту
-
-// Если цены показывать только после аторизации
-$admoption=unserialize($System['admoption']);
-if($admoption['user_price_activate']==1 and !$_SESSION['UsersId']){
-    $price="~";
-}
 	
 	$csv.="$uid;$name;$price\n";
 	}
 	
- $file="base_".date("d_m_y_His").".csv";
-  @$fp = fopen("price/".$file, "w+");
+  $file="base_".date("d_m_y_His").".csv";
+  @$fp = fopen("../files/price/".$file, "w+");
   if ($fp) {
   fputs($fp, $csv);
   fclose($fp);
-  $sorce="price/".$file;
+  $sorce="../files/price/".$file;
   }
   // Пишес  GZIP
   if(@$gzip == "true"){
   gzcompressfile($sorce);
-  //header('Content-Type: application/force-download'); 
-  //header('Content-Disposition: attachment; filename="'.$file.'"'); 
-  header("Location: price/".$file.".bz2");
-  //readfile("price/".$file.".bz2"); 
+  header("Location: ../files/price/".$file.".bz2");
   }
-  else {
-  //header('Content-Type: application/force-download'); 
-  //header('Content-Disposition: attachment; filename="'.$file.'"'); 
-  header("Location: ".$sorce);
-  //header('Content-Length: '.filesize($sorce));
-  //readfile($sorce); 
-  }
+  else header("Location: ../files/price/".$file);
+
 ?>

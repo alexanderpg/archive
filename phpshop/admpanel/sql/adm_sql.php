@@ -9,7 +9,6 @@ $GetSystems=GetSystems();
 $option=unserialize($GetSystems['admoption']);
 $Lang=$option['lang'];
 require("../language/".$Lang."/language.php");
-
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -64,7 +63,7 @@ foreach ($IdsArray as $v)
 $result=mysql_query($v);
 if(@$result) $disp= "
 > <b>MySQL</b>: $sql_area<br><br>
-> <b>MySQL: запрос выполнен.</b>";
+> <b>MySQL: inquiry is executed.</b>";
 else $disp="
 > <b>MySQL</b>: ".mysql_error()."";
 echo ('
@@ -94,24 +93,12 @@ echo ('
 }
 else{
 
-
-
-while (list($val) = each($SysValue['base'])){
-
-    if($SysValue['base'][$val] != "phpshop_system")
-	   if($SysValue['base'][$val]!="phpshop_users")
-@$bases2.="TRUNCATE ".$SysValue['base'][$val].";
-";
-
-
+while (list($val) = each($SysValue['base']))
 @$bases.=$SysValue['base'][$val].", ";
-}
 
 $bases=substr($bases,0,strlen($bases)-2);
-
-
-
-
+$bases2=ereg_replace(",phpshop_system","",$bases);
+$bases2=ereg_replace(",phpshop_users","",$bases2);
 ?>
 <TABLE cellSpacing=1 cellPadding=5 width="100%" align=center border=0>
 <FORM method="post" name="sql_forma" id="sql_forma">
@@ -124,13 +111,14 @@ $bases=substr($bases,0,strlen($bases)-2);
 <tr>
 	<td><select name="sql_query" onchange="SelectQuerySql(this.value)">
 			<option value="" SELECTED id=txtLang>Выбрать команду SQL</option>
+			<!-- <option value="TRUNCATE $bases2">Выгрузить базу</option> -->
 			<option value="OPTIMIZE TABLE <?=$bases?>" id=txtLang>Оптимизировать базу</option>
 			<option value="REPAIR TABLE <?=$bases?>" id=txtLang>Починить базу</option>
 			<option value="DELETE FROM <?=$table_name?> WHERE ID=" id=txtLang>Удалить каталог</option>
             <option value="DELETE FROM <?=$table_name12?> WHERE ID=" id=txtLang>Удалить страницу</option>
-			<option value="<?=$bases2?>" id=txtLang>Очистить базу</option>
+			<option value="TRUNCATE <?=$bases2?>" id=txtLang>Очистить базу</option>
 			<option value="DROP DATABASE <?=$bases?>" id=txtLang>Уничтожить базу</option>
-</select> * Выберете "Очистить базу" для удаления тестовой базы.</td>
+</select></td>
 </tr>
 </table>
 
@@ -141,14 +129,13 @@ $bases=substr($bases,0,strlen($bases)-2);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50">
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('sql')">Справка</BUTTON></BUTTON>
+    <td style="padding:10">
+	<input type="button" value="Загрузить из файла" onclick="miniWin('adm_sql_file.php','500','430');window.close()" class=but style="width:150" name="btnLang">
 	</td>
 	<td align="right" style="padding:10">
 <INPUT class=but onclick="SqlSend()" type=button value=OK> <INPUT class=but type=reset value=Сброс name="btnLang"> 
 <input type="hidden" name="sql_go" value="ok">
 	<input type=submit value=Отмена class=but onClick="return onCancel();" name="btnLang">
-	
 	</td>
 </tr>
 </table>
