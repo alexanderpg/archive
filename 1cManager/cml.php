@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 2.9
+ * @version 3.1
  */
 class CommerceMLLoader {
 
@@ -131,6 +131,10 @@ class CommerceMLLoader {
                     }
                     break;
                 case 'init': // Initialize query
+
+                    if ($type == "sale")
+                        $this->exchange_zip = 0;
+
                     if (!is_dir($upload_path . self::$upload1c)) {
                         mkdir($upload_path . self::$upload1c, 0777, true);
                     } elseif ($this->cleanup_import_directory) {
@@ -170,6 +174,62 @@ class CommerceMLLoader {
                             fclose($file);
                         }
                     }
+
+                    // Статусы заказов
+                    if ($type == "sale") {
+
+                        if (file_exists($upload_path . self::$upload1c . $_GET['filename'])) {
+                            $move_path = 'orders/';
+
+                            if (!is_dir($upload_path . $move_path)) {
+                                @mkdir($upload_path . $move_path, 0777, true);
+                            }
+                            preg_match_all('/^(orders)(?:.*)(\.xml)$/', $_GET['filename'], $new_name_parts);
+                            $new_name = count($new_name_parts) ? $new_name_parts[1][0] . $new_name_parts[2][0] : $_GET['filename'];
+
+                            $xml = simplexml_load_file($upload_path . self::$upload1c . $_GET['filename']);
+                            rename($upload_path . self::$upload1c . $_GET['filename'], $upload_path . $move_path . $new_name);
+
+                            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['orders']);
+                            $PHPShopOrm->debug = false;
+                            foreach ($xml->Документ as $order) {
+
+                                $status_id = null;
+                                
+                                // Номер заказа
+                                $order_uid = preg_replace('/[^0-9\-]+/', '', (string) $order->Комментарий[0]);
+
+                                foreach ($order->ЗначенияРеквизитов[0]->ЗначениеРеквизита as $status) {
+
+                                    // Статуса заказа ИД
+                                    if ($status->Наименование == "Статуса заказа ИД" and ! empty($status->Значение)) {
+
+                                        $status_id = (new PHPShopOrm($GLOBALS['SysValue']['base']['order_status']))->getOne(['*'], ['external_code' => '="' . PHPShopString::utf8_win1251($status->Значение) . '"']);
+                                    }
+
+                                    // Статус заказа
+                                    if (empty($status_id) and $status->Наименование == "Статус заказа") {
+                                        $status_id = (new PHPShopOrm($GLOBALS['SysValue']['base']['order_status']))->getOne(['*'], ['external_code' => '="' . PHPShopString::utf8_win1251($status->Значение) . '"']);
+                                    }
+                                }
+                                
+                                if (!empty($status_id['id'])) {
+                                    $order = $PHPShopOrm->getOne(array('*'), array('uid' => '="' . $order_uid . '"'));
+                                    if (is_array($order)) {
+                                        PHPShopObj::loadClass(["payment", "lang", "order", "file", "parser"]);
+                                        $PHPShopLang = new PHPShopLang(array('locale' => $_SESSION['lang'], 'path' => 'shop'));
+                                        (new PHPShopOrderFunction((int) $order['id']))->changeStatus((int) $status_id['id'], $order['statusi']);
+                                        //$PHPShopOrm->update(['statusi_new' => $status_id['id']], ['uid' => '="' . (string) $order->Номер[0] . '"']);
+                                    }
+                                }
+                            }
+
+                            $response = "success";
+                        } else {
+                            $response = "failure";
+                        }
+                    }
+
                     break;
                 case 'import': // Processing data
                     if (file_exists($upload_path . 'completed.lock')) {
@@ -430,7 +490,9 @@ class CommerceMLLoader {
                             unset($this->category_array[$k]);
                     }
 
-                    array_walk_recursive($this->category_array, 'self::array2iconv');
+
+                    if ($GLOBALS['PHPShopBase']->codBase != 'utf-8')
+                        array_walk_recursive($this->category_array, 'self::array2iconv');
 
                     $this->writeCsv('sklad/' . $date . '/tree.csv', $this->category_array, true);
                 }
@@ -579,7 +641,6 @@ class CommerceMLLoader {
 
                         // Артикул для подтипа
                         $uid = (string) $item->Ид[0];
-                        
                     } else {
                         $parent_enabled = 0;
                     }
@@ -621,7 +682,8 @@ class CommerceMLLoader {
                         }
                     }
 
-                    array_walk_recursive($this->product_array, 'self::array2iconv');
+                    if ($GLOBALS['PHPShopBase']->codBase != 'utf-8')
+                        array_walk_recursive($this->product_array, 'self::array2iconv');
 
                     $this->writeCsv('sklad/' . $date . '/upload_0.csv', $this->product_array, true);
 
@@ -758,7 +820,6 @@ class CommerceMLLoader {
                     if ($parent_enabled == 1) {
 
                         $uid = (string) $item->Ид[0];
-                        
                     } else
                         $uid = null;
 
@@ -814,7 +875,9 @@ class CommerceMLLoader {
                         }
                     }
 
-                    array_walk_recursive($this->product_array, 'self::array2iconv');
+                    if ($GLOBALS['PHPShopBase']->codBase != 'utf-8')
+                        array_walk_recursive($this->product_array, 'self::array2iconv');
+
                     $this->writeCsv('sklad/' . $date . '/upload_0.csv', $this->product_array, true);
 
                     // Выполнение

@@ -92,9 +92,9 @@ function actionStart() {
 
     $PHPShopCategoryArray = new PHPShopCategoryArray();
     $CategoryArray = $PHPShopCategoryArray->getArray();
-    
-    if(is_array($CategoryArray))
-    $GLOBALS['count'] = count($CategoryArray);
+
+    if (is_array($CategoryArray))
+        $GLOBALS['count'] = count($CategoryArray);
 
     $CategoryArray[0]['name'] = '- ' . __('Корневой уровень') . ' -';
     $tree_array = array();
@@ -225,6 +225,9 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setCollapse('Дополнительно', $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/')) .
             $PHPShopGUI->setField("Склад для списания", $PHPShopGUI->setSelect('warehouse_new', $warehouse_value, 300)));
 
+    // Внешний код
+    $Tab1 .= $PHPShopGUI->setCollapse('Интеграция', $PHPShopGUI->setField('Внешний код', $PHPShopGUI->setInputText(null, 'external_code_new', $data['external_code'], '100%')));
+
     // Сумма заказа
     if (empty($_GET['target']) or $_GET['target'] != 'cat') {
         $Tab2 .= $PHPShopGUI->setField("Блокировка при стоимости более", $PHPShopGUI->setInputText(null, "sum_max_new", $data['sum_max'], 150, $PHPShopSystem->getDefaultValutaCode()));
@@ -266,7 +269,7 @@ function actionStart() {
 function actionInsert() {
     global $PHPShopOrm, $PHPShopModules;
 
-    $PHPShopOrm->updateZeroVars('flag_new', 'enabled_new', 'price_null_enabled_new','categories_check_new');
+    $PHPShopOrm->updateZeroVars('flag_new', 'enabled_new', 'price_null_enabled_new', 'categories_check_new');
 
     $_POST['icon_new'] = iconAdd('icon_new');
 
@@ -275,7 +278,7 @@ function actionInsert() {
         if (is_array($_POST['payment_new']))
             $_POST['payment_new'] = @implode(',', $_POST['payment_new']);
     }
-    
+
     // Категории товаров
     $_POST['categories_new'] = "";
     if (is_array($_POST['categories']) and $_POST['categories'][0] != 'null') {
@@ -285,8 +288,8 @@ function actionInsert() {
         foreach ($_POST['categories'] as $v)
             if (!empty($v) and ! strstr($v, ','))
                 $_POST['categories_new'] .= $v . ",";
-    }
-    else $_POST['categories_check_new'] = 0;
+    } else
+        $_POST['categories_check_new'] = 0;
 
     // Мультибаза
     $_POST['servers_new'] = "";

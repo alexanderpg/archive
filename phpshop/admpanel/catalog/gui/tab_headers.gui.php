@@ -6,7 +6,6 @@
  * @return string 
  */
 function tab_headers($row) {
-    
     global $PHPShopGUI;
 
     $title = $row['title'];
@@ -90,7 +89,8 @@ function tab_headers($row) {
 </div>
 
 <div id="titleForma" style="display:' . $t2_enabled . '">
-<textarea class="form-control" name="title_new">' . $title . '</textarea>
+<textarea class="form-control" name="title_new" style="height:150px">' . $title . '</textarea>
+'.$PHPShopGUI->setAIHelpButton('title_new',70,'catalog_title').'
 </div>');
 
    $disp.=$PHPShopGUI->setCollapse("Description",'<label>
@@ -114,7 +114,8 @@ function tab_headers($row) {
 </div>
 
 <div id="titleFormaD" style="display:' . $d2_enabled . '">
-<textarea class="form-control" name="descrip_new">' . $descrip . '</textarea>
+<textarea class="form-control" name="descrip_new" style="height:150px">' . $descrip . '</textarea>
+'.$PHPShopGUI->setAIHelpButton('descrip_new',80,'catalog_descrip').'
 </div>');
    
    $disp.=$PHPShopGUI->setCollapse("Keywords",'

@@ -114,9 +114,8 @@ function actionStart() {
     if ($data['model'] === 'ADV' || $data['model'] === 'DBS') {
         $Tab1 .= $PHPShopGUI->setField('Пароль защиты файла', $PHPShopGUI->setInputText('http://' . $_SERVER['SERVER_NAME'] . '/yml/?pas=', 'password_new', $data['password']));
         $Tab1 .= $PHPShopGUI->setField('Вывод характеристик', $PHPShopGUI->setCheckbox('use_params_new', 1, 'Включить вывод характеристик в YML', $data['use_params']));
-        
     }
-    
+
     if ($data['model'] === 'FBS' || $data['model'] === 'DBS') {
         $Tab1 .= $PHPShopGUI->setField('Идентификатор кампании', $PHPShopGUI->setInputText('xx-', 'campaign_id_new', $data['campaign_id']));
         $Tab1 .= $PHPShopGUI->setField('Авторизационный токен API', $PHPShopGUI->setInputText(null, 'auth_token_new', $data['auth_token']));
@@ -125,8 +124,16 @@ function actionStart() {
         $Tab1 .= $PHPShopGUI->setField('Блокировать прием заказов', $PHPShopGUI->setCheckbox('stop_new', 1, null, $data['stop']));
         $Tab1 .= $PHPShopGUI->setField('Выгружать изображения', $PHPShopGUI->setCheckbox('options[block_image]', 1, null, $options['block_image']));
         $Tab1 .= $PHPShopGUI->setField('Выгружать описание', $PHPShopGUI->setCheckbox('options[block_content]', 1, null, $options['block_content']));
+        
+        $export_value[] = ['Цены и склад', 0, $data['export']];
+        $export_value[] = ['Цены', 1, $data['export']];
+        $export_value[] = ['Склад', 2, $data['export']];
+
+        $Tab1 .= $PHPShopGUI->setField('Обновление данных', $PHPShopGUI->setSelect('export_new', $export_value, '100%', true));
+        $Tab1 .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
 
         if ($data['model'] === 'FBS') {
+
             $Tab1 .= $PHPShopGUI->setField('Доставка для заказов с Маркета', $PHPShopGUI->setSelect('delivery_id_new', $delivery_value, 300, null));
             if ((int) $data['import_from'] > 0) {
                 $fromCaption = 'У вас больше 5 000 товаров выгружаются в Яндекс.Маркет. Процесс экспорта разбит на несколько шагов. 
@@ -136,8 +143,8 @@ function actionStart() {
             }
         }
     }
-    
-    
+
+
     $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в маркете', $data['link']));
 
 
@@ -392,7 +399,7 @@ function actionUpdate() {
     global $PHPShopOrm, $PHPShopModules;
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new');
+    $PHPShopOrm->updateZeroVars('link_new','log_new');
 
     // Настройки витрины
     $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);

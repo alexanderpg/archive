@@ -3,7 +3,7 @@
 /**
  * Обработчик фото галереи
  * @author PHPShop Software
- * @version 1.4
+ * @version 1.5
  * @package PHPShopCore
  */
 class PHPShopPhoto extends PHPShopCore {
@@ -122,7 +122,10 @@ class PHPShopPhoto extends PHPShopCore {
                 // Перехват модуля
                 $this->setHook(__CLASS__, __FUNCTION__, $row, 'MIDDLE');
 
-                $disp .= ParseTemplateReturn('./phpshop/lib/templates/photo/photo_element_forma.tpl', true);
+                if (PHPShopParser::checkFile('photo/photo_element_forma.tpl'))
+                    $disp .= ParseTemplateReturn('photo/photo_element_forma.tpl');
+                else
+                    $disp .= ParseTemplateReturn('phpshop/lib/templates/photo/photo_element_forma.tpl', true);
             }
         // Если есть описание каталога
         if (empty($this->LoadItems['CatalogPhoto'][$this->category]))
@@ -130,8 +133,8 @@ class PHPShopPhoto extends PHPShopCore {
         elseif (!empty($this->LoadItems['CatalogPhoto'][$this->category]['content_enabled']))
             $content = $this->PHPShopPhotoCategory->getContent();
 
-        
-        
+
+
         $this->set('pageContent', $content . $disp);
         $this->set('pageTitle', $this->category_name);
 
@@ -190,6 +193,6 @@ class PHPShopPhoto extends PHPShopCore {
         // Подключаем шаблон
         $this->parseTemplate($this->getValue('templates.page_page_list'));
     }
-}
 
+}
 ?>

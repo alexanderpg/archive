@@ -6,7 +6,7 @@ PHPShopObj::loadClass('user');
 
 // Стартовый вид
 function actionStart() {
-    global $PHPShopGUI, $PHPShopOrm, $PHPShopModules, $PHPShopSystem;
+    global $PHPShopGUI, $PHPShopOrm, $PHPShopModules, $PHPShopSystem,$hideCatalog;
 
     // Выборка
     $PHPShopOrm->sql = 'SELECT a.*, b.name as product, b.pic_small, b.description FROM ' . $GLOBALS['SysValue']['base']['comment'] . ' AS a 
@@ -22,12 +22,12 @@ function actionStart() {
     }
 
     // Размер названия поля
-    $PHPShopGUI->field_col = 2;
+    $PHPShopGUI->field_col = 3;
 
     $PHPShopGUI->addJSFiles('./js/jquery.tagsinput.min.js', './js/bootstrap-datetimepicker.min.js', './js/jquery.waypoints.min.js', './news/gui/news.gui.js');
     $PHPShopGUI->addCSSFiles('./css/jquery.tagsinput.css', './css/bootstrap-datetimepicker.min.css');
 
-    $PHPShopGUI->setActionPanel(__("Покупатели") . ' / ' . __('Комментарии') . ' / ' . $data['name'], array('Удалить'), array('Сохранить и закрыть'), false);
+    $PHPShopGUI->setActionPanel(__("Покупатели") . ' / ' . __('Комментарии') . ' / ' . $data['name'], array('Удалить'), array('Сохранить', 'Сохранить и закрыть'), false);
 
     $media = '<div class="media">
   <div class="media-left">
@@ -38,6 +38,7 @@ function actionStart() {
   <div class="media-body">
     <a class="media-heading" href="?path=product&id=' . $data['parent_id'] . '&return=' . $_GET['path'] . '">' . $data['product'] . '</a>
     ' . $data['description'] . '
+    <input name="product_name" value="' . $data['product'] . ' ' . $data['description'] . '" type="hidden">
   </div>
 </div>';
 
@@ -45,18 +46,35 @@ function actionStart() {
     $oFCKeditor = new Editor('content_new');
     $oFCKeditor->Height = '300';
     $oFCKeditor->Value = $data['content'];
-
+    
+    $rate_value[] = array(1, 1, $data['rate']);
+    $rate_value[] = array(2, 2, $data['rate']);
+    $rate_value[] = array(3, 3, $data['rate']);
+    $rate_value[] = array(4, 4, $data['rate']);
+    $rate_value[] = array(5, 5, $data['rate']);
 
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $PHPShopGUI->setField("ФИО", $PHPShopGUI->setInput('text.required', "name_new", $data['name'])) .
-            $PHPShopGUI->setField("Дата", $PHPShopGUI->setInputDate("datas_new", PHPShopDate::get($data['datas']))) .
+            $PHPShopGUI->setField("Дата", $PHPShopGUI->setInputDate("datas_new", PHPShopDate::get($data['datas']), 'width:200px')) .
             $PHPShopGUI->setField("Название", $media) .
-            $PHPShopGUI->setField("Комментарий", $oFCKeditor->AddGUI()) .
-            $PHPShopGUI->setField("Статус", $PHPShopGUI->setRadio("enabled_new", 1, "Вкл.", $data['enabled']) . $PHPShopGUI->setRadio("enabled_new", 0, "Выкл.", $data['enabled'])
-    ));
+            $PHPShopGUI->setField("Статус", $PHPShopGUI->setCheckbox("enabled_new", 1, null, $data['enabled'])) .
+            $PHPShopGUI->setField("Рейтинг", $PHPShopGUI->setSelect('rate_new', $rate_value, 50)) .
+            $PHPShopGUI->setField("Комментарий", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 100, 'product_comment', 'product_name'))
+    );
 
 
+    // Отзывы
+    $_GET['user_id'] = $data['user_id'];
+    $tab_comment = $PHPShopGUI->loadLib('tab_comment',false,'./shopusers/');
 
+     if (!empty($tab_comment))
+        $sidebarright[] = array('title' => 'Отзывы', 'content' => $tab_comment);
+     
+         // Правый сайдбар
+    if (!empty($sidebarright) and empty($hideCatalog)) {
+        $PHPShopGUI->setSidebarRight($sidebarright, 3, 'hidden-xs');
+        $PHPShopGUI->sidebarLeftRight = 3;
+    }
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
@@ -139,7 +157,12 @@ function ratingUpdate() {
 function actionUpdate() {
     global $PHPShopOrm, $PHPShopModules;
 
-    $_POST['datas_new'] = PHPShopDate::GetUnixTime($_POST['datas_new']);
+    // Корректировка пустых значений
+    $PHPShopOrm->updateZeroVars('enabled_new');
+
+    if (empty($_POST['ajax'])) {
+        $_POST['datas_new'] = PHPShopDate::GetUnixTime($_POST['datas_new']);
+    }
 
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);

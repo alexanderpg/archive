@@ -94,7 +94,8 @@ $key_name = array(
     'files' => 'Файлы',
     'external_code' => 'Внешний код',
     'barcode' => 'Штрихкод',
-    'rate_count' => 'Голоса'
+    'rate_count' => 'Голоса',
+    'productservices_products' => 'Услуги'
 );
 
 //if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
@@ -391,11 +392,17 @@ function csv_update($data) {
         }
     }
 
-
     require_once $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/thumb/phpthumb.php';
     $width_kratko = $PHPShopSystem->getSerilizeParam('admoption.width_kratko');
     $img_tw = $PHPShopSystem->getSerilizeParam('admoption.img_tw');
     $img_th = $PHPShopSystem->getSerilizeParam('admoption.img_th');
+
+    // AI
+    if ($PHPShopSystem->ifSerilizeParam('ai.yandexgpt_seo_import')) {
+        PHPShopObj::loadClass('yandexcloud');
+        require_once $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/parsedown/Parsedown.php';
+        $YandexGPT = new YandexGPT();
+    }
 
     if (is_array($data)) {
 
@@ -498,6 +505,104 @@ function csv_update($data) {
                 $tel['list'][0]['tel_new'] = $row['data_adres'];
                 $row['data_adres'] = serialize($tel);
             }
+
+            // AI Описание
+            if (isset($row['content']) and class_exists('YandexGPT')) {
+
+                if ($subpath[2] == 'catalog')
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_catalog_content_role');
+                else
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_content_role');
+
+                if (!empty($row['content']))
+                    $message = $row['content'];
+                else
+                    $message = $row['name'];
+
+                if ($_POST['export_code'] == 'utf')
+                    $message = PHPShopString::utf8_win1251($message);
+
+                if (!empty($message)) {
+                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 300);
+                    $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
+                    $row['content'] = PHPShopString::utf8_win1251($text);
+                }
+            }
+
+            // AI Краткое описание
+            if (isset($row['description']) and class_exists('YandexGPT')) {
+
+                $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_description_role');
+
+                if (!empty($row['description']))
+                    $message = $row['description'];
+                else
+                    $message = $row['name'];
+
+                if ($_POST['export_code'] == 'utf')
+                    $message = PHPShopString::utf8_win1251($message);
+
+                if (!empty($message)) {
+                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 100);
+
+                    $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
+                    $text = preg_replace("/\r|\n/", ' ', $text);
+
+                    $row['description'] = PHPShopString::utf8_win1251($text);
+                }
+            }
+
+            // AI Meta Title
+            if (isset($row['title']) and class_exists('YandexGPT')) {
+
+                if ($subpath[2] == 'catalog')
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_catalog_title_role');
+                else
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_title_role');
+
+                if (!empty($row['title']))
+                    $message = $row['title'];
+                else
+                    $message = $row['name'];
+
+                if ($_POST['export_code'] == 'utf')
+                    $message = PHPShopString::utf8_win1251($message);
+
+                if (!empty($message)) {
+                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 100);
+
+                    $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
+                    $text = preg_replace("/\r|\n/", ' ', $text);
+
+                    $row['title'] = PHPShopString::utf8_win1251($text);
+                }
+            }
+
+            // AI Meta Description
+            if (isset($row['descrip']) and class_exists('YandexGPT')) {
+                
+                if ($subpath[2] == 'catalog')
+                $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_catalog_description_role');
+                else $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_descrip_role');
+
+                if (!empty($row['descrip']))
+                    $message = $row['descrip'];
+                else
+                    $message = $row['name'];
+
+                if ($_POST['export_code'] == 'utf')
+                    $message = PHPShopString::utf8_win1251($message);
+
+                if (!empty($message)) {
+                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 100);
+
+                    $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
+                    $text = preg_replace("/\r|\n/", ' ', $text);
+
+                    $row['descrip'] = PHPShopString::utf8_win1251($text);
+                }
+            }
+
 
             // Файлы
             if (!empty($row['files'])) {

@@ -16,11 +16,13 @@ function sendMessage($obj) {
         'text' => $_POST['message'],
         'staffid' => 1,
         'isview' => $_SESSION['UsersBan'],
-        'isview_user' => 0
+        'isview_user' => 0,
+        'ai' => 0
     );
 
     $bot->dialog($insert);
     $bot->notice($insert, 'message');
+    $bot->ai($insert);
 }
 
 /**

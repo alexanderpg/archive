@@ -1082,9 +1082,9 @@ class PHPShopGUI {
         if (empty($id)) {
             $id = $name;
         }
-        
-        if($name == "editID" or $name == "saveID" or $name =='delID')
-            $value=$this->__($value);
+
+        if ($name == "editID" or $name == "saveID" or $name == 'delID')
+            $value = $this->__($value);
 
         if (!empty($description) or ! empty($caption)) {
 
@@ -1093,7 +1093,7 @@ class PHPShopGUI {
             if (!empty($caption))
                 $CODE .= ' <div class="input-group-addon input-sm">' . $this->__($caption, $locale) . '</div>';
 
-            $CODE .= '<input class="' . $class_array[$type] . ' ' . $class . '" type="' . $type . '" value="' .$value . '"  name="' . $name . '" id="' . $id . '" placeholder="' . $this->__($placeholder, $locale) . '" ' . $required . '>';
+            $CODE .= '<input class="' . $class_array[$type] . ' ' . $class . '" type="' . $type . '" value="' . $value . '"  name="' . $name . '" id="' . $id . '" placeholder="' . $this->__($placeholder, $locale) . '" ' . $required . '>';
 
             if (!empty($description))
                 $CODE .= '<div class="input-group-addon input-sm">' . $description . '</div>';
@@ -1572,11 +1572,11 @@ class PHPShopGUI {
 
         if (empty($id))
             $id = $name;
-        
-        if(!empty($disabled))
-            $disabled='disabled';
 
-        $CODE = $caption . '<select class="' . $class . '" ' . $search . ' '.$disabled.' data-container="body" data-none-selected-text="' . $this->__('Не выбрано') . '" data-style="' . $style . '" data-width="' . $width . '"  name="' . $name . '" id="' . $id . '" size="' . $size . '" onchange="' . $onchange . '"   ' . $multiple . '>';
+        if (!empty($disabled))
+            $disabled = 'disabled';
+
+        $CODE = $caption . '<select class="' . $class . '" ' . $search . ' ' . $disabled . ' data-container="body" data-none-selected-text="' . $this->__('Не выбрано') . '" data-style="' . $style . '" data-width="' . $width . '"  name="' . $name . '" id="' . $id . '" size="' . $size . '" onchange="' . $onchange . '"   ' . $multiple . '>';
         if (is_array($value))
             foreach ($value as $val) {
 
@@ -1592,7 +1592,7 @@ class PHPShopGUI {
                     $val[2] = "selected";
                 elseif ($val[2] != "selected")
                     $val[2] = null;
-         
+
 
                 if (is_array($val[1])) {
                     $CODE .= '<optgroup label="' . $val[0] . '">';
@@ -1660,9 +1660,9 @@ class PHPShopGUI {
             $toggle = 'data-toggle="toggle"';
         else
             $toggle = null;
-        
-        if(!empty($disabled))
-            $disabled='disabled';
+
+        if (!empty($disabled))
+            $disabled = 'disabled';
 
         if (!empty($caption))
             $CODE = '<div class="checkbox-inline"><label><input ' . $toggle . ' type="checkbox" data-on="' . __('Вкл') . '" data-off="' . __('Выкл') . '" data-size="mini" value="' . $value . '" name="' . $name . '" id="' . $name . '" ' . $checked . ' ' . $disabled . '> ' . $this->__($caption, $locale) . '</label></div> ';
@@ -1921,6 +1921,20 @@ class PHPShopGUI {
      </button>
 	 ';
         return $CODE;
+    }
+
+    /**
+     * Прорисовка элемента вызова AI
+     * @param string $name имя элемента
+     * @param int $length длина
+     * @param string $role роль
+     * @return string
+     */
+    function setAIHelpButton($name, $length, $role, $text=false) {
+        global $PHPShopSystem;
+        if ($PHPShopSystem->ifSerilizeParam('ai.yandexgpt_seo')){
+            return '<div class="text-right" style="padding-top:10px"><button type="button" class="btn btn-default btn-sm ai-help" data-value="' . $name . '" data-length="' . $length . '" data-role="' . $role . '" data-user="' . $text . '"><span class="glyphicon glyphicon-hdd"></span> ' . __('Помощь AI') . '</button></div>';
+        }
     }
 
     /**
@@ -2329,7 +2343,7 @@ class PHPShopInterface extends PHPShopGUI {
 
                         $row = '<a href="' . $val['link'] . '" ' . $popover . ' ' . $modal . ' class="' . $val['class'] . '" target="' . $val['target'] . '" title="' . $val['title'] . '" data-id="' . $val['id'] . '">' . $val['name'] . '</a>' . $val['addon'];
                     } else
-                        $row = $val['name']. $val['addon'];
+                        $row = $val['name'] . $val['addon'];
 
                     // id
                     if (!empty($val['id']))
@@ -2543,6 +2557,7 @@ class PHPShopFrontInterface extends PHPShopInterface {
 /*
  *  Функция перекодирования urldecode для массивов
  */
+
 function urldecodearray($string) {
     if (!is_array($string))
         return urldecode($string);

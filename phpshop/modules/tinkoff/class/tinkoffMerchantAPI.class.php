@@ -247,14 +247,14 @@ class TinkoffMerchantAPI {
     private function _genToken($args) {
         $token = '';
         $args['Password'] = $this->_secretKey;
-        //ksort($args);
+        ksort($args);
 
         foreach ($args as $arg) {
             if(!is_array($arg))
             $token .= $arg;
         }
-        $token = hash('sha256', $token);
 
+        $token = hash('sha256', $token);
         return $token;
     }
 

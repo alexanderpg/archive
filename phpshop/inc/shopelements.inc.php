@@ -15,13 +15,44 @@ class PHPShopDialogElement extends PHPShopElements {
 
         parent::__construct();
 
+
+        // AI
+        if ($this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_chat_enabled') == 1) {
+
+            // Время работы
+            $time = (int) date("H", time());
+            $time_from = (int) $this->PHPShopSystem->getSerilizeParam('admoption.time_from_dialog');
+            $time_until = (int) $this->PHPShopSystem->getSerilizeParam('admoption.time_until_dialog');
+            $day_work = (int) $this->PHPShopSystem->getSerilizeParam('admoption.day_dialog');
+            $day = date("D", time());
+
+            $day_work_array[1] = array('Sunday', 'Saturday');
+            $day_work_array[2] = array('Saturday');
+            $day_work_array[3] = array();
+
+            if (($time_from <= $time and $time < $time_until) and ! in_array($day, $day_work_array[$day_work])) {
+                $fix_avatar = false;
+            } else {
+                //$this->PHPShopSystem->setSerilizeParam('admoption.avatar_dialog', $this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_avatar_dialog'));
+                $this->PHPShopSystem->setSerilizeParam('admoption.title_dialog', $this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_title_dialog'));
+                $fix_avatar = true;
+            }
+        } else {
+            $fix_avatar = false;
+        }
+
         // Иконка
         $icon = $this->PHPShopSystem->getSerilizeParam('admoption.avatar_dialog');
         if (empty($icon))
             $icon = '/phpshop/lib/templates/chat/avatar.png';
 
         $this->avatar = $icon;
-        $this->set('icon_dialog', str_replace('/phpshop', 'phpshop/', $this->avatar));
+        $this->avatar_bot = $this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_avatar_dialog');
+
+        if ($fix_avatar)
+            $this->set('icon_dialog', str_replace('/phpshop', 'phpshop/', $this->avatar_bot));
+        else
+            $this->set('icon_dialog', str_replace('/phpshop', 'phpshop/', $this->avatar));
 
         // Цвет
         $color = $this->PHPShopSystem->getSerilizeParam('admoption.color_dialog');
@@ -90,7 +121,13 @@ class PHPShopDialogElement extends PHPShopElements {
             $day_work_array[3] = array();
 
             if (($time_from <= $time and $time < $time_until) and ! in_array($day, $day_work_array[$day_work])) {
-                $this->set('status_dialog', __('Оператор').' online');
+                $this->set('status_dialog', __('Оператор') . ' online');
+                $this->set('status_dialog_style', 'online');
+                $time_off = false;
+            }
+            // AI
+            elseif ($this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_chat_enabled') == 1) {
+                $this->set('status_dialog', __('Чат-бот') . ' online');
                 $this->set('status_dialog_style', 'online');
                 $time_off = false;
             } else {
@@ -314,7 +351,7 @@ class PHPShopDialogElement extends PHPShopElements {
                     'user_id' => 0,
                     'date' => time(),
                     'name' => __('Администрация'),
-                    'message' => __('Для начала диалога заполните пожалуйста все поля') . ':<form class="message_form"><span class="dialog-reg-name"><input type="text" autocomplete="off" name="name" class="form-control" placeholder="' . __('Имя') . '" required=""></span><span class="dialog-reg-mail"><input type="email" autocomplete="off" name="mail" class="form-control" placeholder="Email" required=""></span>' . $tel . '<div class="dialog-reg-rule"><input type="checkbox" value="on" name="rule" checked="checked"> ' .__('Я согласен').' <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html" target="_blank" title="' . __('Согласие на обработку персональных данных') . '">'.__('на обработку моих персональных данных') . '</a></div><button class="send-message" type="button">' . __('Отправить') . '</button></form>',
+                    'message' => __('Для начала диалога заполните пожалуйста все поля') . ':<form class="message_form"><span class="dialog-reg-name"><input type="text" autocomplete="off" name="name" class="form-control" placeholder="' . __('Имя') . '" required=""></span><span class="dialog-reg-mail"><input type="email" autocomplete="off" name="mail" class="form-control" placeholder="Email" required=""></span>' . $tel . '<div class="dialog-reg-rule"><input type="checkbox" value="on" name="rule" checked="checked"> ' . __('Я согласен') . ' <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html" target="_blank" title="' . __('Согласие на обработку персональных данных') . '">' . __('на обработку моих персональных данных') . '</a></div><button class="send-message" type="button">' . __('Отправить') . '</button></form>',
                     'staffid' => 0,
                     'isview' => 1,
                     'isview_user' => 1,
@@ -408,10 +445,15 @@ class PHPShopDialogElement extends PHPShopElements {
                             $style_adm = 'chat_form';
                         }
 
+                        if (empty($row['ai']))
+                            $avatar = $this->avatar;
+                        else
+                            $avatar = $this->avatar_bot;
+
                         $message .= '
                 <div class="chat_msg_item chat_msg_item_admin ' . $style_adm . '">
                   <div class="chat_avatar">
-                    <img src="' . $this->avatar . '"/>
+                    <img src="' . $avatar . '" alt="" title="' . $row['name'] . '">
                   </div>' . nl2br($row['message']) . '
                   <div class="file">' . $flist . '</div>
                   ' . $status . '
@@ -1107,7 +1149,7 @@ class PHPShopProductIndexElements extends PHPShopProductElements {
                                 // Собираем и возвращаем таблицу с товарами
                                 $disp = $this->compile();
                             }
-                            
+
                             // Перехват модуля
                             $this->setHook(__CLASS__, __FUNCTION__, $dataArray, 'END');
 
@@ -1340,7 +1382,7 @@ class PHPShopShopCatalogElement extends PHPShopProductElements {
                     $this->set('catalogTitle', $category['name']);
                     $this->set('catalogName', $category['name']);
                     $this->set('catalogIcon', $this->setImage($category['icon']));
-                    $this->set('catalogColor', (int)$category['color']);
+                    $this->set('catalogColor', (int) $category['color']);
                     $this->set('catalogContent', null);
 
                     $dis .= ParseTemplateReturn("catalog/catalog_table_forma.tpl");

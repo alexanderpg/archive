@@ -3,10 +3,11 @@
 /**
  * Библиотека работы с Yandex.Market API
  * @author PHPShop Software
- * @version 1.5
+ * @version 1.6
  * @package PHPShopClass
  * @subpackage RestApi
  * @todo https://yandex.ru/dev/market/partner-marketplace-cd/doc/dg/reference/post-campaigns-id-offer-mapping-entries-updates.html
+ * @todo https://yandex.ru/dev/market/partner-api/doc/ru/reference/stocks/updateStocks
  */
 class YandexMarket {
 
@@ -31,6 +32,105 @@ class YandexMarket {
         $this->system = new PHPShopSystem();
         $this->image_source = $this->system->ifSerilizeParam('admoption.image_save_source');
         $this->type = $this->options['type'];
+        $this->export = $this->options['export'];
+        $this->log = $this->options['log'];
+    }
+
+    // Обновление цен
+    public function updatePrices($products) {
+
+        if ($this->export != 2) {
+
+            if (is_array($products)) {
+                foreach ($products as $product) {
+
+                    // Ключ обновления 
+                    if ($this->options['type'] == 1)
+                        $product['uid'] = $product['id'];
+                    else
+                        $product['uid'] = PHPShopString::utf8_win1251($product['uid']);
+
+                    $prices["offers"][] = [
+                        "offerId" => (string) $product['uid'],
+                        "price" => [
+                            "value" => (int) $this->getPrice($product),
+                            "currencyId" => "RUR"
+                        ]
+                    ];
+                }
+
+
+                $method = 'campaigns/' . trim($this->options['campaign_id']) . '/offer-prices/updates';
+                $result = $this->post($method, $prices);
+
+                $log = [
+                    'request' => $prices,
+                    'result' => $result
+                ];
+
+                // Журнал
+                $this->log($log, $method);
+            }
+        }
+    }
+
+    // Обновление остатков
+    public function updateStocks($products) {
+
+        if ($this->export != 1) {
+
+            if (is_array($products)) {
+                foreach ($products as $product) {
+
+                    // Ключ обновления 
+                    if ($this->options['type'] == 1)
+                        $product['uid'] = $product['id'];
+                    else
+                        $product['uid'] = PHPShopString::utf8_win1251($product['uid']);
+
+                    if ($product['items'] < 0)
+                        $product['items'] = 0;
+
+                    $skus["skus"][] = [
+                        "sku" => (string) $product['uid'],
+                        "items" => [[
+                        "count" => (int) $product['items'],
+                            ]]
+                    ];
+                }
+
+
+                $method = 'campaigns/' . trim($this->options['campaign_id']) . '/offers/stocks';
+                $result = $this->put($method, $skus);
+
+                $log = [
+                    'request' => $skus,
+                    'result' => $result
+                ];
+
+                // Журнал
+                $this->log($log, $method);
+            }
+        }
+    }
+
+    // Лог
+    public function log($data, $path) {
+
+        if ($this->log == 1) {
+
+            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['yandexcart']['yandexcart_log']);
+
+            $log = array(
+                'message_new' => serialize($data),
+                'order_id_new' => null,
+                'date_new' => time(),
+                'status_new' => null,
+                'path_new' => $path
+            );
+
+            $PHPShopOrm->insert($log);
+        }
     }
 
     public function getProductsCount() {
@@ -134,7 +234,7 @@ class YandexMarket {
 
             // Ключ обновления
             if ($this->type == 2)
-                $shopSku = str_replace(['-','_'], [' ','-'], $product['uid']);
+                $shopSku = str_replace(['-', '_'], [' ', '-'], $product['uid']);
             else
                 $shopSku = $product['id'];
 

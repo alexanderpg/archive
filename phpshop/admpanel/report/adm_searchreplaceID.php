@@ -113,6 +113,9 @@ function actionStart() {
 
     // Каталог
     $Tab1.=$PHPShopGUI->setField('Каталог', viewCatalog($data['category']),false,'Переадресация на страницу списка товаров в выбранном каталоге');
+    
+    // URL
+    $Tab1 .= $PHPShopGUI->setField("URL", $PHPShopGUI->setInputText('http://', "url_new",$data['url']));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);

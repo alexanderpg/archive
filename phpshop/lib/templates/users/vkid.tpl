@@ -1,5 +1,5 @@
 <p id="vkid_button"></p>
-<script src="https://unpkg.com/@vkid/sdk@latest/dist-sdk/umd/index.js"></script>
+<script src="https://unpkg.com/@vkid/sdk@<2.0.0/dist-sdk/umd/index.js"></script>
 <script>
 
     const VKID = window.VKIDSDK;

@@ -84,9 +84,9 @@ function actionStart() {
 
     $PHPShopCategoryArray = new PHPShopCategoryArray();
     $CategoryArray = $PHPShopCategoryArray->getArray();
-    
-    if(is_array($CategoryArray))
-    $GLOBALS['count'] = count($CategoryArray);
+
+    if (is_array($CategoryArray))
+        $GLOBALS['count'] = count($CategoryArray);
 
     $CategoryArray[0]['name'] = '- ' . __('Корневой уровень') . ' -';
     $tree_array = array();
@@ -215,6 +215,9 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setCollapse('Дополнительно', $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/')) .
             $PHPShopGUI->setField("Склад для списания", $PHPShopGUI->setSelect('warehouse_new', $warehouse_value, 300)));
 
+    // Внешний код
+    $Tab1 .= $PHPShopGUI->setCollapse('Интеграция', $PHPShopGUI->setField('Внешний код', $PHPShopGUI->setInputText(null, 'external_code_new', $data['external_code'], '100%')));
+
     // Сумма заказа
     if (empty($data['is_folder'])) {
         $Tab2 .= $PHPShopGUI->setField("Блокировка при стоимости более", $PHPShopGUI->setInputText(null, "sum_max_new", $data['sum_max'], 150, $PHPShopSystem->getDefaultValutaCode()));
@@ -290,7 +293,7 @@ function actionUpdate() {
     if (empty($_POST['ajax'])) {
 
         // Корректировка пустых значений
-        $PHPShopOrm->updateZeroVars('flag_new', 'enabled_new', 'price_null_enabled_new','categories_check_new');
+        $PHPShopOrm->updateZeroVars('flag_new', 'enabled_new', 'price_null_enabled_new', 'categories_check_new');
     }
 
     if (!empty($_POST['icon_new']))
@@ -313,8 +316,8 @@ function actionUpdate() {
         foreach ($_POST['categories'] as $v)
             if (!empty($v) and ! strstr($v, ','))
                 $_POST['categories_new'] .= $v . ",";
-    }
-    else $_POST['categories_check_new'] = 0;
+    } else
+        $_POST['categories_check_new'] = 0;
 
     // Мультибаза
     if (is_array($_POST['servers'])) {

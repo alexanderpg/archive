@@ -51,13 +51,15 @@ CREATE TABLE `phpshop_modules_yandexcart_system` (
   `stop` enum('0','1') DEFAULT '0',
   `type` enum('1','2') NOT NULL default '1',
   `link` enum('0','1') NOT NULL default '0',
+  `export` enum('0','1','2') NOT NULL default '0',
+  `log` enum('0','1') NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251 ;
 
 -- 
 -- Дамп данных таблицы `phpshop_modules_yandexcart_system`
 --
-INSERT INTO `phpshop_modules_yandexcart_system` VALUES (1,'', '', '', '', '', '', 0, 'ADV', 0, 0, '3.8','','0','1','0');
+INSERT INTO `phpshop_modules_yandexcart_system` VALUES (1,'', '', '', '', '', '', 0, 'ADV', 0, 0, '3.9','','0','1','0','0','0');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexcart_log` (
     `id` int(11) NOT NULL AUTO_INCREMENT,

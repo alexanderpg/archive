@@ -118,7 +118,8 @@ $key_name = array(
     'price_purch' => 'Закупочная цена',
     'files' => 'Файлы',
     'external_code' => 'Внешний код',
-    'barcode' => 'Штрихкод'
+    'barcode' => 'Штрихкод',
+    'productservices_products' => 'Услуги'
 );
 
 //if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')

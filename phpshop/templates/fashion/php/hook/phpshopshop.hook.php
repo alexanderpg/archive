@@ -439,7 +439,7 @@ function template_image_gallery($obj, $array) {
             $i++;
         }
 
-        if ($i < 2 or PHPShopString::is_mobile())
+        if ($i < 2)
             $heroSliderNav = null;
 
         $obj->set('productHeroSlider', $heroSlider);

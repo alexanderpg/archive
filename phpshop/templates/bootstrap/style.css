@@ -2501,3 +2501,7 @@ body.modal-open{
         width:95%;
     }
 }
+
+.solid-menus small{
+    display: none;
+}

@@ -55,7 +55,7 @@ function actionStart() {
     if (empty($hideSite)){
         $get_token='https://oauth.vk.com/authorize?client_id='.$option['vk_id'].'&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=video,offline&response_type=token&v=5.52';
         $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('VK ID', $PHPShopGUI->setField('ID приложения', $PHPShopGUI->setInputText(false, 'option[vk_id]', $option['vk_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://id.vk.com/about/business/go" target="_blank">Кабинет разработчика</a>')) .
-                $PHPShopGUI->setField('Токен доступа', $PHPShopGUI->setTextarea('option[vk_id_token]', $option['vk_id_token'], false, 300, '100') . $PHPShopGUI->setHelp('Получить <a href="'.$get_token.'" id="client_token" target="_blank">Персональный токен</a>')).
+                $PHPShopGUI->setField('Токен доступа', $PHPShopGUI->setTextarea('option[vk_id_token]', $option['vk_id_token'], false, 300, '100') . $PHPShopGUI->setHelp('Используется для передачи отзывов из группы VK. Получить <a href="'.$get_token.'" id="client_token" target="_blank">Персональный токен</a>')).
                 $PHPShopGUI->setField('Сервисный ключ', $PHPShopGUI->setInputText(false, 'option[vk_id_apikey]', $option['vk_id_apikey'], 300)) .
                 $PHPShopGUI->setField("Включить VK ID", $PHPShopGUI->setCheckbox('option[vk_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью VK ID на сайте', $option['vk_id_enabled'])), 'in', true
         );

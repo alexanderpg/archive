@@ -1,5 +1,159 @@
 $().ready(function () {
-    
+
+    // Поиск пользователя
+    $(".search_user").on('input', function () {
+
+        var words = $(this).val();
+        var s = $(this);
+        var set = s.attr('data-set');
+        if (words.length > 3) {
+            $.ajax({
+                type: "POST",
+                url: "?path=shopusers",
+                data: {
+                    words: escape(words),
+                    set: set,
+                    ajax: 1,
+                    selectID: 1,
+                    'actionList[selectID]': 'actionOrderSearch'
+                },
+                success: function (data)
+
+                {
+                    // Результат поиска
+                    if (data != '') {
+                        s.attr('data-content', data);
+                        s.popover('show');
+
+                        // Отключение DADATA
+                        if ($('#body').attr('data-token') != "")
+                            $("[name='fio_new']").suggestions().disable();
+                    } else {
+                        s.popover('hide');
+
+                        // Включение DADATA
+                        if ($('#body').attr('data-token') != "")
+                            $("[name='fio_new']").suggestions().enable();
+                    }
+                }
+            });
+
+        } else {
+            s.attr('data-content', '');
+            s.popover('hide');
+        }
+    });
+
+    // Закрыть поиск пользователя
+    $('body').on('click', '.close', function (event) {
+        event.preventDefault();
+        $('[data-toggle="popover"]').popover('hide');
+    });
+
+    // Выбор в поиске пользователя
+    $('body').on('click', '.select-search', function (event) {
+        event.preventDefault();
+
+        $('[name="user_search"]').val($(this).text());
+        $('[name="user_id_new"]').val($(this).attr('data-id'));
+        $('[name="name_new"]').val($(this).attr('data-name'));
+
+        $('[data-toggle="popover"]').popover('hide');
+    });
+
+    $('[data-toggle="popover"]').popover({
+        "html": true,
+        "placement": "bottom",
+        "template": '<div class="popover" role="tooltip" style="max-width:600px"><div class="arrow"></div><div class="popover-content"></div></div>'
+
+    });
+
+    // Поиск товара  -  2 шаг
+    $("body").on('click', "#selectModal .modal-footer .id-add-send", function (event) {
+        event.preventDefault();
+
+
+        $('.search-list input:checkbox:checked').each(function () {
+            var id = $(this).attr('data-id');
+            var name = $(this).parents(".data-row").find('.product-name').text();
+
+            $(selectTarget).val(name);
+            $('[name="parent_id_new"]').val(id);
+        });
+
+        $('#selectModal').modal('hide');
+    });
+
+    // Выбор элемента по клику в модальном окне подбора товара
+    $('body').on('click', ".search-list  td", function () {
+        $(this).parent('tr').find('input:checkbox[name=items]').each(function () {
+            this.checked = !this.checked && !this.disabled;
+        });
+    });
+
+    // Поиск товара - Поиск
+    $("body").on('click', "#selectModal .search-action", function (event) {
+        event.preventDefault();
+
+        var data = [];
+        data.push({name: 'selectID', value: 2});
+        data.push({name: 'ajax', value: 1});
+        data.push({name: 'actionList[selectID]', value: 'actionSearch'});
+
+        $.ajax({
+            mimeType: 'text/html; charset=' + locale.charset,
+            url: '?path=catalog.search&words=' + escape($('input:text[name=search_name]').val()) + '&cat=' + $('select[name=search_category]').val() + '&price_start=' + $('input:text[name=search_price_start]').val() + '&price_end=' + $('input:text[name=search_price_end]').val(),
+            type: 'post',
+            data: data,
+            dataType: "html",
+            async: false,
+            success: function (data) {
+                $('#selectModal .modal-body').html(data);
+
+            }
+
+        });
+    });
+
+    // Поиск товара  - 1 шаг
+    $(".product-search").on('click', function (event) {
+        event.preventDefault();
+
+        selectTarget = $(this).attr('data-target');
+
+        var data = [];
+        data.push({name: 'selectID', value: 2});
+        data.push({name: 'ajax', value: 1});
+        data.push({name: 'currentID', value: $(selectTarget).val()});
+        data.push({name: 'actionList[selectID]', value: 'actionSearch'});
+        data.push({name: 'frame', value: $.getUrlVar('frame')});
+
+        $.ajax({
+            mimeType: 'text/html; charset=' + locale.charset,
+            url: '?path=catalog.search',
+            type: 'post',
+            data: data,
+            dataType: "html",
+            async: false,
+            success: function (data) {
+                //$('#selectModal .modal-dialog').removeClass('modal-lg');
+                $('#selectModal .modal-title').html(locale.add_cart_value);
+                $('#selectModal .modal-footer .btn-primary').removeClass('edit-select-send');
+                $('#selectModal .modal-footer .btn-primary').addClass('id-add-send');
+                $('#selectModal .modal-footer .btn-delete').addClass('hidden');
+                $('#selectModal .modal-body').css('max-height', ($(window).height() - 200) + 'px');
+                $('#selectModal .modal-body').css('overflow-y', 'auto');
+                $('#selectModal .modal-body').html(data);
+
+                $(".search-list td input:checkbox").each(function () {
+                    this.checked = true;
+                });
+
+                $('#selectModal').modal('show');
+            }
+        });
+    });
+
     // Расширенный поиск сообщений
     $(".search").on('click', function (event) {
         event.preventDefault();

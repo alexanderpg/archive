@@ -283,7 +283,10 @@ class PHPShopCompare extends PHPShopCore {
                     else
                         $price = PHPShopProductFunction::GetPriceValuta($row['id'], array($row['price'], $row['price2'], $row['price3'], $row['price4'], $row['price5']), $row['baseinputvaluta']);
 
+                    if($PHPShopSystem->getParam("shop_type") == 0){
+                        
                     $tdR[$igood][] = '<div class="prod-price"><span class="new-price">' . number_format($price,$this->format, '.', ' ') . ' '.$this->PHPShopSystem->getValutaIcon().'</span></div>';
+                    }
                     $chars = unserialize($row['vendor_array']);
                     foreach ($chars as $k => $char) {
                         $chars[$k] = array_unique($char);

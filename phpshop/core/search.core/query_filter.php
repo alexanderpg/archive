@@ -35,7 +35,7 @@ function query_multibase($obj) {
 /**
  * Составление SQL запроса для поиска товара
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopCoreFunction
  * @param obj $obj объект класса
  * @return mixed
@@ -83,7 +83,7 @@ function query_filter($obj) {
         }
 
     // Чистка запроса Secure Fix
-    $words = PHPShopSecurity::true_search(PHPShopSecurity::TotalClean($_REQUEST['words'], 2),true);
+    $words = PHPShopSecurity::true_search(PHPShopSecurity::TotalClean($_REQUEST['words'], 2), true);
 
     // Разделяем слова
     $_WORDS = explode(" ", $words);
@@ -141,6 +141,10 @@ function query_filter($obj) {
         $sql = getYandexSearchSql($obj, $words, $p, $multibase, $cat);
     }
 
+    if ($obj->isYandexSearchCloud && empty($prewords)) {
+        $sql = getYandexSearchCloudSql($words, $multibase);
+    }
+
     $obj->search_order = array(
         'words' => $words,
         'pole' => $pole,
@@ -163,7 +167,47 @@ function query_filter($obj) {
 }
 
 /**
- * Яндекс.Поиск
+ * Yandex Search Cloud
+ * @param string $search
+ * @param string $multibase
+ * @return string
+ */
+function getYandexSearchCloudSql($search, $multibase = null) {
+
+    $YandexSearch = new YandexSearch();
+    $site=$_SERVER['SERVER_NAME'];
+    //$site='myphpshop.ru';
+
+    // Учет модуля SEOURLPRO
+    if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
+        $site.='/id/';
+    }
+    else {
+        $site.='/shop/';
+    }
+
+    $result = $YandexSearch->search(PHPShopString::win_utf8($search) . ' site:'.$site);
+
+    if (is_array($result)) {
+        $ids = array();
+        foreach ($result as $document) {
+
+            $id_seo = preg_replace('#^.*/id/.*-(.*)\.html$#', '$1', $document['url']);
+            $id = preg_replace('#^.*/shop/UID_(.*)\.html$#', '$1', $document['url']);
+
+            if (!empty($id_seo))
+                $ids[] = $id_seo;
+            elseif (!empty($id))
+                $ids[] = $id;
+        }
+
+        if (is_array($ids))
+            return "select * from " . $GLOBALS['SysValue']['base']['products'] . " where id IN (" . implode(',', $ids) . ") $multibase  and enabled='1' and parent_enabled='0' order by num desc, items desc";
+    }
+}
+
+/**
+ * Yandex Search
  * @param PHPShopSearch $obj
  * @param string $search
  * @param int $p
@@ -255,8 +299,8 @@ function search_base($obj, $words) {
     // Переадресация на категорию
     else if (!empty($row['category'])) {
         header('Location: /' . $GLOBALS['dir']['dir'] . 'shop/CID_' . $row['category'] . '.html');
-    } else if (!empty($row['link'])) {
-        header('Location: ' . $row['link']);
+    } else if (!empty($row['url']) and empty($_REQUEST['ajax'])) {
+        header('Location: http://' . $GLOBALS['dir']['dir'] . $row['url']);
     }
 }
 

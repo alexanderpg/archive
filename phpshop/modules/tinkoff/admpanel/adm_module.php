@@ -66,13 +66,13 @@ function actionStart()
     $info = '
         <h4>Настройка модуля</h4>
         <ol>
-<li>Предоставить необходимые документы и заключить договор с <a href="https://www.tinkoff.ru/kassa/form/partner/phpshop/" target="blank">Тинькофф</a>.</li>
-<li>На закладке настройки ввести предоставленные банком Тинькофф адрес "Шлюза", код "Терминала" и "Секрентый ключ".</li>
+<li>Предоставить необходимые документы и <a href="https://www.tbank.ru/kassa/form/partner/phpshop/" target="blank">заключить договор с Т-Банк</a>.</li>
+<li>На закладке настройки ввести предоставленные банком Т-Банк адрес "Шлюза", код "Терминала" и "Секрентый ключ".</li>
 <li>Выбрать режим налогообложения товаров при включенном флаге передаче данных данных для формирования чека.</a></li>
 <li>Выбрать режим налогообложения доставки в карточке редактирования доставки.</a></li>
-<li>В личном кабинете Тинькофф в разделе "Магазины" указать адрес для уведомлений о кассовых чеках <code>http://' . $_SERVER['SERVER_NAME'] . '/phpshop/modules/tinkoff/payment/notification.php</code></li>
-<li>В личном кабинете Тинькофф в разделе "Магазины" указать URL страницы успешного платежа <code>http://' . $_SERVER['SERVER_NAME'] . '/success/?payment=tinkoff</code></li>
-<li>В личном кабинете Тинькофф в разделе "Магазины" указать URL страницы неуспешного платежа <code>http://' . $_SERVER['SERVER_NAME'] . '/fail/</code></li>
+<li>В личном кабинете Т-Банк в разделе "Магазины" указать адрес для уведомлений о кассовых чеках <code>http://' . $_SERVER['SERVER_NAME'] . '/phpshop/modules/tinkoff/payment/notification.php</code></li>
+<li>В личном кабинете Т-Банк в разделе "Магазины" указать URL страницы успешного платежа <code>http://' . $_SERVER['SERVER_NAME'] . '/success/?payment=tinkoff</code></li>
+<li>В личном кабинете Т-Банк в разделе "Магазины" указать URL страницы неуспешного платежа <code>http://' . $_SERVER['SERVER_NAME'] . '/fail/</code></li>
 </ol>';
 
     $taxation = array(
@@ -91,11 +91,14 @@ function actionStart()
     $OrderStatusArray = $PHPShopOrderStatusArray->getArray();
     $order_status_value[] = array(__('Новый заказ'), 0, $data['status']);
     if (is_array($OrderStatusArray))
-        foreach ($OrderStatusArray as $order_status)
+        foreach ($OrderStatusArray as $order_status){
             $order_status_value[] = array($order_status['name'], $order_status['id'], $data['status']);
+            $order_status_confirmed_value[] = array($order_status['name'], $order_status['id'], $data['status_confirmed']);
+        }
 
     // Статус заказа
     $Tab1.= $PHPShopGUI->setField('Оплата при статусе', $PHPShopGUI->setSelect('status_new', $order_status_value, 300));
+    $Tab1.= $PHPShopGUI->setField('Статус после подверждении заказа', $PHPShopGUI->setSelect('status_confirmed_new', $order_status_confirmed_value, 300));
 
     $Tab1.=$PHPShopGUI->setField('Описание оплаты', $PHPShopGUI->setTextarea('title_end_new', $data['title_end']));
 

@@ -310,16 +310,24 @@ if (!empty($_COOKIE['fullscreen'])) {
                                             <li><a href="?path=company"><?php _e('Юридические лица'); ?></a></li>
                                         </ul>
                                     </li>
-                                    <li class="<?php echo $hideSite; ?>"><a href="?path=system.sync"><?php _e('Документооборот'); ?></a></li>
+                                    <li class="<?php echo $hideSite; ?>"><a href="?path=system.sync"><?php _e('Обмен данными'); ?></a></li>
                                     <li><a href="?path=system.seo"><?php _e('SEO заголовки'); ?></a></li>
                                     <li class="<?php echo $hideSite; ?>"><a href="?path=system.currency"><?php _e('Валюты'); ?></a></li>
                                     <li><a href="?path=system.image"><?php _e('Изображения'); ?></a></li>
                                     <li><a href="?path=system.servers"><?php _e('Витрины'); ?></a></li>
                                     <li class="<?php echo $hideCatalog; ?>"><a href="?path=system.warehouse"><?php _e('Склады'); ?></a></li>
                                     <li><a href="?path=system.dialog"><?php _e('Диалоги'); ?></a></li>
-                                    <li><a href="?path=system.integration"><?php _e('Интеграция'); ?></a></li>
+
+                                    
+                                    <li class="dropdown-submenu"><a href="?path=system.integration"><?php _e('Интеграция'); ?></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="?path=system.yandexcloud"><?php _e('Yandex Cloud'); ?></a></li>
+                                        </ul>
+                                    </li>
+                                    
                                     <li><a href="?path=system.locale"><?php _e('Локализация'); ?></a></li>
                                     <li><a href="?path=system.service"><?php _e('Обслуживание'); ?></a></li>
+                                    
                                     <li class="divider"></li>
                                     <li><a href="?path=tpleditor"><span class="glyphicon glyphicon-picture"></span> <?php _e('Шаблоны дизайна'); ?></a></li>
                                 </ul>

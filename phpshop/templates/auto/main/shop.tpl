@@ -262,7 +262,7 @@
                                     <!-- Catalog -->
                                     <li class="hs-has-mega-menu navbar-nav-item @hideSite@">
 
-                                        <a id="basicMegaMenu" class="hs-mega-menu-invoker nav-link nav-link-toggle" href="javascript:;" aria-haspopup="true" aria-expanded="false">{Каталог}</a>
+                                        <a id="basicMegaMenu" class="hs-mega-menu-invoker nav-link nav-link-toggle" href="/catalog/" aria-haspopup="true" aria-expanded="false">{Каталог}</a>
 
                                         <!-- Nav Item - Mega Menu -->
                                         <div class="hs-mega-menu w-100 dropdown-menu" aria-labelledby="basicMegaMenu">

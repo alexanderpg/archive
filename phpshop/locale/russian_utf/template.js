@@ -35,7 +35,7 @@ var locale = {
 		pickup_phone: "телефон выбранного ПВЗ",
 		pickup: "ПВЗ",
 	    country: "Россия"
-	}
+	},
 	pochta: {
         pickup: "Почта России, отделение"
     }

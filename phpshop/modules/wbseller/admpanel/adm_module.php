@@ -46,7 +46,7 @@ function actionUpdate() {
     global $PHPShopModules, $PHPShopOrm;
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new', 'log_new');
+    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new', 'log_new','discount_new');
 
     $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.wbseller.wbseller_system"));
     $PHPShopOrm->debug = false;
@@ -144,7 +144,8 @@ function actionStart() {
     $Tab3 = $PHPShopGUI->setCollapse('Цены', $PHPShopGUI->setField('Колонка цен WB', $PHPShopGUI->setSelect('price_new', $PHPShopGUI->setSelectValue($data['price'], 5), 100)) .
             $PHPShopGUI->setField('Наценка', $PHPShopGUI->setInputText($status_pre, 'fee_new', $data['fee'], 100, '%')) .
             $PHPShopGUI->setField('Действие', $PHPShopGUI->setRadio("fee_type_new", 1, "Понижение", $data['fee_type']) . $PHPShopGUI->setRadio("fee_type_new", 2, "Повышение", $data['fee_type'])) .
-            $PHPShopGUI->setField("Склад WB", $PHPShopGUI->setSelect('warehouse_id_new', $warehouse_value, '100%'))
+            $PHPShopGUI->setField("Склад WB", $PHPShopGUI->setSelect('warehouse_id_new', $warehouse_value, '100%')).
+            $PHPShopGUI->setField('Скидки WB', $PHPShopGUI->setCheckbox('discount_new', 1, 'Снятие всех скидок в WB', $data['discount']))
     );
 
     // Инструкция

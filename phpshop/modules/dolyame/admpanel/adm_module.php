@@ -171,7 +171,7 @@ function actionStart() {
     $info = '
         <h4>Настройка модуля</h4>
         <ol>
-<li>Предоставить необходимые документы и заключить договор с <a href="https://dolyame.ru" target="blank">Долями</a>.</li>
+<li>Предоставить необходимые документы и заключить договор с <a href="https://dolyame.ru/business/?utm_medium=ptr.act&utm_campaign=sme.partners&partnerId=5-IV4AJGWE&agentId=5-IVFOVQCN&agentSsoId=14373cd1-2b09-4747-bae6-299a0229aedc&utm_source=partner_rko_a_sme" target="blank">Долями</a>.</li>
 <li>На закладке настройки модуля ввести предоставленные Долями <kbd>Логин API магазина</kbd> и <kbd>Пароль API магазина</kbd>.</li>
 <li>Выбрать статус заказа для оплаты и статус заказа после оплаты.</li>
 <li>Указать максимальную сумму заказа для оплаты Долями (по умолчанию 30 000 руб).</li>

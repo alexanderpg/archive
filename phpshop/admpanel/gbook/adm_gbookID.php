@@ -3,10 +3,9 @@
 $TitlePage = __('Редактирование Отзыва') . ' #' . $_GET['id'];
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['gbook']);
 
-
 function actionStart() {
     global $PHPShopGUI, $PHPShopSystem, $PHPShopOrm, $PHPShopModules;
-    
+
     $PHPShopGUI->field_col = 3;
 
     // Выборка
@@ -34,31 +33,30 @@ function actionStart() {
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setField("Дата", $PHPShopGUI->setInputDate("datas_new", PHPShopDate::get($data['datas'])));
 
-    $Tab1.=$PHPShopGUI->setField("Имя", $PHPShopGUI->setInput("text", "name_new", $data['name']));
+    $Tab1 .= $PHPShopGUI->setField("Имя", $PHPShopGUI->setInput("text", "name_new", $data['name']));
 
-    $Tab1.=$PHPShopGUI->setField("E-mail", $PHPShopGUI->setInput("text", "mail_new", $data['mail']));
+    $Tab1 .= $PHPShopGUI->setField("E-mail", $PHPShopGUI->setInput("text", "mail_new", $data['mail']));
 
-    $Tab1.=$PHPShopGUI->setField("Тема", $PHPShopGUI->setTextarea("tema_new", $data['tema'])) .
-            $PHPShopGUI->setField("Отзыв", $PHPShopGUI->setTextarea("otsiv_new", $data['otsiv'], "", '100%', '200'));
-    $Tab1.=$PHPShopGUI->setField("Статус", $PHPShopGUI->setRadio("flag_new", 1, "Вкл.", $data['flag']) . $PHPShopGUI->setRadio("flag_new", 0, "Выкл.", $data['flag']));
-    
-    $Tab1.=$PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
-    
-    $Tab1= $PHPShopGUI->setCollapse('Отзыв',$Tab1);
+    $Tab1 .= $PHPShopGUI->setField("Тема", $PHPShopGUI->setTextarea("tema_new", $data['tema'])) .
+            $PHPShopGUI->setField("Отзыв", $PHPShopGUI->setTextarea("otsiv_new", $data['otsiv'], "", '100%', '200') . $PHPShopGUI->setAIHelpButton('otsiv_new', 100, 'gbook_review'));
+    $Tab1 .= $PHPShopGUI->setField("Статус", $PHPShopGUI->setCheckbox("flag_new", 1, null, $data['flag']));
+
+    $Tab1 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
+
+    $Tab1 = $PHPShopGUI->setCollapse('Отзыв', $Tab1);
 
     // Содержание закладки 2
-    $Tab1.= $PHPShopGUI->setCollapse('Ответ',$oFCKeditor->AddGUI());
-    
+    $Tab1 .= $PHPShopGUI->setCollapse('Ответ', $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('otvet_new', 200, 'gbook_answer', 'otsiv_new'));
+
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true,false,true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true));
 
     // Вывод кнопок сохранить и выход в футер
-    $ContentFooter =
-            $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .
+    $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .
             $PHPShopGUI->setInput("button", "delID", "Удалить", "right", 70, "", "but", "actionDelete.gbook.edit") .
             $PHPShopGUI->setInput("submit", "editID", "Сохранить", "right", 70, "", "but", "actionUpdate.gbook.edit") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionSave.gbook.edit");
@@ -99,6 +97,9 @@ function actionSave() {
 function actionUpdate() {
     global $PHPShopOrm, $PHPShopModules;
 
+    // Корректировка пустых значений
+    $PHPShopOrm->updateZeroVars('flag_new');
+
     if (empty($_POST['ajax'])) {
         $_POST['datas_new'] = PHPShopDate::GetUnixTime($_POST['datas_new']);
     }
@@ -106,16 +107,17 @@ function actionUpdate() {
         $_POST['flag_new'] = 0;
     else if (!empty($_POST['mail_new']))
         sendMail($_POST['name_new'], $_POST['mail_new']);
-    
+
     // Мультибаза
     if (is_array($_POST['servers'])) {
         $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and !strstr($v, ','))
-                $_POST['servers_new'].="i" . $v . "i";
+            if ($v != 'null' and ! strstr($v, ','))
+                $_POST['servers_new'] .= "i" . $v . "i";
     }
-    
-     // Перехват модуля
+
+
+    // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);
 
     $action = $PHPShopOrm->update($_POST, array('id' => '=' . $_POST['rowID']));

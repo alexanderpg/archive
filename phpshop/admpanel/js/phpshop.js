@@ -52,10 +52,10 @@ function showProgressBar(message) {
 
     var messageBox = '.success-notification';
     var innerBox = '#notification .notification-alert';
-    
-    message+='<div class="progress bot-progress" style="width:250px"><div class="progress-bar progress-bar-striped  progress-bar-success active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div></div>';
 
-    if ($(messageBox).length > 0 ) {
+    message += '<div class="progress bot-progress" style="width:250px"><div class="progress-bar progress-bar-striped  progress-bar-success active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div></div>';
+
+    if ($(messageBox).length > 0) {
         $(messageBox).removeClass('hide');
         $(innerBox).html(message);
         $(messageBox).fadeIn('slow');
@@ -738,6 +738,79 @@ $().ready(function () {
             return "Are you sure you want to exit? Please complete sign up or the app will get deleted.";
     });
 
+
+    // AI
+    $("body").on('click', ".ai-help", function () {
+
+        var obj = $(this).attr('data-value');
+        var user = $(this).attr('data-user');
+        var length = $(this).attr('data-length');
+        var role = $(this).attr('data-role');
+
+        if ($('[name="' + user + '"]').val() !== "" && $('[name="' + user + '"]').val() !== undefined)
+            var text = $('[name="' + user + '"]').val();
+        else
+            var text = $('[name="' + obj + '"]').val();
+
+        if (text == "") {
+
+            if ($('[name="name_new"]').val() !== undefined) {
+                text = $('[name="name_new"]').val();
+            }
+
+            if ($('[name="zag_new"]').val() !== undefined)
+                text = $('[name="zag_new"]').val();
+
+            if ($('[name="tema_new"]').val() !== undefined)
+                text = $('[name="tema_new"]').val();
+        }
+
+        $.MessageBox({
+            buttonDone: "OK",
+            buttonFail: locale.cancel,
+            message: locale.confirm_ai_help
+        }).done(function () {
+
+            var data = [];
+            data.push({name: 'text', value: text});
+            data.push({name: 'length', value: length});
+            data.push({name: 'role', value: role});
+
+            $.ajax({
+                mimeType: 'text/html; charset=' + locale.charset,
+                url: './system/ajax/gpt.ajax.php',
+                data: data,
+                type: 'post',
+                dataType: "json",
+                async: false,
+                success: function (json) {
+                    if (json['success'] == 1) {
+
+                        $.MessageBox({
+                            buttonDone: locale.ai_done,
+                            buttonFail: locale.cancel,
+                            message: json['text'],
+                            width: "50%"
+                        }).done(function () {
+
+                            if (tinymce.get(obj) !== null) {
+                                tinymce.get(obj).setContent(json['text']);
+                            }
+
+                            $('[name="' + obj + '"]').val(json['text']);
+                        })
+
+                    } else {
+                        $.MessageBox({
+                            buttonDone: "OK",
+                            buttonFail: locale.cancel,
+                            message: locale.ai_false
+                        })
+                    }
+                }
+            });
+        })
+    });
 
 });
 

@@ -2,7 +2,7 @@
     <!-- Blog Card -->
     <article class=" card h-100 transition-3d-hover">
         <div class="position-relative">
-            <img class="img-fluid p-0 rounded-top" src="@newsIcon@" alt="@newsZag@" loading="lazy">
+            <img class="img-fluid p-0 rounded-top" src="@newsIcon@" alt="" loading="lazy">
         </div>
 
         <div class="card-body">

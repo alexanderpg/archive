@@ -3,7 +3,7 @@
 /**
  * Обработчик товаров
  * @author PHPShop Software
- * @version 2.6
+ * @version 2.7
  * @package PHPShopShopCore
  */
 class PHPShopShop extends PHPShopShopCore {
@@ -41,6 +41,7 @@ class PHPShopShop extends PHPShopShopCore {
     var $category_array = array();
     var $selected_filter = [];
     var $add_main_product_to_parent = false;
+    var $navigation_last = false;
 
     /**
      * Конструктор
@@ -409,8 +410,11 @@ class PHPShopShop extends PHPShopShopCore {
         // Выделение текущего каталога в меню
         $this->setActiveMenu();
 
-        // Навигация хлебных крошек для новых шаблонов
-        $this->navigation($this->category, null);
+        // Навигация хлебных крошек
+        if (!empty($this->navigation_last))
+            $this->navigation($this->category, $row['name']);
+        else
+            $this->navigation($this->category, null);
 
         // Мета заголовки
         $this->set_meta(array($row, $this->PHPShopCategory->getArray(), $parent_category_row));
@@ -1149,7 +1153,7 @@ function CID_Category($mode = false) {
     $this->set('thisCat', $this->PHPShopNav->getId());
 
     // Иконки подкаталогов
-    if ($this->PHPShopCategory->getValue('vid') == 0)
+    if ($this->PHPShopCategory->getValue('podcatalog_view') == 0)
         $this->set('catalogList', $disp);
 
     // Данные родительской категории для meta

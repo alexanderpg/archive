@@ -3,17 +3,16 @@
 $TitlePage = __('Создание отзыва');
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['gbook']);
 
-
 function actionStart() {
     global $PHPShopGUI, $PHPShopSystem, $PHPShopModules, $TitlePage;
-    
+
     $PHPShopGUI->field_col = 3;
 
     // Выборка
     $data['datas'] = PHPShopDate::get();
     $data['tema'] = __('Отзыв от ') . $data['datas'];
     $data['name'] = __('Администратор');
-    $data = $PHPShopGUI->valid($data,'otvet','mail','otsiv','flag','servers');
+    $data = $PHPShopGUI->valid($data, 'otvet', 'mail', 'otsiv', 'flag', 'servers');
 
     $PHPShopGUI->setActionPanel($TitlePage, false, array('Сохранить и закрыть'));
 
@@ -36,21 +35,22 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField("E-mail", $PHPShopGUI->setInput("text", "mail_new", $data['mail']));
 
     $Tab1 .= $PHPShopGUI->setField("Тема", $PHPShopGUI->setTextarea("tema_new", $data['tema'])) .
-            $PHPShopGUI->setField("Отзыв", $PHPShopGUI->setTextarea("otsiv_new", $data['otsiv'], "", '100%', '200'));
-    $Tab1 .= $PHPShopGUI->setField("Статус", $PHPShopGUI->setRadio("flag_new", 1, "Вкл.", $data['flag']) . $PHPShopGUI->setRadio("flag_new", 0, "Выкл.", $data['flag']));
-    
-    $Tab1.=$PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
+            $PHPShopGUI->setField("Отзыв", $PHPShopGUI->setTextarea("otsiv_new", $data['otsiv'], "", '100%', '200') . $PHPShopGUI->setAIHelpButton('otsiv_new', 100, 'gbook_review'));
 
-    $Tab1= $PHPShopGUI->setCollapse('Отзыв',$Tab1);
+    $Tab1 .= $PHPShopGUI->setField("Статус", $PHPShopGUI->setCheckbox("flag_new", 1, null, $data['flag']));
+
+    $Tab1 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
+
+    $Tab1 = $PHPShopGUI->setCollapse('Отзыв', $Tab1);
 
     // Содержание закладки 2
-    $Tab1.= $PHPShopGUI->setCollapse('Ответ',$oFCKeditor->AddGUI());
+    $Tab1 .= $PHPShopGUI->setCollapse('Ответ', $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('otvet_new', 100, 'gbook_answer', 'otsiv_new'));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, null);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true,false,true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("submit", "saveID", "ОК", "right", 70, "", "but", "actionInsert.gbook.create");

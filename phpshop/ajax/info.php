@@ -46,10 +46,11 @@ $GetFile = GetFile("../../license/");
 @$License = parse_ini_file_true("../../license/" . $GetFile, 1);
 
 // Версия шаблона
-$Template = parse_ini_file_true("../../phpshop/templates/" . $PHPShopSystem->getParam('skin').'/php/inc/config.ini', 1);
-if(!empty($Template['sys']['version']))
-    $Template['sys']['version']=' '.$Template['sys']['version'];
-else $Template['sys']['version']=null;
+$Template = parse_ini_file_true("../../phpshop/templates/" . $PHPShopSystem->getParam('skin') . '/php/inc/config.ini', 1);
+if (!empty($Template['sys']['version']))
+    $Template['sys']['version'] = ' ' . $Template['sys']['version'];
+else
+    $Template['sys']['version'] = null;
 
 $TechPodUntilUnixTime = $License['License']['SupportExpires'];
 if (is_numeric($TechPodUntilUnixTime))
@@ -85,18 +86,26 @@ foreach (str_split($GLOBALS['SysValue']['upload']['version']) as $w)
 if (empty($License['License']['DomenLocked']))
     $License['License']['DomenLocked'] = '-';
 
-$shop_type_value = array('интернет-магазин','каталог продукции','сайт компании');
+$shop_type_value = array('интернет-магазин', 'каталог продукции', 'сайт компании');
+
+$YandexCloudUntilUnixTime = $License['License']['YandexCloud'];
+if (is_numeric($YandexCloudUntilUnixTime) and $YandexCloudUntilUnixTime > time())
+    $YandexCloudUntil = PHPShopDate::dataV($YandexCloudUntilUnixTime);
+else
+    $YandexCloudUntil = "-";
+
 
 $Info = "Информация о программе
 ---------------------------------------------
 
 Версия: PHPShop " . $product_name . "
 Сборка: " . substr($version, 0, strlen($version) - 1) . "
-Конфигурация: " . $shop_type_value[(int)$PHPShopSystem->getParam("shop_type")] . "
-Дизайн: " . $_SESSION['skin'] .$Template['sys']['version']." ". $theme . "
+Конфигурация: " . $shop_type_value[(int) $PHPShopSystem->getParam("shop_type")] . "
+Дизайн: " . $_SESSION['skin'] . $Template['sys']['version'] . " " . $theme . "
 Установлено: " . $FileDate . "
 Окончание лицензии: " . $LicenseUntil . "
 Окончание поддержки: " . $TechPodUntil . "
+Окончание подписки Yandex Cloud: " . $YandexCloudUntil . "
 Ограничение на домен: " . $License['License']['DomenLocked'] . "
 
 ---------------------------------------------
@@ -110,6 +119,6 @@ $_RESULT = array(
 );
 
 // JSON 
-$_RESULT['info'] = PHPShopString::win_utf8($_RESULT['info'],true);
+$_RESULT['info'] = PHPShopString::win_utf8($_RESULT['info'], true);
 echo json_encode($_RESULT);
 ?>

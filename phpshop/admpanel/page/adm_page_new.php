@@ -127,8 +127,8 @@ function actionStart() {
 
     // Содержание закладки 3
     if ($data['category'] != 2000) {
-        $Tab3 = $PHPShopGUI->setField("Title", $PHPShopGUI->setTextarea("title_new", $data['title']));
-        $Tab3 .= $PHPShopGUI->setField("Description", $PHPShopGUI->setTextarea("description_new", $data['description']));
+        $Tab3 = $PHPShopGUI->setField("Title", $PHPShopGUI->setTextarea("title_new", $data['title']).$PHPShopGUI->setAIHelpButton('title_new',70,'page_title'));
+        $Tab3 .= $PHPShopGUI->setField("Description", $PHPShopGUI->setTextarea("description_new", $data['description']).$PHPShopGUI->setAIHelpButton('description_new',80,'page_descrip'));
         $Tab3 .= $PHPShopGUI->setField("Keywords", $PHPShopGUI->setTextarea("keywords_new", $data['keywords']));
         $Tab_seo = $PHPShopGUI->setCollapse('SEO / Мета-данные', $Tab3);
 
@@ -169,12 +169,12 @@ function actionStart() {
 
     // Вывод формы закладки
     if (!empty($data['category']) and $data['category'] != 2000 and $data['category'] != 1000) {
-        $Tab_content = $PHPShopGUI->setCollapse("Анонс", $oFCKeditor2->AddGUI());
-        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI());
+        $Tab_content = $PHPShopGUI->setCollapse("Анонс", $oFCKeditor2->AddGUI().$PHPShopGUI->setAIHelpButton('preview_new',100,'page_description'));
+        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI().$PHPShopGUI->setAIHelpButton('content_new',300,'page_content'));
         $PHPShopGUI->setTab(array("Основное", $Tab_description . $Tab_info . $Tab_seo . $Tab_content . $Tab_dop . $Tab_sec, true, false, true));
     } else {
 
-        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI());
+        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI().$PHPShopGUI->setAIHelpButton('content_new',300,'page_content'));
 
         if ($data['category'] == 2000)
             $grid = false;

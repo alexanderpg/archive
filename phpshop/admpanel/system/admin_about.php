@@ -43,6 +43,13 @@ function actionStart() {
         }
     }
 
+    $YandexCloudUntilUnixTime = $License['License']['YandexCloud'];
+    if (is_numeric($YandexCloudUntilUnixTime) and $YandexCloudUntilUnixTime > time())
+        $YandexCloudUntil = PHPShopDate::get($YandexCloudUntilUnixTime);
+    else
+        $YandexCloudUntil = __("нет подписки");
+
+
     // Размер названия поля
     $PHPShopGUI->field_col = 3;
     $PHPShopGUI->addJSFiles('./system/gui/system.gui.js');
@@ -71,8 +78,8 @@ function actionStart() {
     else
         $ShowcaseLimit = __('нет');
 
-    $shop_type_value = array(__('интернет-магазин'),__('каталог продукции'),__('сайт компании'));
-    
+    $shop_type_value = array(__('интернет-магазин'), __('каталог продукции'), __('сайт компании'));
+
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $PHPShopGUI->setField("Название программы", '<a class="btn btn-sm btn-default" href="https://www.phpshop.ru/page/compare.html?from=' . $_SERVER['SERVER_NAME'] . '" target="_blank"><span class="glyphicon glyphicon-info-sign"></span> PHPShop ' . $product_name . '</a>') .
             $PHPShopGUI->setField("Версия программы", '<a class="btn btn-sm btn-default" href="https://www.phpshop.ru/docs/update.html?from=' . $_SERVER['SERVER_NAME'] . '" target="_blank"><span class="glyphicon glyphicon-info-sign"></span> ' . substr($version, 0, strlen($version) - 1) . '</a>') .
@@ -81,8 +88,9 @@ function actionStart() {
             $PHPShopGUI->setField("Дополнительные витрины", $ShowcaseLimit, false, 'Многосайтовость', false, 'text-right') .
             $PHPShopGUI->setField("Окончание поддержки", $TechPodUntil . '&nbsp;&nbsp; <a class="btn btn-sm btn-default  ' . $loadLicClass . '" href="?path=support"><span class="glyphicon glyphicon-user"></span> ' . __('Задать вопрос в поддержку') . '</a>', false, false, false, 'text-right') .
             $PHPShopGUI->setField("Окончание лицензии", $LicenseUntil, false, false, false, 'text-right') .
+            $PHPShopGUI->setField("Окончание подписки <a href=\"https://docs.phpshop.ru/nastroiky/yandex-cloud\" target=\"_blank\">Yandex Cloud</a>", $YandexCloudUntil, false, false, false, 'text-right') .
             $PHPShopGUI->setField("Файл лицензии", $licFilepath, false, false, false, 'text-right') .
-            $PHPShopGUI->setField("Серийный номер", $serialNumber, false, 'Требуется для активации Pro 1С', false, 'text-right') .
+            $PHPShopGUI->setField("Серийный номер", $serialNumber, false, false, false, 'text-right') .
             $PHPShopGUI->setField("Версия PHP", phpversion(), false, false, false, 'text-right') .
             $PHPShopGUI->setField("Версия MySQL", @mysqli_get_server_info($PHPShopBase->link_db), false, false, false, 'text-right') .
             $PHPShopGUI->setField("Max execution time", @ini_get('max_execution_time') . ' sec.', false, 'Максимальное время работы', false, 'text-right') .

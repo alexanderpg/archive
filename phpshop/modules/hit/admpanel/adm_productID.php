@@ -26,6 +26,8 @@ function updateOptionHit($data) {
                 }
             }
         }
+        else if (empty($_POST['hit_new']))
+            $_POST['hit_new'] = 0;
     }
 }
 

@@ -2,7 +2,7 @@
 $().ready(function() {
 
     var theme_new = false;
-    
+   
     // Синхрнизация лицензии
     $("body").on('click', "#loadLic", function(event) {
         event.preventDefault();

@@ -22,19 +22,19 @@ function treegenerator($array, $i, $parent) {
                 $selected = null;
 
             if (empty($check['select'])) {
-                $tree_select.='<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
+                $tree_select .= '<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
                 $i = 1;
             } else {
-                $tree_select.='<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
+                $tree_select .= '<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
                 //$i++;
             }
 
-            $tree.='<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
+            $tree .= '<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
 		<td><a href="?path=catalog&id=' . $k . '">' . $v . '</a></td>
                     </tr>';
 
-            $tree_select.=$check['select'];
-            $tree.=$check['tree'];
+            $tree_select .= $check['select'];
+            $tree .= $check['tree'];
         }
     }
     return array('select' => $tree_select, 'tree' => $tree);
@@ -46,8 +46,8 @@ function viewCatalog() {
     $PHPShopCategoryArray = new PHPShopCategoryArray();
     $CategoryArray = $PHPShopCategoryArray->getArray();
 
-       $CategoryArray[0]['name'] = '- '.__('Выбрать каталог').' -';
-       $tree_array = array();
+    $CategoryArray[0]['name'] = '- ' . __('Выбрать каталог') . ' -';
+    $tree_array = array();
 
     foreach ($PHPShopCategoryArray->getKey('parent_to.id', true) as $k => $v) {
         foreach ($v as $cat) {
@@ -76,18 +76,18 @@ function viewCatalog() {
             else
                 $disabled = ' disabled';
 
-            $tree_select.='<option value="' . $k . '" ' . $selected . $disabled . '>' . $v . '</option>';
+            $tree_select .= '<option value="' . $k . '" ' . $selected . $disabled . '>' . $v . '</option>';
 
-            $tree_select.=$check['select'];
+            $tree_select .= $check['select'];
         }
-    $tree_select.='</select>';
+    $tree_select .= '</select>';
 
     return $tree_select;
 }
 
 // Стартовый вид
 function actionStart() {
-    global $PHPShopGUI, $PHPShopModules,$TitlePage;
+    global $PHPShopGUI, $PHPShopModules, $TitlePage;
 
 
     // Размер названия поля
@@ -97,20 +97,23 @@ function actionStart() {
     $PHPShopGUI->addCSSFiles('./css/jquery.tagsinput.css');
 
     // Передача данных
-    if(!empty($_GET['data']))
-    $data = $_GET['data'];
-    
+    if (!empty($_GET['data']))
+        $data = $_GET['data'];
+
     $data['enabled'] = 1;
-    $data = $PHPShopGUI->valid($data,'name','uid','category');
+    $data = $PHPShopGUI->valid($data, 'name', 'uid', 'category');
 
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setField("Запрос", $PHPShopGUI->setInputText(false, "name_new", str_replace(array('i', 'ii'), array('', ','), $data['name'])) . $PHPShopGUI->setRadio("enabled_new", 1, "Показывать", $data['enabled']) . $PHPShopGUI->setRadio("enabled_new", 0, "Скрыть", $data['enabled']));
 
     // Товары
-    $Tab1.=$PHPShopGUI->setField('Товары', $PHPShopGUI->setTextarea('uid_new', $data['uid'], false, false, false, __('Укажите ID товаров или воспользуйтесь').' <a href="#" data-target="#uid_new"  class="btn btn-sm btn-default tag-search"><span class="glyphicon glyphicon-search"></span> '.__('поиском товаров').'</a>'));
+    $Tab1 .= $PHPShopGUI->setField('Товары', $PHPShopGUI->setTextarea('uid_new', $data['uid'], false, false, false, __('Укажите ID товаров или воспользуйтесь') . ' <a href="#" data-target="#uid_new"  class="btn btn-sm btn-default tag-search"><span class="glyphicon glyphicon-search"></span> ' . __('поиском товаров') . '</a>'));
 
     // Каталог
-    $Tab1.=$PHPShopGUI->setField('Каталог', viewCatalog($data['category']),false,'Переадресация на страницу списка товаров в выбранном каталоге');
+    $Tab1 .= $PHPShopGUI->setField('Каталог', viewCatalog($data['category']), false, 'Переадресация на страницу списка товаров в выбранном каталоге');
+
+    // URL
+    $Tab1 .= $PHPShopGUI->setField("URL", $PHPShopGUI->setInputText('http://', "url_new", $data['url']));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
@@ -134,11 +137,10 @@ function actionInsert() {
         $name_new = null;
         $name = explode(",", $_POST['name_new']);
         foreach ($name as $v)
-            $name_new.="i" . $v . "i";
+            $name_new .= "i" . $v . "i";
 
         $_POST['name_new'] = $name_new;
-    }
-    else
+    } else
         $_POST['name_new'] = "i" . $_POST['name_new'] . "i";
 
     // Перехват модуля

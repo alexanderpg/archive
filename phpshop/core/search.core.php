@@ -47,7 +47,13 @@ class PHPShopSearch extends PHPShopShopCore {
         }
 
         $this->isYandexSpeller = (bool) $this->PHPShopSystem->getSerilizeParam('admoption.yandex_speller_enabled');
-
+        $this->isYandexSearchCloud = (bool) $this->PHPShopSystem->getSerilizeParam('ai.yandexsearch_site_enabled');
+        $this->isYandexSearchToken = (bool) $this->PHPShopSystem->getSerilizeParam('ai.yandexsearch_token');
+        
+        if(empty($this->isYandexSearchToken))
+            $this->isYandexSearchCloud=false;
+        else PHPShopObj::loadClass('yandexcloud');
+        
         $this->title = __('Поиск') . " - " . $this->PHPShopSystem->getValue("name");
     }
 

@@ -15,11 +15,11 @@
                                 <td colspan="2" style=" padding:10px;" align="right"><a style="padding:0px; font-size:11px;margin:0px 0px 0px 14px;color:#086ebd" href="javascript:void(0)" onclick="document.getElementById('mod_oneclick_forma').style.display='none';"><img src="phpshop/modules/oneclick/templates/close.png" alt="" border="0" align="absmiddle"></a></td>
                             </tr>
                             <tr>
-                                <td><b>Ваше имя</b>:</td>
+                                <td><b>{Ваше имя}</b>:</td>
                                 <td><input type="text" name="oneclick_mod_name" id="oneclick_mod_name" size="15"></td>
                             </tr>
                             <tr>
-                                <td><b>Телефон</b>:</td>
+                                <td><b>{Телефон}</b>:</td>
                                 <td><input type="text" name="oneclick_mod_tel" id="oneclick_mod_tel" size="15"> </td>
                             </tr>
                             <tr><td colspan="2"><p>@captcha@</p></td></tr>

@@ -62,7 +62,7 @@ function actionStart()
 
         <h4>Настройка модуля</h4>
         <ol>
- <li>Предоставить необходимые документы и заключить договор с <a href="https://www.tinkoff.ru/business/loans/?utm_source=partner_rko_sme&utm_medium=ptr.act&utm_campaign=sme.partners&partnerId=5-IV4AJGWE#form-application" target="blank">Тинькофф</a>.</li>
+ <li>Предоставить необходимые документы и <a href="https://www.tbank.ru/business/loans/?utm_source=partner_rko_sme&utm_medium=ptr.act&utm_campaign=sme.partners&partnerId=5-IV4AJGWE#form-application" target="blank">заключить договор с Т-банк</a>.</li>
 <li>Сообщите банку, что готовы к прохождению модерации.</li>
 <li>Значения <kbd>ShopId</kbd>, <kbd>ShowcaseId</kbd> и <kbd>PromoCode</kbd> для работы в боевом режиме магазину отправляет менеджер банка при успешной интеграции с тестовыми параметрами. Заполнить эти значения в настройках модуля.</li>
 <li>Включить доступным для продажи в кредит товарам признак "Кредит доступен" в закдадке <kbd>Кредит</kbd>, указать Промокод (опционально, если получен от менеджера банка).</li>

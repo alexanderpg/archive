@@ -16,7 +16,10 @@ function actionBaseUpdate() {
 
 // Функция обновления
 function actionUpdate() {
-    global $PHPShopOrm;
+    global $PHPShopOrm,$PHPShopModules;
+
+    // Настройки витрины
+    $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);
 
     $PHPShopOrm->debug = false;
     $action = $PHPShopOrm->update($_POST);
@@ -41,8 +44,7 @@ function actionStart() {
     $PHPShopGUI->setTab(array("Инструкция", $Tab2), array("О Модуле", $Tab3), array("Обзор адресов", null, '?path=modules.dir.geoipredirect'));
 
     // Вывод кнопок сохранить и выход в футер
-    $ContentFooter =
-            $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
+    $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);

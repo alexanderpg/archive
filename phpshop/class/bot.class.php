@@ -28,6 +28,69 @@ class PHPShopBot {
         }
     }
 
+    //  Поиск по сайту
+    private function search($text) {
+
+        $YandexSearch = new YandexSearch();
+        $site = $_SERVER['SERVER_NAME'];
+        //$site = 'myphpshop.ru';
+        $result = $YandexSearch->search($text . ' site:' . $site);
+        return PHPShopString::utf8_win1251($result[0]['title']) . ' - ' . $result[0]['url'] . ', добавь в ответ ссылку на ' . $result['url'] . '';
+    }
+
+    // AI
+    public function ai($message) {
+
+        // Время работы
+        $time = (int) date("H", time());
+        $time_from = (int) $this->PHPShopSystem->getSerilizeParam('admoption.time_from_dialog');
+        $time_until = (int) $this->PHPShopSystem->getSerilizeParam('admoption.time_until_dialog');
+        $day_work = (int) $this->PHPShopSystem->getSerilizeParam('admoption.day_dialog');
+        $day = date("D", time());
+
+        $day_work_array[1] = array('Sunday', 'Saturday');
+        $day_work_array[2] = array('Saturday');
+        $day_work_array[3] = array();
+
+        if (($time_from <= $time and $time < $time_until) and ! in_array($day, $day_work_array[$day_work])) {
+            return false;
+        }
+        // AI
+        elseif ($this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_chat_enabled') == 1) {
+            
+            PHPShopObj::loadClass("yandexcloud");
+            include('./phpshop/lib/parsedown/Parsedown.php');
+
+            $YandexGPT = new YandexGPT();
+            $system = $this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_chat_role');
+
+            $search = $this->search($message['text']);
+
+            $result = $YandexGPT->text(PHPShopString::utf8_win1251(strip_tags($message['text'])), $system . $search, 0.3, 200);
+            $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
+
+            $insert = array(
+                'user_id' => $message['user_id'],
+                'chat' => array
+                    (
+                    'id' => $message['chat']['id'],
+                    'first_name' => __('Чат-бот'),
+                    'last_name' => "",
+                ),
+                'date' => time(),
+                'text' => $text,
+                'staffid' => 0,
+                'attachments' => null,
+                'bot' => 'message',
+                'isview' => 0,
+                'isview_user' => 0,
+                'ai' => 1
+            );
+
+            $this->dialog($insert);
+        }
+    }
+
     public function dialog($message) {
 
         if (empty($message['attachments']))
@@ -60,7 +123,7 @@ class PHPShopBot {
 
         $insert = array(
             'user_id' => $message['user_id'],
-            'name' => PHPShopString::utf8_win1251($message['chat']['first_name']),
+            'name' => $message['chat']['first_name'],
             'message' => PHPShopString::utf8_win1251(strip_tags($message['text'])),
             'chat_id' => $message['chat']['id'],
             'time' => $message['date'],
@@ -69,7 +132,8 @@ class PHPShopBot {
             'attachments' => $message['attachments'],
             'isview' => $message['isview'],
             'isview_user' => $message['isview_user'],
-            'order_id' => $message['order_id']
+            'order_id' => $message['order_id'],
+            'ai' => $message['ai']
         );
 
         $this->PHPShopOrm->insert($insert, '');
@@ -245,7 +309,7 @@ class PHPShopVKBot extends PHPShopBot {
         $this->token = $this->reviews_token;
         $insert['name_new'] = PHPShopString::utf8_win1251($this->user($chat['object']['from_id']));
         $insert['otsiv_new'] = nl2br(PHPShopString::utf8_win1251(strip_tags($chat['object']['text'])));
-        $insert['tema_new'] = __('Отзыв от ').$insert['name_new'];
+        $insert['tema_new'] = __('Отзыв от ') . $insert['name_new'];
         $insert['datas_new'] = $chat['object']['date'];
         $insert['flag_new'] = 1;
 

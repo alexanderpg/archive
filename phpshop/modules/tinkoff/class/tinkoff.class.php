@@ -2,11 +2,18 @@
 
 include_once dirname(__FILE__) . '/tinkoffMerchantAPI.class.php';
 
+/**
+ * Оплата через Т-Банк
+ * @author PHPShop Software
+ * @version 1.2
+ * @todo https://www.tbank.ru/kassa/dev/payments/
+ */
 class Tinkoff
 {
     public $currency = 'RUB';
     public $customerEmail = '';
     public $settings = array();
+    const PAYMENT_ID = 10032;
 
     public function __construct()
     {
@@ -79,6 +86,10 @@ class Tinkoff
             if($obj->discount > 0 && empty($product['promo_price']))
                 $price = $product['price']  - ($product['price']  * $obj->discount  / 100);
             else $price = $product['price'];
+            
+            // Ограничение 128 символов
+            $product['name'] = substr($product['name'],0,128);
+            
             $receiptItems[] = array(
                 'Name' => mb_convert_encoding($product['name'], "UTF-8", "Windows-1251"),
                 "Price" => $price * 100,

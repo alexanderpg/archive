@@ -66,11 +66,19 @@ if (is_array($data)) {
             }
         }
 
-        $prices[] = [
-            'nmID' => (int) $prod['export_wb_id'],
-            'price' => (int) $WbSeller->price($price, $prod['baseinputvaluta']),
-            'discount' => (int) 0
-        ];
+        // Снять скидки
+        if ($WbSeller->discount == 1) {
+            $prices[] = [
+                'nmID' => (int) $prod['export_wb_id'],
+                'price' => (int) $WbSeller->price($price, $prod['baseinputvaluta']),
+                'discount' => (int) 0
+            ];
+        } else {
+            $prices[] = [
+                'nmID' => (int) $prod['export_wb_id'],
+                'price' => (int) $WbSeller->price($price, $prod['baseinputvaluta'])
+            ];
+        }
 
         if (empty($prod['barcode_wb']))
             $prod['barcode_wb'] = $prod['uid'];

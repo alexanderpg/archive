@@ -2,7 +2,7 @@
 
 /**
  * Библиотека работы с CommerceML
- * @version 1.6
+ * @version 1.7
  * @package PHPShopClass
  * https://v8.1c.ru/tekhnologii/obmen-dannymi-i-integratsiya/standarty-i-formaty/protokol-obmena-s-saytom/
  * https://dev.1c-bitrix.ru/api_help/sale/xml/contragents.php
@@ -169,8 +169,8 @@ class PHPShopCommerceML {
 		</Товары>
 	</Каталог>';
 
-        $xml = '<?xml version="1.0" encoding="windows-1251"?>
-<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . '">
+        $xml = '<?xml version="1.0" encoding="windows-1251"?> //T09:41:49
+<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . 'T'.date("H:i:s").'">
     <Классификатор>
     <Ид>1</Ид>
     <Наименование>Классификатор (Основной каталог товаров)</Наименование>
@@ -197,8 +197,6 @@ class PHPShopCommerceML {
         global $PHPShopSystem;
 
         $xml = null;
-
-
         if (is_array($data))
             foreach ($data as $row)
                 if (is_array($row)) {
@@ -215,11 +213,16 @@ class PHPShopCommerceML {
 
                     $PHPShopDelivery = new PHPShopDelivery($order['Person']['dostavka_metod']);
                     $delivery = str_replace(['&', '<', '>'], '', $PHPShopDelivery->getCity());
-                    if(empty($delivery))
-                        $delivery='Доставка';
+                    $delivery_id = $PHPShopDelivery->getParam('external_code');
+
+                    if (empty($delivery))
+                        $delivery = 'Доставка';
+
+                    if (empty($delivery_id))
+                        $delivery_id = 'ORDER_DELIVERY';
 
                     $item = '<Товар>
-		                   <Ид>ORDER_DELIVERY</Ид>
+		                   <Ид>' . $delivery_id . '</Ид>
 		                   <Наименование>' . $delivery . '</Наименование>
 				   <ЦенаЗаЕдиницу>' . $order['Cart']['dostavka'] . '</ЦенаЗаЕдиницу>
 				   <Количество>1</Количество>
@@ -301,14 +304,15 @@ class PHPShopCommerceML {
                     if ($row['delivtime'])
                         $adr_info .= ", время доставки: " . $row['delivtime'];
                     if ($row['dop_info'])
-                        $adr_info .= ', '.str_replace(['&', '<', '>'], '', $row['dop_info']);
-                    
+                        $adr_info .= ', ' . str_replace(['&', '<', '>'], '', $row['dop_info']);
+
 
                     $xml .= '
 	<Документ>
                 <Ид>' . $row['id'] . '</Ид>
 		<Номер>' . $row['uid'] . '</Номер>
-		<Дата>' . PHPShopDate::get($row['datas'], false, true) . '</Дата>
+		<Дата>' . PHPShopDate::get($row['datas'], false, true). 'T'.date("H:i:s") . '</Дата>
+                <Время>'.date("H:i:s").'</Время>
                 <Комментарий>' . html_entity_decode($status['maneger']) . '[Номер документа на сайте: ' . $row['uid'] . ']</Комментарий>
 		<ХозОперация>Заказ товара</ХозОперация>
 		<Роль>Продавец</Роль>
@@ -323,7 +327,7 @@ class PHPShopCommerceML {
 		      <КПП>' . $row['org_kpp'] . '</КПП>
 		      <Роль>Покупатель</Роль>
                       <АдресРегистрации>
-                        <Представление>' . html_entity_decode($adr_info). '</Представление>
+                        <Представление>' . html_entity_decode($adr_info) . '</Представление>
                         <АдресноеПоле>
                           <Тип>Город</Тип>
                           <Значение>' . html_entity_decode($row['city']) . '</Значение>
@@ -370,13 +374,11 @@ class PHPShopCommerceML {
                 }
 
         $xml = '<?xml version="1.0" encoding="windows-1251"?>
-<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . '">
+<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . 'T'.date("H:i:s"). '">
 	' . $xml . '
 </КоммерческаяИнформация>';
 
         return $xml;
     }
-
 }
-
 ?>

@@ -8,3 +8,4 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_log` (
   `type` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
+ALTER TABLE `phpshop_modules_tinkoff_system` ADD `status_confirmed` int(11) NOT NULL;

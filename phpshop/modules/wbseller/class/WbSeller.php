@@ -52,6 +52,7 @@ class WbSeller {
         $this->delivery = $this->options['delivery'];
         $this->create_products = $this->options['create_products'];
         $this->log = $this->options['log'];
+        $this->discount = $this->options['discount'];
 
         $this->status_list = [
             'new' => 'Новые заказы',
@@ -717,6 +718,9 @@ class WbSeller {
      * @return array
      */
     public function request($method, $params = [], $put = false, $debug = false) {
+        
+        if(empty($this->api_key))
+            return false;
 
         if (strstr($method, 'https'))
             $api = null;

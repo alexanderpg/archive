@@ -81,7 +81,7 @@ function WbsellerUpdate() {
 
             if (!empty($export_wb_id)) {
                 $_POST['export_wb_id_new'] = $data['export_wb_id'] = $export_wb_id;
-                $PHPShopOrm->update(['export_wb_id_new' => $export_wb_id,'barcode_wb_new'=>$barcode_wb], ['id' => '=' . (int) $_POST['rowID']]);
+                $PHPShopOrm->update(['export_wb_id_new' => $export_wb_id, 'barcode_wb_new' => $barcode_wb], ['id' => '=' . (int) $_POST['rowID']]);
 
                 // Фото
                 $WbSeller->sendImages($data);
@@ -115,11 +115,19 @@ function WbsellerUpdate() {
                 }
             }
 
-            $prices[] = [
-                'nmID' => (int) $data['export_wb_id'],
-                'price' => (int) $WbSeller->price($price, $data['baseinputvaluta']),
-                'discount' => (int) 0
-            ];
+            // Снять скидки
+            if ($WbSeller->discount == 1) {
+                $prices[] = [
+                    'nmID' => (int) $data['export_wb_id'],
+                    'price' => (int) $WbSeller->price($price, $data['baseinputvaluta']),
+                    'discount' => (int) 0
+                ];
+            } else {
+                $prices[] = [
+                    'nmID' => (int) $data['export_wb_id'],
+                    'price' => (int) $WbSeller->price($price, $data['baseinputvaluta'])
+                ];
+            }
 
             $WbSeller->sendPrices(['data' => $prices]);
         }

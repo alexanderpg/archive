@@ -359,7 +359,7 @@ function actionStart() {
             'pro' => 13,
             'template' => 8,
             'seo' => 5,
-            'delivery' => 12,
+            'delivery' => 11,
             'chat' => 7,
             'crm' => 6,
             'marketplaces' => 6,
@@ -368,7 +368,7 @@ function actionStart() {
             'yandex' => 3,
             'sale' => 19,
             'develop' => 14,
-            'minus' => -16
+            'minus' => -15
         ],
         1 => [
             'pro' => 3,

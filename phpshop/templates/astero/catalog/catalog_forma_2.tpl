@@ -1,5 +1,5 @@
 <li class="mega-menu-column">
-    <a href="/shop/CID_@catalogId@.html" class="list-group-item">@catalogName@</a>
+    <a href="/shop/CID_@catalogId@.html" class="list-group-item">@catalogName@<small class="pull-right">@catalogCount@</small></a>
     <ul class="mega-menu-block">
      <li class="nav-header" id="cid-ul@catalogId@"><a href="/shop/CID_@catalogId@.html">@catalogName@</a> <b class="caret"></b><a href="/shop/CID_@catalogId@.html"><img src="@catalogIcon@" title="@catalogIconDesc@" alt="@catalogIconDesc@"></a></li>
      

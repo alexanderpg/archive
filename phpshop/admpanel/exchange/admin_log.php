@@ -1,6 +1,6 @@
 <?php
 
-$TitlePage = __("История ипортов");
+$TitlePage = __("История импортов");
 
 function actionStart() {
     global $PHPShopInterface,$TitlePage;

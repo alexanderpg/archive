@@ -13,11 +13,12 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_wbseller_system` (
 `delivery` INT(11) NOT NULL default '0',
 `create_products` enum('0','1') NOT NULL default '0',
 `log` enum('0','1') NOT NULL default '0',
+`discount` enum('0','1') NOT NULL default '0',
 `version` varchar(64) DEFAULT '1.0',
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_wbseller_system` VALUES (1, '', '',1,0,'1','','1','0','',0,'1','0','1.6');
+INSERT INTO `phpshop_modules_wbseller_system` VALUES (1, '', '',1,0,'1','','1','0','',0,'1','0','1.7');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_wbseller_log` (
 `id` int(11) NOT NULL AUTO_INCREMENT,

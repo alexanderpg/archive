@@ -172,6 +172,7 @@ function actionStart() {
 
     // Вывод
     $vid = $PHPShopGUI->setCheckbox('vid_new', 1, 'Не выводить внутренние подкаталоги в навигации', $data['vid']) . '<br>';
+    $vid .= $PHPShopGUI->setCheckbox('podcatalog_view_new', 1, 'Не выводить внутренние подкаталоги в товарах', $data['podcatalog_view']) . '<br>';
     $vid .= $PHPShopGUI->setCheckbox('skin_enabled_new', 1, 'Скрыть каталог', $data['skin_enabled']) . '<br>';
     $vid .= $PHPShopGUI->setCheckbox('menu_new', 1, 'Главное меню', $data['menu']) . '<br>';
     $Tab_info .= $PHPShopGUI->setField("Опции вывода", $vid) . '<br>';
@@ -213,12 +214,15 @@ function actionStart() {
     $editor->Value = $data['content'];
     $Tab2 = $editor->AddGUI();
 
+    // AI
+    $Tab2 .= $PHPShopGUI->setAIHelpButton('content_new', 300, 'catalog_content');
+
     // Заголовки
     $Tab7 = $PHPShopGUI->loadLib('tab_headers', $data);
 
     // Безопасноть
     if ($PHPShopSystem->ifSerilizeParam('admoption.rule_enabled', 1))
-    $Tab8 = $PHPShopGUI->setCollapse('Редактирование', $PHPShopGUI->loadLib('tab_secure', $data));
+        $Tab8 = $PHPShopGUI->setCollapse('Редактирование', $PHPShopGUI->loadLib('tab_secure', $data));
 
     //Мультибаза
     $Tab8 .= $PHPShopGUI->setCollapse('Мультибаза', $PHPShopGUI->loadLib('tab_multibase', $data));

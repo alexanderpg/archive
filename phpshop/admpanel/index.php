@@ -261,6 +261,18 @@ function actionStart() {
     if (getenv("COMSPEC"))
         $_SESSION['mod_pro'] = true;
 
+    if (!empty($License['License']['YandexCloud']) and ($License['License']['YandexCloud'] !='No' and $License['License']['YandexCloud'] > time())) {
+        $_SESSION['yandexcloud'] = $License['License']['YandexCloud'];
+    } else {
+        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['system']);
+        $data = $PHPShopOrm->select();
+        $option = unserialize($data['ai']);
+        $option['yandexgpt_seo'] = 0;
+        $option['yandexgpt_seo_import'] = 0;
+        $option['yandexgpt_chat_enabled'] = 0;
+        $option['yandexsearch_site_enabled'] = 0;
+        $PHPShopOrm->update(['ai_new' => serialize($option)]);
+    }
 
     // ќзнакомительный режим
     if (is_array($License)) {

@@ -99,7 +99,8 @@ $key_name = array(
     'length' => 'Длина',
     'price_purch' => 'Закупочная цена',
     'hit' => 'Хит',
-    'external_code' => 'Внешний код'
+    'external_code' => 'Внешний код',
+    'productservices_products' => 'Услуги'
 );
 
 $key_placeholder = array(

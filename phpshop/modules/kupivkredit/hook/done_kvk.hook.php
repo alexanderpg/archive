@@ -17,6 +17,7 @@ function send_to_order_mod_kvk_hook($obj, $value, $rout) {
         $total = 0;
         $i = 0;
         $dis = '';
+
         foreach ($orders['Cart']['cart'] as $product) {
             if ($obj->discount > 0)
                 $price = $product['price'] - ($product['price'] * $obj->discount / 100);
@@ -32,6 +33,17 @@ function send_to_order_mod_kvk_hook($obj, $value, $rout) {
             $i++;
         }
 
+        // Доставка
+        if (!empty($orders['Cart']['dostavka'])) {
+            $dis .= '<input name="itemVendorCode_' . $i . '" value="delivery" type="hidden">';
+            $dis .= '<input name="itemName_' . $i . '" value="' . iconv("windows-1251", "utf-8", htmlspecialchars('Доставка', ENT_COMPAT, 'cp1251', true)) . '" type="hidden">';
+            $dis .= '<input name="itemQuantity_' . $i . '" value="1" type="hidden">';
+            $total = number_format($total + $orders['Cart']['dostavka'], 2, '.', '');
+            $dis .= '<input name="itemPrice_' . $i . '" value="' . number_format($orders['Cart']['dostavka'], 2, '.', '') . '" type="hidden">';
+
+            $i++;
+        }
+
         $kvk_pay = ceil($total / 19);
         $obj->set('kvk_prod', $dis);
         $obj->set('kvk_ouid', $_POST['ouid']);
@@ -39,7 +51,7 @@ function send_to_order_mod_kvk_hook($obj, $value, $rout) {
         $obj->set('kvk_tel', $_POST['tel_new']);
         $obj->set('kvk_url', $kvk_url);
         $obj->set('kvk_shop_id', $kvk_shop_id);
-         $obj->set('kvk_promo', $kvk_promo);
+        $obj->set('kvk_promo', $kvk_promo);
         if (!empty($kvk_showcase_id))
             $obj->set('kvk_showcase_id', "<input name='showcaseId' value='$kvk_showcase_id' type='hidden'>");
         $obj->set('kvk_sum', number_format($total, 2, '.', ''));

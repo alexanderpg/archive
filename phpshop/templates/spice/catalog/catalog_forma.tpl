@@ -1,7 +1,7 @@
 <li class="dropdown">
     <a href="/shop/CID_@catalogId@.html" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="10">
 		<i class="fa fa-chevron-right"></i>
-    	@catalogName@
+    	@catalogName@<small class="pull-right">@catalogCount@</small>
     </a>
     <ul class="dropdown-menu" role="menu" id="cid-ul@catalogId@">
     

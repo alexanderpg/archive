@@ -111,7 +111,13 @@ function actionStart() {
 
     if (!empty($tab_dialog))
         $sidebarright[] = array('title' => 'Диалоги', 'content' => $tab_dialog);
+    
+    // Отзывы
+    $tab_comment = $PHPShopGUI->loadLib('tab_comment',false);
 
+     if (!empty($tab_comment))
+        $sidebarright[] = array('title' => 'Отзывы', 'content' => $tab_comment);
+    
     // Карта
     $mass = unserialize($data['data_adres']);
     if ($PHPShopSystem->ifSerilizeParam('admoption.yandexmap_enabled')) {

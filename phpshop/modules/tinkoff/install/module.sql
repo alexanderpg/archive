@@ -11,14 +11,15 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_system` (
     `status` int(11) NOT NULL,
     `title_end` text NOT NULL,
     `taxation` varchar(64) NOT NULL,
+    `status_confirmed` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_modules_tinkoff_system` (`id`, `title`, `terminal`, `secret_key`, `gateway`, `force_payment`, `version`, `enabled_taxation`, `status`, `title_end`, `taxation`) VALUES
-(1, 'Платежная система Тинькофф Банка', 'TinkoffBankTest', 'TinkoffBankTest', 'https://securepay.tinkoff.ru/v2', '0', 2.4, 0, 0, '', 'osn');
+(1, 'Платежная система Т-Банк', 'TinkoffBankTest', 'TinkoffBankTest', 'https://securepay.tinkoff.ru/v2', '0', 2.5, 0, 0, '', 'osn');
 
 INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
-(10032, 'Мир, Visa, Mastercard (Tinkoff)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tinkoff.png');
+(10032, 'Мир, Visa, Mastercard (Т-Банк)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tbank.svg');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
