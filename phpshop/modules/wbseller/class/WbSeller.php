@@ -11,7 +11,7 @@ class WbSeller {
 
     const GET_PRODUCT_LIST = 'https://content-api.wildberries.ru/content/v2/get/cards/list';
     const GET_PRODUCT_PRICE = 'https://discounts-prices-api.wildberries.ru/api/v2/list/goods/filter';
-    const GET_PARENT_TREE = 'https://content-api.wildberries.ru/content/v1/object/parent/all';
+    const GET_PARENT_TREE = 'https://content-api.wildberries.ru/content/v2/object/parent/all';
     const GET_TREE = 'https://content-api.wildberries.ru/content/v2/object/all';
     const GET_TREE_ATTRIBUTE = 'https://content-api.wildberries.ru/content/v2/object/charcs/';
     const IMPORT_PRODUCT = 'https://content-api.wildberries.ru/content/v2/cards/upload';
@@ -344,7 +344,7 @@ class WbSeller {
     /**
      *  Список товаров из WB
      */
-    public function getProductList($search = "", $limit = null) {
+    public function getProductList($search = "", $limit = null,$updatedAt=false,$nmID=false) {
 
         if (empty($limit))
             $limit = 50;
@@ -352,7 +352,7 @@ class WbSeller {
         $params = [
             'settings' => [
                 'cursor' => [
-                    'limit' => (int) $limit
+                    'limit' => (int) $limit,
                 ],
                 'filter' => [
                     "textSearch" => (string) PHPShopString::win_utf8($search),
@@ -364,6 +364,12 @@ class WbSeller {
                 ]
             ],
         ];
+        
+        if(!empty($updatedAt))
+            $params['settings']['cursor']['updatedAt']=$updatedAt;
+        
+        if(!empty($nmID))
+            $params['settings']['cursor']['nmID']=$nmID;
 
 
         $result = $this->request(self::GET_PRODUCT_LIST, $params);

@@ -77,7 +77,8 @@ function pochtaSetData(result) {
         region = result.areaTo; // В ручном вводе адреса курьерской доставки область\регион в поле района
     }
 
-    var deliveryCost = result.cashOfDelivery / 100;
+    var deliveryCost = Number(result.cashOfDelivery / 100);
+    deliveryCost = Math.round(deliveryCost);
     if($("#d").data('free') === 1) {
         deliveryCost = 0;
     }

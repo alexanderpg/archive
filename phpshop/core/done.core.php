@@ -8,7 +8,7 @@ $PHPShopOrder = new PHPShopOrderFunction();
 /**
  * Обработчик записи заказа
  * @author PHPShop Software
- * @version 1.8
+ * @version 1.9
  * @package PHPShopCore
  */
 class PHPShopDone extends PHPShopCore {
@@ -46,6 +46,9 @@ class PHPShopDone extends PHPShopCore {
         $this->setNum();
 
         $this->PHPShopOrder = $PHPShopOrder;
+
+        // Статус заказа
+        $this->statusOrder = $this->PHPShopSystem->getNewStatusOrder();
 
         // Библиотека доставки
         if (PHPShopSecurity::true_num($_POST['d'])) {
@@ -91,7 +94,7 @@ class PHPShopDone extends PHPShopCore {
         $last = $row['uid'];
         $all_num = explode("-", $last);
         $ferst_num = $all_num[0];
-        $order_num = (int)$ferst_num + 1;
+        $order_num = (int) $ferst_num + 1;
 
         if (empty($_SESSION['order_prefix']))
             $_SESSION['order_prefix'] = substr(rand(1000, 99999), 0, $this->format);
@@ -132,12 +135,11 @@ class PHPShopDone extends PHPShopCore {
 
             // Смена статуса
             if (!empty($this->userId)) {
-                
+
                 $_SESSION['UsersStatus'] = $status;
-                
+
                 (new PHPShopUser($this->userId))->updateParam(['status_new' => (int) $status]);
                 $_SESSION['UsersStatusPice'] = (new PHPShopUserStatus($_SESSION['UsersStatus']))->getPrice();
-
             }
 
             foreach ($this->PHPShopCart->_CART as $id => $product) {
@@ -276,8 +278,11 @@ class PHPShopDone extends PHPShopCore {
                 // SMS администратору
                 $this->sms();
 
-                // PUSH администратору
-                $this->push();
+                // Сообщение смена статуса
+                if (!empty($this->statusOrder)) {
+                    $PHPShopOrderFunction = new PHPShopOrderFunction((int) $this->orderId);
+                    $PHPShopOrderFunction->changeStatus($this->statusOrder, 0);
+                }
 
                 // Запись бонусов
                 $this->bonus($this->orderId);
@@ -463,25 +468,6 @@ class PHPShopDone extends PHPShopCore {
     }
 
     /**
-     * PUSH оповещение
-     */
-    function push() {
-
-        // Перехват модуля
-        if ($this->setHook(__CLASS__, __FUNCTION__))
-            return true;
-
-        if ($this->PHPShopSystem->ifSerilizeParam('admoption.push_enabled')) {
-
-            $msg = $this->lang('mail_title_adm') . $this->ouid . " - " . $this->total . " " . $this->currency;
-
-            PHPShopObj::loadClass(array("push"));
-            $PHPShopPush = new PHPShopPush();
-            $PHPShopPush->send($msg);
-        }
-    }
-
-    /**
      * SMS оповещение
      */
     function sms() {
@@ -590,6 +576,9 @@ class PHPShopDone extends PHPShopCore {
         $insert['dop_info_new'] = PHPShopSecurity::TotalClean($_POST['dop_info']);
         $insert['sum_new'] = $this->total;
 
+        // Статус нового заказа
+        $insert['statusi_new'] = $this->statusOrder;
+
         if (defined('HostID')) {
             $insert['servers_new'] = HostID;
             $insert['admin_new'] = HostAdmin;
@@ -678,7 +667,7 @@ function mailcartforma($val, $option) {
     // Артикул
     if (!empty($val['parent_uid']))
         $val['uid'] = $val['parent_uid'];
-    
+
     // Подтип
     if (!empty($val['parent']))
         $val['id'] = $val['parent'];

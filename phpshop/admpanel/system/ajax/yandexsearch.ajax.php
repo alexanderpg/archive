@@ -154,5 +154,4 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
 
         </script>
     </body>
-</body>
 </html>

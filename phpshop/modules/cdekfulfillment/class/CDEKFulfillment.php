@@ -19,12 +19,6 @@ class CDEKFulfillment {
     public function __construct() {
         $PHPShopOrm = new PHPShopOrm('phpshop_modules_cdekfulfillment_system');
         $this->option = $PHPShopOrm->select();
-
-        // price columns
-        if ($this->option['price'] == 1)
-            $this->option['price'] = 'price';
-        else
-            $this->option['price'] = 'price' . $this->option['price'];
     }
 
     /*
@@ -38,7 +32,7 @@ class CDEKFulfillment {
         $PHPShopOrder = new PHPShopOrderFunction($order['id']);
 
         $cdek = unserialize($order['cdekfulfillment_order_data']);
-        
+
         // Дополнительный склад
         $PHPShopOrmWarehouse = new PHPShopOrm($GLOBALS['SysValue']['base']['warehouses']);
         $Warehouses = $PHPShopOrmWarehouse->select(array('*'), array('enabled' => "='1'"), array('order' => 'num DESC'), array('limit' => 100));
@@ -53,80 +47,79 @@ class CDEKFulfillment {
         else
             $currency = $PHPShopOrder->default_valuta_iso;
 
-        if (is_array($cdek) and !empty($cdek['id'])) {
+        if (is_array($cdek) and ! empty($cdek['id'])) {
 
             $info .= $PHPShopGUI->setField('№ Заказа', $PHPShopGUI->setText($cdek['id']));
+            $info .= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setText($order['cdekfulfillment_delivery_price'] . $currency));
             $info .= $PHPShopGUI->setField('Отправлен', $PHPShopGUI->setText(explode(".", $cdek['date']['date'])[0]));
 
             // Корзина локальный склад
             $PHPShopInterface = new PHPShopInterface();
             $PHPShopInterface->checkbox_action = false;
-            $PHPShopInterface->setCaption(array("Наименование на складе ".$dataWarehouse[$this->option['warehouse_main']]['name'], "50%"), array("Цена", "15%"), array('<span class="hidden-xs">'.$dataWarehouse[$this->option['warehouse_main']]['name'].'</span><span class="visible-xs">'.$dataWarehouse[$this->option['warehouse_main']]['name'].'</span>', "10%", array('align' => 'center')), array('Сумма', '15%', array('align' => 'right')));
+            $PHPShopInterface->setCaption(array("Наименование на складе " . $dataWarehouse[$this->option['warehouse_main']]['name'], "50%"), array("Цена", "15%"), array('<span class="hidden-xs">' . $dataWarehouse[$this->option['warehouse_main']]['name'] . '</span><span class="visible-xs">' . $dataWarehouse[$this->option['warehouse_main']]['name'] . '</span>', "10%", array('align' => 'center')), array('Сумма', '15%', array('align' => 'right')));
 
             // Корзина
             $cart = unserialize($order['orders'])['Cart']['cart'];
 
-            if (sizeof($cart) != 0)
-                if (is_array($cart))
-                    foreach ($cart as $val) {
+            if (is_array($cart) and sizeof($cart) != 0)
+                foreach ($cart as $val) {
 
-                        if (!empty($val['id'])) {
+                    if (!empty($val['id'])) {
 
-                            // Проверка сдека
-                            $export_cdek_id = (new PHPShopProduct($val['id']))->getParam('export_cdek_id');
+                        // Проверка сдека
+                        $export_cdek_id = (new PHPShopProduct($val['id']))->getParam('export_cdek_id');
 
-                            $code = null;
-                            if (is_array($cdek['raw']['orderProducts'])) {
-                                foreach ($cdek['raw']['orderProducts'] as $product) {
+                        $code = null;
+                        if (is_array($cdek['raw']['orderProducts'])) {
+                            foreach ($cdek['raw']['orderProducts'] as $product) {
 
-                                    if ($export_cdek_id == $product['productOffer']) {
+                                if ($export_cdek_id == $product['productOffer']['id']) {
 
-                                        // Кол-во совпало со СДЕК
-                                        if ($product['count'] == $val['num']) {
-                                            $val['cdek'] = $product['count'];
-                                            $val['main'] = 0;
-                                        }
-                                        // Не хватает в СДЕК
-                                        elseif ($product['count'] < $val['num']) {
-                                            
-                                            $val['cdek'] = $product['count'];
-                                            $val['main'] = $val['num'] - $product['count'];
-                                            
-                                        }
+                                    // Кол-во совпало со СДЕК
+                                    if ($product['count'] == $val['num']) {
+                                        $val['cdek'] = $product['count'];
+                                        $val['main'] = 0;
+                                    }
+                                    // Не хватает в СДЕК
+                                    elseif ($product['count'] < $val['num']) {
+
+                                        $val['cdek'] = $product['count'];
+                                        $val['main'] = $val['num'] - $product['count'];
                                     }
                                 }
                             }
+                        }
 
-                            if (empty($val['cdek'])){
-                                $val['main']= $val['num'];
-                                $val['cdek']=0;
-                            }
-                            
-                            // Пропуск
-                            if (empty($val['main'])){
-                                continue;
-                            }
-                            
-                            
-                            // Проверка подтипа товара
-                            if (!empty($val['parent']))
-                                $val['id'] = $val['parent'];
-                            if (!empty($val['parent_uid']))
-                                $val['uid'] = $val['parent_uid'];
+                        if (empty($val['cdek'])) {
+                            $val['main'] = $val['num'];
+                            $val['cdek'] = 0;
+                        }
 
-                            // Артикул
-                            if (!empty($val['uid']))
-                                $code .= __('Артикул') . ': ' . $val['uid'];
-                            else
-                                $code .= __('Код') . ': ' . $val['id'];
+                        // Пропуск
+                        if (empty($val['main'])) {
+                            continue;
+                        }
 
 
-                            if (!empty($val['pic_small']))
-                                $icon = '<img src="' . $val['pic_small'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
-                            else
-                                $icon = '<img class="media-object" src="./images/no_photo.gif">';
+                        // Проверка подтипа товара
+                        if (!empty($val['parent']))
+                            $val['id'] = $val['parent'];
+                        if (!empty($val['parent_uid']))
+                            $val['uid'] = $val['parent_uid'];
 
-                            $name = '
+                        // Артикул
+                        if (!empty($val['uid']))
+                            $code .= __('Артикул') . ': ' . $val['uid'];
+                        else
+                            $code .= __('Код') . ': ' . $val['id'];
+
+
+                        if (!empty($val['pic_small']))
+                            $icon = '<img src="' . $val['pic_small'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
+                        else
+                            $icon = '<img class="media-object" src="./images/no_photo.gif">';
+
+                        $name = '
 <div class="media">
   <div class="media-left">
     <a href="?path=product&id=' . $val['id'] . '" >
@@ -139,86 +132,84 @@ class CDEKFulfillment {
   </div>
 </div>
 ';
-                            // Цена
-                            $price = $PHPShopOrder->ReturnSumma($val['price']) . $currency;
-                            if (!empty((int) $val['price_n'])) {
-                                $price .= '<br><s class="text-muted">' . $PHPShopOrder->ReturnSumma($val['price_n']) . '</s>' . $currency;
-                            }
-
-                            $PHPShopInterface->setRow(array('name' => $name, 'align' => 'left'), $price, array('name' => $val['main'], 'align' => 'center'), array('name' => $PHPShopOrder->ReturnSumma($val['price'] * $val['num']) . $currency, 'align' => 'right'));
+                        // Цена
+                        $price = $PHPShopOrder->ReturnSumma($val['price']) . $currency;
+                        if (!empty((int) $val['price_n'])) {
+                            $price .= '<br><s class="text-muted">' . $PHPShopOrder->ReturnSumma($val['price_n']) . '</s>' . $currency;
                         }
+
+                        $PHPShopInterface->setRow(array('name' => $name, 'align' => 'left'), $price, array('name' => $val['main'], 'align' => 'center'), array('name' => $PHPShopOrder->ReturnSumma($val['price'] * $val['num']) . $currency, 'align' => 'right'));
                     }
-                    
-            $cart1=$PHPShopInterface->getContent();
-            
+                }
+
+            $cart1 = $PHPShopInterface->getContent();
+
             // Корзина удаленный склад
             $PHPShopInterface = new PHPShopInterface();
             $PHPShopInterface->checkbox_action = false;
-            $PHPShopInterface->setCaption(array("Наименование на складе ".$dataWarehouse[$this->option['warehouse_cdek']]['name'], "50%"), array("Цена", "15%"), array('<span class="hidden-xs">'.$dataWarehouse[$this->option['warehouse_cdek']]['name'].'</span><span class="visible-xs">'.$dataWarehouse[$this->option['warehouse_cdek']]['name'].'</span>', "10%", array('align' => 'center')), array('Сумма', '15%', array('align' => 'right')));
+            $PHPShopInterface->setCaption(array("Наименование на складе " . $dataWarehouse[$this->option['warehouse_cdek']]['name'], "50%"), array("Цена", "15%"), array('<span class="hidden-xs">' . $dataWarehouse[$this->option['warehouse_cdek']]['name'] . '</span><span class="visible-xs">' . $dataWarehouse[$this->option['warehouse_cdek']]['name'] . '</span>', "10%", array('align' => 'center')), array('Сумма', '15%', array('align' => 'right')));
 
             // Корзина
             $cart = unserialize($order['orders'])['Cart']['cart'];
 
-            if (sizeof($cart) != 0)
-                if (is_array($cart))
-                    foreach ($cart as $val) {
+            if (is_array($cart) and sizeof($cart) != 0)
+                foreach ($cart as $val) {
 
-                        if (!empty($val['id'])) {
+                    if (!empty($val['id'])) {
 
-                            // Проверка сдека
-                            $export_cdek_id = (new PHPShopProduct($val['id']))->getParam('export_cdek_id');
+                        // Проверка сдека
+                        $export_cdek_id = (new PHPShopProduct($val['id']))->getParam('export_cdek_id');
 
-                            $code = null;
-                            if (is_array($cdek['raw']['orderProducts'])) {
-                                foreach ($cdek['raw']['orderProducts'] as $product) {
+                        $code = null;
+                        if (is_array($cdek['raw']['orderProducts'])) {
+                            foreach ($cdek['raw']['orderProducts'] as $product) {
 
-                                    if ($export_cdek_id == $product['productOffer']) {
+                                if ($export_cdek_id == $product['productOffer']['id']) {
 
-                                        // Кол-во совпало со СДЕК
-                                        if ($product['count'] == $val['num']) {
-                                            $val['cdek'] = $product['count'];
-                                            $val['main'] = 0;
-                                        }
-                                        // Не хватает в СДЕК
-                                        elseif ($product['count'] < $val['num']) {
-                                            
-                                            $val['cdek'] = $product['count'];
-                                            $val['main'] = $val['num'] - $product['count'];
-                                            
-                                        }
+                                    // Кол-во совпало со СДЕК
+                                    if ($product['count'] == $val['num']) {
+                                        $val['cdek'] = $product['count'];
+                                        $val['main'] = 0;
+                                    }
+                                    // Не хватает в СДЕК
+                                    elseif ($product['count'] < $val['num']) {
+
+                                        $val['cdek'] = $product['count'];
+                                        $val['main'] = $val['num'] - $product['count'];
                                     }
                                 }
                             }
+                        }
 
-                            if (empty($val['cdek'])){
-                                $val['main']= $val['num'];
-                                $val['cdek']=0;
-                            }
-                            
-                            // Пропуск
-                            if (empty($val['cdek'])){
-                                continue;
-                            }
+                        if (empty($val['cdek'])) {
+                            $val['main'] = $val['num'];
+                            $val['cdek'] = 0;
+                        }
 
-                            // Проверка подтипа товара
-                            if (!empty($val['parent']))
-                                $val['id'] = $val['parent'];
-                            if (!empty($val['parent_uid']))
-                                $val['uid'] = $val['parent_uid'];
+                        // Пропуск
+                        if (empty($val['cdek'])) {
+                            continue;
+                        }
 
-                            // Артикул
-                            if (!empty($val['uid']))
-                                $code .= __('Артикул') . ': ' . $val['uid'];
-                            else
-                                $code .= __('Код') . ': ' . $val['id'];
+                        // Проверка подтипа товара
+                        if (!empty($val['parent']))
+                            $val['id'] = $val['parent'];
+                        if (!empty($val['parent_uid']))
+                            $val['uid'] = $val['parent_uid'];
+
+                        // Артикул
+                        if (!empty($val['uid']))
+                            $code .= __('Артикул') . ': ' . $val['uid'];
+                        else
+                            $code .= __('Код') . ': ' . $val['id'];
 
 
-                            if (!empty($val['pic_small']))
-                                $icon = '<img src="' . $val['pic_small'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
-                            else
-                                $icon = '<img class="media-object" src="./images/no_photo.gif">';
+                        if (!empty($val['pic_small']))
+                            $icon = '<img src="' . $val['pic_small'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
+                        else
+                            $icon = '<img class="media-object" src="./images/no_photo.gif">';
 
-                            $name = '
+                        $name = '
 <div class="media">
   <div class="media-left">
     <a href="?path=product&id=' . $val['id'] . '" >
@@ -231,19 +222,19 @@ class CDEKFulfillment {
   </div>
 </div>
 ';
-                            // Цена
-                            $price = $PHPShopOrder->ReturnSumma($val['price']) . $currency;
-                            if (!empty((int) $val['price_n'])) {
-                                $price .= '<br><s class="text-muted">' . $PHPShopOrder->ReturnSumma($val['price_n']) . '</s>' . $currency;
-                            }
-
-                            $PHPShopInterface->setRow(array('name' => $name, 'align' => 'left'), $price, array('name' => $val['cdek'], 'align' => 'center'), array('name' => $PHPShopOrder->ReturnSumma($val['price'] * $val['num']) . $currency, 'align' => 'right'));
+                        // Цена
+                        $price = $PHPShopOrder->ReturnSumma($val['price']) . $currency;
+                        if (!empty((int) $val['price_n'])) {
+                            $price .= '<br><s class="text-muted">' . $PHPShopOrder->ReturnSumma($val['price_n']) . '</s>' . $currency;
                         }
-                    }
-                    
-            $cart2=$PHPShopInterface->getContent();
 
-            $info .= '<table class="table table-hover cart-list-cdekfulfillment">' . $cart1 .$cart2. '</table><script src="../modules/cdekfulfillment/admpanel/gui/cdekfulfillment.gui.js"></script>';
+                        $PHPShopInterface->setRow(array('name' => $name, 'align' => 'left'), $price, array('name' => $val['cdek'], 'align' => 'center'), array('name' => $PHPShopOrder->ReturnSumma($val['price'] * $val['num']) . $currency, 'align' => 'right'));
+                    }
+                }
+
+            $cart2 = $PHPShopInterface->getContent();
+
+            $info .= '<table class="table table-hover cart-list-cdekfulfillment">' . $cart1 . $cart2 . '</table><script src="../modules/cdekfulfillment/admpanel/gui/cdekfulfillment.gui.js"></script>';
 
             if (is_array($cdek['orderProducts']))
                 foreach ($cdek['orderProducts'] as $product) {
@@ -328,6 +319,19 @@ class CDEKFulfillment {
             else
                 $paid = 'not_paid';
 
+            $phone = trim(str_replace(array('(', ')', '-', '+', '&#43;'), '', $order['tel']));
+
+            // Проверка на первую 7 или 8
+            $first_d = substr($phone, 0, 1);
+            if ($first_d != 8 and $first_d != 7)
+                $phone = '7' . $phone;
+            
+            // Проверка нулевой цены доставки
+            if(empty($order['cdekfulfillment_delivery_price'])){
+                $order['cdekfulfillment_delivery_price'] = $this->getDeliveryPrice($cart['Cart']['weight']);
+                (new PHPShopOrm($GLOBALS['SysValue']['base']['orders']))->update(
+                ['cdekfulfillment_delivery_price_new' => $order['cdekfulfillment_delivery_price']], ['id' => '=' . (int) $order['id']]);
+            }
 
             if (is_array($orderProduct)) {
                 $params = [
@@ -335,7 +339,7 @@ class CDEKFulfillment {
                         "name" => PHPShopString::win_utf8($order['fio']),
                         "email" => PHPShopString::win_utf8($PHPShopUser->getParam('mail')),
                     ],
-                    "phone" => trim(str_replace(array('(', ')', '-', '+', '&#43;'), '', $order['tel'])),
+                    "phone" => trim(str_replace(array('(', ')', '-', '+', '&#43;'), '', $phone)),
                     "shop" => $this->option['shop_id'],
                     "paymentState" => $paid,
                     "orderProducts" => $orderProduct,
@@ -350,6 +354,7 @@ class CDEKFulfillment {
                             "country" => 28
                         ]
                     ],
+                    "comment"=>trim(PHPShopString::win_utf8($order['city'])),
                     "eav" => [
                         "order-reserve-warehouse" => $this->option['warehouse_id']
                     ],
@@ -358,7 +363,7 @@ class CDEKFulfillment {
                         "deliveryService" => 1,
                         "rate" => $this->option['rate'],
                         "sender" => $this->option['sender'],
-                        "retailPrice" => $this->option['fee']
+                        "retailPrice" => (int) $order['cdekfulfillment_delivery_price']
                     ]
                 ];
 
@@ -373,10 +378,28 @@ class CDEKFulfillment {
                 } else {
                     (new PHPShopOrm('phpshop_orders'))->update(array('cdekfulfillment_order_data_new' => serialize($result)), array('id' => "='" . $order['id'] . "'"));
                     $this->log($log, $order['uid'], self::ORDER, __('Успешная передача заказа'));
-                    return ['cdek' => $orderProduct, 'main' => $mainProduct,'id'=>$result['id']];
+                    return ['cdek' => $orderProduct, 'main' => $mainProduct, 'id' => $result['id']];
                 }
-            }
+            } else
+                return ['main' => $mainProduct];
         }
+    }
+
+    /**
+     *  Стоимость доставки
+     */
+    public function getDeliveryPrice($weight) {
+        $price = (int) $this->option['price'];
+        $taxa = (int) $this->option['fee'];
+        $fee = 100; // гр
+        // Такса за вес
+        if (!empty($taxa)) {
+            $delivery = $price + ceil($weight / $fee) * $taxa;
+        } else {
+            $delivery = $price;
+        }
+
+        return $delivery;
     }
 
     /**
@@ -386,11 +409,9 @@ class CDEKFulfillment {
 
         if (is_array($prod)) {
 
-            $price = $prod[$this->option['price']];
             $params = [
                 "name" => PHPShopString::win_utf8($prod['name']),
                 "sku" => PHPShopString::win_utf8($prod['uid']),
-                "price" => (int) $this->price($price, $prod['baseinputvaluta']),
                 "purchasingPrice" => 1,
                 "weight" => (int) $prod['weight'],
                 "barcodes" => [$prod['barcode_cdek']],
@@ -424,8 +445,6 @@ class CDEKFulfillment {
 
         if (is_array($prod)) {
 
-            $price = $prod[$this->option['price']];
-
             $params = [
                 "state" => "normal",
                 "type" => "simple",
@@ -436,7 +455,7 @@ class CDEKFulfillment {
                 "extId" => PHPShopString::win_utf8($prod['uid']),
                 "barcodes" => [$prod['barcode_cdek']],
                 "image" => 'https://' . $_SERVER['SERVER_NAME'] . $prod['pic_big'],
-                "price" => (int) $this->price($price, $prod['baseinputvaluta']),
+                "price" => 0,
                 "purchasingPrice" => 1,
                 "weight" => (int) $prod['weight'],
                 "dimensions" => [

@@ -125,7 +125,7 @@ function actionStart() {
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('content_new');
     $oFCKeditor->Height = '400';
-    $oFCKeditor->Value = PHPShopString::utf8_win1251($product_info['description']);
+    $oFCKeditor->Value = PHPShopString::utf8_win1251(nl2br($product_info['description']));
 
     if (is_array($product_info['photos']) and count($product_info['photos']) > 0) {
         $icon = null;
@@ -176,7 +176,7 @@ function actionStart() {
     // Валюта
     $Tab1 .= $PHPShopGUI->setField('Валюта', $valuta_area);
 
-    $Tab_size = $PHPShopGUI->setField("Вес", $PHPShopGUI->setInputText(null, 'weight_new', $product_info['weight'], 100, __('г&nbsp;&nbsp;&nbsp;&nbsp;')));
+    $Tab_size = $PHPShopGUI->setField("Вес", $PHPShopGUI->setInputText(null, 'weight_new', $product_info['weightBrutto']*100, 100, __('г&nbsp;&nbsp;&nbsp;&nbsp;')));
     $Tab_size .= $PHPShopGUI->setField("Высота", $PHPShopGUI->setInputText(null, 'height_new', $product_info['dimensions']['height'], 100, __('cм')));
     $Tab_size .= $PHPShopGUI->setField("Ширина", $PHPShopGUI->setInputText(null, 'width_new', $product_info['dimensions']['width'], 100, __('cм')));
     $Tab_size .= $PHPShopGUI->setField("Длина", $PHPShopGUI->setInputText(null, 'length_new', $product_info['dimensions']['length'], 100, __('cм')));

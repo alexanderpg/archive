@@ -73,7 +73,6 @@ function actionStart() {
     // Категория БД
     $category = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $_GET['type_id']])['name'];
 
-
     $PHPShopCategoryArray = new PHPShopCategoryArray(false, ["id", "name", "parent_to", "category_ozonseller"]);
     $GLOBALS['CategoryArray'] = $CategoryArray = $PHPShopCategoryArray->getArray();
     $GLOBALS['count'] = count($CategoryArray);
@@ -119,7 +118,7 @@ function actionStart() {
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('content_new');
     $oFCKeditor->Height = '400';
-    $oFCKeditor->Value = PHPShopString::utf8_win1251($OzonSeller->getProductDescription($product_info['id'])['result']['description']);
+    $oFCKeditor->Value = PHPShopString::utf8_win1251(nl2br($OzonSeller->getProductDescription($product_info['id'])['result']['description']));
 
     $product_info['images'][]=$product_info['primary_image'];
     

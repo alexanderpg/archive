@@ -107,10 +107,11 @@ function actionStart() {
                 $PHPShopGUI->setField("Подпись отправителя", $PHPShopGUI->setInputText(null, "option[sms_name]", $option['sms_name'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href=" https://sms.targetsms.ru/ru/reg.html?ref=phpshop" target="_blank">Targetsms.ru</a>'))
         );
 
+        /*
         $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('PUSH Уведомления', $PHPShopGUI->setField("PUSH оповещение", $PHPShopGUI->setCheckbox('option[push_enabled]', 1, 'Уведомление о заказе администратору. Требуется SSL сертификат.', $option['push_enabled'])) .
                 $PHPShopGUI->setField("Ключ сервера", $PHPShopGUI->setInputText(null, "option[push_token]", $option['push_token'], 300)) .
                 $PHPShopGUI->setField("Идентификатор отправителя", $PHPShopGUI->setInputText(null, "option[push_id]", $option['push_id'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://console.firebase.google.com/" target="_blank">Firebase.google.com</a>'))
-        );
+        );*/
     }
 
 

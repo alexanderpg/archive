@@ -40,7 +40,8 @@ function tab_base($data) {
                 $panel = 'panel-default';
                 $mes = '  <span class="pull-right text-muted">' . __('текущая версия') . ' ' . $ready_version[$row['name']] . '</span>';
                 $demo = null;
-                $reload = 'skin-reload';
+                $href=null;
+                $reload = 'skin-load';
 
                 if ((float) $row['version'] > (float) $ready_version[$row['name']]){
                     $load = __('Обновить');
@@ -59,14 +60,18 @@ function tab_base($data) {
                 $panel = 'panel-default';
                 $mes = null;
                 $reload = null;
+                $href=null;
                 $demo = "hide";
                 $load = __('Загрузить');
                 $icon = 'glyphicon-plus';
                 $button = 'btn-success';
             }
 
-            if (empty($_SESSION['update']))
-                $reload = 'hide';
+            
+            if (empty($_SESSION['update'])){
+                $reload = null;
+                $href='?path=update';
+            }
 
             if ($row['type'] == 'new')
                 $new = ' <span class="label label-primary">new</span>';
@@ -80,7 +85,7 @@ function tab_base($data) {
                         <div class="btn-group" role="group" aria-label="...">
                         <a class="btn btn-sm btn-primary ' . $demo . '" data-toggle="tooltip" data-placement="top" title="' . __('Настроить') . '" href="?path=' . $_GET['path'] . '&name=' . $row['name'] . '"><span class="glyphicon glyphicon-cog"></span> ' . __('Настроить') . '</a>
                             
-                        <a class="btn btn-sm '.$button.' skin-load ' . $reload . ' " data-path="' . $row['name'] . '" data-type="default" data-toggle="tooltip" data-placement="top" title="' . $load . '"><span class="glyphicon ' . $icon . '"></span> ' . $row['version'] . '</a>
+                        <a class="btn btn-sm '.$button.' ' . $reload . '" href="'.$href.'"  data-path="' . $row['name'] . '" data-type="default" data-toggle="tooltip" data-placement="top" title="' . $load . '"><span class="glyphicon ' . $icon . '"></span> ' . $row['version'] . '</a>
                               
                         <a class="btn btn-sm btn-default ' . $demo . '" data-toggle="tooltip" data-placement="top" title="' . __('Посмотреть демо') . '" href="../../?skin=' . $row['name'] . '" target="_blank"><span class="glyphicon glyphicon-eye-open"></span> ' . __('Демо') . '</a>
                             

@@ -49,13 +49,4 @@ $().ready(function () {
         })
     });
 
-    // закрепление навигации
-    if ($('#fix-check').length && typeof (WAYPOINT_LOAD) != 'undefined')
-        var waypoint = new Waypoint({
-            element: document.getElementById('fix-check'),
-            handler: function (direction) {
-                $('.navbar-action').toggleClass('navbar-fixed-top');
-            },
-        });
-
 });

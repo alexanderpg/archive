@@ -17,29 +17,30 @@ class PHPShopShowcaseElement extends PHPShopElements {
 
     public function index() {
 
-        //if (defined("HostID") or defined("HostMain")) {
+        if (defined("HostID") or defined("HostMain")) {
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['servers']);
             $data = $PHPShopOrm->getList(array('*'), array('enabled' => "='1'"), array('order' => 'name'));
             $dis = null;
-            if (is_array($data))
+            if (is_array($data)) {
                 foreach ($data as $row) {
 
                     $this->set('ShowcaseName', $row['name']);
                     $this->set('ShowcaseHost', $row['host']);
 
                     // Перехват модуля
-                    $this->setHook(__CLASS__, __FUNCTION__, $row,'MIDDLE');
+                    $this->setHook(__CLASS__, __FUNCTION__, $row, 'MIDDLE');
 
                     $dis .= $this->parseTemplate($this->getValue('templates.showcase_menu_element'));
                 }
 
-            $this->set('ShowcaseList', $dis);
-            
-            // Перехват модуля
-            $this->setHook(__CLASS__, __FUNCTION__, $row,'END');    
-            
+                $this->set('ShowcaseList', $dis);
+
+                // Перехват модуля
+                $this->setHook(__CLASS__, __FUNCTION__, $row, 'END');
+            }
+
             return $this->parseTemplate($this->getValue('templates.showcase_menu'));
-        //}
+        }
     }
 
 }
@@ -1446,8 +1447,8 @@ class PHPShopShopCatalogElement extends PHPShopProductElements {
         if (is_array($array) and is_array($array['sub'])) {
             foreach ($array['sub'] as $k => $v) {
 
-                if ($this->multimenu and $this->tree_array[$k]['vid'] != 1)
-                    $check = $this->treegenerator($this->tree_array[$k]);
+                if ($this->multimenu and @ $this->tree_array[$k]['vid'] != 1)
+                    $check = $this->treegenerator(@$this->tree_array[$k]);
                 else
                     $check = false;
 
@@ -1545,7 +1546,7 @@ class PHPShopShopCatalogElement extends PHPShopProductElements {
                 if (!empty($this->CategoryArray[$k]['icon']))
                     $this->tree_array[$k]['icon'] = $this->CategoryArray[$k]['icon'];
 
-                $this->tree_array[$k]['vid'] = $this->CategoryArray[$k]['vid'];
+                $this->tree_array[$k]['vid'] = @$this->CategoryArray[$k]['vid'];
 
                 if (!empty($this->CategoryArray[$k]['tile']))
                     $this->tree_array[$k]['tile'] = $this->CategoryArray[$k]['tile'];
@@ -1569,8 +1570,8 @@ class PHPShopShopCatalogElement extends PHPShopProductElements {
 
             foreach ($this->tree_array[0]['sub'] as $k => $v) {
 
-                if (is_array($this->tree_array) and $this->tree_array[$k]['vid'] != 1)
-                    $check = $this->treegenerator($this->tree_array[$k]);
+                if (is_array($this->tree_array) and @ $this->tree_array[$k]['vid'] != 1)
+                    $check = $this->treegenerator(@$this->tree_array[$k]);
 
                 $this->set('catalogName', $v);
                 $this->set('catalogUid', $k);

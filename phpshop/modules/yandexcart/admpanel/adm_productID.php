@@ -143,21 +143,21 @@ function YandexcartSave() {
 
     // Компания 1
     $products = $PHPShopOrm->getOne(['*'], ['yml' => "='1'", 'id' => '=' . $_POST['rowID']]);
-    if (count($products) > 0) {
+    if (is_array($products) and count($products) > 0) {
         $Market->updateStocks([$products], false);
         $Market->updatePrices([$products], false);
     }
 
     // Компания 2
     $products_2 = $PHPShopOrm->getOne(['*'], ['yml_2' => "='1'", 'id' => '=' . $_POST['rowID']]);
-    if (count($products_2) > 0) {
+    if (is_array($products_2) and count($products_2) > 0) {
         $Market->updateStocks([$products_2], 2);
         $Market->updatePrices([$products_2], 2);
     }
 
     // Компания 3
     $products_3 = $PHPShopOrm->getOne(['*'], ['yml_3' => "='1'", 'id' => '=' . $_POST['rowID']]);
-    if (count($products_3) > 0) {
+    if (is_array($products_3) and count($products_3) > 0) {
         $Market->updateStocks([$products_3], 3);
         $Market->updatePrices([$products_3], 3);
     }

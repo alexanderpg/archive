@@ -90,10 +90,10 @@ class PHPShopReturncall extends PHPShopCore {
      * @param array $option параметры проверки [url|captcha|referer]
      * @return boolean
      */
-    function security($option = array('url' => false, 'captcha' => true, 'referer' => true)) {
+    function security() {
         global $PHPShopRecaptchaElement;
 
-        return $PHPShopRecaptchaElement->security($option);
+        return $PHPShopRecaptchaElement->security(['url' => 'returncall_mod_message', 'captcha' => true, 'referer' => true]);
     }
 
     /**

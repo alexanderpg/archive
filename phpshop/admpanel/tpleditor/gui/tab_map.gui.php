@@ -44,6 +44,7 @@ function tab_map() {
         'astero' => 1,
         'spice' => 1,
         'diggi' => 2,
+        'diggi_fluid' => 2,
     );
 
     if (!empty($map_name[$_GET['name']]))

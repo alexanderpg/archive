@@ -79,4 +79,30 @@ var locale = {
     product_operations: "Choose what you want to do with the products in the category and subcategories.",
     charset: "utf-8",
     confirm_change_price: "The new price differs by more than 20%. Are you sure?",
+    help: "Help",
+	cdek: {
+        express_delivery: "Express delivery",
+        pickup_code: "Selected pickup point code",
+        city: "city",
+        pickup_address: "selected pickup point address",
+        pickup_phone: "selected pickup point phone",
+        pickup: "Pickup point"
+    },
+    confirm_ai_help: "Do you really want to request AI help?",
+    ai_done: "Use",
+    ai_false: "Enter initial text for AI processing",
+    update_check: "PHPShop update is available, do you want to install the update?",
+    confirm_video: "Do you really want to create a video from images?",
+    create_video: "Creating video from images",
+    analytics: {
+        products: "Products",
+        sales: "Sales",
+        avgprice: "Avg. price",
+        currency: " RUB",
+        unit: " units",
+        customers: "Customers",
+        avg: "Average bill",
+        repeat: "Loyalty"á
+	    customers_unit: " hum."
+    }
 };

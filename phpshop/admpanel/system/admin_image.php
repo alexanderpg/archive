@@ -124,6 +124,22 @@ function actionStart() {
             $PHPShopGUI->setField('Максимальная высота', $PHPShopGUI->setInputText(false, 'option[img_th_s]', $option['img_th_s'], 100, 'px')) .
             $PHPShopGUI->setField('Адаптивность', $PHPShopGUI->setCheckbox('option[image_slider_adaptive]', 1, 'Оптимизировать изображение точно под указанные размеры', $option['image_slider_adaptive']))
     );
+    
+     if (empty($hideSite)){
+         
+        $ffmpeg_path_value[]=['/usr/local/bin/ffmpeg','/usr/local/bin/ffmpeg',$option['ffmpeg_path']];
+        $ffmpeg_path_value[]=['ffmpeg','ffmpeg',$option['ffmpeg_path']];
+
+        if(empty($option['ffmpeg_image']))
+            $option['ffmpeg_image']=3;
+        if(empty($option['ffmpeg_path']))
+            $option['ffmpeg_path']='/usr/local/bin/ffmpeg';
+        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Генерация видео для товаров из изображений', 
+                $PHPShopGUI->setField('Генерация видео', $PHPShopGUI->setCheckbox('option[ffmpeg_enabled]', 1, null, $option['ffmpeg_enabled'])) .
+                $PHPShopGUI->setField('Путь размещения утилиты FFmpeg', $PHPShopGUI->setSelect('option[ffmpeg_path]', $ffmpeg_path_value)).
+                $PHPShopGUI->setField('Количество изображений', $PHPShopGUI->setInputText(false, 'option[ffmpeg_image]', $option['ffmpeg_image'], 50))
+        );
+     }
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
@@ -169,7 +185,7 @@ function actionUpdate() {
     $_POST['option']['watermark_image'] = $_POST['watermark_image'];
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.image_save_source', 'option.image_adaptive_resize', 'option.image_save_name', 'option.watermark_big_enabled', 'option.watermark_source_enabled', 'option.watermark_center_enabled', 'option.image_save_path', 'option.image_save_catalog', 'option.watermark_small_enabled', 'option.image_off', 'option.image_cat', 'option.image_slider', 'option.image_slider_adaptive', 'option.image_cat_adaptive', 'option.image_save_seo', 'option.image_webp', 'option.image_webp_save');
+    $PHPShopOrm->updateZeroVars('option.image_save_source', 'option.image_adaptive_resize', 'option.image_save_name', 'option.watermark_big_enabled', 'option.watermark_source_enabled', 'option.watermark_center_enabled', 'option.image_save_path', 'option.image_save_catalog', 'option.watermark_small_enabled', 'option.image_off', 'option.image_cat', 'option.image_slider', 'option.image_slider_adaptive', 'option.image_cat_adaptive', 'option.image_save_seo', 'option.image_webp', 'option.image_webp_save','option.ffmpeg_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <module>
-    <version>4.1</version>
+    <version>4.2</version>
     <name>Яндекс.Маркет</name>
     <description>Модуль продаж через Яндекс.Маркет.</description>
     <faqlink>https://docs.phpshop.ru/moduli/yandeks/yandex-cart</faqlink>
     <category>yandex,pro,marketplaces</category>
-    <sign>1753087293</sign>
+    <sign>1764078296</sign>
     <pro>true</pro>
     <adminmenu>
         <title>Яндекс.Маркет</title>

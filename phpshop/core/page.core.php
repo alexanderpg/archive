@@ -3,7 +3,7 @@
 /**
  * Обработчик страниц
  * @author PHPShop Software
- * @version 1.9
+ * @version 2.0
  * @package PHPShopCore
  */
 class PHPShopPage extends PHPShopCore {
@@ -171,6 +171,10 @@ class PHPShopPage extends PHPShopCore {
         $this->set('ogDescription', $row['description']);
 
         $this->title = $title;
+        
+        if(empty($row['description']))
+            $row['description']=$row['name'];
+            
         $this->description = $row['description'];
         $this->keywords = $row['keywords'];
         $this->lastmodified = $row['datas'];

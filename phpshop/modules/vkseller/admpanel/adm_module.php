@@ -25,6 +25,9 @@ function actionBaseUpdate() {
 function actionUpdate() {
     global $PHPShopModules, $PHPShopOrm;
 
+    // Настройки витрины
+    $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);
+
     // Корректировка пустых значений
     $PHPShopOrm->updateZeroVars('link_new');
 
@@ -186,14 +189,14 @@ function actionStart() {
         ];
 
     $Tab1 = $PHPShopGUI->setField('Модель работы', $PHPShopGUI->setSelect('model_new', $models, '100%', true));
-    
+
     // Статусы автоматической загрузки
-    $status_import_array=['Новый заказ','Согласовывается','Собирается','Доставляется','Выполнен','Отменен','Возврат'];
+    $status_import_array = ['Новый заказ', 'Согласовывается', 'Собирается', 'Доставляется', 'Выполнен', 'Отменен', 'Возврат'];
     foreach ($status_import_array as $k => $status_val) {
         $order_status_import_value[] = array(__($status_val), $k, $data['status_import']);
     }
-    
-        // Доставка
+
+    // Доставка
     $PHPShopDeliveryArray = new PHPShopDeliveryArray();
 
     $DeliveryArray = $PHPShopDeliveryArray->getArray();
@@ -208,7 +211,7 @@ function actionStart() {
 
             $delivery_value[] = array($delivery['city'], $delivery['id'], $data['delivery'], 'data-subtext="' . $delivery['price'] . '"');
         }
-        
+
 
     if ($data['model'] === 'API') {
         $Tab1 .= $PHPShopGUI->setField('API key', $PHPShopGUI->setTextarea('token_new', $data['token'], false, '100%', '100') . $PHPShopGUI->setHelp('Получить <a href="../modules/vkseller/token.php?client_id=" id="client_token" target="_blank">Персональный ключ</a>'));
@@ -219,7 +222,7 @@ function actionStart() {
         $Tab1 .= $PHPShopGUI->setField("ID сообщества", $PHPShopGUI->setInputText('public', "owner_id_new", $data['owner_id'], '100%'));
         $Tab1 .= $PHPShopGUI->setField('Статус нового заказа', $PHPShopGUI->setSelect('status_new', $order_status_value, '100%'));
         $Tab1 .= $PHPShopGUI->setField('Статус заказа в VK для автоматической загрузки', $PHPShopGUI->setSelect('status_import_new', $order_status_import_value, '100%'));
-       $Tab1 .= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setSelect('delivery_new', $delivery_value, '100%'));
+        $Tab1 .= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setSelect('delivery_new', $delivery_value, '100%'));
         $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в ВК', $data['link']));
     }
 

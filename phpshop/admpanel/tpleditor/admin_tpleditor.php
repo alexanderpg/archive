@@ -24,6 +24,7 @@ function _tpl($file) {
         'catalog_page_info_forma.tpl' => 'Форма описания каталога статей',
         'catalog_table_forma.tpl' => 'Форма каталога продукции',
         'cid_category.tpl' => 'Форма списка каталогов',
+        'catalog_list_forma.tpl' => 'Форма списка всех каталогов',
         'podcatalog_forma.tpl' => 'Форма подкаталога товаров',
         'podcatalog_page_forma.tpl' => 'Форма подкаталога статей',
         'main' => 'Основное',

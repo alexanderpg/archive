@@ -291,22 +291,26 @@ class YandexMarket {
      */
     public function getProductList($visibility = "ALL", $offer_id = null, $vendorName = null, $limit = 5) {
 
+        $method = 'businesses/' . trim($this->options['businesses_id']) . '/offer-mappings';
 
-        if ($visibility == 'ALL')
-            $params['archived'] = 'false';
-        else
-            $params['archived'] = 'true';
+        if (!empty($limit)) {
+            if ($visibility == 'ALL')
+                $params['archived'] = 'false';
+            else
+                $params['archived'] = 'true';
 
-        if (!empty($offer_id)) {
-            $params['offerIds'] = [$offer_id];
-            unset($params['archived']);
+            if (!empty($offer_id)) {
+                $params['offerIds'] = [$offer_id];
+                unset($params['archived']);
+            }
+
+            if (!empty($vendorName)) {
+                $params['vendorNames'] = [$vendorName];
+            }
+
+            $method .= '?limit=' . $limit;
         }
 
-        if (!empty($vendorName)) {
-            $params['vendorNames'] = [$vendorName];
-        }
-
-        $method = 'businesses/' . trim($this->options['businesses_id']) . '/offer-mappings?limit=' . $limit;
         $result = $this->post($method, $params);
 
         $log = [
@@ -330,7 +334,7 @@ class YandexMarket {
             else
                 $campaign = $this->options['campaign_id'];
 
-            if (is_array($products) and !empty($campaign)) {
+            if (is_array($products) and ! empty($campaign)) {
                 foreach ($products as $product) {
 
                     // Ключ обновления 
@@ -396,7 +400,7 @@ class YandexMarket {
             else
                 $campaign = $this->options['campaign_id'];
 
-            if (is_array($products) and !empty($campaign)) {
+            if (is_array($products) and ! empty($campaign)) {
                 foreach ($products as $product) {
 
                     // Ключ обновления 
@@ -631,16 +635,15 @@ class YandexMarket {
 
         return $url;
     }
-    
+
     /**
      * Получение категорий
      */
     public function getTree() {
-        
-        $tree = $this->post('categories/tree',['language'=>'RU']);
+
+        $tree = $this->post('categories/tree', ['language' => 'RU']);
         return $tree;
     }
-    
 
     public function getRegionById($id) {
         $region = $this->get('regions/' . $id . '.json');

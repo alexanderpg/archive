@@ -252,6 +252,7 @@ class PHPShopOrderDelivery {
         if ($this->isActiveDelivery($delivery, $selectedId)) {
             PHPShopParser::set('deliveryActive', 'active');
             PHPShopParser::set('deliveryChecked', 'checked');
+            PHPShopParser::set('deliveryComment', $delivery['comment']);
             if(is_null($selectedId)) {
                 $html .= '<IMG onload="UpdateDeliveryJq(' . (int) $delivery['id'] . ');" SRC="' . $this->getTemplateAsset('images/shop/flag_green.gif') . '"  style="display:none;">';
             } else {
@@ -268,6 +269,7 @@ class PHPShopOrderDelivery {
             PHPShopParser::set('deliveryPayment', $delivery['payment']);
             PHPShopParser::set('deliveryIcon', $delivery['icon']);
             PHPShopParser::set('deliveryTitle', $delivery['city']);
+            PHPShopParser::set('deliveryComment', $delivery['comment']);
 
             try {
                 $this->checkDeliveryMethodAllow($delivery);

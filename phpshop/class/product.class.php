@@ -84,7 +84,12 @@ class PHPShopProduct extends PHPShopObj {
         return parent::getParam("pic_small");
     }
 
-    // Удалить товар со склада
+    /**
+     * Удалить товар со склада
+     * @param int $count кол-во
+     * @param int $parent ИД родителя
+     * @param int $warehouseId ИД склада
+     */
     public function removeFromWarehouse($count, $parent = 0, $warehouseId = null)
     {
         // Склад
@@ -96,7 +101,13 @@ class PHPShopProduct extends PHPShopObj {
         $this->applyWarehouseControl($parent, $warehouseId,$count);
     }
 
-    // Добавить товар на склад
+
+    /**
+     * Добавить товар на склад
+     * @param int $count кол-во
+     * @param int $parent ИД родителя
+     * @param int $warehouseId ИД склада
+     */
     public function addToWarehouse($count, $parent = 0, $warehouseId = null)
     {
         // Склад
@@ -108,7 +119,13 @@ class PHPShopProduct extends PHPShopObj {
         $this->applyWarehouseControl($parent, $warehouseId,$count);
     }
 
-    // Контроль склада
+   
+    /**
+     * Контроль склада
+     * @param int $parent ИД родителя
+     * @param int $warehouseId ИД склад
+     * @param int $count кол-во
+     */
     public function applyWarehouseControl($parent = 0, $warehouseId = null,$count = 0)
     {
         $PHPShopSystem = new PHPShopSystem();
@@ -153,39 +170,35 @@ class PHPShopProduct extends PHPShopObj {
         }
 
         switch ($PHPShopSystem->getSerilizeParam('admoption.sklad_status')) {
+            
+            // Товара нет в наличии
             case(3):
                 if ($disabled) {
                     $product_update['sklad_new'] = 1;
                     $this->objRow['sklad'] = 1;
-                    $product_update['enabled_new'] = 1;
-                    $this->objRow['enabled'] = 1;
-                    $product_update['p_enabled_new'] = 0;
-                    $this->objRow['p_enabled'] = 0;
+                    //$product_update['enabled_new'] = 1;
+                    //$this->objRow['enabled'] = 1;
                 } else {
                     $product_update['sklad_new'] = 0;
                     $this->objRow['sklad'] = 0;
-                    $product_update['enabled_new'] = 1;
-                    $this->objRow['enabled'] = 1;
-                    $product_update['p_enabled_new'] = 1;
-                    $this->objRow['p_enabled'] = 1;
+                    //$product_update['enabled_new'] = 1;
+                    //$this->objRow['enabled'] = 1;
                 }
                 break;
 
+            // Товар убирается с продаж
             case(2):
                 if ($disabled) {
                     $product_update['enabled_new'] = 0;
                     $this->objRow['enabled'] = 0;
-                    $product_update['sklad_new'] = 0;
-                    $this->objRow['sklad'] = 0;
-                    $product_update['p_enabled_new'] = 0;
-                    $this->objRow['p_enabled'] = 0;
+                    //$product_update['sklad_new'] = 0;
+                    //$this->objRow['sklad'] = 0;
                 } else {
                     $product_update['enabled_new'] = 1;
                     $this->objRow['enabled'] = 1;
-                    $product_update['sklad_new'] = 0;
-                    $this->objRow['sklad'] = 0;
-                    $product_update['p_enabled_new'] = 1;
-                    $this->objRow['p_enabled'] = 1;
+                    //$product_update['sklad_new'] = 0;
+                    //$this->objRow['sklad'] = 0;
+
                 }
                 break;
             default:

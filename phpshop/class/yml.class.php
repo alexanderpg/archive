@@ -785,7 +785,7 @@ function setProducts() {
 
         // Габариты
         if (!empty($val['length']) && !empty($val['width']) && !empty($val['height']))
-            $xml .= '<dimensions>' . sprintf('%s/%s/%s', number_format($val['length'], 2, '.', ''), number_format($val['width'], 2, '.', ''), number_format($val['height'], 2, '.', '')
+            $xml .= '<dimensions>' . sprintf('%s/%s/%s', number_format((int)$val['length'], 2, '.', ''), number_format((int)$val['width'], 2, '.', ''), number_format((int)$val['height'], 2, '.', '')
                     ) . '</dimensions>';
 
         $xml .= '<currencyId>' . $this->defvalutaiso . '</currencyId>

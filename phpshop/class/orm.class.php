@@ -275,7 +275,9 @@ class PHPShopOrm {
         }
 
         // Счетчик запросов
-        (int)$GLOBALS['SysValue']['sql']['num']++;
+         if(isset($GLOBALS['SysValue']['sql']['num']))
+          (int)$GLOBALS['SysValue']['sql']['num']++;
+         else $GLOBALS['SysValue']['sql']['num']=1;
 
         // Проверка на большой массив, убирается чистка на слеши для экономии памяти
         if ($num > 1000)

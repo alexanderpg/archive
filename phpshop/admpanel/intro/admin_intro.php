@@ -17,12 +17,12 @@ function mailNotice($type, $until_day, $promo = null) {
             case "license":
 
                 $userContent = PHPShopParser::file("tpl/license.mail.tpl", true, false);
-                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается лицензия для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html",false, false, true);
+                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается лицензия для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html", false, false, true);
 
                 break;
             case "support":
                 $userContent = PHPShopParser::file("tpl/support.mail.tpl", true, false);
-                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается техническая поддержка для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html",false, false, true);
+                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается техническая поддержка для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html", false, false, true);
 
                 break;
         }
@@ -34,7 +34,7 @@ function mailNotice($type, $until_day, $promo = null) {
 }
 
 function actionStart() {
-    global $PHPShopInterface, $PHPShopSystem, $PHPShopGUI, $TitlePage, $PHPShopBase,$hideCatalog,$hideSite;
+    global $PHPShopInterface, $PHPShopSystem, $PHPShopGUI, $TitlePage, $PHPShopBase, $hideCatalog, $hideSite;
 
 
     // Поисковые запросы
@@ -104,7 +104,6 @@ function actionStart() {
             $update_enable = @xml2array(UPDATE_PATH, "update", true);
             if (is_array($update_enable) and $update_enable['status'] != 'no_update') {
                 $_SESSION['update_check'] = intval($update_enable['name'] - $update_enable['num']);
-                
             } else
                 $_SESSION['update_check'] = 0;
         }
@@ -126,16 +125,17 @@ function actionStart() {
                 mailNotice('support', $until_day);
                 $_SESSION['update'] = 3;
                 $search_jurnal = __('До конца месяца, для вас действует льготное продление техподдержки: при оплате полугода, вы получаете целый год техподдержки.');
-                $search_jurnal_title = __('Техническая поддержка заканчивается через') . ' <span class="label label-warning">' . abs(round($until_day)) . '  ' . __('дн.') . '</span><a class="pull-right btn btn-xs btn-default" href="https://www.phpshop.ru/order/?from=' . $_SERVER['SERVER_NAME'].'" target="_blank"><span class="glyphicon glyphicon-ruble"></span> ' . __('Купить') . '</a>';
+                $search_jurnal_title = __('Техническая поддержка заканчивается через') . ' <span class="label label-warning">' . abs(round($until_day)) . '  ' . __('дн.') . '</span><a class="pull-right btn btn-xs btn-default" href="https://www.phpshop.ru/order/?from=' . $_SERVER['SERVER_NAME'] . '" target="_blank"><span class="glyphicon glyphicon-ruble"></span> ' . __('Купить') . '</a>';
                 $search_jurnal_class = 'panel-success';
                 $search_jairnal_icon = 'exclamation-sign';
             }
     }
-    
+
     // Сообщение об обновлении
-    if($License['License']['SupportExpires'] > date("U") and !empty($_SESSION['update_check']))
+    if ($License['License']['SupportExpires'] > date("U") and ! empty($_SESSION['update_check']))
         $_SESSION['update_check_message'] = true;
-    else $_SESSION['update_check_message'] = false;
+    else
+        $_SESSION['update_check_message'] = false;
 
     // Заканчивается лицензия
     $LicenseUntilUnixTime = intval($License['License']['Expires']);
@@ -160,7 +160,7 @@ function actionStart() {
     }
 
     $PHPShopGUI->setActionPanel($TitlePage, false, array('Время'));
-    $PHPShopGUI->addJSFiles('js/chart.min.js', 'intro/gui/intro.gui.js');
+    $PHPShopGUI->addJSFiles('js/chart.min.js', 'intro/gui/intro.gui.js', './report/gui/chart.min.js');
     $PHPShopInterface->checkbox_action = false;
 
     // Знак рубля
@@ -233,7 +233,7 @@ function actionStart() {
     if (is_array($data)) {
         foreach ($data as $row) {
             $d = date("d", $row['datas']) . '.' . date("m", $row['datas']);
-            $array_order_date[$d] += (int)$row['sum'];
+            $array_order_date[$d] += (int) $row['sum'];
         }
 
         if (is_array($array_order_date)) {
@@ -301,13 +301,43 @@ function actionStart() {
     if (!empty($new_comment))
         $new_comment = '+' . $new_comment;
 
+    // Восстанавление настроек аналитики из кеша
+    $file = 'analytics';
+    $cache_key = md5(str_replace("www.", "", getenv('SERVER_NAME')) . $file);
+    $PHPShopCache = new PHPShopCache($cache_key);
+    $PHPShopFileCache = new PHPShopFileCache(false);
+    $PHPShopFileCache->check_time = false;
+    $PHPShopFileCache->dir = "/UserFiles/Cache/static/";
+    $analytics_cache = $PHPShopFileCache->get($cache_key);
+    
+    if (!empty($analytics_cache))
+        $analytics_cache = unserialize(gzuncompress($analytics_cache));
+
+    if (is_array($analytics_cache['analytics_filter']))
+        $day = (strtotime($analytics_cache['analytics_filter']['date_to']) - strtotime($analytics_cache['analytics_filter']['date_from'])) / (60 * 60 * 24);
+    else
+        $day = 0;
+
+    $PHPShopGUI->_CODE .= '
+    <div class="row intro-row">
+       <div class="col-md-12 col-xs-12">
+          <div class="panel panel-default ">
+             <div class="panel-heading"><span class="glyphicon glyphicon-equalizer"></span> ' . __('Аналитика за последние ' . $day . ' дн.') . ' <a class="pull-right" href="?path=report.customers">' . __('Показать больше') . '</a></div>
+                <div class="panel-body">
+                ' . $PHPShopInterface->loadLib('tab_analytics', $analytics_cache, './report/') . '
+               </div>
+          </div>
+       </div>
+    </div>';
+
+
     $PHPShopGUI->_CODE .= '
      <div class="row intro-row">
        <div class="col-md-2 col-xs-6 ">
           <div class="panel panel-default ">
              <div class="panel-heading"><span class="glyphicon glyphicon-flag"></span> ' . __('Новых заказов') . '</div>
                 <div class="panel-body text-right panel-intro ">
-                <a href="?path=order&where[statusi]=0" class="'.$hideCatalog.'">' . $new_order . '</a>
+                <a href="?path=order&where[statusi]=0" class="' . $hideCatalog . '">' . $new_order . '</a>
                </div>
           </div>
        </div>
@@ -338,7 +368,7 @@ function actionStart() {
        </div>
    </div>   
 
-   <div class="row intro-row '.$hideCatalog.'">
+   <div class="row intro-row ' . $hideCatalog . '">
        <div class="col-md-6 ">
            <div class="panel panel-default">
              <div class="panel-heading"><span class="glyphicon glyphicon-shopping-cart"></span> ' . __('Заказы') . ' <a class="pull-right" href="?path=order">' . __('Показать больше') . '</a></div>
@@ -558,10 +588,11 @@ function actionStart() {
        </div>
    </div>   
 ';
-    
+
     // Доступно обновление сообщение
-    $PHPShopGUI->_CODE .='<div id="update_check" data-update="'.$_SESSION['update_check_message'].'"></div>';
+    $PHPShopGUI->_CODE .= '<div id="update_check" data-update="' . $_SESSION['update_check_message'] . '"></div>';
 
     $PHPShopGUI->Compile();
 }
+
 ?>

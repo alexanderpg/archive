@@ -1,6 +1,6 @@
 <?php
 
-$TitlePage = __('Тикет в поддержку') . ' №' . $_GET['id'];
+$TitlePage = __('Тикет в поддержку') . ' ' . $_GET['id'];
 
 $licFile = PHPShopFile::searchFile('../../license/', 'getLicense', true);
 @$License = parse_ini_file_true("../../license/" . $licFile, 1);
@@ -104,7 +104,7 @@ function actionStart() {
         $dataArray = readDatabase($path, "row");
     }
 
-    $PHPShopGUI->setActionPanel(__("Тикет") . " &#8470; " . $_GET['id'] . ' / ' . __($dataArrayTrack[0]['subject']), false, array('PUSH','Выполнено'));
+    $PHPShopGUI->setActionPanel(__("Тикет") . " &#8470; " . $_GET['id'] . ' / ' . __($dataArrayTrack[0]['subject']), false, array('Выполнено'));
 
     if (is_array($dataArray))
         foreach ($dataArray as $row) {
@@ -124,7 +124,7 @@ function actionStart() {
                     $files = explode("#", $f);
                     if (!empty($f)) {
 
-                        if (in_array(PHPShopSecurity::getExt($files[1]), array('gif', 'png', 'jpg', 'jpeg'))) {
+                        if (in_array(PHPShopSecurity::getExt($files[1]), array('gif', 'png', 'jpg', 'jpeg','webp'))) {
                             $flist .= '<div class="col-xs-6 col-md-6">
                              <a href="https://help.phpshop.ru/download_attachment.php?att_id=' . $files[0] . '&track=' . $dataArrayTrack[0]['trackid'] . '" class="thumbnail" target="_blank" title="' . $files[1] . '"><img src="https://help.phpshop.ru/download_attachment.php?att_id=' . $files[0] . '&track=' . $dataArrayTrack[0]['trackid'] . '" alt="' . $files[1] . '" ></a></div>';
                         } else {
@@ -259,7 +259,7 @@ function fileAdd() {
     // Копируем от пользователя
     if (!empty($_FILES['file']['name'])) {
         $_FILES['file']['ext'] = PHPShopSecurity::getExt($_FILES['file']['name']);
-        $_FILES['file']['name'] = PHPShopString::toLatin(str_replace('.' . $_FILES['file']['ext'], '', PHPShopString::utf8_win1251($_FILES['file']['name']))) . '.' . $_FILES['file']['ext'];
+        $_FILES['file']['name'] = PHPShopString::toLatin(str_replace('.' . $_FILES['file']['ext'], '', $_FILES['file']['name'])) . '.' . $_FILES['file']['ext'];
        if (!empty($_FILES['file']['ext'])) {
             if (move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path . $_FILES['file']['name'])) {
                 $file = $GLOBALS['dir']['dir'] . $path . $_FILES['file']['name'];

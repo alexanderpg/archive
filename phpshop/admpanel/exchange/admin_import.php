@@ -101,7 +101,7 @@ $key_name = array(
 //if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
 //unset($key_name);
 // Стоп лист
-$key_stop = array('password', 'wishlist', 'sort', 'yml_bid_array', 'status', 'datas', 'price_search', 'vid', 'name_rambler', 'servers', 'skin', 'skin_enabled', 'secure_groups', 'icon_description', 'title_enabled', 'title_shablon', 'descrip_shablon', 'descrip_enabled', 'productsgroup_check', 'productsgroup_product', 'keywords_enabled', 'keywords_shablon', 'sort_cache', 'sort_cache_created_at', 'parent_title', 'menu', 'order_by', 'order_to', 'org_ras', 'org_bank', 'org_kor', 'org_bik', 'org_city', 'admin', 'org_fakt_adres');
+$key_stop = array('password', 'wishlist', 'sort', 'status', 'datas', 'price_search', 'vid', 'name_rambler', 'servers', 'skin', 'skin_enabled', 'secure_groups', 'icon_description', 'title_enabled', 'title_shablon', 'descrip_shablon', 'descrip_enabled', 'productsgroup_check', 'productsgroup_product', 'keywords_enabled', 'keywords_shablon', 'sort_cache', 'sort_cache_created_at', 'parent_title', 'menu', 'order_by', 'order_to', 'org_ras', 'org_bank', 'org_kor', 'org_bik', 'org_city', 'admin', 'org_fakt_adres');
 
 if (empty($subpath[2]))
     $subpath[2] = null;
@@ -168,6 +168,12 @@ function checkImage($img, $id, $uniq) {
     $path_parts = pathinfo($img);
     $path_parts['basename'] = PHPShopFile::toLatin($path_parts['basename']);
 
+    // Нет расширения ставим JPG
+    if (empty($path_parts['extension'])){
+        $rand = '_' . substr(abs(crc32($img)), 0, 5);
+        $path_parts['basename'] .= $rand.'.jpg';
+    }
+
     // Папка картинок
     $path = $PHPShopSystem->getSerilizeParam('admoption.image_result_path');
 
@@ -188,14 +194,14 @@ function checkImage($img, $id, $uniq) {
     $check = $PHPShopOrmImg->select(array('id'), array('name' => '="' . $img_check . '"', 'parent' => '=' . intval($id)), false, array('limit' => 1))['id'];
 
     // Картинки нет
-    if (!is_array($check)) {
+    if (empty($check)) {
 
         // Проверка имени файла
         if (empty($uniq) and file_exists($_SERVER['DOCUMENT_ROOT'] . $img_check)) {
 
             // Соль
             $rand = '_' . substr(abs(crc32($img)), 0, 5);
-            $path_parts['basename'] = str_replace([".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".WEBP"], [$rand . ".png", $rand . ".jpg", $rand . ".jpeg", $rand . ".gif", $rand . ".PNG", $rand . ".JPG", $rand . ".JPEG", $rand . ".GIF", $rand . ".WEBP"], $path_parts['basename']);
+            $path_parts['basename'] = str_replace([".png", ".jpg", ".jpeg", ".gif", ".webp", ".PNG", ".JPG", ".JPEG", ".GIF", ".WEBP"], [$rand . ".png", $rand . ".jpg", $rand . ".jpeg", $rand . ".gif", $rand . ".webp", $rand . ".PNG", $rand . ".JPG", $rand . ".JPEG", $rand . ".GIF", $rand . ".WEBP"], $path_parts['basename']);
         }
     }
 
@@ -823,10 +829,10 @@ function csv_update($data) {
                         if (!empty($_POST['export_imgpath']))
                             $img = '/UserFiles/Image/' . $img;
 
+
                         // Проверка изображния
                         $checkImage = checkImage($img, $row['id'], $row['parent']);
                         $img_save = $checkImage['img'];
-
 
                         // Создаем новую
                         if (empty($checkImage['check'])) {
@@ -863,10 +869,11 @@ function csv_update($data) {
                             $PHPShopOrmImg->insert(array('parent_new' => intval($row['id']), 'name_new' => $img, 'num_new' => $k));
 
                             // Изображение
-                            if(!in_array($path_parts['extension'], array('mp4', 'mov'))) {
-                                
+                            if (!in_array($path_parts['extension'], array('mp4', 'mov'))) {
+
                                 $file = $_SERVER['DOCUMENT_ROOT'] . $img;
-                            $name = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $file);
+                                $name = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $file);
+
 
                                 if (!file_exists($name) and file_exists($file)) {
 
@@ -1228,7 +1235,7 @@ function actionSave() {
 
     // Читаем csv из файлового менеджера
     elseif (!empty($_POST['lfile'])) {
-        $csv_file = $_SERVER['DOCUMENT_ROOT'] .$_POST['lfile'];
+        $csv_file = $_SERVER['DOCUMENT_ROOT'] . $_POST['lfile'];
         $path_parts = pathinfo($csv_file);
         $csv_file_name = $path_parts['basename'];
     }
@@ -1298,7 +1305,7 @@ function actionSave() {
 
                     // Каталоги
                     foreach ($xml->shop[0]->categories[0]->category as $item) {
-                        $category_array[(string) $item->attributes()->id] = [PHPShopString::utf8_win1251((string) $item[0],true), (string) $item->attributes()->parentId];
+                        $category_array[(string) $item->attributes()->id] = [PHPShopString::utf8_win1251((string) $item[0], true), (string) $item->attributes()->parentId];
                     }
 
                     // Товары
@@ -1356,8 +1363,8 @@ function actionSave() {
                         if (is_array((array) $item->param)) {
                             while ($i < (count((array) $item->param) - 1)) {
 
-                                $sort_name = PHPShopString::utf8_win1251((string) $item->param[$i]->attributes()->name,true);
-                                $sort_value = PHPShopString::utf8_win1251((string) $item->param[$i],true);
+                                $sort_name = PHPShopString::utf8_win1251((string) $item->param[$i]->attributes()->name, true);
+                                $sort_value = PHPShopString::utf8_win1251((string) $item->param[$i], true);
                                 $i++;
 
                                 $sort .= $sort_name . '/' . $sort_value . '#';
@@ -1367,7 +1374,7 @@ function actionSave() {
 
                         // Бренд
                         if (isset($item->vendor[0]))
-                            $sort .= 'Бренд/' . PHPShopString::utf8_win1251((string) $item->vendor[0],true);
+                            $sort .= 'Бренд/' . PHPShopString::utf8_win1251((string) $item->vendor[0], true);
 
                         // Штрихкод
                         if (!empty((string) $item->barcode[0]))
@@ -1377,12 +1384,12 @@ function actionSave() {
 
                         // Артикул
                         if (!empty((string) $item->vendorCode[0])) {
-                            $uid = PHPShopString::utf8_win1251((string) $item->vendorCode[0],true);
+                            $uid = PHPShopString::utf8_win1251((string) $item->vendorCode[0], true);
 
                             // Внешний код
                             $external_code = (string) $item->attributes()->id;
                         } else {
-                            $uid = PHPShopString::utf8_win1251((string) $item->attributes()->id,true);
+                            $uid = PHPShopString::utf8_win1251((string) $item->attributes()->id, true);
                             $external_code = null;
                         }
 
@@ -1406,18 +1413,18 @@ function actionSave() {
                                 $images = (string) $item->picture;
 
                             if (!empty((string) $item->param[0]))
-                                $parent = PHPShopString::utf8_win1251((string) $item->param[0],true);
+                                $parent = PHPShopString::utf8_win1251((string) $item->param[0], true);
 
                             if (!empty((string) $item->param[1]))
-                                $parent2 = PHPShopString::utf8_win1251((string) $item->param[1],true);
+                                $parent2 = PHPShopString::utf8_win1251((string) $item->param[1], true);
 
                             // Главный товар
                             if (!is_array($yml_array[(string) $item->attributes()->group_id])) {
 
                                 // Название
-                                $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251($name,true))));
+                                $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251($name, true))));
 
-                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0],true)), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, 0, null, '', $oldprice, $length, $width, $height];
+                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0], true)), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, 0, null, '', $oldprice, $length, $width, $height];
                             } else {
 
                                 // Список подтипов
@@ -1440,7 +1447,7 @@ function actionSave() {
                         }
 
 
-                        $yml_array[$uid] = [$uid, PHPShopString::utf8_win1251($name,true), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0],true)), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height, $external_code];
+                        $yml_array[$uid] = [$uid, PHPShopString::utf8_win1251($name, true), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0], true)), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height, $external_code];
                     }
 
                     if (empty($GLOBALS['exchanges_cron']))
@@ -1452,7 +1459,7 @@ function actionSave() {
                 else if ($subpath[2] == 'catalog') {
                     $yml_array[] = ['Id', 'Наименование', 'Родитель'];
                     foreach ($xml->shop[0]->categories[0]->category as $item) {
-                        $yml_array[] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0],true), (string) $item->attributes()->parentId];
+                        $yml_array[] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0], true), (string) $item->attributes()->parentId];
                     }
 
                     if (empty($GLOBALS['exchanges_cron']))

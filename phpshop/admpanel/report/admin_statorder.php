@@ -104,7 +104,7 @@ function actionStart() {
 
     // Размер названия поля
     $PHPShopGUI->field_col = 3;
-    $PHPShopGUI->addJSFiles('./js/bootstrap-datetimepicker.min.js', './js/bootstrap-datetimepicker.ru.js', 'js/chart.min.js', 'report/gui/report.gui.js');
+    $PHPShopGUI->addJSFiles('./js/bootstrap-datetimepicker.min.js', 'js/chart.min.js', 'report/gui/report.gui.js');
     $PHPShopGUI->addCSSFiles('./css/bootstrap-datetimepicker.min.css');
     $PHPShopGUI->setActionPanel($TitlePage, array('Линейная диаграмма', 'Гистограмма', 'Радар диаграмма', '|', 'Export'), false, false);
 

@@ -11,7 +11,7 @@ function cdekfulfillmentSend($data) {
         if ($_POST['statusi_new'] == $CDEKFulfillment->option['status']) {
             $orderProduct = $CDEKFulfillment->sendOrder($data);
 
-            // Заказ отправлен
+            // Заказ отправлен в СДЕК
             if (!empty($orderProduct['id'])) {
 
                 // Списывание со склада СДЕК
@@ -19,7 +19,7 @@ function cdekfulfillmentSend($data) {
                     foreach ($orderProduct['cdek'] as $val) {
                         $product = new PHPShopProduct((int) $val['productOffer'], 'export_cdek_id');
                         if (is_array($product->objRow)) {
-                            $product->removeFromWarehouse($val['num'], 0, $CDEKFulfillment->option['warehouse_cdek']);
+                            $product->removeFromWarehouse($val['count'], 0, $CDEKFulfillment->option['warehouse_cdek']);
                         }
                     }
 
@@ -28,16 +28,29 @@ function cdekfulfillmentSend($data) {
                     foreach ($orderProduct['main'] as $val) {
                         $product = new PHPShopProduct((int) $val['productOffer'], 'id');
                         if (is_array($product->objRow)) {
-                            $product->removeFromWarehouse($val['num'], 0, $CDEKFulfillment->option['warehouse_main']);
+                            $product->removeFromWarehouse($val['count'], 0, $CDEKFulfillment->option['warehouse_main']);
                         }
                     }
             }
+
+            // Заказ локальный
+            elseif (is_array($orderProduct['main'])) {
+
+                // Списывание с главного склада
+                if (is_array($orderProduct['main']))
+                    foreach ($orderProduct['main'] as $val) {
+                        $product = new PHPShopProduct((int) $val['productOffer'], 'id');
+                        if (is_array($product->objRow)) {
+                            $product->removeFromWarehouse($val['count'], 0, $CDEKFulfillment->option['warehouse_main']);
+                        }
+                    }
+            }
+
             // Ошибка
             else {
-                
+
                 // Меняем статус заказа обратно
-                $_POST['statusi_new']=$data['statusi'];
-                
+                $_POST['statusi_new'] = $data['statusi'];
             }
         }
     }

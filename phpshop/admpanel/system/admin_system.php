@@ -1,6 +1,7 @@
 <?php
 
 $TitlePage = __("Основные Настройки");
+PHPShopObj::loadClass('order');
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['system']);
 
 // Выбор языка
@@ -196,7 +197,6 @@ function actionStart() {
         foreach ($valuta_array as $val) {
             $dengi_value[] = array($val['name'], $val['id'], $data['dengi']);
             $kurs_value[] = array($val['name'], $val['id'], $data['kurs']);
-            $kurs_beznal_value[] = array($val['name'], $val['id'], $data['kurs_beznal']);
         }
 
 
@@ -287,6 +287,21 @@ function actionStart() {
                 $PHPShopGUI->setField("Общая пагинация", $PHPShopGUI->setInputText(false, 'num_row_new', $data['num_row'], 50), 1, 'Количество позиций на одной странице') .
                 $PHPShopGUI->setField('Временная зона', $PHPShopGUI->setSelect('option[timezone]', $timezone_value))
         ;
+    
+    // Статусы заказов
+    $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
+
+    $status_array = $PHPShopOrderStatusArray->getArray();
+    $status_array[0] = ['name' => __('Новый заказ'), 'sklad_action' => false, 'id' => 0,'description'=>__('Системный')];
+
+    if (is_array($status_array))
+        foreach ($status_array as $status_val) {
+            if ($status_val['id'] != 1)
+                $order_status_value[] = array($status_val['name'], $status_val['id'], $option['status_new_order'],'data-subtext="'.$status_val['description'].'"');
+        }
+
+    if (empty($hideSite) and empty($hideCatalog))
+        $disp .= $PHPShopGUI->setField('Статус нового заказа', $PHPShopGUI->setSelect('option[status_new_order]', $order_status_value));
 
     $PHPShopGUI->_CODE = $PHPShopGUI->setCollapse('Вывод', $disp);
 
@@ -402,7 +417,7 @@ function actionStart() {
             $PHPShopGUI->setField("Быстрый поиск", $PHPShopGUI->setSelect('option[search_enabled]', $search_enabled_value, null, true), 1, 'Поиск в верхнем правом углу панели управления', $hideCatalog)
     );
 
-  
+
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 

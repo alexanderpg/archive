@@ -81,5 +81,30 @@ var locale = {
     charset: "windows-1252",
     confirm_create_order: "Ви дійсно хочете виконати операцію?",
     confirm_change_price: "Нова ціна відрізняється більше ніж на 20%. Ви впевнені?",
-    help: "Помощь"
+    help: "Помощь",
+	cdek: {
+        express_delivery: "Кур'єрська доставка",
+        pickup_code: "Код обраного ПВЗ",
+        city: "місто",
+        pickup_address: "адреса обраного ПВЗ",
+        pickup_phone: "телефон обраного ПВЗ",
+        pickup: "ПВЗ"
+    },
+    confirm_ai_help: "Ви дійсно хочете запросити допомогу ШІ?",
+    ai_done: "Використати",
+    ai_false: "Введіть початковий текст для обробки ШІ",
+    update_check: "Доступне оновлення PHPShop, бажаєте встановити оновлення?",
+    confirm_video: "Ви дійсно хочете створити відео з зображень?",
+    create_video: "Створення відео з зображень",
+    analytics: {
+        products: "Товари",
+        sales: "Продажі",
+        avgprice: "Сер. ціна",
+        currency: " грн.",
+        unit: " шт.",
+        customers: "Клієнти",
+        avg: "Середній чек",
+        repeat: "Лояльність",
+	    customers_unit: " чел."
+    }
 };

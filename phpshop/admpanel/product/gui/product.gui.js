@@ -1,4 +1,40 @@
 $().ready(function () {
+    
+    // Создание видео
+    $("body").on('click', "#videoCreate", function (event) {
+        event.preventDefault();
+        var id = $(this).attr('data-id');
+        
+        showProgressBar(locale.create_video);
+        $('.progress-bar').css('width', '30%').html('30%');
+        
+        $.MessageBox({
+            buttonDone: "OK",
+            buttonFail: locale.cancel,
+            message: locale.confirm_video
+        }).done(function () {
+
+            var data = [];
+            data.push({name: 'productID', value: id});
+
+            $.ajax({
+                mimeType: 'text/html; charset=' + locale.charset,
+                url: './editors/default/video/ajax/ffmpeg.ajax.php',
+                data: data,
+                type: 'post',
+                dataType: "json",
+                async: false,
+                success: function (json) {
+                    if (json['success'] == 1) {
+                        $('.progress-bar').css('width', '100%').html('100%').removeClass('active');
+                        $('.success-notification').delay(500).fadeOut(1000);
+                        //showAlertMessage(locale.save_done);
+                    } else
+                        showAlertMessage(locale.save_false, true);
+                }
+            });
+        })
+    });
 
     $("body").on('click', ".set-image-tab", function (e) {
         e.preventDefault();

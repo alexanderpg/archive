@@ -191,7 +191,7 @@ class AddToTemplateVisualCartAjax {
     }
 
     function get_memory($cart = true) {
-        if ($this->true_key($_COOKIE['visualcart_memory'])) {
+        if (!empty($_COOKIE['visualcart_memory']) and $this->true_key($_COOKIE['visualcart_memory'])) {
             $this->memory = $_COOKIE['visualcart_memory'];
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['visualcart']['visualcart_memory']);
             $data = $PHPShopOrm->select(array('*'), array('memory' => "='" . $this->memory . "'"), false, array('limit' => 1));

@@ -706,7 +706,7 @@ class OzonSeller {
     /**
      *  Список товаров из Ozon
      */
-    public function getProductList($visibility = "ALL", $offer_id = null, $product_id = null, $limit = null) {
+    public function getProductList($visibility = "ALL", $offer_id = null, $product_id = null, $limit = null, $last_id=null) {
 
         if (empty($limit))
             $limit = 50;
@@ -733,8 +733,10 @@ class OzonSeller {
             else
                 $params['filter']['product_id'] = [$product_id];
         }
-
-
+        
+        if(!empty($last_id)){
+            $params['last_id'] = $last_id;
+        }
 
         $result = $this->request(self::GET_PRODUCT_LIST, $params);
 

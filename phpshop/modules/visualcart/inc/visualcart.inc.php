@@ -132,7 +132,7 @@ class AddToTemplateVisualCart extends PHPShopElements {
 
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['visualcart']['visualcart_memory']);
             $PHPShopOrm->debug = $this->debug;
-            if ($this->true_key($_COOKIE['visualcart_memory'])) {
+            if (!empty($_COOKIE['visualcart_memory']) and $this->true_key($_COOKIE['visualcart_memory'])) {
                 $data = $PHPShopOrm->select(array('*'), array('memory' => "='" . $_COOKIE['visualcart_memory'] . "'"), false, array('limit' => 1));
 
                 if (is_array($data)) {

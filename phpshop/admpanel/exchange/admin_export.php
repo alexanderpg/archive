@@ -694,7 +694,7 @@ function actionSave() {
         if (empty($GLOBALS['exchanges_cron']))
             $sorce = "./csv/export_" . $subpath[2] . "_" . date("d_m_y_His") . ".xlsx";
         else
-            $sorce = '../../../admpanel/csv/export_" . $subpath[2] . "_" . date("d_m_y_His") . ".xlsx";';
+            $sorce = '../../../admpanel/csv/export_' . $subpath[2] . "_" . date("d_m_y_His") . ".xlsx";
 
         SimpleXLSXGen::fromArray($tmp_content)->saveAs($sorce);
     }

@@ -3,7 +3,7 @@
 /**
  * Сортировка товаров
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopCoreFunction
  * @param obj $obj объект класса
  * @return mixed
@@ -15,7 +15,7 @@ function query_filter($obj) {
     if (count($obj->category_array) === 0) {
         $obj->category_array = array($obj->category);
     }
-
+    
     $dop_cats = '';
     foreach ($obj->category_array as $category) {
         $dop_cats .= ' OR dop_cat LIKE \'%#' . $category . '#%\' ';
@@ -74,13 +74,19 @@ function query_filter($obj) {
         $filters = preg_replace('#^.*/filters/(.*)$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
 
         if (!empty($filters)) {
-            $filters_data = (new PHPShopOrm($GLOBALS['SysValue']['base']['sort']))->getOne(['*'], ['sort_seo_name' => '="' . PHPShopSecurity::TotalClean($filters) . '"']);
+            
+            $filter_sort = 'and';
+            $filter_sort_search = 'and';
+            
+            // Набор характеристик
+            $sort_category = unserialize($obj->PHPShopCategory->getParam('sort'));
+            $filters_data = (new PHPShopOrm($GLOBALS['SysValue']['base']['sort']))->getOne(['*'], ['sort_seo_name' => '="' . PHPShopSecurity::TotalClean($filters) . '"','category'=>' IN ('.implode(",", $sort_category).')']);
             if (is_array($filters_data))
                 $v[$filters_data['category']] = $filters_data['id'];
             else $v[0]=0;
         }
     }
-
+    
     // Сортировка по характеристикам
     $sort_count = 0;
     if (is_array($v)) {
@@ -254,6 +260,6 @@ function query_filter($obj) {
         else
             $sort .= " and (" . $obj->PHPShopSystem->getPriceColumn() . " BETWEEN " . ($priceOT / (100 + $percent) * 100) . " AND " . ($priceDO / (100 + $percent) * 100) . ") ";
     }
+    
     return array('sql' => $catt . " and enabled='1' and parent_enabled='0' " . $sort . " " . $string);
 }
-?>

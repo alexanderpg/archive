@@ -5,7 +5,7 @@ PHPShopObj::loadClass('category');
 $TitlePage = __('Товары из Яндекс.Маркета');
 
 function actionStart() {
-    global $PHPShopInterface, $TitlePage, $select_name, $PHPShopModules;
+    global $PHPShopInterface, $TitlePage, $select_name;
 
     $PHPShopInterface->checkbox_action = false;
     $PHPShopInterface->setActionPanel($TitlePage, $select_name, false);

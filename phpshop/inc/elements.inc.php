@@ -1947,16 +1947,16 @@ class PHPShopPhotoElement extends PHPShopElements {
 class PHPShopRecaptchaElement extends PHPShopElements {
 
     // Общие ключи Recaptcha 
-    public $secret = '6LdhAiYUAAAAAGzO0wlENkavrN49gFhHiHqH9vkv';
-    public $public = '6LdhAiYUAAAAAO1uc9b8KfotAyfoInSrWuygbQKC';
+    public $secret = 'empty';
+    public $public = 'empty';
     protected $api = 'https://www.google.com/recaptcha/api/siteverify';
     // Общие ключи Hcaptcha         
-    public $hsecret = '0xba1b193f433F4656778a3C7a96326CA412769E3D';
-    public $hpublic = '6756c855-3f50-4360-a799-4f7b4855c927';
+    public $hsecret = 'empty';
+    public $hpublic = 'empty';
     protected $hapi = 'https://hcaptcha.com/siteverify';
     // Общие ключи SmartCaptcha         
-    public $smartsecret = '';
-    public $smartpublic = '';
+    public $smartsecret = 'empty';
+    public $smartpublic = 'empty';
     protected $smartapi = 'https://smartcaptcha.yandexcloud.net/validate';
 
     public function __construct() {

@@ -112,11 +112,8 @@ class PHPShopText {
         $style = null;
         if ($size)
             $style .= 'font-size:' . $size . 'px;';
-        if ($color)
-            $style .= 'color:' . $color;
         if (empty($title))
             $title = $text;
-
         if ($title)
             $title = ' title="' . str_replace('"', "", $title) . '" ';
         if ($target)

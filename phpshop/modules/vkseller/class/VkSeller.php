@@ -8,6 +8,7 @@ PHPShopObj::loadClass("valuta");
  * @version 1.4
  * @package PHPShopModules
  * @todo https://dev.vk.ru/method/market
+ * @todo https://vk.com/ymlapp?mid=-223238042&ref=group_menu
  */
 class VkSeller {
 

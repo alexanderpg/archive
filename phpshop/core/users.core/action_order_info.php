@@ -55,7 +55,7 @@ function action_order_info($obj, $tip) {
             // Цифровой контент
             if ($obj->PHPShopSystem->getSerilizeParam('admoption.digital_product_enabled') == 1) {
                 if ($PHPShopOrderStatusArray->getParam($row['statusi'] . '.sklad_action') == 1 or $row['statusi'] == 101) {
-                    $files = PHPShopText::tr(PHPShopText::b( __('Файлы')), $PHPShopOrderFunction->cart('userfiles', array('obj' => $obj)), '-');
+                    $files = PHPShopText::tr(PHPShopText::b(__('Файлы')), $PHPShopOrderFunction->cart('userfiles', array('obj' => $obj)), '-');
                 }
             }
 
@@ -160,10 +160,11 @@ function userfiles($val, $option) {
 
                 if ($extension == 'txt') {
 
+                    $content = file_get_contents($_SERVER['DOCUMENT_ROOT'] . $cfile['path']);
+
                     if (empty($cfile['name']))
                         $cfile['name'] = $content;
 
-                    $content = file_get_contents($_SERVER['DOCUMENT_ROOT'] . $cfile['path']);
                     $dis .= PHPShopText::a($content, $cfile['name'], false, false, false, '_blank');
                 } else {
                     $F = $option['obj']->link_encode($cfile['path']);

@@ -44,7 +44,7 @@ function tab_cart($data, $option = false) {
     $PHPShopInterface->dropdown_action_form = false;
     $PHPShopInterface->setCaption(array("Наименование", "50%"), array("Цена", "15%"), array('<span class="hidden-xs">Кол-во</span><span class="visible-xs">Кол.</span>', "10%", array('align' => 'center')), array(null, "10%"), array('Сумма', '15%', array('align' => 'right')));
 
-    if (sizeof($cart) != 0)
+    if (is_array($cart) and sizeof($cart) != 0)
         if (is_array($cart))
             foreach ($cart as $key => $val) {
 

@@ -6,7 +6,7 @@ if (!defined("OBJENABLED"))
 /**
  * Системные настройки
  * @author PHPShop Software
- * @version 1.6
+ * @version 1.7
  * @package PHPShopObj
  */
 class PHPShopSystem extends PHPShopObj {
@@ -105,6 +105,14 @@ class PHPShopSystem extends PHPShopObj {
             $value = 1;
         if ($this->getSerilizeParam($param) == $value)
             return true;
+    }
+    
+    /**
+     * Статус нового заказа по умолчанию
+     * @return int
+     */
+    function getNewStatusOrder() {
+        return (int) $this->getSerilizeParam('admoption.status_new_order');
     }
 
     /**

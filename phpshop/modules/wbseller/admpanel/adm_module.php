@@ -9,6 +9,30 @@ PHPShopObj::loadClass("delivery");
 $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.wbseller.wbseller_system"));
 $WbSeller = new WbSeller();
 
+// Выгрузка всех товаров
+function actionImportProducts() {
+
+    // Безопасность
+    $cron_secure = md5($GLOBALS['SysValue']['connect']['host'] . $GLOBALS['SysValue']['connect']['dbase'] . $GLOBALS['SysValue']['connect']['user_db'] . $GLOBALS['SysValue']['connect']['pass_db']);
+
+    $protocol = 'http://';
+    if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
+        $protocol = 'https://';
+    }
+
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/ozonseller/admpanel/ajax/import.ajax.php?s=" . $cron_secure;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $true_path);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_exec($ch);
+    curl_close($ch);
+
+    header('Location: ./csv/product.wb.csv');
+}
+
 // Обновление цен
 function actionUpdatePrice() {
 
@@ -73,9 +97,18 @@ function actionStart() {
             'action' => 'exportID',
             'icon' => 'glyphicon glyphicon-export'
         ];
-        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить цены', 'Сохранить и закрыть']);
-    }
+        
+        $PHPShopGUI->action_button['Загрузить товары'] = [
+            'name' => __('Загрузить товары в CSV'),
+            'class' => 'btn btn-default btn-sm navbar-btn ',
+            'type' => 'submit',
+            'action' => 'importID',
+            'icon' => 'glyphicon glyphicon-cloud-download'
+        ];
 
+        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Загрузить товары','Выгрузить цены', 'Сохранить и закрыть']);
+    }
+    
     // Статус
     $status[] = [__('Новый заказ'), 0, $data['status']];
     $statusArray = (new PHPShopOrm('phpshop_order_status'))->getList(['id', 'name']);
@@ -160,6 +193,7 @@ function actionStart() {
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit") .
+            $PHPShopGUI->setInput("submit", "importID", "Применить", "right", 80, "", "but", "actionImportProducts.modules.edit") .
             $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);

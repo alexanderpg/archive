@@ -48,6 +48,71 @@ function startClock() {
     }, 100);
 }
 
+function initChart(canvasId, data, color, title, postfix) {
+    var canvas = document.getElementById(canvasId);
+    if (!canvas)
+        return;
+
+    var ctx = canvas.getContext('2d');
+    new Chart2(ctx, {
+        type: "line",
+        data: {
+            labels: JSON.parse($("#chart_date").val()),
+            datasets: [{
+                    data: data,
+                    borderColor: color,
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    pointHoverRadius: 4,
+                    pointBackgroundColor: "transparent",
+                    pointHoverBackgroundColor: color,
+                    pointBorderColor: "transparent",
+                    pointHoverBorderColor: "#fff",
+                    pointBorderWidth: 2,
+                    tension: 0.4,
+                    fill: false
+                }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {display: false},
+                x: {display: false}
+            },
+            plugins: {
+                legend: {display: false},
+                tooltip: {
+                    enabled: true,
+                    mode: "index",
+                    intersect: false,
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    titleColor: "#fff",
+                    bodyColor: "#fff",
+                    borderColor: color,
+                    borderWidth: 1,
+                    cornerRadius: 4,
+                    padding: 8,
+                    displayColors: false,
+                    callbacks: {
+                        title: function (tooltipItems) {
+                            return tooltipItems[0].label;
+                        },
+                        label: function (context) {
+                            var value = context.parsed.y;
+                            var formattedValue = new Intl.NumberFormat("ru-RU").format(value);
+                            return title + ": " + formattedValue + postfix;
+                        }
+                    }
+                }
+            },
+            hover: {
+                mode: "nearest",
+                intersect: false
+            }
+        }
+    });
+}
 
 
 $(document).ready(function () {
@@ -219,5 +284,15 @@ $(document).ready(function () {
         });
 
     }
+    
+    // Графики клиенты
+    if ($("#chart_customers").length) {
+        initChart("js-chart-customers", JSON.parse($("#chart_customers").val()), "#377dff", locale.analytics.customers, "");
+        initChart("js-chart-ltv", JSON.parse($("#chart_ltv").val()), "#28a745", "LTV", locale.analytics.currency);
+        initChart("js-chart-avg", JSON.parse($("#chart_avg").val()), "#b37cfc", locale.analytics.avg, locale.analytics.currency);
+        initChart("js-chart-repeat", JSON.parse($("#chart_repeat").val()), "#f0616e", locale.analytics.repeat, "%");
+    }
+    
+    
 
 });

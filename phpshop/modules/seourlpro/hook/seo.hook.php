@@ -37,6 +37,12 @@ function setPaginator_seourl_hook($obj, $nav, $rout) {
 
 
         $nav = strtr($nav, array_combine($replace_old, $replace_new));
+        
+        // Убираем окончание .html
+        if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
+            $nav = preg_replace(['/\.html\?/'],['?'],$nav);
+        }
+        
         $obj->set('productPageNav', $nav);
         $obj->set('catalogFirstPage', strtr($obj->get('catalogFirstPage'), array_combine($replace_old, $replace_new)));
 

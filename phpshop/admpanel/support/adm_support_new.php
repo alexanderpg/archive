@@ -96,13 +96,13 @@ function fileAdd() {
     // Копируем от пользователя
     if (!empty($_FILES['file']['name'])) {
         $_FILES['file']['ext'] = PHPShopSecurity::getExt($_FILES['file']['name']);
-        $_FILES['file']['name'] = PHPShopString::toLatin(str_replace('.' . $_FILES['file']['ext'], '', PHPShopString::utf8_win1251($_FILES['file']['name']))) . '.' . $_FILES['file']['ext'];
-        if (!empty($_FILES['file']['ext'])) {
+        $_FILES['file']['name'] = PHPShopString::toLatin(str_replace('.' . $_FILES['file']['ext'], '', $_FILES['file']['name'])) . '.' . $_FILES['file']['ext'];
+       if (!empty($_FILES['file']['ext'])) {
             if (move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path . $_FILES['file']['name'])) {
                 $file = $GLOBALS['dir']['dir'] . $path . $_FILES['file']['name'];
             }
-        } else
-            $file = 'Error_PHP_ext';
+        }
+        else $file='Error_PHP_ext';
     }
 
     if (empty($file))

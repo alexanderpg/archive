@@ -36,7 +36,7 @@ function actionStart() {
         $catname = '  &rarr;  <span id="catname">' . $CategoryArray[$_GET['cat']]['name'] . '</span>';
     elseif (!empty($CategoryArray[$_GET['sub']]['name']))
         $catname = '  &rarr;  <span id="catname">' . $CategoryArray[$_GET['sub']]['name'] . '</span>';
-    elseif (isset($_GET['where']) and !empty($_GET['where']['name']))
+    elseif (isset($_GET['where']) and ! empty($_GET['where']['name']))
         $catname = '  &rarr;  <span id="catname">' . __('Поиск') . '</span>';
     else
         $catname = '  &rarr;  <span id="catname">' . __('Новые товары') . '</span>';
@@ -121,7 +121,7 @@ function actionStart() {
         $function_del = $function_pre_del = null;
     else {
         $function_del = 'Удалить выбранные';
-        $function_pre_del ='|';
+        $function_pre_del = '|';
     }
 
 
@@ -170,10 +170,11 @@ function getTableCaption() {
     // Дополнительный склад
     $PHPShopOrmWarehouse = new PHPShopOrm($GLOBALS['SysValue']['base']['warehouses']);
     $Warehouses = $PHPShopOrmWarehouse->select(array('*'), array('enabled' => "='1'"), array('order' => 'num DESC'), array('limit' => 100));
-    
-    foreach($Warehouses as $warehouse){
-        $dataWarehouse[$warehouse['id']]=$warehouse;
-    }
+
+    if (is_array($Warehouses))
+        foreach ($Warehouses as $warehouse) {
+            $dataWarehouse[$warehouse['id']] = $warehouse;
+        }
 
     // Убираем меню если много полей
     $count_view = 0;

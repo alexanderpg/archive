@@ -5,7 +5,7 @@
  * @package PHPShopExchange
  * @author PHPShop Software
  * @todo https://hmarketing.ru/blog/bitrix/zaprosy-obmena/
- * @version 4.0
+ * @version 4.1
  */
 class CommerceMLLoader {
 
@@ -50,6 +50,9 @@ class CommerceMLLoader {
         $this->img_w = $PHPShopSystem->getSerilizeParam('admoption.img_w');
         $this->img_h = $PHPShopSystem->getSerilizeParam('admoption.img_h');
         $this->image_save_source = $PHPShopSystem->getSerilizeParam('admoption.image_save_source');
+
+        // Замена спецсимволов в значениях характеристик
+        $this->replace = ['≥' => '>='];
     }
 
     private function checkauth() {
@@ -412,6 +415,8 @@ class CommerceMLLoader {
 
     private function parser($xml) {
         global $parent_array, $sort_array, $properties_array;
+        
+        $upload_path = dirname(__FILE__) . $this->exchange_path . '/';
 
         if ($xml) {
 
@@ -453,17 +458,28 @@ class CommerceMLLoader {
                         if (isset($item->ВариантыЗначений)) {
                             foreach ($item->ВариантыЗначений->Справочник as $directory) {
 
-                                if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
-                                    $directory_array[(string) $directory->ИдЗначения[0]] = (string) $directory->Значение[0];
+                                if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore)) {
+
+                                    // Замена спецсимвлов
+                                    foreach ($this->replace as $k => $v) {
+                                        if (stristr((string) $directory->Значение[0], $k))
+                                            $directory_array[(string) $directory->ИдЗначения[0]] = str_replace($k, $v, (string) $directory->Значение[0]);
+                                        else
+                                            $directory_array[(string) $directory->ИдЗначения[0]] = (string) $directory->Значение[0];
+                                    }
+                                }
                             }
                         }
                         // Справочник 2.04
                         elseif (isset($item->ТипыЗначений)) {
 
+
                             foreach ($item->ТипыЗначений[0]->ТипЗначений[0]->ВариантыЗначений[0]->ВариантЗначения as $directory) {
 
-                                if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
+                                if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore)) {
+
                                     $directory_array[(string) $directory->Ид[0]] = (string) $directory->Значение[0];
+                                }
                             }
                         }
 
@@ -609,6 +625,9 @@ class CommerceMLLoader {
                             if ((string) $i == '@attributes')
                                 continue;
 
+                            if (!file_exists($upload_path . self::$upload1c . $img))
+                                continue;
+
                             $ext = pathinfo($img, PATHINFO_EXTENSION);
 
                             // Картинки
@@ -643,9 +662,9 @@ class CommerceMLLoader {
                             }
                             // Файлы
                             else {
-                               $file_name = 'file' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.' . $ext;
-                               copy(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img, $_SERVER['DOCUMENT_ROOT'].$this->exchange_file_path . $file_name);
-                               $files[]=$file_name;
+                                $file_name = 'file' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.' . $ext;
+                                copy(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img, $_SERVER['DOCUMENT_ROOT'] . $this->exchange_file_path . $file_name);
+                                $files[] = $file_name;
                             }
                         }
                     }
@@ -695,10 +714,10 @@ class CommerceMLLoader {
                     } else {
                         $parent_enabled = 0;
                     }
-                    
+
                     // Дополнительные файлы
-                    if(count($files)>0)
-                        $image.='|'. implode(',', $files);
+                    if (count($files) > 0)
+                        $image .= '|' . implode(',', $files);
 
                     $this->product_array[(string) $item->Ид[0]] = array($uid, (string) $item->Наименование[0], $description, $image, $content, $image_count, "", "", "", "", "", "", $weight, "", "", $category, "", (string) $item->Ид[0], $parent_enabled);
 

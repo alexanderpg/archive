@@ -180,7 +180,7 @@
 <br>{Пароль}: @user_password@</b>
 
 </p>
-<p>{Авторизоваться} <a href="http://@serverPath@users/order.html">{на сайте}</a>.</p>
+<p>{Авторизоваться} <a href="http://@serverPath@/users/order.html">{на сайте}</a>.</p>
                                 </td>
                             </tr>
                         </tbody>

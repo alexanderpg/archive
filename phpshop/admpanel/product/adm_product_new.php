@@ -408,7 +408,7 @@ function actionStart() {
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true), array("Изображение", $Tab6, true, $PHPShopSystem->ifSerilizeParam("admoption.image_off", 1)), array("Описание", $Tab2 . $Tab3, true, false, true), array("Дополнительно", $Tab_docs . $Tab_rating . $Tab_header, true, false, true), array("Характеристики", $Tab_sorts, true), array("Подтипы", $Tab_option, true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true), array("Изображение и видео", $Tab6, true, $PHPShopSystem->ifSerilizeParam("admoption.image_off", 1)), array("Описание", $Tab2 . $Tab3, true, false, true), array("Дополнительно", $Tab_docs . $Tab_rating . $Tab_header, true, false, true), array("Характеристики", $Tab_sorts, true), array("Подтипы", $Tab_option, true));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("submit", "saveID", "ОК", "right", 70, "", "but", "actionInsert.catalog.create") .

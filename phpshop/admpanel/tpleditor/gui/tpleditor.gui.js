@@ -78,8 +78,9 @@ $().ready(function () {
     });
 
     // Переагрузка шаблона
-    $('.skin-load').on('click', function () {
+    $('.skin-load').on('click', function (event) {
 
+        event.preventDefault();
         var data = [];
         var id = $(this);
         var path = $(this).attr('data-path');

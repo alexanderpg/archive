@@ -18,9 +18,6 @@ $PHPShopValutaArray = new PHPShopValutaArray();
 $PHPShopNav = new PHPShopNav();
 $PHPShopRecaptchaElement = new PHPShopRecaptchaElement();
 $PHPShopLang = new PHPShopLang(['locale' => $_SESSION['lang'], 'path' => 'shop']);
-if ($PHPShopSystem->ifSerilizeParam('admoption.recaptcha_enabled')) {
-    $PHPShopRecaptchaElement->recaptcha = true;
-}
 $ajaxNotice = new AjaxNotice();
 
 try {
@@ -51,11 +48,17 @@ class AjaxNotice {
             $_POST['name_new'] = PHPShopSecurity::TotalClean($_POST['name_new'], 4);
             $_POST['message'] = PHPShopString::utf8_win1251(strip_tags($_POST['message']));
             $_POST['tel_new'] = PHPShopString::utf8_win1251(strip_tags($_POST['tel_new']));
-            $PHPShopUsers = new PHPShopUsers();
-            $PHPShopUsers->add_user_from_order($email);
 
-            notice_add($PHPShopUsers);
-            $this->lead();
+            $product = $this->getProductData((int) $_REQUEST['productId']);
+
+            if (is_array($product)) {
+
+                $PHPShopUsers = new PHPShopUsers();
+                $PHPShopUsers->add_user_from_order($email);
+
+                notice_add($PHPShopUsers);
+                $this->lead($product);
+            }
         } else {
             throw new Exception(__("Ошибка ключа, повторите попытку ввода ключа"));
         }
@@ -70,27 +73,31 @@ class AjaxNotice {
     /**
      * Добавление лида
      */
-    private function lead() {
-        
-        $product = $this->getProductData((int) $_REQUEST['productId']);
-        
-        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['notes']);
-        $content = "http://" . $_SERVER['SERVER_NAME'] . "/shop/UID_" . $product['id'] . ".html\n".PHPShopString::utf8_win1251($_POST['message']);
-        $insert = array('date_new' => time(), 'message_new' => __('Уведомление').' '.PHPShopString::utf8_win1251($product['title']), 'name_new' => $_POST['name_new'], 'mail_new' => $_POST['mail'], 'tel_new' => '', 'content_new' => __('Уведомление о поступлении товара').' '.PHPShopSecurity::TotalClean($content));
-        $PHPShopOrm->insert($insert);
+    private function lead($product) {
+
+        if (is_array($product)) {
+            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['notes']);
+            $content = "http://" . $_SERVER['SERVER_NAME'] . "/shop/UID_" . $product['id'] . ".html\n" . PHPShopString::utf8_win1251($_POST['message']);
+            $insert = array('date_new' => time(), 'message_new' => __('Уведомление') . ' ' . PHPShopString::utf8_win1251($product['title']), 'name_new' => $_POST['name_new'], 'mail_new' => $_POST['mail'], 'tel_new' => '', 'content_new' => __('Уведомление о поступлении товара') . ' ' . PHPShopSecurity::TotalClean($content));
+            $PHPShopOrm->insert($insert);
+        }
     }
 
     public function getProductData($productId) {
         $product = new PHPShopProduct($productId);
 
-        return [
-            'id' => $productId,
-            'link' => sprintf('/shop/UID_%s.html', $productId),
-            'title' => PHPShopString::win_utf8($product->getName()),
-            'image' => sprintf('<a href="'.$GLOBALS['SysValue']['dir']['dir'].'/shop/UID_%s.html" title="%s">
+        // Проверка наличия
+        if (!empty($product->getName()) and ! empty($product->getParam('sklad'))) {
+
+            return [
+                'id' => $productId,
+                'link' => sprintf('/shop/UID_%s.html', $productId),
+                'title' => PHPShopString::win_utf8($product->getName()),
+                'image' => sprintf('<a href="' . $GLOBALS['SysValue']['dir']['dir'] . '/shop/UID_%s.html" title="%s">
                                    <img class="one-image-slider" src="%s" alt="%s" title="%s"/>
                                 </a>', $productId, PHPShopString::win_utf8($product->getName()), $product->getImage(), PHPShopString::win_utf8($product->getName()), PHPShopString::win_utf8($product->getName()))
-        ];
+            ];
+        }
     }
 
 }

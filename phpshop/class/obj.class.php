@@ -6,7 +6,7 @@ if (!defined("OBJENABLED"))
 /**
  * Родительский класс Объекта
  * @author PHPShop Software
- * @version 1.8
+ * @version 1.9
  * @package PHPShopClass
  */
 class PHPShopObj {
@@ -80,13 +80,21 @@ class PHPShopObj {
     }
 
     /**
-     * Обновить параметр в базе
+     * Обновить данные в БД
      * @param array $value массив значений
      * @param string $var поле выборки, по умолчанию id
      * @param string $prefix префикс полей в форме [_new]
      */
     function updateParam($value, $var = 'id', $prefix = '_new'){
        return $this->PHPShopOrm->update($value, array($var => '="' . $this->objID . '"'), $prefix);
+    }
+    
+    /**
+     * Удалить данные в БД
+     * @param string $var поле выборки, по умолчанию id
+     */
+    function deleteParam($var = 'id'){
+       return $this->PHPShopOrm->delete(array($var => '="' . $this->objID . '"'));
     }
     
    

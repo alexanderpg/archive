@@ -724,6 +724,24 @@
             <description>Иконка каталога</description>
         </var>
     </template>
+    
+    <template>
+        <name>Форма списка всех каталогов </name>
+        <path>catalog/catalog_list_forma.tpl</path>
+        <description>Форма списка каталогов товаров с иконками</description>
+        <var>
+            <name>podcatalogId</name>
+            <description>ID каталога</description>
+        </var>
+        <var>
+            <name>podcatalogName</name>
+            <description>Наименование каталога товаров</description>
+        </var>
+        <var>
+            <name>podcatalogIcon</name>
+            <description>Иконка каталога</description>
+        </var>
+    </template>
 
     <template>
         <name>Форма сортировки подкаталога продукции</name>

@@ -21,7 +21,7 @@ class ProductDay extends PHPShopProductElements {
     function productdayview() {
 
         $this->option();
-        
+
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
         $PHPShopOrm->debug = false;
 
@@ -34,26 +34,26 @@ class ProductDay extends PHPShopProductElements {
 
         $productday = $PHPShopOrm->select(array('*'), $where, array('order' => 'datas desc'), array('limit' => 1));
 
-       // Добавляем время начала отображения
-       if((int) $productday['productday_time'] === 0) {
-           $this->setStartTime($productday['id']);
+        // Добавляем время начала отображения
+        if ((int) $productday['productday_time'] === 0 and ! empty($productday['id'])) {
+            $this->setStartTime($productday['id']);
         }
         // Если время больше чем указано в настройках. Иначе ломается шаблон.
-        if((int) date("H") >= (int) $this->option['time']) {
+        if ((int) date("H") >= (int) $this->option['time']) {
             return true;
         }
 
         $hour = date("H");
         $minute = date("i");
         $second = date("s");
-        
-        if(!empty($this->option['time']))
-        $hour_good = ($this->option['time'] - $hour);
+
+        if (!empty($this->option['time']))
+            $hour_good = ($this->option['time'] - $hour);
         $minute_good = (60 - $minute);
         $second_good = (60 - $second);
 
-        
-        if (!empty($productday['productday_time']) and ($productday['productday_time'] > 0 && $productday['productday_time'] <= time()) and is_array($productday) and $this->option['status'] == 1) {
+
+        if (!empty($productday['productday_time']) and ( $productday['productday_time'] > 0 && $productday['productday_time'] <= time()) and is_array($productday) and $this->option['status'] == 1) {
 
             // Убираем товар из акции
             if (empty($productday['price_n']))
@@ -72,7 +72,7 @@ class ProductDay extends PHPShopProductElements {
 
             if (is_array($promotions)) {
                 $price = $promotions['price'];
-                if((float) $productday['price_n'] == 0) {
+                if ((float) $productday['price_n'] == 0) {
                     $productday['price_n'] = (float) $promotions['price_n'];
                 }
             }
@@ -80,18 +80,18 @@ class ProductDay extends PHPShopProductElements {
             PHPShopParser::set('productDayId', $productday['id']);
             PHPShopParser::set('productDayName', $productday['name']);
             PHPShopParser::set('productDayDescription', $productday['description']);
-            
+
             $productDayPrice = PHPShopProductFunction::GetPriceValuta($productday['id'], array($price, $productday['price2'], $productday['price3'], $productday['price4'], $productday['price5']), $productday['baseinputvaluta']);
 
             PHPShopParser::set('productDayPrice', number_format($productDayPrice, $this->format, '.', ' '));
-            
+
             // Старая цена
             $productDayPriceN = PHPShopProductFunction::GetPriceValuta($productday['id'], $productday['price_n'], $productday['baseinputvaluta'], false, false);
-            if(!empty($productDayPriceN)){
-            PHPShopParser::set('productDayPriceN', number_format($productDayPriceN, $this->format, '.', ' '));
-            PHPShopParser::set('productDayCurrency', $this->currency);
+            if (!empty($productDayPriceN)) {
+                PHPShopParser::set('productDayPriceN', number_format($productDayPriceN, $this->format, '.', ' '));
+                PHPShopParser::set('productDayCurrency', $this->currency);
             }
-            
+
             PHPShopParser::set('productValutaName', $this->currency);
             PHPShopParser::set('productDayPicBig', $productday['pic_big']);
             PHPShopParser::set('productDayPicBigSource', str_replace(".", "_big.", $productday['pic_big']));
@@ -113,22 +113,22 @@ class ProductDay extends PHPShopProductElements {
                 $url = '/shop/UID_' . $productday['id'];
                 PHPShopParser::set('productDayProductUrl', $url);
             }
-            
+
             $this->doLoadFunction(__CLASS__, 'comment_rate', array("row" => $productday, "type" => "CID"), 'shop');
             PHPShopParser::set('productDay', PHPShopParser::file($GLOBALS['SysValue']['templates']['productday']['product_day'], true, false, true));
         }
     }
 
-    private function setStartTime($productId)
-    {
+    private function setStartTime($productId) {
         $date = new DateTime();
-        if((date("H") >= (int) $this->option['time']) || (int) $this->option['time'] === 24) {
+        if ((date("H") >= (int) $this->option['time']) || (int) $this->option['time'] === 24) {
             $date->modify('+1 day');
         }
         $date->setTime((int) $this->option['time'] === 24 ? 0 : (int) $this->option['time'], 0);
         $orm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
         $orm->update(['productday_time_new' => $date->getTimestamp(), 'datas_new' => time()], ['id' => '=' . $productId]);
     }
+
 }
 
 // Добавляем в шаблон элемент

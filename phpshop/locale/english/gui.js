@@ -80,5 +80,30 @@ var locale = {
     charset: "windows-1251",
     confirm_create_order: "¬ы действительно хотите создать заказ?",
     confirm_change_price: "The new price differs by more than 20%. Are you sure?",
-    help: "Help"
+    help: "Help",
+	cdek: {
+        express_delivery: "Express delivery",
+        pickup_code: "Selected pickup point code",
+        city: "city",
+        pickup_address: "selected pickup point address",
+        pickup_phone: "selected pickup point phone",
+        pickup: "Pickup point"
+    },
+    confirm_ai_help: "Do you really want to request AI help?",
+    ai_done: "Use",
+    ai_false: "Enter initial text for AI processing",
+    update_check: "PHPShop update is available, do you want to install the update?",
+    confirm_video: "Do you really want to create a video from images?",
+    create_video: "Creating video from images",
+    analytics: {
+        products: "Products",
+        sales: "Sales",
+        avgprice: "Avg. price",
+        currency: " RUB",
+        unit: " units",
+        customers: "Customers",
+        avg: "Average bill",
+        repeat: "Loyalty",
+	    customers_unit: " hum."
+    }
 };

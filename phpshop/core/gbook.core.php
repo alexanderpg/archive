@@ -141,7 +141,7 @@ class PHPShopGbook extends PHPShopCore {
             $d_mail = PHPShopText::b($row['name']);
 
         // Определяем переменные
-        $this->set('gbookData', PHPShopDate::dataV($row['datas']));
+        $this->set('gbookData', PHPShopDate::dataV($row['datas'],false));
         $this->set('gbookName', $row['name']);
         $this->set('gbookTema', $row['tema']);
         $this->set('gbookMail', $d_mail);

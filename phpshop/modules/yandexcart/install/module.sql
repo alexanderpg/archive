@@ -60,7 +60,7 @@ CREATE TABLE `phpshop_modules_yandexcart_system` (
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 
-INSERT INTO `phpshop_modules_yandexcart_system` VALUES(1, '', '', '', '', '', '', '0', '', 0, '', '4.1', '', '0', '1', '0', '0', '0', '', '', '', '', 0, 0, 0, '', NULL, '0');
+INSERT INTO `phpshop_modules_yandexcart_system` VALUES(1, '', '', '', '', '', '', '0', '', 0, '', '4.2', '', '0', '1', '0', '0', '0', '', '', '', '', 0, 0, 0, '', NULL, '0');
 
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexcart_log` (

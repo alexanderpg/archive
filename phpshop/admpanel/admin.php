@@ -36,8 +36,7 @@ if ($shop_type == 2) {
 elseif ($shop_type == 1) {
     $hideCatalog = 'hide';
     $brand_type = 'Catalog ';
-} 
-else {
+} else {
     $hideSite = $hideCatalog = $brand_type = null;
 }
 
@@ -380,9 +379,9 @@ if (!empty($_COOKIE['fullscreen'])) {
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user hidden-xs"></span> <span class="visible-xs"><?php _e('Администратор'); ?> <span class="caret"></span></span><span class="caret  hidden-xs"></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li class="dropdown-header"><?php
-                                        _e('Вошел как');
-                                        echo ' ' . $_SESSION['logPHPSHOP'];
-                                        ?></li>
+                            _e('Вошел как');
+                            echo ' ' . $_SESSION['logPHPSHOP'];
+                            ?></li>
                                     <li class="divider"></li>
                                     <li><a href="?path=users&id=<?php echo $_SESSION['idPHPSHOP']; ?>"><?php _e('Профиль'); ?></a></li>
                                     <li><a href="?path=users"><?php _e('Все администраторы'); ?></a></li>
@@ -471,7 +470,7 @@ if (!empty($_COOKIE['fullscreen'])) {
                                 </ul>
                             </li>
 
-                            <li class="dropdown <?php echo @$menu_active_slider . @$menu_active_links . @$menu_active_banner . @$menu_active_opros . @$menu_active_metrica_traffic . @$menu_active_metrica_sources_summary . @$menu_active_metrica_sources_social . @$menu_active_metrica_sources_sites . @$menu_active_metrica_search_phrases . @$menu_active_metrica_search_engines . @$menu_active_metrica . @$menu_active_promotions . @$menu_active_lead_kanban; ?>" >
+                            <li class="dropdown <?php echo @$menu_active_slider . @$menu_active_links . @$menu_active_banner . @$menu_active_opros . @$menu_active_metrica_traffic . @$menu_active_metrica_sources_summary . @$menu_active_metrica_sources_social . @$menu_active_metrica_sources_sites . @$menu_active_metrica_search_phrases . @$menu_active_metrica_search_engines . @$menu_active_metrica . @$menu_active_promotions . @$menu_active_lead_kanban . @$menu_active_report_customers . @$menu_active_report_goods; ?>" >
                                 <a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-expanded="false"><?php _e('Маркетинг'); ?> <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li class="<?php echo $hideCatalog; ?>"><a href="?path=lead.kanban"><span><?php _e('Канбан доска'); ?></span><span class="dropdown-header"><?php _e('Управление заказами и задачами'); ?></span></a></li>
@@ -480,8 +479,20 @@ if (!empty($_COOKIE['fullscreen'])) {
                                     <li><a href="?path=news.sendmail"><?php _e('Рассылки'); ?><span class="dropdown-header"><?php _e('Создание рассылок пользователям'); ?></span></a></li>
 
                                     <li><a href="?path=banner"><?php _e('Баннеры и pop-up'); ?><span class="dropdown-header"><?php _e('Вывод баннеров и уведомлений'); ?></span></a></li>
+
+                                    <li><a href="?path=metrica"><?php _e('Статистика посещений'); ?><span class="dropdown-header"><?php _e('Статистика посещей Яндекс.Метрика'); ?></span></a></li>
+
                                     <li class="divider"></li>
-                                    <li><a href="?path=metrica"><span class="glyphicon glyphicon-equalizer"></span> <?php _e('Статистика посещений'); ?></a></li>
+                                    <li class="dropdown-submenu <?php echo $hideCatalog; ?>">
+                                        <a href="?path=report.customers"><span class="glyphicon glyphicon-equalizer"></span> <?php _e('Аналитика'); ?></a>
+                                        <!--
+                                        <ul class="dropdown-menu">
+
+                                            <li><a href="?path=report.goods"><?php _e('Аналитика товаров'); ?><span class="dropdown-header"><?php _e('Аналитические отчеты  по товарам'); ?></span></a></li>
+                                            <li><a href="?path=report.customers"><span><?php _e('Аналитика покупателей'); ?></span><span class="dropdown-header"><?php _e('Аналитические отчеты по клиентам'); ?></span></a></li>
+                                        </ul-->
+                                    </li>
+
                                 </ul>
                             </li>
                         </ul>
@@ -528,49 +539,51 @@ if (!empty($_COOKIE['fullscreen'])) {
                                 </span>
                             </div>
                         </form>
-                        <?php
+                        <div style="overflow:hidden">
+                            <?php
 // notification
-                        $i_notif = 0;
-                        if (empty($_SESSION['update_check']))
-                            if (is_array($notificationList))
-                                foreach ($notificationList as $notification) {
-                                    if ($i_notif < 3) {
-                                        include_once($_classPath . 'modules/' . $notification . '/admpanel/notification.php');
-                                        $notification_function = 'notification' . ucfirst($notification);
-                                        if (function_exists($notification_function)) {
-                                            call_user_func($notification_function);
+                            $i_notif = 0;
+                            if (empty($_SESSION['update_check']))
+                                if (is_array($notificationList))
+                                    foreach ($notificationList as $notification) {
+                                        if ($i_notif < 3) {
+                                            include_once($_classPath . 'modules/' . $notification . '/admpanel/notification.php');
+                                            $notification_function = 'notification' . ucfirst($notification);
+                                            if (function_exists($notification_function)) {
+                                                call_user_func($notification_function);
+                                            }
                                         }
+                                        $i_notif++;
                                     }
-                                    $i_notif++;
-                                }
 
 // update
-                        if (!empty($_SESSION['update_check']))
-                            echo '<a class="navbar-btn btn btn-sm btn-info navbar-right hidden-xs" href="?path=update" data-toggle="tooltip" data-placement="bottom" title="' . __('Доступно обновление') . '" >Update <span class="badge">' . intval($_SESSION['update_check']) . '</span></a>';
+                            if (!empty($_SESSION['update_check']))
+                                echo '<a class="navbar-btn btn btn-sm btn-info navbar-right hidden-xs" href="?path=update" data-toggle="tooltip" data-placement="bottom" title="' . __('Доступно обновление') . '" >Update <span class="badge">' . intval($_SESSION['update_check']) . '</span></a>';
 
 
 // dialog
-                        $dialog = $PHPShopBase->getNumRows('dialog', "where isview='0'");
-                        if ($dialog > 99)
-                            $dialog = 99;
-                        ?>
-                        <a class="navbar-btn btn btn-sm btn-primary navbar-right hidden-xs" href="?path=dialog"><?php _e('Диалоги'); ?> <span class="badge" id="dialog-check"><?php echo intval($dialog); ?></span></a><audio id="play-chat" src="images/chat.mp3"></audio>
+                            $dialog = $PHPShopBase->getNumRows('dialog', "where isview='0'");
+                            if ($dialog > 99)
+                                $dialog = 99;
+                            ?>
+                            <a class="navbar-btn btn btn-sm btn-primary navbar-right hidden-xs hide" href="?path=dialog"><?php _e('Диалоги'); ?> <span class="badge" id="dialog-check"><?php echo intval($dialog); ?></span></a><audio id="play-chat" src="images/chat.mp3"></audio>
 
-                        <?php
-                        $order = $PHPShopBase->getNumRows('orders', "where statusi='0'");
-                        ?>
+                            <?php
+                            $order = $PHPShopBase->getNumRows('orders', "where statusi='0'");
+                            ?>
 
-                        <a class="navbar-btn btn btn-sm btn-warning navbar-right hidden-xs hidden-sm hide" href="?path=order&where[statusi]=0"><?php _e('Заказы'); ?> <span class="badge" id="<?php echo $hideCatalog; ?>orders-check"><?php if(empty($hideCatalog)) echo $order; ?></span>
-                        </a><audio id="play" src="images/message.mp3"></audio>
+                            <a class="navbar-btn btn btn-sm btn-warning navbar-right hidden-xs hidden-sm hide" href="?path=order&where[statusi]=0"><?php _e('Заказы'); ?> <span class="badge" id="<?php echo $hideCatalog; ?>orders-check"><?php if (empty($hideCatalog)) echo $order; ?></span>
+                            </a><audio id="play" src="images/message.mp3"></audio>
 
-                        <?php
-                        $notes = $PHPShopBase->getNumRows('notes', "where status='0'");
-                        if ($notes > 99)
-                            $notes = 99;
-                        ?>
+                            <?php
+                            $notes = $PHPShopBase->getNumRows('notes', "where status='0'");
+                            if ($notes > 99)
+                                $notes = 99;
+                            ?>
 
-                        <a class="navbar-btn btn btn-sm btn-info navbar-right hidden-xs hide" href="?path=lead.kanban"><?php _e('Лиды'); ?> <span class="badge" id="notes-check"><?php echo $notes; ?></span>
-                        </a><audio id="play" src="images/message.mp3"></audio>
+                            <a class="navbar-btn btn btn-sm btn-info navbar-right hidden-xs hide" href="?path=lead.kanban"><?php _e('Лиды'); ?> <span class="badge" id="notes-check"><?php echo $notes; ?></span>
+                            </a><audio id="play" src="images/message.mp3"></audio>
+                        </div>
 
                     </div><!-- /.navbar-collapse -->
                 </div>
@@ -795,4 +808,4 @@ if (!empty($_COOKIE['fullscreen'])) {
 </html><?php
 // Запись файла локализации [off]
 //writeLangFile();
-?>
+        ?>

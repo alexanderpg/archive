@@ -33,12 +33,43 @@ function actionUpdate() {
     return $action;
 }
 
+// Обновление цен
+function actionUpdateWarehouse() {
+
+    // Безопасность
+    $cron_secure = md5($GLOBALS['SysValue']['connect']['host'] . $GLOBALS['SysValue']['connect']['dbase'] . $GLOBALS['SysValue']['connect']['user_db'] . $GLOBALS['SysValue']['connect']['pass_db']);
+
+    $protocol = 'http://';
+    if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
+        $protocol = 'https://';
+    }
+
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/cdekfulfillment/cron/products.php?s=" . $cron_secure;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $true_path);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_exec($ch);
+    curl_close($ch);
+}
+
 function actionStart() {
-    global $PHPShopGUI, $PHPShopOrm,$PHPShopSystem;
-
-
+    global $PHPShopGUI, $PHPShopOrm,$PHPShopSystem,$TitlePage, $select_name;
+    
+    $PHPShopGUI->action_button['Загрузить остатки'] = [
+            'name' => 'Загрузить остатки',
+            'class' => 'btn btn-default btn-sm navbar-btn ',
+            'type' => 'submit',
+            'action' => 'exportID',
+            'icon' => 'glyphicon glyphicon-import'
+        ];
+    
     // Выборка
     $data = $PHPShopOrm->select();
+    
+    $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Загрузить остатки', 'Сохранить и закрыть']);
 
     // Доступые статусы заказов
     $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
@@ -55,6 +86,7 @@ function actionStart() {
     $rate[] = array(__('Экспресс склад-дверь'), 38, $data['rate']);
     $rate[] = array(__('Посылка склад-дверь'), 49, $data['rate']);
     $rate[] = array(__('Экономичная посылка склад-дверь'), 58, $data['rate']);
+    $rate[] = array(__('Посылка склад-склад'), 48, $data['rate']);
 
     $Tab1 = $PHPShopGUI->setField('Логин интеграции', $PHPShopGUI->setInputText(false, 'account_new', $data['account'], 300));
     $Tab1 .= $PHPShopGUI->setField('Пароль интеграции', $PHPShopGUI->setInputText(false, 'password_new', $data['password'], 300));
@@ -63,10 +95,6 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('ID отправителя', $PHPShopGUI->setInputText(false, 'sender_new', $data['sender'], 300));
     $Tab1 .= $PHPShopGUI->setField('Тариф', $PHPShopGUI->setSelect('rate_new', $rate, 300));
     
-    $price=$PHPShopGUI->setSelectValue($data['price'], 5);
-    $price[]=array(__('Закупочная'), '_purch', $data['price']);
-    
-    $Tab1 .= $PHPShopGUI->setField('Колонка цен CDEK', $PHPShopGUI->setSelect('price_new', $price, 300));
     $Tab1 .= $PHPShopGUI->setField('Статус заказа для отправки', $PHPShopGUI->setSelect('status_new', $status, 300));
     $Tab1 .= $PHPShopGUI->setField('Статус оплаты', $PHPShopGUI->setCheckbox('paid_new', 1, 'Заказ оплачен', $data["paid"]));
     
@@ -89,7 +117,9 @@ function actionStart() {
     
     $Tab1 .= $PHPShopGUI->setField("Склад удаленный для списания", $PHPShopGUI->setSelect('warehouse_cdek_new', $warehouse_cdek_value, 300));
     $Tab1 .= $PHPShopGUI->setField("Склад локальный для списания", $PHPShopGUI->setSelect('warehouse_main_new', $warehouse_main_value, 300));
-    $Tab1 .= $PHPShopGUI->setField('Дополнительный сбор с получателя', $PHPShopGUI->setInputText(null, 'fee_new', $data['fee'], 100,$currency));
+    
+    $Tab1 .= $PHPShopGUI->setField('Стоимость доставки', $PHPShopGUI->setInputText(null, 'price_new', $data['price'], 100,$currency));
+    $Tab1 .= $PHPShopGUI->setField('Такса за каждые 100 г веса', $PHPShopGUI->setInputText(null, 'fee_new', $data['fee'], 100,$currency));
     
     $Tab1 .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
 
@@ -106,6 +136,7 @@ function actionStart() {
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
+            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdateWarehouse.modules.edit") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);

@@ -107,7 +107,7 @@ function actionStart() {
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('content_new');
     $oFCKeditor->Height = '400';
-    $oFCKeditor->Value = PHPShopString::utf8_win1251($product_info['description']);
+    $oFCKeditor->Value = PHPShopString::utf8_win1251(nl2br($product_info['description']));
 
     if (is_array($product_info['pictures']) and count($product_info['pictures']) > 0) {
         $icon = null;

@@ -66,7 +66,7 @@ function actionStart() {
                 $data[$products_list['product_id']]['link'] ='?path=modules.dir.ozonseller.import&id='.$products_list['product_id'].'&type_id='.$data[$products_list['product_id']]['type_id'].'&sku='.$data[$products_list['product_id']]['sources'][0]['sku'];
 
                 // Категория
-                $category = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $data[$products_list['product_id']]['category_id']]);
+                $category = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $data[$products_list['product_id']]['description_category_id']]);
                 $data[$products_list['product_id']]['category'] = $category['name'];
             }
         }

@@ -50,6 +50,8 @@ if(empty($result['status']))
     $result['status']=null;
 if(empty($result['animation']))
     $result['animation']=null;
+if(empty($result['count']))
+    $result['count']=0;
 
 echo json_encode(array('success' => 1, 'num' => $result['count'], 'bot' => $result['bot'], 'status' => $result['status'],'animation'=>$result['animation'],'message' => PHPShopString::win_utf8($result['message'])));
 ?>

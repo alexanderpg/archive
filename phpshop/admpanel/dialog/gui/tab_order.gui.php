@@ -7,7 +7,7 @@ function tab_order() {
     $PHPShopOrm->debug = false;
     $currency = ' ' . $PHPShopSystem->getDefaultValutaCode();
 
-    $data = $PHPShopOrm->select(array('*'), array('user'=>'='.intval($_GET['user'])), array('order' => 'id desc'), array('limit'=>'5'));
+    $data = $PHPShopOrm->select(array('*'), array('user'=>'='.intval($_GET['user'])), array('order' => 'id desc'), array('limit'=>'1000'));
 
     if (is_array($data)) {
         $tab = '<ul class="nav nav-pills nav-stacked">';

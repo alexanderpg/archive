@@ -58,6 +58,7 @@ class PHPShopProductElements extends PHPShopElements {
      */
     var $cell_type_class = 'product-element-block';
     var $warehouse;
+    var $sortCategories= null;
 
     /**
      * Конструктор

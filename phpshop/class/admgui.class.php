@@ -35,6 +35,8 @@ class PHPShopGUI {
     var $collapse_count = 0;
     var $collapse_old_style = false;
     var $checkbox_old_style = false;
+    // Длина названия поля
+    var $field_col = false;
 
     /**
      * Конструктор
@@ -119,7 +121,7 @@ class PHPShopGUI {
      * @param bool $drag_off загрузка перетаскиванием
      * @param array $option настройки
      */
-    function setIcon($data, $id = "icon_new", $drag_off = false, $option = array('load' => true, 'server' => true, 'url' => true, 'multi' => false, 'view' => false, 'search' => false), $width = false) {
+    function setIcon($data, $id = "icon_new", $drag_off = false, $option = array('load' => true, 'server' => true, 'url' => true, 'multi' => false, 'view' => false, 'search' => false, 'ffmpeg' => false), $width = false) {
         global $PHPShopSystem;
 
         $filename = $option['load'] === true ? '' : $option['load'];
@@ -130,7 +132,7 @@ class PHPShopGUI {
                 $width = 'style="max-width:' . $width . 'px"';
 
             // Видео
-            if (in_array(pathinfo($data,PATHINFO_EXTENSION), array('mp4', 'mov')))
+            if (in_array(pathinfo($data, PATHINFO_EXTENSION), array('mp4', 'mov')))
                 $icon = '<video src="' . $data . '" data-thumbnail="' . $id . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" ' . $width . ' style="max-width:100px;max-height:100px;"></video>';
             // Изображение
             else
@@ -158,9 +160,13 @@ class PHPShopGUI {
             $add .= '<button type="button" class="btn btn-default" id="promtUrl" data-target="' . $id . '">URL</button>
               <input type="hidden" name="furl' . $filename . '" id="furl" value="0">';
 
+        // ffmpeg
+        if (!empty($option['ffmpeg']) and !empty($PHPShopSystem->ifSerilizeParam('admoption.ffmpeg_enabled')) and !empty($PHPShopSystem->getSerilizeParam('admoption.ffmpeg_path'))) {
+            $add .= '<button type="button" class="btn btn-default" id="videoCreate" data-id="' . $_GET['id'] . '"><span class="glyphicon glyphicon-film"></span> ' . __('Создать видео из изображений') . '</button>';
+        }
+        
         // Поиск Яндекс
         if (!empty($option['search']) and empty($PHPShopSystem->ifSerilizeParam('admoption.yandexcloud_enabled'))) {
-
             $add .= '<button ' . $this->disabled_yandexcloud . ' type="button" class="btn btn-default" id="yandexsearchModal" data-target="' . $id . '"><span class="glyphicon glyphicon-search"></span> ' . __('Поиск в Яндексе') . '</button>';
         }
 
@@ -1585,7 +1591,7 @@ class PHPShopGUI {
     function setSelect($name, $value, $width = '', $locale = false, $caption = false, $search = false, $disabled = false, $size = 1, $multiple = false, $id = false, $class = 'selectpicker hidden-edit', $onchange = null, $style = 'btn btn-default btn-sm') {
 
         if ($search)
-            $search = 'data-live-search="true" data-placeholder="123"';
+            $search = 'data-live-search="true" data-placeholder=""';
 
         if ($multiple)
             $multiple = 'multiple';

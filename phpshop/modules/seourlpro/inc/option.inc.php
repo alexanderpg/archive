@@ -226,6 +226,11 @@ class PHPShopSeoPro {
             $result = $this->stro_replace($array_id_prod, $array_str_prod, $result);
         }
 
+        // Убираем окончание .html
+        if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
+            $result = preg_replace(['/\.html"/i'],['"'],$result);
+        }
+
         return $result;
     }
 
@@ -250,11 +255,12 @@ class PHPShopSeoPro {
             $array_str_prod = array_values($this->memory_prod);
             $array_id_prod = array_keys($this->memory_prod);
         }
-        
+
         // Убираем окончание .html
         if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2)
-          $replace = ['/\.html"/i' => '"','/\.html\?/' => '?'];
-        else $replace=false;
+            $replace = ['/\.html"/i' => '"', '/\.html\?/' => '?'];
+        else
+            $replace = false;
 
         ob_start();
         ob_implicit_flush(0);

@@ -63,12 +63,15 @@ function actionStart() {
 
     // Доступые статусы заказов
     $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
-    $OrderStatusArray = $PHPShopOrderStatusArray->getArray();
-    $order_status_value[] = array(__('Новый заказ'), 0, $data['status']);
-    if (is_array($OrderStatusArray))
-        foreach ($OrderStatusArray as $order_status)
-            $order_status_value[] = array($order_status['name'], $order_status['id'], $data['status']);
 
+    $status_array = $PHPShopOrderStatusArray->getArray();
+    $status_array[0] = ['name' => __('Новый заказ'), 'sklad_action' => false, 'id' => 0,'description'=>__('Системный')];
+
+    if (is_array($status_array))
+        foreach ($status_array as $status_val) {
+            if ($status_val['id'] != 1)
+                $order_status_value[] = array($status_val['name'], $status_val['id'], $data['status'],'data-subtext="'.$status_val['description'].'"');
+        }
 
     $Tab1 = $PHPShopGUI->setField('Заголовок', $PHPShopGUI->setInputText(false, 'title_new', $data['title']));
     $Tab1 .= $PHPShopGUI->setField('Сообщение', $PHPShopGUI->setTextarea('title_end_new', $data['title_end']));

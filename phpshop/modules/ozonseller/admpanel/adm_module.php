@@ -12,6 +12,30 @@ PHPShopObj::loadClass("delivery");
 $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_system"));
 $OzonSeller = new OzonSeller();
 
+// Выгрузка всех товаров
+function actionImportProducts() {
+
+    // Безопасность
+    $cron_secure = md5($GLOBALS['SysValue']['connect']['host'] . $GLOBALS['SysValue']['connect']['dbase'] . $GLOBALS['SysValue']['connect']['user_db'] . $GLOBALS['SysValue']['connect']['pass_db']);
+
+    $protocol = 'http://';
+    if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
+        $protocol = 'https://';
+    }
+
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/ozonseller/admpanel/ajax/import.ajax.php?s=" . $cron_secure;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $true_path);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_exec($ch);
+    curl_close($ch);
+
+    header('Location: ./csv/product.ozon.csv');
+}
+
 // Обновление цен
 function actionUpdatePrice() {
 
@@ -239,7 +263,15 @@ function actionStart() {
             'icon' => 'glyphicon glyphicon-export'
         ];
 
-        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить товары', 'Выгрузить цены', 'Сохранить и закрыть']);
+        $PHPShopGUI->action_button['Загрузить товары'] = [
+            'name' => __('Загрузить товары в CSV'),
+            'class' => 'btn btn-default btn-sm navbar-btn ',
+            'type' => 'submit',
+            'action' => 'importID',
+            'icon' => 'glyphicon glyphicon-cloud-download'
+        ];
+
+        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Загрузить товары', 'Выгрузить товары', 'Выгрузить цены', 'Сохранить и закрыть']);
     }
 
     // Статус
@@ -410,6 +442,7 @@ function actionStart() {
             $PHPShopGUI->setInput("hidden", "locale_ozon_export_done", __('Экспорт в OZON выполнен, выгружено % товаров')) .
             $PHPShopGUI->setInput("hidden", "stop", 0) .
             $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit") .
+            $PHPShopGUI->setInput("submit", "importID", "Применить", "right", 80, "", "but", "actionImportProducts.modules.edit") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);
@@ -435,7 +468,7 @@ function actionCategorySearch() {
 
             $result .= '<a href=\'#\' class=\'select-search-ozon\'  data-id=\'' . $row['id'] . '\'  data-name=\'' . $parent . ' - ' . $row['name'] . '\'    >' . $parent . ' &rarr; ' . $row['name'] . '</a><br>';
         }
-        
+
         if (!empty($result))
             $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 

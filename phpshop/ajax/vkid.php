@@ -64,7 +64,7 @@ if (!empty($_GET['access_token']) and ! empty($client_id)) {
         $PHPShopUsers = new PHPShopUsers();
         $PHPShopUsers->stop_redirect = true;
 
-        $userId = $PHPShopUsers->add_user_from_order($json['email'], PHPShopString::utf8_win1251($payload['user']['first_name'] . ' ' . $payload['user']['last_name']), $json['phone']);
+        $userId = $PHPShopUsers->add_user_from_order($json['email'], PHPShopString::utf8_win1251($json['first_name'] . ' ' . $json['last_name']), $json['phone']);
 
         if (!empty($userId)) {
 

@@ -16,9 +16,6 @@ $PHPShopValutaArray = new PHPShopValutaArray();
 $PHPShopNav = new PHPShopNav();
 $PHPShopRecaptchaElement = new PHPShopRecaptchaElement();
 $PHPShopLang = new PHPShopLang(['locale'=>$_SESSION['lang'],'path'=>'shop']);
-if($PHPShopSystem->ifSerilizeParam('admoption.recaptcha_enabled')) {
-    $PHPShopRecaptchaElement->recaptcha = true;
-}
 $ajaxPricemail = new AjaxPricemail();
 
 try {

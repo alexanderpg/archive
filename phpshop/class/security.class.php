@@ -139,6 +139,10 @@ class PHPShopSecurity {
      * @return mixed
      */
     static function TotalClean($str, $flag = 2) {
+        
+        if(!empty($GLOBALS['PHPShopLang']->charset))
+            $charset = $GLOBALS['PHPShopLang']->charset;
+        else $charset=null;
 
         switch ($flag) {
             case 1:
@@ -148,7 +152,7 @@ class PHPShopSecurity {
                 break;
 
             case 2:
-                return htmlspecialchars(stripslashes($str), ENT_QUOTES, $GLOBALS['PHPShopLang']->charset);
+                return htmlspecialchars(stripslashes($str), ENT_QUOTES, $charset);
                 break;
 
             case 3:
@@ -160,7 +164,7 @@ class PHPShopSecurity {
             case 4:
                 if (preg_match("/[^(\w)|(\x7F-\xFF)|(\s)]/", $str))
                     $str = "";
-                return htmlspecialchars(stripslashes($str), ENT_COMPAT, $GLOBALS['PHPShopLang']->charset);
+                return htmlspecialchars(stripslashes($str), ENT_COMPAT, $charset);
                 break;
 
             case 5:

@@ -22,7 +22,7 @@ class PHPShopPricemail extends PHPShopShopCore {
         $this->action = array("nav" => "index", "post" => "send_price_link");
         parent::__construct();
 
-        if(is_null($productId)) {
+        if (is_null($productId)) {
             $productId = $this->PHPShopNav->getId();
         }
         $this->productId = $productId;
@@ -72,10 +72,13 @@ class PHPShopPricemail extends PHPShopShopCore {
      * Добавление лида
      */
     function lead() {
-        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['notes']);
-        $content="Для товара http://".$_SERVER['SERVER_NAME'] . "/shop/UID_" . $this->PHPShopNav->getId() . ".html"." указана ссылка с меньшей ценой ".$_POST['link_to_page'].' '.$_POST['adr_name'];
-        $insert = array('date_new' => time(), 'message_new' => __('Нашли дешевле'), 'name_new' => $_POST['name_person'], 'mail_new' => $_POST['mail'], 'tel_new' => $_POST['tel_name'], 'content_new' => PHPShopSecurity::TotalClean($content));
-        $PHPShopOrm->insert($insert);
+
+        if (!empty($this->PHPShopNav->getId())) {
+            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['notes']);
+            $content = "Для товара http://" . $_SERVER['SERVER_NAME'] . "/shop/UID_" . $this->PHPShopNav->getId() . ".html" . " указана ссылка с меньшей ценой " . $_POST['link_to_page'] . ' ' . $_POST['adr_name'];
+            $insert = array('date_new' => time(), 'message_new' => __('Нашли дешевле'), 'name_new' => $_POST['name_person'], 'mail_new' => $_POST['mail'], 'tel_new' => $_POST['tel_name'], 'content_new' => PHPShopSecurity::TotalClean($content));
+            $PHPShopOrm->insert($insert);
+        }
     }
 
     /**
@@ -89,11 +92,11 @@ class PHPShopPricemail extends PHPShopShopCore {
 
         if (PHPShopSecurity::true_param($_POST['mail'], $_POST['name_person'], $_POST['link_to_page'])) {
 
-            if(isset($_REQUEST['ajax'])) {
-                $_POST['name_person']  = PHPShopString::utf8_win1251($_POST['name_person']);
+            if (isset($_REQUEST['ajax'])) {
+                $_POST['name_person'] = PHPShopString::utf8_win1251($_POST['name_person']);
                 $_POST['link_to_page'] = PHPShopString::utf8_win1251($_POST['link_to_page']);
-                $_POST['org_name']     = PHPShopString::utf8_win1251($_POST['org_name']);
-                $_POST['adr_name']     = PHPShopString::utf8_win1251($_POST['adr_name']);
+                $_POST['org_name'] = PHPShopString::utf8_win1251($_POST['org_name']);
+                $_POST['adr_name'] = PHPShopString::utf8_win1251($_POST['adr_name']);
             }
 
             // Заголовок e-mail пользователю
@@ -126,7 +129,7 @@ class PHPShopPricemail extends PHPShopShopCore {
                 new PHPShopMail($this->PHPShopSystem->getEmail(), $this->PHPShopSystem->getEmail(), $this->title_mail, $content, true);
             }
 
-            if(!isset($_REQUEST['ajax'])) {
+            if (!isset($_REQUEST['ajax'])) {
                 $this->redirect();
             }
         }

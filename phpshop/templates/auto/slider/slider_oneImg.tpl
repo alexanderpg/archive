@@ -1,4 +1,4 @@
-<div class="js-slide bg-img-hero-center gradient-x-overlay-sm-dark" style="background-image: url('@image@');">
+<div class="js-slide bg-img-hero-center" style="background-image: url('@image@');">
 	<div class="space-5">
     </div>
     <div class="container d-block align-items-md-center text-center">

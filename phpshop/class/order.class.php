@@ -561,8 +561,13 @@ class PHPShopOrderFunction extends PHPShopObj {
         if (!empty($statuses[$statusId]['sms_action'])) {
 
             $this->objRow['tel'];
-
-            $msg = strtoupper(PHPShopString::check_idna($_SERVER['SERVER_NAME'], true)) . ': ' . $PHPShopBase->getParam('lang.sms_user') . $this->objRow['uid'] . " - " . $statuses[$statusId]['name'];
+            
+            $message = $statuses[$statusId]['bot_message'];
+            if (!empty($message)) {
+                $this->setParserVars();
+                $message = preg_replace_callback("/@([a-zA-Z0-9_]+)@/", 'PHPShopParser::SysValueReturn', $message);
+            } else
+                $message = strtoupper(PHPShopString::check_idna($_SERVER['SERVER_NAME'], true)) . ': ' . $PHPShopBase->getParam('lang.sms_user') . $this->objRow['uid'] . " - " . $statuses[$statusId]['name'];
 
             $phone = trim(str_replace(array('(', ')', '-', '+', '&#43;'), '', $this->objRow['tel']));
             // ѕроверка на первую 7 или 8
@@ -572,10 +577,10 @@ class PHPShopOrderFunction extends PHPShopObj {
 
             $lib = str_replace('./phpshop/', $_classPath, $PHPShopBase->getParam('file.sms'));
             include_once $lib;
-            SendSMS($msg, $phone);
+            SendSMS($message, $phone);
         }
 
-        // Email оповещение
+        // E-mail оповещение
         if ((int) $statusObj->getParam($statusId . '.mail_action') === 1) {
             $this->sendStatusChangedMail();
         }

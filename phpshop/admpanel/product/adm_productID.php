@@ -291,12 +291,6 @@ function actionStart() {
     // Валюта
     $Tab_price .= $PHPShopGUI->setField('Валюта', $valuta_area);
 
-    // YML
-    $Tab_yml = $PHPShopGUI->setField('<a href="/yml/" target="_blank" title="Открыть файл">YML</a>', $PHPShopGUI->setCheckbox('yml_new', 1, 'Вывод в Яндекс Маркете', $data['yml']) . '<br>' .
-            $PHPShopGUI->setRadio('p_enabled_new', 1, 'В наличии', $data['p_enabled']) . '<br>' .
-            $PHPShopGUI->setRadio('p_enabled_new', 0, 'Уведомить (Под заказ)', $data['p_enabled'])
-    );
-
     $Tab1 .= $PHPShopGUI->setCollapse('Цены', $Tab_price, 'in', true, true, array('type' => 'price'));
     $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_info_size);
 
@@ -362,7 +356,7 @@ function actionStart() {
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true), array("Изображение", $Tab6, true, $PHPShopSystem->ifSerilizeParam("admoption.image_off", 1)), array("Описание", $Tab2 . $Tab3, true, false, true), array("Дополнительно", $Tab_docs . $Tab_rating . $Tab_header . $Tab_external, true, false, true), array("Характеристики", $Tab_sorts, true), array("Подтипы", $Tab_option, true), array("Отзывы", $Tab_comments, true, $Tab_comments_enabled));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true), array("Изображение и видео", $Tab6, true, $PHPShopSystem->ifSerilizeParam("admoption.image_off", 1)), array("Описание", $Tab2 . $Tab3, true, false, true), array("Дополнительно", $Tab_docs . $Tab_rating . $Tab_header . $Tab_external, true, false, true), array("Характеристики", $Tab_sorts, true), array("Подтипы", $Tab_option, true), array("Отзывы", $Tab_comments, true, $Tab_comments_enabled));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .

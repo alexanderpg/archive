@@ -40,7 +40,7 @@ function actionStart() {
     $message_var='Переменные: <code>@ouid@</code> - номер заказа, <code>@date@</code> - дата заказа, <code>@status@</code> - новый статус заказа, <code>@fio@</code> - имя покупателя, <code>@sum@</code> - стоимость заказа, <code>@manager@</code> - примечание, <code>@tracking@</code> - номер для отслеживания, <code>@account@</code> - ссылка на счет, <code>@bonus@</code> - начисленные бонусы за заказ, <code>@pay@</code> - ссылка на оплату, <code>@order@</code> - ссылка на бланк заказа, <code>@receipt@</code> - ссылка на товарный чек, <code>@invoice@</code> - ссылка на счет-фактуру, <code>@torg@</code> - ссылка на тор-12, <code>@warranty@</code> - ссылка на гарантию, <code>@act@</code> - ссылка на акт';
 
     // Текст уведомления в мессенджеры
-    $Tab1 .= $PHPShopGUI->setCollapse("Текст уведомления в мессенджеры", $PHPShopGUI->setTextarea('bot_message_new', $data['bot_message'], true, false, 150) . $PHPShopGUI->setHelp($message_var));
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст уведомления в мессенджеры и sms", $PHPShopGUI->setTextarea('bot_message_new', $data['bot_message'], true, false, 150) . $PHPShopGUI->setHelp($message_var));
 
     // Сообщение
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));

@@ -91,9 +91,9 @@ function actionStart() {
     $GLOBALS['tree_array'] = &$tree_array;
 
     $tree_select = '<select class="selectpicker show-menu-arrow hidden-edit" data-live-search="true" data-container="body"  data-style="btn btn-default btn-sm" name="cat[]" data-width="100%" multiple>';
-    
-    if(empty($_GET['cat']))
-        $_GET['cat']=null;
+
+    if (empty($_GET['cat']))
+        $_GET['cat'] = null;
 
     if (is_array($tree_array[0]['sub']))
         foreach ($tree_array[0]['sub'] as $k => $v) {
@@ -136,43 +136,43 @@ function actionStart() {
             $cart = $order['Cart']['cart'];
             $discount = $order['Person']['discount'];
 
-            if (sizeof($cart) != 0)
-                if (is_array($cart))
-                    foreach ($cart as $key => $val) {
+            if (is_array($cart) and sizeof($cart) != 0)
+                foreach ($cart as $key => $val) {
 
-                        // Поиск товара
-                        if (!empty($_GET['where']['name'])) {
+                    // Поиск товара
+                    if (!empty($_GET['where']['name'])) {
 
-                            if ($val['id'] == trim($_GET['where']['name']) or $val['uid'] == trim($_GET['where']['name']) or stristr($val['name'], trim($_GET['where']['name'])))
-                                true;
-                            else
-                                continue;
-                        }
-
-                        if (!empty($val['name'])) {
-                            $productIds[] = intval($key);
-                            if ($order['Cart']['num'] > 1) {
-                                
-                                // Продажа
-                                $sum = $val['price'] * $val['num'];
-                                
-                                
-                                $totalIds[$key] = number_format($sum - ($sum * $discount / 100), 0, ".", '');
-                            } else{
-                                $totalIds[$key] = $row['sum'];
-                            }
-                            
-                            // Закупка
-                            if (!empty($val['price_purch']))
-                                $sum_purch = $val['price_purch'] * $val['num'];
-                            else $sum_purch = round(($row['price'] * intval($_GET['where']['margin'])) / 100);
-
-                            // Закупка
-                            $totalIdsPurch[$key] = $sum_purch;
-                            
-                            $orderIds[$key] = $row['id'];
-                        }
+                        if ($val['id'] == trim($_GET['where']['name']) or $val['uid'] == trim($_GET['where']['name']) or stristr($val['name'], trim($_GET['where']['name'])))
+                            true;
+                        else
+                            continue;
                     }
+
+                    if (!empty($val['name'])) {
+                        $productIds[] = intval($key);
+                        if ($order['Cart']['num'] > 1) {
+
+                            // Продажа
+                            $sum = $val['price'] * $val['num'];
+
+
+                            $totalIds[$key] = number_format($sum - ($sum * $discount / 100), 0, ".", '');
+                        } else {
+                            $totalIds[$key] = $row['sum'];
+                        }
+
+                        // Закупка
+                        if (!empty($val['price_purch']))
+                            $sum_purch = $val['price_purch'] * $val['num'];
+                        else
+                            $sum_purch = round(($row['price'] * intval($_GET['where']['margin'])) / 100);
+
+                        // Закупка
+                        $totalIdsPurch[$key] = $sum_purch;
+
+                        $orderIds[$key] = $row['id'];
+                    }
+                }
         }
 
     $catCount = array();
@@ -184,20 +184,21 @@ function actionStart() {
         if (is_array($data))
             foreach ($data as $row) {
 
-                if (@in_array($row['category'], $_GET['cat']) or empty($_GET['cat'])) {
+                if (is_array($_GET['cat']))
+                    if (@in_array($row['category'], $_GET['cat']) or empty($_GET['cat'])) {
 
-                    if (key_exists($row['category'], $catCount)) {
-                        $catCount[$row['category']]['count'] ++;
-                        $catCount[$row['category']]['sum'] += $totalIds[$row['id']];
-                        $catCount[$row['category']]['sum_purch'] += $totalIdsPurch[$row['id']];
-                    } else {
-                        $catCount[$row['category']]['count'] = 1;
-                        $catCount[$row['category']]['sum'] = $totalIds[$row['id']];
-                        $catCount[$row['category']]['sum_purch'] = $totalIdsPurch[$row['id']];
+                        if (key_exists($row['category'], $catCount)) {
+                            $catCount[$row['category']]['count'] ++;
+                            $catCount[$row['category']]['sum'] += $totalIds[$row['id']];
+                            $catCount[$row['category']]['sum_purch'] += $totalIdsPurch[$row['id']];
+                        } else {
+                            $catCount[$row['category']]['count'] = 1;
+                            $catCount[$row['category']]['sum'] = $totalIds[$row['id']];
+                            $catCount[$row['category']]['sum_purch'] = $totalIdsPurch[$row['id']];
+                        }
+
+                        $catCount[$row['category']]['export'][] = $orderIds[$row['id']];
                     }
-
-                    $catCount[$row['category']]['export'][] = $orderIds[$row['id']];
-                }
             }
     }
 
@@ -210,7 +211,7 @@ function actionStart() {
 
     $export = null;
     $i = 1;
-    
+
     if (is_array($catCount))
         foreach ($catCount as $key => $row) {
 
@@ -219,7 +220,7 @@ function actionStart() {
 
             if (!empty($row['sum_purch']))
                 $margin = round($row['sum'] - $row['sum_purch']);
-            elseif(!empty($_GET['where']['margin'])) 
+            elseif (!empty($_GET['where']['margin']))
                 $margin = round(($row['sum'] * intval($_GET['where']['margin'])) / 100);
 
             $progress = '
@@ -230,7 +231,7 @@ function actionStart() {
   </div>
 </div>';
 
-            $PHPShopInterface->setRow($i, $progress, array('name' => $row['count'], 'align' => 'center'), array('name' => (int)$margin . $currency,  'align' => 'center'), array('name' => $row['sum'] . $currency, 'align' => 'right', 'order' => $row['sum']));
+            $PHPShopInterface->setRow($i, $progress, array('name' => $row['count'], 'align' => 'center'), array('name' => (int) $margin . $currency, 'align' => 'center'), array('name' => $row['sum'] . $currency, 'align' => 'right', 'order' => $row['sum']));
             $i++;
         }
 
