@@ -1,7 +1,0 @@
-Photoshop Color balance
------------------------
-green
-
-    -66
-    +93
-    -91
