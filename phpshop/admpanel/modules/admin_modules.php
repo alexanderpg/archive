@@ -359,7 +359,7 @@ function actionStart() {
             'payment' => 27,
             'credit' => 4,
             'yandex' => 3,
-            'sale' => 19,
+            'sale' => 20,
             'develop' => 15,
             'minus' => -16
         ],
@@ -371,7 +371,7 @@ function actionStart() {
             'chat' => 7,
             'crm' => 2,
             'yandex' => 1,
-            'sale' => 8,
+            'sale' => 9,
             'develop' => 14,
             'minus' => -3
         ],

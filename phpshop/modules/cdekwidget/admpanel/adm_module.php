@@ -49,6 +49,15 @@ function actionUpdate() {
     include_once dirname(__FILE__) . '/../class/CDEKWidget.php';
     $CDEKWidget = new CDEKWidget();
 
+    if (!isset($_POST['webhook_new'])) {
+        $_POST['webhook_new'] = '0';
+        $CDEKWidget->delWebhook();
+    }
+    else {
+        $CDEKWidget->setWebhook();
+    }
+
+
     $getCityCode = $CDEKWidget->getCityCode($_POST['city_from_new'])[0]['code'];
 
     if (!empty($getCityCode))
@@ -65,6 +74,7 @@ function actionUpdate() {
 
 function actionStart() {
     global $PHPShopGUI, $PHPShopOrm, $PHPShopSystem;
+
 
     $PHPShopGUI->addJSFiles('../modules/cdekwidget/admpanel/gui/script.gui.js?v=1.5');
     // Подсказки
@@ -108,11 +118,11 @@ function actionStart() {
     }
 
     $Tab1 = $PHPShopGUI->setField('Аккаунт интеграции', $PHPShopGUI->setInputText(false, 'account_new', $data['account'], 300));
-    $Tab1 .= $PHPShopGUI->setField('Пароль интеграции', $PHPShopGUI->setInputText(false, 'password_new', $data['password'],300));
-    $Tab1 .= $PHPShopGUI->setField('Режим разработки', $PHPShopGUI->setCheckbox("test_new", 1, "Отправка данных на тестовую среду СДЭК", $data["test"]));
+    $Tab1 .= $PHPShopGUI->setField('Пароль интеграции', $PHPShopGUI->setInputText(false, 'password_new', $data['password'], 300));
+    $Tab1 .= $PHPShopGUI->setField('Вебхуки', $PHPShopGUI->setCheckbox("webhook_new", 1, "Отправлять сообщения в мессенджеры покупателя о смене статуса доставки", $data["webhook"]));
     $Tab1 .= $PHPShopGUI->setField('Только регионы РФ', $PHPShopGUI->setCheckbox("russia_only_new", 1, "Отображать в виджете только города России", $data["russia_only"]));
     $Tab1 .= $PHPShopGUI->setField('Статус для отправки', $PHPShopGUI->setSelect('status_new', $status, 300));
-    $Tab1 .= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setSelect('delivery_id_new[]', $delivery_value, 300, null, false, $search = false, false, $size = 1, $multiple = true));
+    $Tab1 .= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setSelect('delivery_id_new[]', $delivery_value, 300, null, false, $search = false, false, $size = 1, true));
     $Tab1 .= $PHPShopGUI->setField('Город отправки отправлений', $PHPShopGUI->setInputText(false, 'city_from_new', $data['city_from'], 300));
     $Tab1 .= $PHPShopGUI->setField('Почтовый индекс города отправителя', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="text" value="' . $data['index_from'] . '" name="index_from_new" style="width:300px; ">');
     $Tab1 .= $PHPShopGUI->setField('Город на карте по умолчанию', $PHPShopGUI->setInputText(false, 'default_city_new', $data['default_city'], 300));

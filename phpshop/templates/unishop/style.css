@@ -3756,17 +3756,17 @@ body.modal-open {
     margin-top: 0px;
     display: inline-block;
 }
-#price-filter-form #slider-range {
+#price-filter-form .slider-range {
     height: 4px;
     background: #ededed;
     border-radius: 3px;
     margin-top: 15px;
 }
-#price-filter-form #slider-range .ui-widget-header {
+#price-filter-form .slider-range .ui-widget-header {
     transition: background .45s;
     background: #9da9b9;
 }
-#price-filter-form #slider-range  .ui-state-default, .ui-widget-content .ui-state-default {
+#price-filter-form .slider-range  .ui-state-default, .ui-widget-content .ui-state-default {
     border: 4px solid #9da9b9;
     border-radius: 50%;
     background: #fff;

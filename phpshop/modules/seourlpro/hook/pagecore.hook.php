@@ -50,11 +50,21 @@ function index_seourl_hook($obj, $row, $rout) {
                     return true;
                 }
             }
+
+            // Страница
+            else {
+
+                // Редирект без .html
+                if (strstr($_SERVER['REQUEST_URI'], ".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2) {
+                    header('Location: ' . $obj->getValue('dir.dir') . str_replace('.html', '', $_SERVER['REQUEST_URI']), true, 301);
+                    return true;
+                }
+            }
         }
     }
 
-    if ($rout == 'END' and $row['category'] != 1000 and !empty($row['category']))
-        navigation_seourl($obj, $row['name'],['url'=>'/page/','name'=>__('Блог')]);
+    if ($rout == 'END' and $row['category'] != 1000 and ! empty($row['category']))
+        navigation_seourl($obj, $row['name'], ['url' => '/page/', 'name' => __('Блог')]);
 }
 
 /**
@@ -86,9 +96,23 @@ function ListPage_seourl_hook($obj, $row, $rout) {
             $obj->ListInfoItems = parseTemplateReturn($obj->getValue('templates.error_page_forma'));
             $obj->setError404();
             return true;
-        } elseif ($url == $url_pack) {
+        }
 
-            header('Location: ' . $url_true . '.html', true, 301);
+        // Редирект со старых ссылок
+        elseif ($url == $url_pack) {
+
+            // Убираем окончание .html
+            if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+                $html = '.html';
+            else
+                $html = null;
+
+            header('Location: ' . $url_true . $html, true, 301);
+            return true;
+        }
+        // Редирект без .html
+        elseif ($url == $url_true and strstr($_SERVER['REQUEST_URI'], ".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2) {
+            header('Location: ' . $obj->getValue('dir.dir') . $url_true, true, 301);
             return true;
         }
     }
@@ -151,7 +175,7 @@ function ListCategory_seourl_hook($obj, $dataArray, $rout) {
         $obj->set('pageContent', $disp);
 
         // SEO хлебные крошки
-        navigation_seourl($obj, $obj->category_name, ['url'=>'/page/','name'=>__('Блог')]);
+        navigation_seourl($obj, $obj->category_name, ['url' => '/page/', 'name' => __('Блог')]);
         if (!empty($_GET['mobile']) and $_GET['mobile'] == 'true' and ! empty($GLOBALS['SysValue']['base']['mobile']['mobile_system'])) {
             header('Location: ' . $obj->getValue('dir.dir') . '/page/CID_' . $obj->PHPShopNav->getId() . '.html', true, 302);
             return true;
@@ -309,7 +333,7 @@ function displayPage($obj, $link) {
     $obj->lastmodified = $row['datas'];
 
     // Навигация хлебные крошки
-    navigation_seourl($obj, $obj->category_name,['url'=>'/page/','name'=>__('Блог')]);
+    navigation_seourl($obj, $obj->category_name, ['url' => '/page/', 'name' => __('Блог')]);
 
     // Подключаем шаблон
     $obj->parseTemplate($obj->getValue('templates.page_page_list'));

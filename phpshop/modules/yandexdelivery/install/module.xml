@@ -5,7 +5,7 @@
     <description>Модуль интеграции с сервисом Яндекс.Доставка.</description>
     <faqlink>https://docs.phpshop.ru/moduli/dostavka/yandex-delivery</faqlink>
     <category>yandex, delivery</category>
-    <sign>1720696148</sign>
+    <sign>1755585244</sign>
     <adminmenu>
         <title>Яндекс Доставка</title>
         <capability>true</capability>

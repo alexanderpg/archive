@@ -3,7 +3,7 @@
 /**
  * Библиотека парсинга данных
  * @author PHPShop Software
- * @version 2.2
+ * @version 2.3
  * @package PHPShopParser
  */
 class PHPShopParser {
@@ -253,7 +253,7 @@ class PHPShopCssParser {
  * @param string $TemplateName имя файла шаблона
  * @return string
  */
-function ParseTemplate($TemplateName) {
+function ParseTemplate($TemplateName, $replace = false) {
     global $SysValue;
 
     $file = tmpGetFile($SysValue['dir']['templates'] . chr(47) . $_SESSION['skin'] . chr(47) . $TemplateName);
@@ -312,6 +312,17 @@ function ParseTemplate($TemplateName) {
             "/phpshop\//i" => "/phpshop/",
         );
     }
+
+    // Пользовательская замена в шаблоне
+    if (!empty($replace)) {
+
+        
+        if (is_array($replace)){
+            foreach($replace as $k=>$v)
+                $replaces[$k]=$v;
+        }
+    }
+
     echo preg_replace(array_keys($replaces), array_values($replaces), $string);
 }
 
@@ -489,7 +500,7 @@ function __hide($name, $type = 'parser', $class = 'hide d-none') {
         echo $class;
     else if ($type == 'zero' and empty((int) $GLOBALS['SysValue']['other'][$name]))
         echo $class;
-    else if($type == $GLOBALS['SysValue']['other'][$name])
+    else if ($type == $GLOBALS['SysValue']['other'][$name])
         echo $class;
 }
 

@@ -91,8 +91,15 @@ function ID_seourl_hook($obj, $row, $rout) {
             $obj->ListInfoItems = parseTemplateReturn($obj->getValue('templates.error_page_forma'));
             $obj->set('newsZag', __('Ошибка 404'));
             $obj->setError404();
-        } elseif ($url == $url_pack) {
+        } 
+        // Редирект со старых ссылок
+        elseif ($url == $url_pack) {
             header('Location: ' . $obj->getValue('dir.dir') . $url_true . '.html', true, 301);
+            return true;
+        }
+        // Редирект без .html
+        elseif($url == $url_true and strstr($_SERVER['REQUEST_URI'],".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
+            header('Location: ' . $obj->getValue('dir.dir') . $url_true, true, 301);
             return true;
         }
     }

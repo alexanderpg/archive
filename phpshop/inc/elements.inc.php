@@ -200,7 +200,7 @@ class PHPShopCoreElement extends PHPShopElements {
         $this->set('workingTime', $this->PHPShopSystem->getSerilizeParam("bank.org_time"));
 
         // SMS
-        if ($this->PHPShopSystem->getSerilizeParam("admoption.sms_login") != 1)
+        if ($this->PHPShopSystem->getSerilizeParam("admoption.sms_login") != 1 and $this->PHPShopSystem->getSerilizeParam("admoption.wappi_enabled") != 1)
             $this->set('sms_login_enabled', 'hidden d-none');
         else {
             $this->set('sms_login_enabled', 'req');
@@ -337,6 +337,10 @@ class PHPShopCoreElement extends PHPShopElements {
             else
                 $this->set('vkid', ParseTemplateReturn('phpshop/lib/templates/users/vkid.tpl', true));
         }
+        
+       // Verification
+       $this->set('verification', $this->PHPShopSystem->getSerilizeParam('admoption.service_yandex_metatag'),true);
+       $this->set('verification', $this->PHPShopSystem->getSerilizeParam('admoption.service_google_metatag'),true);
     }
 
     /**
@@ -1314,6 +1318,8 @@ class PHPShopSkinElement extends PHPShopElements {
                 }
             }
 
+            if (is_array($value))
+                sort($value);
 
             // Определяем переменные
             $forma = PHPShopText::div(PHPShopText::form(PHPShopText::select('skin', $value, '100%', $float = "none", $caption = false, $onchange = "ChangeSkin()"), 'SkinForm', 'get'), 'left', 'padding:10px');
@@ -1944,12 +1950,10 @@ class PHPShopRecaptchaElement extends PHPShopElements {
     public $secret = '6LdhAiYUAAAAAGzO0wlENkavrN49gFhHiHqH9vkv';
     public $public = '6LdhAiYUAAAAAO1uc9b8KfotAyfoInSrWuygbQKC';
     protected $api = 'https://www.google.com/recaptcha/api/siteverify';
-    
     // Общие ключи Hcaptcha         
     public $hsecret = '0xba1b193f433F4656778a3C7a96326CA412769E3D';
     public $hpublic = '6756c855-3f50-4360-a799-4f7b4855c927';
     protected $hapi = 'https://hcaptcha.com/siteverify';
-    
     // Общие ключи SmartCaptcha         
     public $smartsecret = '';
     public $smartpublic = '';
@@ -2172,6 +2176,7 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
 
 
 

@@ -9,7 +9,7 @@ PHPShopObj::loadClass('delivery');
 /**
  * Обработчик кабинета пользователя
  * @author PHPShop Software
- * @version 2.4
+ * @version 2.5
  * @package PHPShopCore
  */
 class PHPShopUsers extends PHPShopCore {
@@ -79,7 +79,7 @@ class PHPShopUsers extends PHPShopCore {
     function action_sms() {
 
         // Проверка режима SMS
-        if ($this->PHPShopSystem->getSerilizeParam("admoption.sms_login") != 1) {
+        if ($this->PHPShopSystem->getSerilizeParam("admoption.sms_login") != 1 and $this->PHPShopSystem->getSerilizeParam("admoption.wappi_enabled") != 1) {
             $this->setError404();
             return true;
         }
@@ -98,7 +98,7 @@ class PHPShopUsers extends PHPShopCore {
             }
 
             $until = time() + 180;
-            $data = $PHPShopOrm->getOne(array('*'), array('tel' => '="' . $_POST['tel'] . '"'));
+            $data = $PHPShopOrm->getOne(array('*'), array('tel' => '="' . $_POST['tel'] . '" or tel="' . trim(str_replace(array('(', ')', '-', '+', '&#43;'), '', $_POST['tel'])) . '" or tel="' . trim(str_replace('+','&#43;',$_POST['tel'])) . '"'));
 
             if (is_array($data)) {
                 if (!empty($data['tel'])) {
@@ -116,7 +116,17 @@ class PHPShopUsers extends PHPShopCore {
 
                         include_once $this->getValue('file.sms');
                         $msg = __('Проверочный код для авторизации ' . $token_new);
-                        $send = SendSMS($msg, $phone);
+
+                        // Wappi
+                        if ($this->PHPShopSystem->getSerilizeParam("admoption.wappi_enabled") == 1) {
+                            PHPShopObj::loadClass('bot');
+                            $PHPShopWappi = new PHPShopWappi();
+                            $send = $PHPShopWappi->cascade(PHPShopString::win_utf8($msg), $phone);
+                        } 
+                        // SMS
+                        else {
+                            $send = SendSMS($msg, $phone);
+                        }
                     }
 
                     $this->set('userTel', $data['tel']);
@@ -163,7 +173,7 @@ class PHPShopUsers extends PHPShopCore {
     function true_sms($tel, $sms) {
         global $PHPShopUserElement;
         $PHPShopOrm = new PHPShopOrm($this->objBase);
-        $data = $PHPShopOrm->getOne(array('*'), array('tel' => '="' . $tel . '"', 'token' => '=' . intval($sms)), array('order' => 'id'));
+        $data = $PHPShopOrm->getOne(array('*'), array('tel' => '="' . $tel . '" or tel="' . trim(str_replace(array('(', ')', '-', '+', '&#43;'), '', $_POST['tel'])) . '" or tel="' . trim(str_replace('+','&#43;',$_POST['tel'])) . '"' , 'token' => '=' . intval($sms)), array('order' => 'id'));
         if (is_array($data)) {
             $_POST['login'] = $data['login'];
             $_POST['password'] = base64_decode($data['password']);
@@ -728,7 +738,7 @@ class PHPShopUsers extends PHPShopCore {
      * вывод товаров вишлиста
      */
     function action_wishlist() {
-        global $PHPShopSystem,$PHPShopPromotions;
+        global $PHPShopSystem, $PHPShopPromotions;
 
         // Перехват модуля
         if ($this->setHook(__CLASS__, __FUNCTION__, false, 'START'))

@@ -22,7 +22,6 @@ $PHPShopSystem = new PHPShopSystem();
 // Модули
 $PHPShopModules = new PHPShopModules($_classPath . "modules/");
 
-
 // Учет модуля SEOURL
 if (!empty($GLOBALS['SysValue']['base']['seourl']['seourl_system'])) {
     $seourl_enabled = true;
@@ -30,8 +29,16 @@ if (!empty($GLOBALS['SysValue']['base']['seourl']['seourl_system'])) {
 else
     $seourl_enabled = false;
 
+if ($PHPShopBase->codBase == 'utf-8') {
+        $encoding = 'utf-8';
+        $charset = 'utf-8';
+    } else {
+        $charset = 'cp1251';
+        $encoding = 'windows-1251';
+    }
+
 // Описание канала RSS
-$xml = '<?xml version="1.0" encoding="windows-1251" ?>
+$xml = '<?xml version="1.0" encoding="'.$encoding.'"?>
 <rss version="2.0">
 <channel>
 <title>RSS Новости - ' . $PHPShopSystem->getParam('title') . '</title>
@@ -63,5 +70,6 @@ $xml.='</channel>
 </rss>';
 
 // Вывод XML
+header("HTTP/1.1 200");
+header("Content-Type: application/xml; charset=" . $charset);
 echo $xml;
-?>

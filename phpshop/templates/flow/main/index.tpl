@@ -7,7 +7,8 @@
         <title>@pageTitl@</title>
         <meta name="description" content="@pageDesc@">
         <meta name="keywords" content="@pageKeyw@">
-        <meta name="copyright" content="@pageReg@">
+        <meta name="copyright" content="@pageReg@"> 
+        @verification@
 
         <link rel="apple-touch-icon" href="@icon@">
         <link rel="icon" href="@icon@" type="image/x-icon">

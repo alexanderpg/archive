@@ -107,8 +107,7 @@
                             @leftCatal@ 
                         </div>
 
-
-                        <!-- Фасетный фильтр -->
+                        <!-- Фасетный фильтр-->
                         <div class="d-none space-1" id="faset-filter">
 
                             <div class="panel-body faset-filter-block-wrapper">
@@ -129,7 +128,7 @@
                                     </form>
                                     <br>
 
-                                    <div id="slider-range"></div>
+                                    <div id="slider-range" class="slider-range"></div>
 
                                 </div>
                                 <a href="?" id="faset-filter-reset" class="generic-btn black-hover-btn w-100">{Сбросить фильтр}</a>

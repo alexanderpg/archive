@@ -175,8 +175,8 @@
                             <tr>
                                 <td
                                     style="color: #646464;font-family: Helvetica, sans-serif; font-size: 15px;line-height: 24px; font-weight: 300;">
-                                    <p>{Отслеживать статус заказа, распечатать платежные документы можно в} <a href="http://@serverPath@users/order.html?order_info=@ouid@#Order">{Личном кабинете}</a>.</p>
-                                    <p>{Получайте уведомления о заказе, задайте нам вопрос}@bot@ {через раздел} <a href="http://@serverPath@users/order.html?order_info=@ouid@#Order" target="_blank">{Диалоги}</a>.</p>
+                                    <p>{Отслеживать статус заказа, распечатать платежные документы можно в} <a href="http://@serverPath@/users/order.html?order_info=@ouid@#Order">{Личном кабинете}</a>.</p>
+                                    <p>{Получайте уведомления о заказе, задайте нам вопрос}@bot@ {через раздел} <a href="http://@serverPath@/users/order.html?order_info=@ouid@#Order" target="_blank">{Диалоги}</a>.</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -210,7 +210,7 @@
                                             <tr>
                                                 <td width="30"></td>
                                                 <td align="center">
-                                                    <a href="http://@serverPath@users/message.html" style="color: #fff !important; font-size: 14px;text-decoration: none;font-family: Helvetica,sans-serif;">{Задать вопрос по заказу}</a>
+                                                    <a href="http://@serverPath@/users/message.html" style="color: #fff !important; font-size: 14px;text-decoration: none;font-family: Helvetica,sans-serif;">{Задать вопрос по заказу}</a>
                                                 </td>
                                                 <td width="30"></td>
                                             </tr>

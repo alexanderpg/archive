@@ -4,13 +4,13 @@
 <tr>
     <td style="font-size: 14px; color: #262626; font-weight: bold; " class="" width="125" valign="top" align="left">
         <p style="margin: 10; ">
-            <a target="_blank" href="http://@serverShop@/shop/UID_@product_mail_id@.html">
+            <a target="_blank" href="http://@serverShop@@ShopDir@/shop/UID_@product_mail_id@.html">
                 <img src="http://@serverShop@@product_mail_pic@" alt="@product_mail_name@" style="max-width: 100px; max-height: 100px;">
             </a>
         </p>
     </td>
     <td style="font-size: 14px; color: #262626; font-family:Helvetica,sans-serif;vertical-align: middle;line-height: 22px;" class="" width="125" valign="center" align="left">
-        <p style="margin: 0; "><a target="_blank" style="text-decoration: none;" href="http://@serverShop@/shop/UID_@product_mail_id@.html">@product_mail_name@</a> 
+        <p style="margin: 0; "><a target="_blank" style="text-decoration: none;" href="http://@serverShop@@ShopDir@/shop/UID_@product_mail_id@.html">@product_mail_name@</a> 
             <br><span style="color: #6f6f6f; font-size: 12px;" title="Артикул" class="@php __hide('product_mail_uid'); php@">{Арт}: @product_mail_uid@</span> </p>
     </td>
     <td style="font-size: 14px; color: #6f6f6f; font-family:Helvetica,sans-serif; vertical-align: middle;" class="erase" width="125" valign="center" align="right">

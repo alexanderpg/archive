@@ -24,12 +24,13 @@ CREATE TABLE `phpshop_modules_avito_system` (
   `price` int(11) NOT NULL,
   `transition` enum('0','1') NOT NULL DEFAULT '0',
   `map_url` varchar(255) DEFAULT '',
+  `stop_words` text,
   `version` varchar(64) DEFAULT '1.0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_modules_avito_system` (`id`, `password`, `manager`, `address`, `phone`, `preview_description_template`, `image_url`, `latitude`, `longitude`, `client_id`, `ñlient_secret`, `version`, `create_products`, `link`, `log`, `delivery_id`, `export`, `type`, `status`, `status_import`, `fee`, `fee_type`, `price`,`transition`) VALUES
-(1, '', '', '', '', '', '', '', '', '', '', '2.6', '1', '0', '1', '1', '1', '2', 2, 'confirming', 0, '2', 1,'0');
+(1, '', '', '', '', '', '', '', '', '', '', '2.7', '1', '0', '1', '1', '1', '2', 2, 'confirming', 0, '2', 1,'0');
 
 ALTER TABLE `phpshop_products` ADD `export_avito` enum('0','1') DEFAULT '0';
 ALTER TABLE `phpshop_products` ADD `name_avito` varchar(255) DEFAULT '';

@@ -13,6 +13,8 @@ if (empty($_SERVER['DOCUMENT_ROOT'])) {
 
 include($_classPath . "class/obj.class.php");
 PHPShopObj::loadClass("base");
+PHPShopObj::loadClass("array");
+PHPShopObj::loadClass("valuta");
 PHPShopObj::loadClass("system");
 PHPShopObj::loadClass("orm");
 PHPShopObj::loadClass("date");

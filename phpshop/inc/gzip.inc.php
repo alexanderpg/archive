@@ -26,6 +26,12 @@ elseif(!$PHPShopCache->valid_url() and count($_POST) > 0 and $PHPShopCache->mod 
 
 if (!empty($cache)) {
     
+    // Îøèáêà 404
+    if(stristr($cache,'Îøèáêà 404') or stristr($cache,PHPShopString::win_utf8('Îøèáêà 404'))){
+        header("HTTP/1.0 404 Not Found");
+        header("Status: 404 Not Found");
+    }
+            
     echo $cache;
     echo $PHPShopCache->debug();
     

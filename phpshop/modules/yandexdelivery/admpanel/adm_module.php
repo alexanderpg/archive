@@ -83,7 +83,9 @@ function actionStart() {
     PHPShopParser::set('yandexdelivery_weight', $data['weight']);
     PHPShopParser::set('yandexdelivery_city', $data['city']);
     PHPShopParser::set('yandexdelivery_station', $data['warehouse_id']);
-    $Tab1 .= ParseTemplateReturn('../modules/yandexdelivery/templates/template.tpl', true);
+    //$Tab1 .= ParseTemplateReturn('../modules/yandexdelivery/templates/template.tpl', true);
+    
+    $GLOBALS['modalExternalModules'] = ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true);
 
 
     $info = '<h4>Получение учетных данных и настройка</h4>

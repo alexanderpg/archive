@@ -386,8 +386,7 @@
                 <div class="row">
                     <div class="col-3 d-none @php echo $GLOBALS['container_style']; php@">
 
-
-                        <!-- Фасетный фильтр -->
+                        <!-- Фасетный  фильтр -->
                         <div class="d-none space-1" id="faset-filter">
 
                             <div class="panel-body faset-filter-block-wrapper">
@@ -408,7 +407,7 @@
                                     </form>
                                     <br>
 
-                                    <div id="slider-range"></div>
+                                    <div id="slider-range" class="slider-range"></div>
 
                                 </div>
                                 <a href="?" id="faset-filter-reset" class="btn btn-sm btn-block btn-soft-secondary transition-3d-hover">{Сбросить фильтр}</a>

@@ -3,9 +3,9 @@
 /**
  * Библиотека работы с CDEK API 2
  * @author PHPShop Software
- * @version 2.0
- * @package PHPShopClass
- * @subpackage RestApi
+ * @version 2.1
+ * @package PHPShopModules
+ * @todo https://apidoc.cdek.ru
  */
 class CDEKWidget {
 
@@ -24,6 +24,7 @@ class CDEKWidget {
     private $authUrl = 'v2/oauth/token';
     private $orderUrl = 'v2/orders';
     private $citiesUrl = 'v2/location/suggest';
+    private $webhooksUrl = 'v2/webhooks';
     private $token;
     private $orderId;
 
@@ -35,6 +36,47 @@ class CDEKWidget {
         $this->option = $PHPShopOrm->select();
 
         (int) $this->option['test'] === 1 ? $this->isTest = true : $this->isTest = false;
+    }
+
+    /**
+     *  Удаление Webhook
+     */
+    public function delWebhook() {
+
+        $hooks = $this->getWebhook();
+        if (is_array($hooks))
+            foreach ($hooks as $hook) {
+                $result = $this->request($this->webhooksUrl.'/'.$hook['uuid'], false, false, true);
+            }
+
+        return $result;
+    }
+
+    /**
+     *  Создание Webhook
+     */
+    public function getWebhook() {
+
+        $result = $this->request($this->webhooksUrl, false, false);
+
+        return $result;
+    }
+
+    /**
+     *  Создание Webhook
+     */
+    public function setWebhook() {
+
+        $host = $_SERVER['SERVER_NAME'];
+
+        $parameters = [
+            'type' => 'ORDER_STATUS',
+            'url' => 'https://' . $host . '/phpshop/modules/cdekwidget/api/webhook.php'
+        ];
+
+        $result = $this->request($this->webhooksUrl, $parameters);
+
+        return $result;
     }
 
     /**
@@ -116,13 +158,13 @@ class CDEKWidget {
 
         $PHPShopOrm->insert($log);
     }
-    
+
     /**
      * Получение кода города
      * @param string $city город
      */
-    public function getCityCode($city){
-        $result = $this->request($this->citiesUrl, ['cities?name='.PHPShopString::win_utf8($city).'&country_code=RU'],false);
+    public function getCityCode($city) {
+        $result = $this->request($this->citiesUrl, ['cities?name=' . PHPShopString::win_utf8($city) . '&country_code=RU'], false);
         return $result;
     }
 
@@ -324,7 +366,7 @@ class CDEKWidget {
         PHPShopParser::set('cdek_admin', 1);
         PHPShopParser::set('russia_only', (int) $this->option['russia_only']);
         PHPShopParser::set('cdek_scripts', '<script type="text/javascript" src="../modules/cdekwidget/js/widjet.js" charset="utf-8"/></script><script type="text/javascript" src="../modules/cdekwidget/js/cdekwidget.js" /></script>');
-        $GLOBALS['modalExternalModules']=ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true);
+        $GLOBALS['modalExternalModules'] = ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true);
 
         return ParseTemplateReturn($template, true);
     }
@@ -427,27 +469,27 @@ class CDEKWidget {
      * @param bool $post
      * @return array
      */
-    private function request($method, $params = array(), $post = true) {
+    private function request($method, $params = array(), $post = true, $del = false) {
         if (empty($this->token)) {
             $this->getToken();
         }
 
-        $this->isTest ? $domain = $this->testDomain : $domain = $this->domain;
+        $domain = $this->domain;
 
         $ch = curl_init();
         $headers = array(
             'Authorization: Bearer ' . $this->token,
             'Content-Type: application/json'
         );
-        
-        
+
+
         if ($post) {
             $headers[2] = 'Content-Length: ' . strlen(json_encode($params));
             curl_setopt($ch, CURLOPT_URL, $domain . $method);
         } else {
             curl_setopt($ch, CURLOPT_URL, $domain . $method . '/' . $params[0]);
         }
-        
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -455,6 +497,9 @@ class CDEKWidget {
         if ($post) {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+        }
+        if ($del) {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         }
 
         $result = curl_exec($ch);

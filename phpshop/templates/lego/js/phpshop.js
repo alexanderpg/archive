@@ -995,7 +995,7 @@ $(document).ready(function () {
 
     // Визуальная корзина
     if ($("#cartlink").attr('data-content') == "") {
-        $("#cartlink").attr('href', '/order/');
+        $("#cartlink").attr('href', ROOT_PATH+'/order/');
     }
     $('[data-toggle="popover"]').popover();
     $('a[data-toggle="popover"]').on('show.bs.popover', function () {

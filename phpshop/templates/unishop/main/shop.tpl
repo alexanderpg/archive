@@ -192,6 +192,8 @@
                         <ul class="list-group sidebar-nav hidden-xs hidden-sm @hideSite@">
                             @leftCatal@
                         </ul>
+
+                        <!-- Фасетный  фильтр -->
                         <div class="hide" id="faset-filter">
                             <h3 class="side-heading filter-title">{Фильтр товаров }<a href="?" id="faset-filter-reset" data-toggle="tooltip" data-placement="top" title="{Сбросить фильтр}"><span class="glyphicon glyphicon-remove"></span></a></h3>
                             <div class="list-group filter-body-fix">
@@ -210,11 +212,14 @@
                                             </div>
                                         </div>
                                         <p></p>
-                                        <div id="slider-range"></div>
+                                        <div id="slider-range" class="slider-range"></div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                         <!--/ Фасетный фильтр -->
+                        
+                        
                         <div class="menu-fix">
                             <h3 class="side-heading">{Полезная информация}</h3>
                             <div class="list-group sidebar-nav">

@@ -45,7 +45,7 @@
                                     },
                                     source_platform_station: station,
                                     physical_dims_weight_gross: weight,
-                                    delivery_price: (price) => "от " +price + " руб",
+                                    delivery_price: "",
                                  
                                     show_select_button: true,
                                     filter: {

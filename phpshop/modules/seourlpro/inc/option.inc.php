@@ -79,7 +79,7 @@ class PHPShopSeoPro {
                 $GLOBALS['SysValue']['nav']['path'] = 'index';
                 $url['filename'] = substr($url['dirname'], 1, strlen($url['dirname']) - 1) . '/' . $url['filename'];
             }
-        } 
+        }
 
         // Поддержка виртуальных каталогов /filters/
         if (strpos($GLOBALS['SysValue']['nav']['truepath'], '/filters/') !== false) {
@@ -150,17 +150,17 @@ class PHPShopSeoPro {
 
     function setMemory($id, $name, $mode = 1, $latin = true) {
         if ($mode == 1) {
-            
-            $this->memory[$this->cat_pre . $id. $this->add_html] = $this->setLatin($name, $latin);
+
+            $this->memory[$this->cat_pre . $id . $this->add_html] = $this->setLatin($name, $latin);
 
             if (strstr($name, '/')) {
-                $this->memory['./CID_' . $id . '_1'.$this->add_html] = '/' . $this->setLatin($name . '-1', $latin);
+                $this->memory['./CID_' . $id . '_1' . $this->add_html] = '/' . $this->setLatin($name . '-1', $latin);
             } else
-                $this->memory['CID_' . $id . '_1'.$this->add_html] = $this->setLatin($name . '-1', $latin);
+                $this->memory['CID_' . $id . '_1' . $this->add_html] = $this->setLatin($name . '-1', $latin);
         } elseif ($mode == 2)
-            $this->memory_prod[$this->prod_pre . $id.$this->add_html] = $this->prod_pre_target . $this->setLatin($name, $latin) . '-' . $id;
+            $this->memory_prod[$this->prod_pre . $id . $this->add_html] = $this->prod_pre_target . $this->setLatin($name, $latin) . '-' . $id;
         elseif ($mode == 3)
-            $this->memory[$this->cat_page_pre . $id.$this->add_html] = 'page/' . $this->setLatin($name, $latin);
+            $this->memory[$this->cat_page_pre . $id . $this->add_html] = 'page/' . $this->setLatin($name, $latin);
     }
 
     function setLatin($str, $enabled = true) {
@@ -182,10 +182,10 @@ class PHPShopSeoPro {
 
                 if (!empty($val['cat_seo_name'])) {
                     $this->setMemory($key, $val['cat_seo_name'], 1, false);
-                    $this->memory['CID_' . $key . '_1'.$this->add_html] = $this->setLatin($val['cat_seo_name'] . '-1');
+                    $this->memory['CID_' . $key . '_1' . $this->add_html] = $this->setLatin($val['cat_seo_name'] . '-1');
                 } else {
                     $this->setMemory($key, $val['name']);
-                    $this->memory['CID_' . $key . '_1'.$this->add_html] = $this->setLatin($val['name'] . '-1');
+                    $this->memory['CID_' . $key . '_1' . $this->add_html] = $this->setLatin($val['name'] . '-1');
                 }
             }
     }
@@ -209,7 +209,7 @@ class PHPShopSeoPro {
         if (is_array($GLOBALS['Cache'][$GLOBALS['SysValue']['base']['categories']]))
             foreach ($GLOBALS['Cache'][$GLOBALS['SysValue']['base']['categories']] as $key => $val) {
                 $this->setMemory($key, $val['name']);
-                $this->memory['CID_' . $key . '_1'.$this->add_html] = $this->setLatin($val['name'] . '-1');
+                $this->memory['CID_' . $key . '_1' . $this->add_html] = $this->setLatin($val['name'] . '-1');
             }
     }
 
@@ -250,12 +250,15 @@ class PHPShopSeoPro {
             $array_str_prod = array_values($this->memory_prod);
             $array_id_prod = array_keys($this->memory_prod);
         }
-
+        
+        // Убираем окончание .html
+        if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2)
+          $replace = ['/\.html"/i' => '"'];
+        else $replace=false;
 
         ob_start();
-
         ob_implicit_flush(0);
-        ParseTemplate($obj->getValue($obj->template));
+        ParseTemplate($obj->getValue($obj->template), $replace);
         $result = ob_get_clean();
 
         if (is_array($this->memory))

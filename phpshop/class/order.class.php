@@ -584,23 +584,38 @@ class PHPShopOrderFunction extends PHPShopObj {
         if ((int) $statusObj->getParam($statusId . '.bot_action') === 1) {
 
             PHPShopObj::loadClass('bot');
-            $message = $PHPShopBase->getParam('lang.sms_user') . $this->objRow['uid'] . " - " . $statuses[$statusId]['name'];
+
+            $message = $statuses[$statusId]['bot_message'];
+            if (!empty($message)) {
+                $this->setParserVars();
+                $message = preg_replace_callback("/@([a-zA-Z0-9_]+)@/", 'PHPShopParser::SysValueReturn', $message);
+            } else
+                $message = $PHPShopBase->getParam('lang.sms_user') . $this->objRow['uid'] . " - " . $statuses[$statusId]['name'];
+
             $user_id = $this->getParam('user');
 
-            // Telegram
-            if ($this->PHPShopSystem->ifSerilizeParam('admoption.telegram_enabled', 1)) {
-                $bot = new PHPShopTelegramBot();
-                $chat_id = $bot->find($user_id);
-                if (!empty($chat_id))
-                    $bot->send($chat_id, PHPShopString::win_utf8($message));
-            }
+            // Wappi
+            if ($this->PHPShopSystem->ifSerilizeParam('admoption.wappi_enabled', 1)) {
+                $PHPShopWappi = new PHPShopWappi();
+                $message = PHPShopString::win_utf8($message);
+                $PHPShopWappi->cascade($message, $this->getParam('tel'));
+            } else {
 
-            // Vk
-            if ($this->PHPShopSystem->ifSerilizeParam('admoption.vk_enabled', 1)) {
-                $bot = new PHPShopVKBot();
-                $chat_id = $bot->find($user_id);
-                if (!empty($chat_id))
-                    $bot->send($chat_id, PHPShopString::win_utf8($message));
+                // Telegram
+                if ($this->PHPShopSystem->ifSerilizeParam('admoption.telegram_enabled', 1)) {
+                    $bot = new PHPShopTelegramBot();
+                    $chat_id = $bot->find($user_id);
+                    if (!empty($chat_id))
+                        $bot->send($chat_id, PHPShopString::win_utf8($message));
+                }
+
+                // Vk
+                if ($this->PHPShopSystem->ifSerilizeParam('admoption.vk_enabled', 1)) {
+                    $bot = new PHPShopVKBot();
+                    $chat_id = $bot->find($user_id);
+                    if (!empty($chat_id))
+                        $bot->send($chat_id, PHPShopString::win_utf8($message));
+                }
             }
 
             // Чат
@@ -649,16 +664,12 @@ class PHPShopOrderFunction extends PHPShopObj {
     }
 
     /**
-     * Оповещение пользователя о новом статусе
+     * Переменные для письма
      */
-    private function sendStatusChangedMail() {
-        global $PHPShopGUI;
-
-        $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
-        $PHPShopSystem = new PHPShopSystem();
+    private function setParserVars() {
+        global $PHPShopSystem;
 
         PHPShopObj::loadClass("parser");
-        PHPShopObj::loadClass("mail");
         PHPShopParser::set('ouid', $this->getParam('uid'));
         PHPShopParser::set('date', PHPShopDate::dataV($this->getParam('datas')));
         PHPShopParser::set('status', $this->getStatus());
@@ -672,16 +683,53 @@ class PHPShopOrderFunction extends PHPShopObj {
         if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
             $protocol = 'https://';
         }
-        PHPShopParser::set('account', $protocol . $_SERVER['SERVER_NAME'] . 'phpshop/forms/account/forma.html?orderId=' . $this->objID . '&tip=2&datas=' . $this->getParam('datas'));
+        PHPShopParser::set('account', $protocol . $_SERVER['SERVER_NAME'] . '/phpshop/forms/account/forma.html?orderId=' . $this->objID . '&tip=2&datas=' . $this->getParam('datas'));
         PHPShopParser::set('bonus', $this->getParam('bonus_plus'));
-
-        // Ссылка на оплату
+        
         $host = $GLOBALS['SysValue']['connect']['host'];
         $dbname = $GLOBALS['SysValue']['connect']['dbase'];
         $uname = $GLOBALS['SysValue']['connect']['user_db'];
         $upass = $GLOBALS['SysValue']['connect']['pass_db'];
         
-        PHPShopParser::set('pay', $protocol . $_SERVER['SERVER_NAME'] .'/pay/?orderID=' . $this->objID . '-' . md5($host . $dbname . $uname . $upass . $this->objID));
+        $security = md5($host . $dbname . $uname . $upass . $this->objID);
+
+        // Ссылка на оплату
+        PHPShopParser::set('pay', $protocol . $_SERVER['SERVER_NAME'] . '/pay/?orderID=' . $this->objID . '-' . $security);
+        
+        // Бланк заказа
+        PHPShopParser::set('order', $protocol . $_SERVER['SERVER_NAME'] . '/phpshop/admpanel/order/forms/order.php?orderID=' . $this->objID . '-' . $security);
+        
+        // Товарный чек
+        PHPShopParser::set('receipt', $protocol . $_SERVER['SERVER_NAME'] . '/phpshop/admpanel/order/forms/receipt.php?orderID=' . $this->objID . '-' . $security);
+        
+        // Счет-фактура
+        PHPShopParser::set('receipt', $protocol . $_SERVER['SERVER_NAME'] . '/phpshop/admpanel/order/forms/invoice.php?orderID=' . $this->objID . '-' . $security);
+        
+        // Торг-12
+        PHPShopParser::set('torg', $protocol . $_SERVER['SERVER_NAME'] . '/phpshop/admpanel/order/forms/torg-12.php?orderID=' . $this->objID . '-' . $security);
+        
+        // Гарантия
+        PHPShopParser::set('warranty', $protocol . $_SERVER['SERVER_NAME'] . '/phpshop/admpanel/order/forms/warranty.php?orderID=' . $this->objID . '-' . $security);
+        
+        // Акт
+        PHPShopParser::set('act', $protocol . $_SERVER['SERVER_NAME'] . '/phpshop/admpanel/order/forms/act.php?orderID=' . $this->objID . '-' . $security);
+        
+    }
+
+    /**
+     * Оповещение пользователя о новом статусе
+     */
+    private function sendStatusChangedMail() {
+        global $PHPShopGUI;
+
+        $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
+        $PHPShopSystem = new PHPShopSystem();
+
+        PHPShopObj::loadClass("parser");
+        PHPShopObj::loadClass("mail");
+
+        // Переменные для письма
+        $this->setParserVars();
 
         $title = __('Cтатус заказа') . ' ' . $this->getParam('uid') . ' ' . __('поменялся на') . ' ' . $this->getStatus();
 
@@ -748,9 +796,7 @@ class PHPShopOrderStatusArray extends PHPShopArray {
     function __construct() {
         $this->objBase = $GLOBALS['SysValue']['base']['order_status'];
         $this->order = array('order' => 'num');
-        parent::__construct('id', 'name', 'color', 'sklad_action', 'cumulative_action', 'mail_action', 'mail_message', 'sms_action', 'num', 'bot_action');
+        parent::__construct('id', 'name', 'color', 'sklad_action', 'cumulative_action', 'mail_action', 'mail_message', 'sms_action', 'num', 'bot_action', 'bot_message');
     }
 
 }
-
-?>

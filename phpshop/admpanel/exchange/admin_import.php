@@ -1298,7 +1298,7 @@ function actionSave() {
 
                     // Каталоги
                     foreach ($xml->shop[0]->categories[0]->category as $item) {
-                        $category_array[(string) $item->attributes()->id] = [PHPShopString::utf8_win1251((string) $item[0]), (string) $item->attributes()->parentId];
+                        $category_array[(string) $item->attributes()->id] = [PHPShopString::utf8_win1251((string) $item[0],true), (string) $item->attributes()->parentId];
                     }
 
                     // Товары
@@ -1312,7 +1312,6 @@ function actionSave() {
                         $category_path = substr($category_path, 1, strlen($category_path) - 1);
                         $category_path_array = explode("/", $category_path);
                         $category_path = implode("/", array_reverse($category_path_array));
-
 
                         // Склад
                         if (isset($item->count[0]))
@@ -1357,8 +1356,8 @@ function actionSave() {
                         if (is_array((array) $item->param)) {
                             while ($i < (count((array) $item->param) - 1)) {
 
-                                $sort_name = PHPShopString::utf8_win1251((string) $item->param[$i]->attributes()->name);
-                                $sort_value = PHPShopString::utf8_win1251((string) $item->param[$i]);
+                                $sort_name = PHPShopString::utf8_win1251((string) $item->param[$i]->attributes()->name,true);
+                                $sort_value = PHPShopString::utf8_win1251((string) $item->param[$i],true);
                                 $i++;
 
                                 $sort .= $sort_name . '/' . $sort_value . '#';
@@ -1368,7 +1367,7 @@ function actionSave() {
 
                         // Бренд
                         if (isset($item->vendor[0]))
-                            $sort .= 'Бренд/' . PHPShopString::utf8_win1251((string) $item->vendor[0]);
+                            $sort .= 'Бренд/' . PHPShopString::utf8_win1251((string) $item->vendor[0],true);
 
                         // Штрихкод
                         if (!empty((string) $item->barcode[0]))
@@ -1378,12 +1377,12 @@ function actionSave() {
 
                         // Артикул
                         if (!empty((string) $item->vendorCode[0])) {
-                            $uid = PHPShopString::utf8_win1251((string) $item->vendorCode[0]);
+                            $uid = PHPShopString::utf8_win1251((string) $item->vendorCode[0],true);
 
                             // Внешний код
                             $external_code = (string) $item->attributes()->id;
                         } else {
-                            $uid = PHPShopString::utf8_win1251((string) $item->attributes()->id);
+                            $uid = PHPShopString::utf8_win1251((string) $item->attributes()->id,true);
                             $external_code = null;
                         }
 
@@ -1407,18 +1406,18 @@ function actionSave() {
                                 $images = (string) $item->picture;
 
                             if (!empty((string) $item->param[0]))
-                                $parent = PHPShopString::utf8_win1251((string) $item->param[0]);
+                                $parent = PHPShopString::utf8_win1251((string) $item->param[0],true);
 
                             if (!empty((string) $item->param[1]))
-                                $parent2 = PHPShopString::utf8_win1251((string) $item->param[1]);
+                                $parent2 = PHPShopString::utf8_win1251((string) $item->param[1],true);
 
                             // Главный товар
                             if (!is_array($yml_array[(string) $item->attributes()->group_id])) {
 
                                 // Название
-                                $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251($name))));
+                                $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251($name,true))));
 
-                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, 0, null, '', $oldprice, $length, $width, $height];
+                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0],true)), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, 0, null, '', $oldprice, $length, $width, $height];
                             } else {
 
                                 // Список подтипов
@@ -1441,7 +1440,7 @@ function actionSave() {
                         }
 
 
-                        $yml_array[$uid] = [$uid, PHPShopString::utf8_win1251($name), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height, $external_code];
+                        $yml_array[$uid] = [$uid, PHPShopString::utf8_win1251($name,true), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0],true)), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height, $external_code];
                     }
 
                     if (empty($GLOBALS['exchanges_cron']))
@@ -1453,7 +1452,7 @@ function actionSave() {
                 else if ($subpath[2] == 'catalog') {
                     $yml_array[] = ['Id', 'Наименование', 'Родитель'];
                     foreach ($xml->shop[0]->categories[0]->category as $item) {
-                        $yml_array[] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0]), (string) $item->attributes()->parentId];
+                        $yml_array[] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0],true), (string) $item->attributes()->parentId];
                     }
 
                     if (empty($GLOBALS['exchanges_cron']))

@@ -37,7 +37,7 @@ class PHPShopBot {
         $result = $YandexSearch->search($text . ' site:' . $site);
         return PHPShopString::utf8_win1251($result[0]['title']) . ' - ' . $result[0]['url'] . ', добавь в ответ ссылку на ' . $result[0]['url'];
     }
-    
+
     //  Поиск изображения по сайту
     private function search_img($text) {
 
@@ -67,7 +67,7 @@ class PHPShopBot {
         }
         // AI
         elseif ($this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_chat_enabled') == 1) {
-            
+
             PHPShopObj::loadClass("yandexcloud");
             include('./phpshop/lib/parsedown/Parsedown.php');
 
@@ -78,12 +78,13 @@ class PHPShopBot {
 
             $result = $YandexGPT->text(PHPShopString::utf8_win1251(strip_tags($message['text'])), $system . $search, 0.3, 200);
             $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
-            
+
             $search_img = $this->search_img($text);
-            if(!empty($search_img[0]['url']))
+            if (!empty($search_img[0]['url']))
                 $attachments = $search_img[0]['url'];
-            else $attachments=null;
-            
+            else
+                $attachments = null;
+
             $insert = array(
                 'user_id' => $message['user_id'],
                 'chat' => array
@@ -910,6 +911,81 @@ class PHPShopTelegramBot extends PHPShopBot {
 
         if (!empty($title))
             $PHPShopRSS->insert($insert);
+    }
+
+}
+
+/**
+ * Библиотека Wappi API
+ * @author PHPShop Software
+ * @version 1.0
+ * @package PHPShopClass
+ */
+class PHPShopWappi {
+
+    private $api = 'https://wappi.pro';
+
+    public function __construct($cascade_id = null) {
+        $this->PHPShopSystem = new PHPShopSystem();
+        $this->token = $this->PHPShopSystem->getSerilizeParam('admoption.wappi_token');
+
+        if (!empty($cascade_id))
+            $this->cascade_id = $cascade_id;
+        else
+            $this->cascade_id = $this->PHPShopSystem->getSerilizeParam('admoption.wappi_id');
+
+        $this->enabled = $this->PHPShopSystem->getSerilizeParam('admoption.wappi_enabled');
+        if ($this->token == '' or $this->id == '')
+            $this->enabled = 0;
+    }
+
+    private function format_phone($phone) {
+
+        $phone = trim(str_replace(array('(', ')', '-', '+', '&#43;'), '', $phone));
+
+        // Проверка на первую 7 или 8
+        $first_d = substr($phone, 0, 1);
+        if ($first_d != 8 and $first_d != 7)
+            $phone = '7' . $phone;
+
+        return $phone;
+    }
+
+    /**
+     * Отправка каскадом
+     */
+    public function cascade($text, $phone, $file_name = null, $url = null, $caption = null) {
+
+        $message = json_encode([
+            "recipient" => $this->format_phone($phone),
+            "cascade_id" => $this->cascade_id,
+            "body" => $text,
+            "caption" => $caption,
+            "file_name" => $file_name,
+            "url" => $url
+        ]);
+
+        return $this->post($message, '/csender/cascade/send');
+    }
+
+    private function post($param, $path) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->api . $path);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Authorization: ' . $this->token;
+        $headers[] = 'Content-Type: text/plain';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($result, true);
     }
 
 }

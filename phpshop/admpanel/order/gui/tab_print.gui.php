@@ -20,7 +20,7 @@ function tab_print($data) {
     $disp.=$PHPShopGUI->setButton('Счет в банк', 'credit-card', 'btn-print-order','../../../phpshop/forms/account/forma.html?orderId='.$data['id'].'&tip=2&datas='.$data['datas']);
 
     // Счет в сбербанк
-    $disp.=$PHPShopGUI->setButton('Сбербанк', 'list-alt', 'btn-print-order','../../../phpshop/forms/receipt/forma.html?orderId='.$data['id'].'&tip=2&datas='.$data['datas']);
+    //$disp.=$PHPShopGUI->setButton('Сбербанк', 'list-alt', 'btn-print-order','../../../phpshop/forms/receipt/forma.html?orderId='.$data['id'].'&tip=2&datas='.$data['datas']);
     
     // Счет-Фактура
     $disp.=$PHPShopGUI->setButton('Счет-Фактура', 'barcode', 'btn-print-order','./order/forms/invoice.php?orderID=' . $data['id'] );

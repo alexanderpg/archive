@@ -3,7 +3,7 @@
 /**
  * Кэширование
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopClass
  */
 class PHPShopCache {
@@ -38,6 +38,12 @@ class PHPShopCache {
         // Bot
         if ($this->checkBot()) {
             $this->mod = $this->seo;
+
+            // UTF
+            if ($PHPShopSystem->getSerilizeParam('admoption.cache_seo_utf') == 1 and $this->mod == 1)
+                $this->seo_utf = true;
+            else
+                $this->seo_utf = false;
         }
         // User
         elseif ($this->mod > 0) {
@@ -79,7 +85,7 @@ class PHPShopCache {
     }
 
     public function valid_element($name) {
-        if (!in_array($name, ['usersDisp', 'specMain', 'specMainIcon', 'captcha', 'wishlist', 'pageCss', 'skin', 'cloud','topBrands']))
+        if (!in_array($name, ['usersDisp', 'specMain', 'specMainIcon', 'captcha', 'wishlist', 'pageCss', 'skin', 'cloud', 'topBrands']))
             return true;
     }
 
@@ -143,6 +149,13 @@ class PHPShopCache {
 
         @header("Last-Modified: " . gmdate("D, d M Y H:i:s", (time() - $this->time * 60 * 60 * 24)) . " GMT");
         @header("X-Powered-By: PHPShop");
+
+        if ($this->seo_utf)
+            @header('Content-type: text/html; charset=utf-8');
+    }
+
+    private function utf($content) {
+        return PHPShopString::win_utf8(str_replace('windows-1251', 'utf-8', $content), false);
     }
 
     public function display($cache_key) {
@@ -150,7 +163,12 @@ class PHPShopCache {
             $content = $this->get($cache_key, $this->level);
             if (!empty($content)) {
                 $this->header();
-                return gzuncompress($content);
+                $content = gzuncompress($content);
+
+                if ($this->seo_utf)
+                    $content = $this->utf($content);
+
+                return $content;
             }
         }
     }
@@ -300,7 +318,9 @@ class PHPShopCache {
             '/google/i',
             '/yahoo/i',
             '/bing/i',
-            '/lighthouse/i'
+            '/lighthouse/i',
+            '/whatsapp/i',
+            '/compatible/i',
         ];
 
         foreach ($botPatterns as $pattern) {

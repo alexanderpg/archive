@@ -375,7 +375,7 @@
                         <div class="mb-2">
                             @leftCatal@ 
                         </div>
-
+                        
                         <!-- ‘асетный фильтр -->
                         <div class="d-none space-1" id="faset-filter">
 
@@ -397,7 +397,7 @@
                                     </form>
                                     <br>
 
-                                    <div id="slider-range"></div>
+                                    <div id="slider-range" class="slider-range"></div>
 
                                 </div>
                                 <a href="?" id="faset-filter-reset" class="btn btn-sm btn-block btn-soft-secondary transition-3d-hover">{—бросить фильтр}</a>

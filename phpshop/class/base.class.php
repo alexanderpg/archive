@@ -56,7 +56,7 @@ class PHPShopBase {
     function __construct($iniPath, $connectdb = true, $error = true) {
 
         //$error = false;
-        
+
         // Отладка ядра
         $this->setPHPCoreReporting($error);
 
@@ -202,15 +202,14 @@ class PHPShopBase {
 
             try {
                 mysqli_select_db($link_db, $this->getParam("connect.dbase")) or $this->mysql_error .= mysqli_error($link_db);
-                
+
                 if ($this->codBase != "utf-8")
                     mysqli_query($link_db, "SET NAMES '" . $this->codBase . "'");
 
                 mysqli_query($link_db, "SET SESSION sql_mode=''");
                 mysqli_report(MYSQLI_REPORT_OFF);
-                
             } catch (Exception $ex) {
-                 $this->mysql_error .= mysqli_error($link_db);
+                $this->mysql_error .= mysqli_error($link_db);
             }
         } catch (Exception $e) {
             $this->mysql_error = mysqli_connect_error();
@@ -325,6 +324,20 @@ class PHPShopBase {
                 }
             }
         }
+    }
+
+    /**
+     * Авторизация ссылок печатных документов
+     */
+    public function checkFile($s, $id) {
+
+        $host = $GLOBALS['SysValue']['connect']['host'];
+        $dbname = $GLOBALS['SysValue']['connect']['dbase'];
+        $uname = $GLOBALS['SysValue']['connect']['user_db'];
+        $upass = $GLOBALS['SysValue']['connect']['pass_db'];
+
+        if ($s == md5($host . $dbname . $uname . $upass . $id))
+            return true;
     }
 
 }

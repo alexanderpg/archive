@@ -32,18 +32,23 @@ function actionStart() {
             $PHPShopGUI->setCheckbox("cumulative_action_new", 1, "Учет скидки покупателя", $data['cumulative_action']) . $PHPShopGUI->setHelp(__('Сумма заказа пользователя будет засчитана в накопительную сумму, указанную в') . ' <a href="?path=shopusers.status"><span class="glyphicon glyphicon-share-alt"></span>' . __('Статусах и скидках покупателей') . '</a>', false, false)
     );
 
-    // Внешний код
-    $Tab1 .= $PHPShopGUI->setCollapse('Интеграция', $PHPShopGUI->setField('Внешний код', $PHPShopGUI->setInputText(null, 'external_code_new', $data['external_code'], '100%')));
-
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1);
+    
+    // Переменные
+    $message_var='Переменные: <code>@ouid@</code> - номер заказа, <code>@date@</code> - дата заказа, <code>@status@</code> - новый статус заказа, <code>@fio@</code> - имя покупателя, <code>@sum@</code> - стоимость заказа, <code>@manager@</code> - примечание, <code>@tracking@</code> - номер для отслеживания, <code>@account@</code> - ссылка на счет, <code>@bonus@</code> - начисленные бонусы за заказ, <code>@pay@</code> - ссылка на оплату, <code>@order@</code> - ссылка на бланк заказа, <code>@receipt@</code> - ссылка на товарный чек, <code>@invoice@</code> - ссылка на счет-фактуру, <code>@torg@</code> - ссылка на тор-12, <code>@warranty@</code> - ссылка на гарантию, <code>@act@</code> - ссылка на акт';
+    // Текст уведомления в мессенджеры
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст уведомления в мессенджеры", $PHPShopGUI->setTextarea('bot_message_new', $data['bot_message'], true, false, 150) . $PHPShopGUI->setHelp($message_var));
 
     // Сообщение
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('mail_message_new');
-    $oFCKeditor->Height = '350';
+    $oFCKeditor->Height = '380';
     $oFCKeditor->Value = $data['mail_message'];
 
-    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setHelp('Переменные: <code>@ouid@</code> - номер заказа, <code>@date@</code> - дата заказа, <code>@status@</code> - новый статус заказа, <code>@fio@</code> - имя покупателя, <code>@sum@</code> - стоимость заказа, <code>@manager@</code> - примечание, <code>@tracking@</code> - номер для отслеживания, <code>@account@</code> - ссылка на счет, <code>@bonus@</code> - начисленные бонусы за заказ, <code>@pay@</code> - ссылка на оплату'));
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setHelp($message_var));
+
+    // Внешний код
+    $Tab1 .= $PHPShopGUI->setCollapse('Интеграция', $PHPShopGUI->setField('Внешний код', $PHPShopGUI->setInputText(null, 'external_code_new', $data['external_code'], '100%')));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);

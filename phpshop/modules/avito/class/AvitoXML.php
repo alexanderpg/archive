@@ -3,7 +3,7 @@
 /**
  * Библиотека AvitoXML
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopClass
  */
 class AvitoXML {
@@ -73,8 +73,8 @@ class AvitoXML {
                 $this->param_array[$par['id']] = $par;
             }
         }
-        
-        $this->description_template = $this->options['preview_description_template'];
+
+        $this->description_template = $this->options['stop_words'];
     }
 
     /**
@@ -281,7 +281,7 @@ class AvitoXML {
                     $price = $row['price'];
 
                 $price = $this->getProductPrice($price, $row['baseinputvaluta']);
-                
+
                 // Наценка
                 if ($this->fee > 0) {
                     if ($this->fee_type == 1) {
@@ -290,16 +290,18 @@ class AvitoXML {
                         $price = $price + ($price * $this->fee / 100);
                     }
                 }
-                
+
                 // Округление
                 $price = round($price, -1);
-                
+
+                $content = $this->replaceDescriptionVariables($row);
+
                 // Чистка тегов
-                $content = '<![CDATA[' . trim(strip_tags($row['content'], '<p><strong><i><ul><li><br><em><ol>')) . ']]>';
-                
+                $content = '<![CDATA[' . trim(strip_tags($content, '<p><strong><i><ul><li><br><em><ol>')) . ']]>';
+
                 // Замена символов
-                if(!empty($this->description_template))
-                $content = str_replace(explode(',',$this->description_template), '', $content);
+                if (!empty($this->description_template))
+                    $content = str_replace(explode(',', $this->description_template), '', $content);
 
                 $array = array(
                     "id" => $id,
@@ -407,10 +409,18 @@ class AvitoXML {
             $Category = $CategoryAvitoArray->getParam($CategoryAvitoArray->getParam($category_parent . '.parent_to') . '.name');
 
             $CategoryAvitoArray->getParam($parent . '.parent_to');
+
+            if (empty($Category)) {
+                $Category = $ProductType;
+                $GoodsType = $GoodsSubType;
+                $GoodsSubType = $ProductType = null;
+            }
+
             $xml .= '<Category>' . PHPShopString::win_utf8($Category) . '</Category>';
             $xml .= '<GoodsType>' . PHPShopString::win_utf8($GoodsType) . '</GoodsType>';
             $xml .= '<ProductType>' . PHPShopString::win_utf8($ProductType) . '</ProductType>';
             $xml .= '<GoodsSubType>' . PHPShopString::win_utf8($GoodsSubType) . '</GoodsSubType>';
+
 
             // Изображение
             $xml .= '<Images>' . $this->getImages($val['id'], $val['picture']) . '</Images>';
@@ -460,6 +470,131 @@ class AvitoXML {
         $this->serFooter();
 
         return $this->xml;
+    }
+    
+    /**
+     * Характеристики для шаблона описания
+     */
+     private function sort_table($product) {
+
+        $category = new PHPShopCategory((int) $product['category']);
+
+        $sort = $category->unserializeParam('sort');
+        $vendor_array = unserialize($product['vendor_array']);
+        $dis = $sortCat = $sortValue = null;
+        $arrayVendorValue = [];
+
+        if (is_array($sort))
+            foreach ($sort as $v) {
+                $sortCat .= (int) $v . ',';
+            }
+
+        if (!empty($sortCat)) {
+
+            // Массив имен характеристик
+            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['sort_categories']);
+            $arrayVendor = array_column($PHPShopOrm->getList(['*'], ['id' => sprintf(' IN (%s 0)', $sortCat)], ['order' => 'num']), null, 'id');
+
+            if (is_array($vendor_array))
+                foreach ($vendor_array as $v) {
+                    foreach ($v as $value)
+                        if (is_numeric($value))
+                            $sortValue .= (int) $value . ',';
+                }
+
+            if (!empty($sortValue)) {
+
+                // Массив значений характеристик
+                $PHPShopOrm = new PHPShopOrm();
+                $result = $PHPShopOrm->query("select * from " . $GLOBALS['SysValue']['base']['sort'] . " where id IN ( $sortValue 0) order by num");
+                while (@$row = mysqli_fetch_array($result)) {
+                    $arrayVendorValue[$row['category']]['name'][$row['id']] = $row['name'];
+                    $arrayVendorValue[$row['category']]['id'][] = $row['id'];
+                }
+
+                if (is_array($arrayVendor))
+                    foreach ($arrayVendor as $idCategory => $value) {
+
+                        if (!empty($arrayVendorValue[$idCategory]['name'])) {
+                            if (!empty($value['name'])) {
+                                $arr = array();
+                                foreach ($arrayVendorValue[$idCategory]['id'] as $valueId) {
+                                    $arr[] = $arrayVendorValue[$idCategory]['name'][(int) $valueId];
+                                }
+
+                                $sortValueName = implode(', ', $arr);
+
+                                $dis .= PHPShopText::li($value['name'] . ': ' . $sortValueName, null, '');
+                            }
+                        }
+                    }
+
+                return PHPShopText::ul($dis, '');
+            }
+        }
+    }
+
+    /**
+     *  Шаблон генерации описания
+     */
+    private function replaceDescriptionVariables($product) {
+        $template = $this->options['preview_description_template'];
+
+        if (empty(trim($template))) {
+            return $product['content'];
+        }
+
+        if (stripos($template, '@Content@') !== false) {
+            $template = str_replace('@Content@', $product['content'], $template);
+        }
+        if (stripos($template, '@Description@') !== false) {
+            $template = str_replace('@Description@', $product['description'], $template);
+        }
+        if (stripos($template, '@Attributes@') !== false) {
+            $template = str_replace('@Attributes@', $this->sort_table($product), $template);
+        }
+        if (stripos($template, '@Catalog@') !== false) {
+            $template = str_replace('@Catalog@', $this->categories[$product['category']]['site_title'], $template);
+        }
+        if (stripos($template, '@Product@') !== false) {
+            $template = str_replace('@Product@', $product['name'], $template);
+        }
+        if (stripos($template, '@Article@') !== false) {
+            $template = str_replace('@Article@', __('Артикул') . ': ' . $product['uid'], $template);
+        }
+        if (stripos($template, '@Subcatalog@') !== false) {
+            if (count($this->categoriesForPath) === 0) {
+                $orm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
+                $this->categoriesForPath = array_column($orm->getList(['id', 'name', 'parent_to'], false, false, ['limit' => 100000]), null, 'id');
+            }
+
+            $this->path = [];
+            $this->getNavigationPath($this->categories[$product['category']]['site_id']);
+
+            $subcat = '';
+            array_shift($this->path);
+
+            foreach ($this->path as $subcategory) {
+                $subcat .= $subcategory['name'] . ' - ';
+            }
+
+            $subcat = substr($subcat, 0, strlen($subcat) - 3);
+
+            $template = str_replace('@Subcatalog@', $subcat, $template);
+        }
+
+        return $template;
+    }
+
+    private function getNavigationPath($id) {
+
+        if (!empty($id)) {
+            if (isset($this->categoriesForPath[$id])) {
+                $this->path[] = $this->categoriesForPath[$id];
+                if (!empty($this->categoriesForPath[$id]['parent_to']))
+                    $this->getNavigationPath($this->categoriesForPath[$id]['parent_to']);
+            }
+        }
     }
 
 }

@@ -122,7 +122,7 @@ outline: none!important;
     padding: 5px 0px 0px 0px;
 }
 
-#slider-range{
+.slider-range{
     margin-top:10px;
 }
 
@@ -1562,32 +1562,32 @@ a.highslide {display:block;}
   float: right;
 }
 #faset-filter-body h4:first-child{border-top:0}
-#slider-range.ui-slider-horizontal {
+.slider-range.ui-slider-horizontal {
   height: 4px;
 }
 
-#slider-range.ui-widget-content {
+.slider-range.ui-widget-content {
   background: #eaeaea;
   border: none;
 }
 
 
-#slider-range.ui-widget-content .ui-slider-handle.ui-corner-all {
+.slider-range.ui-widget-content .ui-slider-handle.ui-corner-all {
   border-radius: 50%;
 }
 
-#slider-range.ui-widget-content .ui-state-default,
-#slider-range.ui-widget-content .ui-widget-content .ui-state-default,
-#slider-range.ui-widget-content .ui-widget-header .ui-state-default {
+.slider-range.ui-widget-content .ui-state-default,
+.slider-range.ui-widget-content .ui-widget-content .ui-state-default,
+.slider-range.ui-widget-content .ui-widget-header .ui-state-default {
   background-image: none;
 }
 
-#slider-range.ui-widget-content .ui-slider-handle {
+.slider-range.ui-widget-content .ui-slider-handle {
   top: -4px;
   margin-left: 0;
 }
 
-#slider-range.ui-widget-content .ui-slider-handle {
+.slider-range.ui-widget-content .ui-slider-handle {
   width: 12px;
   height: 12px;
   outline:none!important

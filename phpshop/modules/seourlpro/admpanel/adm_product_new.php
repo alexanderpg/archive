@@ -11,7 +11,7 @@ class PHPShopSeourlOption extends PHPShopArray {
         $this->memory = __CLASS__;
 
         $this->objBase = $GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'];
-        parent::__construct('redirect_enabled');
+        parent::__construct('redirect_enabled','html_enabled');
     }
 
 }
@@ -19,25 +19,25 @@ class PHPShopSeourlOption extends PHPShopArray {
 function addSeoUrl($data) {
     global $PHPShopGUI;
 
-     // Копирование товара
-     //if(!empty($_GET['id']))
-     $data['prod_seo_name']=null;
-     
-     $Tab3 = $PHPShopGUI->setField("SEO ссылка:", $PHPShopGUI->setInput("text", "prod_seo_name_new", $data['prod_seo_name'], "left", false,false,false,false,'/id/','-'.$data['id'].'.html'), 1, 'Можно использовать вложенные ссылки /sony/plazma/televizor');
-     
-         $PHPShopSeourlOption = new PHPShopSeourlOption();
+    // Копирование товара
+    $data['prod_seo_name'] = null;
+    
+        $PHPShopSeourlOption = new PHPShopSeourlOption();
+    if($PHPShopSeourlOption->getParam('html_enabled') == 2)
+        $html=null;
+    else $html='.html';
+
+    $Tab3 = $PHPShopGUI->setField("SEO ссылка:", $PHPShopGUI->setInput("text", "prod_seo_name_new", $data['prod_seo_name'], "left", false, false, false, false, '/id/', '-' . $data['id'] . $html), 1, 'Можно использовать вложенные ссылки /sony/plazma/televizor');
 
     if ($PHPShopSeourlOption->getParam('redirect_enabled') == 2)
-        $Tab3.= $PHPShopGUI->setField("Редирект", $PHPShopGUI->setInput("text", "prod_seo_name_old_new", $data['prod_seo_name_old'], "left", false, false, false, false), 1, 'Старая ссылка для 301 редиректа');
-    
-    $PHPShopGUI->addTab(array("SEO",$Tab3,450));
+        $Tab3 .= $PHPShopGUI->setField("Редирект", $PHPShopGUI->setInput("text", "prod_seo_name_old_new", $data['prod_seo_name_old'], "left", false, false, false, false), 1, 'Старая ссылка для 301 редиректа');
+
+    $PHPShopGUI->addTab(array("SEO", $Tab3, 450));
 }
 
-
-$addHandler=array(
-        'actionStart'=>'addSeoUrl',
-        'actionDelete'=>false,
-        'actionUpdate'=>false
+$addHandler = array(
+    'actionStart' => 'addSeoUrl',
+    'actionDelete' => false,
+    'actionUpdate' => false
 );
-
 ?>

@@ -13,8 +13,12 @@ $PHPShopGUI = new PHPShopGUI();
 $_SESSION['lang'] = $PHPShopSystem->getSerilizeParam("admoption.lang_adm");
 $PHPShopLang = new PHPShopLang(array('locale' => $_SESSION['lang'], 'path' => 'admin'));
 
+if(empty($_GET['send']))
+ $_GET['text']=PHPShopString::utf8_win1251($_GET['text']);
+
+
 $YandexSearch = new YandexSearch();
-$result = $YandexSearch->search_img($_GET['text'], $_GET['itype'], $_GET['iorient'], $_GET['isize'], $_GET['page']);
+$result = $YandexSearch->search_img(PHPShopString::win_utf8($_GET['text']), $_GET['itype'], $_GET['iorient'], $_GET['isize'], $_GET['page']);
 
 // Тема оформления
 if (empty($_SESSION['admin_theme']))
@@ -45,7 +49,8 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
 
         <form class="" style="padding:10px">
             <div class="input-group" >
-                <input name="text" maxlength="256" value="<?php echo PHPShopString::utf8_win1251($_GET['text']); ?>" class="form-control input-sm" required="" type="search">
+                <input name="text" maxlength="256" value="<?php echo $_GET['text']; ?>" class="form-control input-sm" required="" type="search">
+                <input name="send" value="1" type="hidden">
                 <span class="input-group-btn">
                     <button class="btn btn-default btn-sm" type="submit"><span class="glyphicon glyphicon-search"></span> <?php _e('Поиск') ?></button>
                 </span>
@@ -55,11 +60,11 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
                 <label class="btn btn-default btn-sm <?php if (empty($_GET['itype'])) echo 'active'; ?>">
                     <input type="radio" name="itype" value="" autocomplete="off" <?php if (empty($_GET['itype'])) echo 'checked=""' ?>> <?php _e('Все') ?>
                 </label>
-                <label class="btn btn-default btn-sm <?php if ($_GET['itype'] == 'jpg') echo 'active'; ?>">
-                    <input type="radio" name="itype" value="jpg" autocomplete="off" <?php if ($_GET['itype'] == 'jpg') echo 'checked=""' ?>> JPG
+                <label class="btn btn-default btn-sm <?php if ($_GET['itype'] == 'IMAGE_FORMAT_JPEG') echo 'active'; ?>">
+                    <input type="radio" name="itype" value="IMAGE_FORMAT_JPEG" autocomplete="off" <?php if ($_GET['itype'] == 'IMAGE_FORMAT_JPEG') echo 'checked=""' ?>> JPG
                 </label>
-                <label class="btn btn-default btn-sm <?php if ($_GET['itype'] == 'png') echo 'active'; ?>">
-                    <input type="radio" name="itype" value="png" autocomplete="off" <?php if ($_GET['itype'] == 'png') echo 'checked=""' ?>> PNG
+                <label class="btn btn-default btn-sm <?php if ($_GET['itype'] == 'IMAGE_FORMAT_PNG') echo 'active'; ?>">
+                    <input type="radio" name="itype" value="IMAGE_FORMAT_PNG" autocomplete="off" <?php if ($_GET['itype'] == 'IMAGE_FORMAT_PNG') echo 'checked=""' ?>> PNG
                 </label>
             </div>
 
@@ -67,11 +72,11 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
                 <label class="btn btn-default btn-sm <?php if (empty($_GET['iorient'])) echo 'active'; ?>">
                     <input type="radio" name="iorient" value="" autocomplete="off" <?php if (empty($_GET['iorient'])) echo 'checked=""' ?>> <?php _e('Все') ?>
                 </label>
-                <label class="btn btn-default btn-sm <?php if ($_GET['iorient'] == 'horizontal') echo 'active'; ?>">
-                    <input type="radio" name="iorient" value="horizontal" autocomplete="off" <?php if ($_GET['iorient'] == 'horizontal') echo 'checked=""' ?>> <?php _e('Горизонтальные') ?>
+                <label class="btn btn-default btn-sm <?php if ($_GET['iorient'] == 'IMAGE_ORIENTATION_HORIZONTAL') echo 'active'; ?>">
+                    <input type="radio" name="iorient" value="IMAGE_ORIENTATION_HORIZONTAL" autocomplete="off" <?php if ($_GET['iorient'] == 'IMAGE_ORIENTATION_HORIZONTAL') echo 'checked=""' ?>> <?php _e('Горизонтальные') ?>
                 </label>
-                <label class="btn btn-default btn-sm <?php if ($_GET['iorient'] == 'vertical') echo 'active'; ?>">
-                    <input type="radio" name="iorient" value="vertical" autocomplete="off" <?php if ($_GET['iorient'] == 'vertical') echo 'checked=""' ?>> <?php _e('Вертикальные') ?>
+                <label class="btn btn-default btn-sm <?php if ($_GET['iorient'] == 'IMAGE_ORIENTATION_VERTICAL') echo 'active'; ?>">
+                    <input type="radio" name="iorient" value="IMAGE_ORIENTATION_VERTICAL" autocomplete="off" <?php if ($_GET['iorient'] == 'IMAGE_ORIENTATION_VERTICAL') echo 'checked=""' ?>> <?php _e('Вертикальные') ?>
                 </label>
             </div>
 
@@ -79,14 +84,14 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
                 <label class="btn btn-default btn-sm <?php if (empty($_GET['isize'])) echo 'active'; ?>">
                     <input type="radio" name="isize" value="" autocomplete="off" <?php if (empty($_GET['isize'])) echo 'checked=""' ?>> <?php _e('Все') ?>
                 </label>
-                <label class="btn btn-default btn-sm <?php if ($_GET['isize'] == 'large') echo 'active'; ?>">
-                    <input type="radio" name="isize" value="large" autocomplete="off" <?php if ($_GET['isize'] == 'large') echo 'checked=""' ?>> <?php _e('Большие') ?>
+                <label class="btn btn-default btn-sm <?php if ($_GET['isize'] == 'IMAGE_SIZE_LARGE') echo 'active'; ?>">
+                    <input type="radio" name="isize" value="IMAGE_SIZE_LARGE" autocomplete="off" <?php if ($_GET['isize'] == 'IMAGE_SIZE_LARGE') echo 'checked=""' ?>> <?php _e('Большие') ?>
                 </label>
-                <label class="btn btn-default btn-sm <?php if ($_GET['isize'] == 'medium') echo 'active'; ?>">
-                    <input type="radio" name="isize" value="medium" autocomplete="off" <?php if ($_GET['isize'] == 'medium') echo 'checked=""' ?>> <?php _e('Средние') ?>
+                <label class="btn btn-default btn-sm <?php if ($_GET['isize'] == 'IMAGE_SIZE_MEDIUM') echo 'active'; ?>">
+                    <input type="radio" name="isize" value="IMAGE_SIZE_MEDIUM" autocomplete="off" <?php if ($_GET['isize'] == 'IMAGE_SIZE_MEDIUM') echo 'checked=""' ?>> <?php _e('Средние') ?>
                 </label>
-                <label class="btn btn-default btn-sm <?php if ($_GET['isize'] == 'small') echo 'active'; ?>">
-                    <input type="radio" name="isize" value="small" autocomplete="off" <?php if ($_GET['isize'] == 'medium') echo 'checked=""' ?>> <?php _e('Маленькие') ?>
+                <label class="btn btn-default btn-sm <?php if ($_GET['isize'] == 'IMAGE_SIZE_SMALL') echo 'active'; ?>">
+                    <input type="radio" name="isize" value="IMAGE_SIZE_SMALL" autocomplete="off" <?php if ($_GET['isize'] == 'IMAGE_SIZE_SMALL') echo 'checked=""' ?>> <?php _e('Маленькие') ?>
                 </label>
             </div>
             

@@ -121,13 +121,19 @@ class PHPShopBrand extends PHPShopShopCore {
         if ($this->setHook(__CLASS__, __FUNCTION__, null, 'START'))
             return true;
 
+        // Редирект без .html
+        if (strstr($_SERVER['REQUEST_URI'], ".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2) {
+            header('Location: ' . $this->getValue('dir.dir') . str_replace('.html', '', $_SERVER['REQUEST_URI']), true, 301);
+            return true;
+        }
+
         // Валюта
         $this->set('productValutaName', $this->currency());
 
         // Количество ячеек
         if (empty($this->cell))
             $this->cell = $this->calculateCell("selection", $this->PHPShopSystem->getValue('num_row_adm'));
- 
+
 
         if (!empty($_GET['gridChange']))
             switch ($_GET['gridChange']) {

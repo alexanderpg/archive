@@ -845,7 +845,7 @@ $(document).ready(function () {
     // Визуальная корзина
     $("#cartlink").on('click', function () {
         if ($(this).attr('data-content') == "") {
-            window.location.href = $('#body').attr('data-dir') + '/order/';
+            window.location.href = $('#body').attr('data-dir') + ROOT_PATH+'/order/';
         }
     });
 

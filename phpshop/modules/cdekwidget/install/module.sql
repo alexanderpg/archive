@@ -18,11 +18,12 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_cdekwidget_system` (
   `fee_type` enum('1','2') DEFAULT '1',
   `test` enum('0','1')  DEFAULT '0',
   `paid` enum('0','1') DEFAULT '0',
+  `webhook` enum('0','1') DEFAULT '0',
   `version` varchar(64) DEFAULT '1.0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_cdekwidget_system` VALUES (1, '', '', '0', '', '', '', '', '', '','', '', '', 0,  0, 1, 0, 0,'2.4');
+INSERT INTO `phpshop_modules_cdekwidget_system` VALUES (1, '', '', '0', '', '', '', '', '', '','', '', '', 0,  0, 1, 0, 0, 0,'2.5');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_cdekwidget_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -36,4 +37,3 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_cdekwidget_log` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
 ALTER TABLE `phpshop_orders` ADD `cdek_order_data` text default '';
-ALTER TABLE `phpshop_delivery` ADD `is_mod` enum('1','2') DEFAULT '1';

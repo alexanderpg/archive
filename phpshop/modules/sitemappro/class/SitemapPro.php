@@ -31,13 +31,18 @@ class SitemapPro {
             $this->isSeoUrlProEnabled = true;
 
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system']);
-            $settings = $PHPShopOrm->select(['seo_news_enabled, seo_page_enabled', 'seo_brands_enabled'], ['id' => "='1'"]);
+            $settings = $PHPShopOrm->select(['seo_news_enabled, seo_page_enabled', 'seo_brands_enabled', 'html_enabled'], ['id' => "='1'"]);
             if ($settings['seo_news_enabled'] == 2)
                 $this->isSeoNewsEnabled = true;
             if ($settings['seo_page_enabled'] == 2)
                 $this->isSeoPagesEnabled = true;
             if ($settings['seo_brands_enabled'] == 2)
                 $this->isSeoBrandsEnabled = true;
+
+            if ($settings['html_enabled'] == 2)
+                $this->html = null;
+            else
+                $this->html = '.html';
 
             include_once dirname(dirname(__DIR__)) . '/seourlpro/inc/option.inc.php';
         }
@@ -153,12 +158,12 @@ class SitemapPro {
                         else
                             $url = $category['cat_seo_name'];
                     }
-                    
-                    if(empty($row['sort_seo_name']))
+
+                    if (empty($row['sort_seo_name']))
                         continue;
 
                     // Виртуальные каталоги
-                    $sortLink = '/filters/'.$row['sort_seo_name'];
+                    $sortLink = '/filters/' . $row['sort_seo_name'];
 
                     if (empty($this->xml)) {
                         $this->xml .= '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -166,7 +171,7 @@ class SitemapPro {
                     }
 
                     $this->xml .= '<url>' . "\n";
-                    $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . '.html' . $sortLink . '</loc>' . "\n";
+                    $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . $this->html . $sortLink . '</loc>' . "\n";
                     $this->xml .= '<changefreq>weekly</changefreq>' . "\n";
                     $this->xml .= '<priority>0.5</priority>' . "\n";
                     $this->xml .= '</url>' . "\n";
@@ -227,7 +232,7 @@ class SitemapPro {
                     $url = 'id/' . $row['prod_seo_name'] . '-' . $row['id'];
             }
 
-            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . '.html</loc>' . "\n";
+            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . $this->html . '</loc>' . "\n";
             $this->xml .= '<lastmod>' . PHPShopDate::dataV($row['datas'], false, true) . '</lastmod>' . "\n";
             $this->xml .= '<changefreq>daily</changefreq>' . "\n";
             $this->xml .= '<priority>1.0</priority>' . "\n";
@@ -262,7 +267,7 @@ class SitemapPro {
 
         foreach ($data as $row) {
             $this->xml .= '<url>' . "\n";
-            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . 'page/' . $row['link'] . '.html</loc>' . "\n";
+            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . 'page/' . $row['link'] .$this->html. '</loc>' . "\n";
             $this->xml .= '<lastmod>' . PHPShopDate::dataV($row['datas'], false, true) . '</lastmod>' . "\n";
             $this->xml .= '<changefreq>weekly</changefreq>' . "\n";
             $this->xml .= '<priority>1.0</priority>' . "\n";
@@ -300,7 +305,7 @@ class SitemapPro {
             }
 
             $this->xml .= '<url>' . "\n";
-            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . '.html</loc>' . "\n";
+            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . $this->html.'</loc>' . "\n";
             $this->xml .= '<changefreq>weekly</changefreq>' . "\n";
             $this->xml .= '<priority>0.5</priority>' . "\n";
             $this->xml .= '</url>' . "\n";
@@ -336,7 +341,7 @@ class SitemapPro {
             }
 
             $this->xml .= '<url>' . "\n";
-            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . '.html</loc>' . "\n";
+            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . $this->html.'</loc>' . "\n";
             $this->xml .= '<lastmod>' . PHPShopDate::dataV(PHPShopDate::GetUnixTime($row['datas']), false, true) . '</lastmod>' . "\n";
             $this->xml .= '<changefreq>daily</changefreq>' . "\n";
             $this->xml .= '<priority>0.5</priority>' . "\n";
@@ -374,7 +379,7 @@ class SitemapPro {
             }
 
             $this->xml .= '<url>' . "\n";
-            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . '.html</loc>' . "\n";
+            $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . $url . $this->html.'</loc>' . "\n";
             $this->xml .= '<changefreq>weekly</changefreq>' . "\n";
             $this->xml .= '<priority>0.5</priority>' . "\n";
             $this->xml .= '</url>' . "\n";
@@ -399,7 +404,7 @@ class SitemapPro {
 
             foreach ($brandValues as $brandValue) {
                 $this->xml .= '<url>' . "\n";
-                $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . 'brand/' . $brandValue['sort_seo_name'] . '.html</loc>' . "\n";
+                $this->xml .= '<loc>' . $this->getSiteUrl($ssl) . 'brand/' . $brandValue['sort_seo_name'] .$this->html. '</loc>' . "\n";
                 $this->xml .= '<changefreq>weekly</changefreq>' . "\n";
                 $this->xml .= '<priority>0.5</priority>' . "\n";
                 $this->xml .= '</url>' . "\n";

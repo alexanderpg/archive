@@ -9,4 +9,4 @@ CREATE TABLE `phpshop_modules_sitemappro_system` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_sitemappro_system` VALUES (1, '10000', 'content', '0', '0', '1.2');
+INSERT INTO `phpshop_modules_sitemappro_system` VALUES (1, '10000', 'content', '0', '0', '1.3');

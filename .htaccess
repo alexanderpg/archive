@@ -30,7 +30,13 @@ RewriteEngine On
 #RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+
+# Включение проверки расширения .html
 RewriteCond %{REQUEST_URI} (((.*)\.html$)|((.*)/)|((.*)/filters/(.*)))$
+
+# Выключение проверки расширения .html
+#RewriteCond %{REQUEST_URI} !((.*)\.(.*))$
+
 RewriteCond %{REQUEST_URI} !((.*)\.html(.*)\.html)$
 RewriteCond %{REQUEST_URI} !(((.*)\.(.*)/)|((.*)/filters/(.*).html)|(/(id|map|search|compare|order|done|users|gbook|page|price|news|spec|newtip)/(.*)/filters/(.*)))$
 RewriteRule ^(.*)$ index.php
@@ -40,8 +46,9 @@ ErrorDocument 404 /404.html
 ErrorDocument 403 /404.html
 
 # Проверка обязательного / в конце
-RewriteCond %{REQUEST_URI} (map|search|compare|order|done|users|gbook|page|price|news|spec|newtip)$
+RewriteCond %{REQUEST_URI} (map|search|compare|done|users|gbook|page|price|news|spec|newtip)$
 RewriteRule ^(.*)$ /$1/ [L,R=302]
+
 
 ## PHPShop Security ##
 

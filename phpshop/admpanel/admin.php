@@ -477,7 +477,7 @@ if (!empty($_COOKIE['fullscreen'])) {
                                     <li class="<?php echo $hideCatalog; ?>"><a href="?path=lead.kanban"><span><?php _e('Канбан доска'); ?></span><span class="dropdown-header"><?php _e('Управление заказами и задачами'); ?></span></a></li>
                                     <li class="<?php echo $hideCatalog; ?>"><a href="?path=promotions"><span><?php _e('Промоакции'); ?></span><span class="dropdown-header"><?php _e('Промоакции и скидки'); ?></span></a></li>
                                     <li><a href="?path=slider"><span><?php _e('Слайдер'); ?></span><span class="dropdown-header"><?php _e('Рекламный слайдер на главной странице'); ?></span></a></li>
-                                    <li><a href="?path=news.sendmail"><?php _e('Рассылки'); ?><span class="dropdown-header"><?php _e('Создание email рассылок пользователям'); ?></span></a></li>
+                                    <li><a href="?path=news.sendmail"><?php _e('Рассылки'); ?><span class="dropdown-header"><?php _e('Создание рассылок пользователям'); ?></span></a></li>
 
                                     <li><a href="?path=banner"><?php _e('Баннеры и pop-up'); ?><span class="dropdown-header"><?php _e('Вывод баннеров и уведомлений'); ?></span></a></li>
                                     <li class="divider"></li>

@@ -542,11 +542,6 @@ img.navbar-brand {
     max-width: 100%;
 }
 
-img.brand {
-	-webkit-filter: invert(1);
-   filter: invert(1);
-   }
-
 .card-img-bottom, .card-img-top {
 	max-width: fit-content;
 	border-radius: 0;

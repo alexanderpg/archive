@@ -239,7 +239,7 @@
                                         </div>
                                     </form>
 
-                                    <div id="slider-range"></div>
+                                    <div id="slider-range" class="slider-range"></div>
 
                                 </div>
                                 <a href="?" id="faset-filter-reset" class="border-btn">{—бросить фильтр}</a>

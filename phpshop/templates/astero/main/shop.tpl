@@ -211,7 +211,8 @@
                 </ul>
 
                 <!-- Categories Links Ends -->
-                <!-- Фасетный фильтр -->
+
+                <!-- Фасетный фильтр --> 
                 <div class="hide" id="faset-filter">
                     <h3 class="side-heading filter-title">{Фильтр товаров }<a href="?" id="faset-filter-reset" data-toggle="tooltip" data-placement="top" title="{Сбросить фильтр}"><span class="glyphicon glyphicon-remove"></span></a></h3>                    
                     <div class="list-group filter-body-fix">
@@ -230,14 +231,12 @@
                                     </div>
                                 </div>
                                 <p></p>
-                                <div id="slider-range"></div>
+                                <div class="slider-range" id="slider-range"></div>
                             </form>
                         </div>
                     </div>
                 </div>
                 <!--/ Фасетный фильтр -->
-
-
 
                 <div class="sidebar-fix-block  hidden-xs hidden-sm">
 

@@ -209,6 +209,7 @@
                         @leftCatal@
                 </ul>
                 <!-- Categories Links Ends -->
+                
                 <!-- Фасетный фильтр -->
                 <div class="hide panel panel-default" id="faset-filter">
                     <div class="faset-filter-name filter-title btn btn-default">{Фильтры}</div>
@@ -229,14 +230,14 @@
                                 </div>
                             </form>
 
-                            <div id="slider-range"></div>
+                            <div id="slider-range" class="slider-range"></div>
 
                         </div>
                         <a href="?" id="faset-filter-reset" class="border-btn" >{Сбросить фильтр}</a>
                     </div>
                 </div>
 
-                <!--/ Фасетный фильтр -->
+                <!--/ Фасетный фильтр 
                 <!-- jQuery -->
                 <script src="@pathTemplate@/js/jquery-1.11.0.min.js"></script>
                 <script src="@pathMin@java/jqfunc.js"></script>

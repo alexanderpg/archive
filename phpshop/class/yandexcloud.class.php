@@ -103,20 +103,18 @@ class YandexGPT {
 /*
  * Библиотека работы с Yandex Search API
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopClass
  * @todo https://yandex.cloud/ru/docs/search-api/concepts/response#response-format
  * @todo https://rookee.ru/blog/yazyk-zaprosov-yandex/
  */
-
 class YandexSearch {
 
-    const API_URL = 'https://yandex.ru/search/xml';
-    const API_URL_IMG = 'https://yandex.ru/images-xml';
+    const API_URL = 'https://searchapi.api.cloud.yandex.net/v2/web/search';
+    const API_URL_IMG = 'https://searchapi.api.cloud.yandex.net/v2/image/search';
 
     function __construct() {
         $this->PHPShopSystem = new PHPShopSystem();
-
         $this->TOKEN = $this->PHPShopSystem->getSerilizeParam('ai.yandexsearch_token');
         $this->FOLDER = $this->PHPShopSystem->getSerilizeParam('ai.yandexgpt_id');
     }
@@ -127,27 +125,42 @@ class YandexSearch {
     }
 
     private function request($text) {
-        $query = '<?xml version="1.0" encoding="UTF-8"?>
-<request>
-  <query>' . $text . '</query>
-  <sortby order="descending">rlv</sortby>
-  <maxpassages>1</maxpassages>
-  <page>0</page>
-  <groupings>
-    <groupby attr="d" mode="deep" groups-on-page="10" docs-in-group="3" />
-  </groupings>
-</request>';
+
+        $query = [
+            "query" => [
+                "searchType" => "SEARCH_TYPE_RU",
+                "queryText" => $text,
+                "familyMode" => "FAMILY_MODE_NONE",
+                "page" => "0",
+                "fixTypoMode" => "FIX_TYPO_MODE_ON"
+            ],
+            "sortSpec" => [
+                "sortMode" => "SORT_MODE_BY_RELEVANCE",
+                "sortOrder" => "SORT_ORDER_DESC"
+            ],
+            "groupSpec" => [
+                "groupMode" => "GROUP_MODE_DEEP",
+                "groupsOnPage" => "10",
+                "docsInGroup" => "3"
+            ],
+            "maxPassages" => "1",
+            "region" => "225",
+            "l10N" => "LOCALIZATION_RU",
+            "folderId" => $this->FOLDER,
+            "responseFormat" => "FORMAT_XML",
+            "userAgent" => ""
+        ];
 
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::API_URL . '?folderid=' . $this->FOLDER . '&apikey=' . $this->TOKEN . '&filter=strict&l10n=ru',
+            CURLOPT_URL => self::API_URL,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_POSTFIELDS => $query,
+            CURLOPT_POSTFIELDS => json_encode($query),
             CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer " . $this->TOKEN,
+                "Authorization: Bearer " . $this->TOKEN
             ],
         ]);
 
@@ -157,25 +170,55 @@ class YandexSearch {
         return $response;
     }
 
-    private function request_img($text, $itype, $iorient, $isize, $page, $site=false) {
+    private function request_img($text, $itype, $iorient, $isize, $page, $site = false) {
+
+        $query = [
+            "query" => [
+                "searchType" => "SEARCH_TYPE_RU",
+                "queryText" => $text,
+                "familyMode" => "FAMILY_MODE_NONE",
+                "page" => (int)$page,
+                "fixTypoMode" => "FIX_TYPO_MODE_ON"
+            ],
+            "site" => (string)$site,
+            "docsOnPage" => 20,
+            "folderId" => $this->FOLDER,
+            "userAgent" => ""
+        ];
+        
+        if(!empty($iorient))
+            $query['imageSpec']['orientation']=(string)$iorient;
+        
+        if(!empty($isize))
+            $query['imageSpec']['size']=(string)$isize;
+        
+        if(!empty($itype))
+            $query['imageSpec']['format']=(string)$itype;
+        
 
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::API_URL_IMG . '?folderid=' . $this->FOLDER . '&apikey=' . $this->TOKEN . '&text=' . urlencode($text) . '&itype=' . $itype . '&iorient=' . $iorient . '&isize=' . $isize . '&p=' . $page . '&site=' . $site,
+            CURLOPT_URL => self::API_URL_IMG,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_POSTFIELDS => json_encode($query),
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer " . $this->TOKEN
+            ],
         ]);
 
         $response = curl_exec($curl);
+        //echo $response;
         curl_close($curl);
 
         return $response;
     }
 
     public function search($text) {
-        $response = $this->request($text);
-        $xml = simplexml_load_string($response);
+        $response = json_decode($this->request($text), true);
+        $xml = simplexml_load_string(base64_decode($response['rawData']));
 
         if (isset($xml->response->results->grouping->group)) {
             foreach ($xml->response->results->grouping->group as $item) {
@@ -187,13 +230,16 @@ class YandexSearch {
             $result = (string) $xml->response->error[0];
     }
 
-    public function search_img($text, $itype = false, $iorient = false, $isize = false, $page = false, $site = false) {
-        $response = str_replace(['file-size', 'image-properties', 'original-width', 'original-height', 'thumbnail-link', 'mime-type'], ['filesize', 'properties', 'width', 'height', 'thumbnail', 'type'], $this->request_img($text, $itype, $iorient, $isize, $page,$site));
-        $xml = simplexml_load_string($response);
+    public function search_img($text, $itype = null, $iorient = null, $isize = null, $page = 0, $site = null) {
+        
+        $response = json_decode($this->request_img($text, $itype, $iorient, $isize, $page, $site), true);
+        $response = str_replace(['file-size', 'image-properties', 'original-width', 'original-height', 'thumbnail-link', 'mime-type','image-link'], ['filesize', 'properties', 'width', 'height', 'thumbnail', 'type','url'], base64_decode($response['rawData']));
 
+        $xml = simplexml_load_string($response);
 
         if (isset($xml->response->results->grouping->group)) {
             foreach ($xml->response->results->grouping->group as $item) {
+   
                 $result[] = ['url' => (string) $item->doc->url, 'size' => (string) $item->doc->properties->filesize, 'width' => (string) $item->doc->properties->width, 'height' => (string) $item->doc->properties->height, 'thumbnail' => (string) $item->doc->properties->thumbnail, 'type' => (string) $item->doc->properties->type];
             }
         } else

@@ -96,13 +96,19 @@ if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
     $seourlpro_enabled = true;
 
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system']);
-    $settings = $PHPShopOrm->select(array('seo_news_enabled, seo_page_enabled', 'seo_brands_enabled'), array('id' => "='1'"));
+    $settings = $PHPShopOrm->select(array('seo_news_enabled, seo_page_enabled', 'seo_brands_enabled', 'html_enabled'), array('id' => "='1'"));
     if ($settings['seo_news_enabled'] == 2)
         $seo_news_enabled = true;
     if ($settings['seo_page_enabled'] == 2)
         $seo_page_enabled = true;
     if ($settings['seo_brands_enabled'] == 2)
         $seo_brands_enabled = true;
+
+    if ($settings['html_enabled'] == 2)
+        $html = null;
+    else
+        $html = '.html';
+
 
     include_once dirname(dirname(__DIR__)) . '/seourlpro/inc/option.inc.php';
 }
@@ -137,7 +143,7 @@ $data = $PHPShopOrm->select(array('id,datas,link'), $where, array('order' => 'da
 if (is_array($data))
     foreach ($data as $row) {
         $stat_pages .= '<url>' . "\n";
-        $stat_pages .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . '/page/' . $row['link'] . '.html</loc>' . "\n";
+        $stat_pages .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . '/page/' . $row['link'] . $html.'</loc>' . "\n";
         $stat_pages .= '<lastmod>' . sitemaptime($row['datas'], false) . '</lastmod>' . "\n";
         $stat_pages .= '<changefreq>weekly</changefreq>' . "\n";
         $stat_pages .= '<priority>1.0</priority>' . "\n";
@@ -177,7 +183,7 @@ if (is_array($data))
         }
 
         $stat_pages .= '<url>' . "\n";
-        $stat_pages .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
+        $stat_pages .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url .$html. '</loc>' . "\n";
         $stat_pages .= '<changefreq>weekly</changefreq>' . "\n";
         $stat_pages .= '<priority>0.5</priority>' . "\n";
         $stat_pages .= '</url>' . "\n";
@@ -214,7 +220,7 @@ if (is_array($data))
         }
 
         $stat_news .= '<url>' . "\n";
-        $stat_news .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
+        $stat_news .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url . $html.'</loc>' . "\n";
         $stat_news .= '<lastmod>' . sitemaptime(PHPShopDate::GetUnixTime($row['datas'])) . '</lastmod>' . "\n";
         $stat_news .= '<changefreq>daily</changefreq>' . "\n";
         $stat_news .= '<priority>0.5</priority>' . "\n";
@@ -250,7 +256,7 @@ while ($row = mysqli_fetch_array($result)) {
             $url = '/id/' . $row['prod_seo_name'] . '-' . $row['id'];
     }
 
-    $stat_products .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
+    $stat_products .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url .$html. '</loc>' . "\n";
     $stat_products .= '<lastmod>' . sitemaptime($row['datas']) . '</lastmod>' . "\n";
     $stat_products .= '<changefreq>daily</changefreq>' . "\n";
     $stat_products .= '<priority>1.0</priority>' . "\n";
@@ -289,7 +295,7 @@ if (is_array($data))
         }
 
         $stat_products .= '<url>' . "\n";
-        $stat_products .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
+        $stat_products .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . $url . $html.'</loc>' . "\n";
         $stat_products .= '<changefreq>weekly</changefreq>' . "\n";
         $stat_products .= '<priority>0.5</priority>' . "\n";
         $stat_products .= '</url>' . "\n";
@@ -313,7 +319,7 @@ if ($seourlpro_enabled && $seo_brands_enabled) {
 
         foreach ($brandValues as $brandValue) {
             $brands .= '<url>' . "\n";
-            $brands .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . '/brand/' . $brandValue['sort_seo_name'] . '.html</loc>' . "\n";
+            $brands .= '<loc>' . $loc . $_SERVER['SERVER_NAME'] . '/brand/' . $brandValue['sort_seo_name'] .$html. '</loc>' . "\n";
             $brands .= '<changefreq>weekly</changefreq>' . "\n";
             $brands .= '<priority>0.5</priority>' . "\n";
             $brands .= '</url>' . "\n";

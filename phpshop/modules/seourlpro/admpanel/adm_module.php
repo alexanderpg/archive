@@ -50,6 +50,7 @@ function actionStart() {
     }
     $Tab1 .= $PHPShopGUI->setField('SEO ссылки новостей', $PHPShopGUI->setRadio('seo_news_enabled_new', 2, 'Включить', $data['seo_news_enabled']) . $PHPShopGUI->setRadio('seo_news_enabled_new', 1, 'Выключить', $data['seo_news_enabled']), false, false);
     $Tab1 .= $PHPShopGUI->setField('SEO ссылки страниц', $PHPShopGUI->setRadio('seo_page_enabled_new', 2, 'Включить', $data['seo_page_enabled']) . $PHPShopGUI->setRadio('seo_page_enabled_new', 1, 'Выключить', $data['seo_page_enabled']), false, false);
+    $Tab1 .= $PHPShopGUI->setField('Окончание .html в SEO ссылках', $PHPShopGUI->setRadio('html_enabled_new', 1, 'Включить', $data['html_enabled']) . $PHPShopGUI->setRadio('html_enabled_new', 2, 'Выключить', $data['html_enabled']), false, false);
 
     $Tab2 = $PHPShopGUI->setPay($serial = false, false, $data['version'], true);
 

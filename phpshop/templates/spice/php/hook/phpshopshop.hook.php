@@ -314,10 +314,19 @@ function template_UID($obj, $dataArray, $rout) {
             $obj->set('ComStartCart', '<!--');
             $obj->set('ComEndCart', '-->');
             //$obj->set('ComEnd','-->');
-
-            if (empty($dataArray['sklad']))
-                $obj->set('optionsDisp', ParseTemplateReturn("product/product_option_product.tpl"));
+            $obj->set('optionsDisp', ParseTemplateReturn("product/product_option_product.tpl"));
         }
+        // Спецпредложения
+        if (!empty($dataArray['spec']))
+            $obj->set('specIcon', ParseTemplateReturn('product/specIcon.tpl'));
+        else
+            $obj->set('specIcon', '');
+
+        // Новинки
+        if (!empty($dataArray['newtip']))
+            $obj->set('newtipIcon', ParseTemplateReturn('product/newtipIcon.tpl'));
+        else
+            $obj->set('newtipIcon', '');
 
         //$obj->set('brandUidDescription',str_replace('href','href="#" data-url',$GLOBALS['SysValue']['other']['brandUidDescription']));
     }

@@ -170,9 +170,9 @@
                             style="color: #646464;font-family: Helvetica, sans-serif; font-size: 15px;line-height: 24px; ">
                             <span> {Спасибо за заказ}, @user_name@!</span>
 
-                            <p>{Ваш заказ принят}. {Отслеживать статус заказа, распечатать платежные документы можно в} <a href="http://@serverPath@users/order.html?order_info=@ouid@#Order">{Личном кабинете}</a>.</p>
+                            <p>{Ваш заказ принят}. {Отслеживать статус заказа, распечатать платежные документы можно в} <a href="http://@serverPath@/users/order.html?order_info=@ouid@#Order">{Личном кабинете}</a>.</p>
 
-                            <p>{Получайте уведомления о заказе, задайте нам вопрос}@bot@ {через раздел} <a href="http://@serverPath@users/order.html?order_info=@ouid@#Order" target="_blank">{Диалоги}</a>.</p>
+                            <p>{Получайте уведомления о заказе, задайте нам вопрос}@bot@ {через раздел} <a href="http://@serverPath@/users/order.html?order_info=@ouid@#Order" target="_blank">{Диалоги}</a>.</p>
                             <p>
                                 @php
 
@@ -442,7 +442,7 @@
                                     <tr>
                                         <td width="30"></td>
                                         <td align="center">
-                                            <a href="http://@serverPath@users/order.html?order_info=@ouid@#Order" style="color: #fff !important; font-size: 14px;text-decoration: none;font-family: Helvetica,sans-serif;">{Посмотреть заказ}</a>
+                                            <a href="http://@serverPath@/users/order.html?order_info=@ouid@#Order" style="color: #fff !important; font-size: 14px;text-decoration: none;font-family: Helvetica,sans-serif;">{Посмотреть заказ}</a>
                                         </td>
                                         <td width="30"></td>
                                     </tr>

@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Библиотека работы с Bitrix24 API
+ * @author PHPShop Software
+ * @version 1.3
+ * @package PHPShopModules
+ * @todo https://apidocs.bitrix24.ru/api-reference/
+ */
 class Bitrix24 {
 
     /*
@@ -242,12 +248,12 @@ class Bitrix24 {
         if(is_int($result['result'])) {
             $this->PHPShopOrm->objBase = $GLOBALS['SysValue']['base']['shopusers'];
             $this->PHPShopOrm->_SQL = '';
-            $this->PHPShopOrm->update(array('bitrix24_company_id_new' => "$result[result]"), array('id=' => '"' . $this->order['user'] . '"'));
-
+            $this->PHPShopOrm->update(array('bitrix24_company_id_new' => $result['result']), array('id=' => '"' . $this->order['user'] . '"'));
+            $this->log(array('parameters' => $fields, 'response' => $result), $this->order['uid'], 'Успешное создание компании', 'createCompany', 'success');
+            
             return $result['result'];
         }
-
-        $this->log(array('parameters' => $fields, 'response' => $result), $this->order['uid'], 'Ошибка создания компании', 'createCompany', 'error');
+        else $this->log(array('parameters' => $fields, 'response' => $result), $this->order['uid'], 'Ошибка создания компании', 'createCompany', 'error');
     }
 
     /*
@@ -301,11 +307,12 @@ class Bitrix24 {
         if(is_int($result['result'])) {
             $this->PHPShopOrm->objBase = $GLOBALS['SysValue']['base']['shopusers'];
             $this->PHPShopOrm->_SQL = '';
-            $this->PHPShopOrm->update(array('bitrix24_client_id_new' => "$result[result]"), array('id=' => '"' . $this->order['user'] . '"'));
+            $this->PHPShopOrm->update(array('bitrix24_client_id_new' => $result['result']), array('id=' => '"' . $this->order['user'] . '"'));
+             $this->log(array('parameters' => $fields, 'response' => $result), $this->order['uid'], 'Успешное создание контакта', 'createContact', 'success');
 
             return $result['result'];
         }
-
+        else
         $this->log(array('parameters' => $fields, 'response' => $result), $this->order['uid'], 'Ошибка создания контакта', 'createContact', 'error');
     }
 

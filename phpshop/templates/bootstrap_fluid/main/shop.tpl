@@ -183,7 +183,7 @@
                     <ul class="list-group sidebar-nav hidden-xs hidden-sm @php if($GLOBALS['PHPShopNav']->objNav['path']!="shop") echo "hide"; php@">
                         @leftCatal@
                 </ul> 
-
+                    
                 <!-- Фасетный фильтр -->
                 <div class="hide panel panel-default @hideSite@" id="faset-filter">
                     <div class="faset-filter-name"><span class="close"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></span>Фильтры</div>
@@ -204,7 +204,7 @@
                                 </div>
                             </form>
 
-                            <div id="slider-range"></div>
+                            <div class="slider-range" id="slider-range"></div>
 
                         </div>
                         <a href="?" id="faset-filter-reset" class="border-btn" >{Сбросить фильтр}</a>

@@ -40,7 +40,8 @@ function addYadeliveryTab($data) {
         PHPShopParser::set('yandexdelivery_weight', $weight);
         PHPShopParser::set('yandexdelivery_city', $YandexDelivery->options['city']);
         PHPShopParser::set('yandexdelivery_station', $YandexDelivery->options['warehouse_id']);
-        $Tab .= ParseTemplateReturn('../modules/yandexdelivery/templates/template.tpl', true);
+        //$Tab .= ParseTemplateReturn('../modules/yandexdelivery/templates/template.tpl', true);
+        $GLOBALS['modalExternalModules'] = ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true);
 
         $PHPShopGUI->addTab(["Яндекс.Доставка", $Tab]);
     }

@@ -2,7 +2,7 @@
 
 /**
  * Библиотека Отправление почты
- * @version 2.6
+ * @version 2.7
  * @package PHPShopClass
  * <code>
  * // example:
@@ -146,12 +146,12 @@ class PHPShopMail {
             $GLOBALS['SysValue']['other']['logo'] = $this->PHPShopSystem->getLogo(true);
             $GLOBALS['SysValue']['other']['charset'] = $this->codepage;
             $GLOBALS['SysValue']['other']['shopName'] = $this->PHPShopSystem->getName();
-            $GLOBALS['SysValue']['other']['serverPath'] = $_SERVER['SERVER_NAME'] . "/" . $GLOBALS['SysValue']['dir']['dir'];
+            $GLOBALS['SysValue']['other']['serverPath'] = $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'];
             $GLOBALS['SysValue']['other']['date'] = date("d-m-y H:i");
 
             // Адрес сайта
             PHPShopParser::set('serverName', PHPShopString::check_idna($_SERVER['SERVER_NAME']));
-            PHPShopParser::set('serverShop', PHPShopString::check_idna($_SERVER['SERVER_NAME']));
+            PHPShopParser::set('serverShop', PHPShopString::check_idna($_SERVER['SERVER_NAME'])). $GLOBALS['SysValue']['dir']['dir'];
 
             // Социальные сети
             PHPShopParser::set('vk', $this->PHPShopSystem->getSerilizeParam('bank.vk'));

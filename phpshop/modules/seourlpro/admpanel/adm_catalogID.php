@@ -11,7 +11,7 @@ class PHPShopSeourlOption extends PHPShopArray {
         $this->memory = __CLASS__;
 
         $this->objBase = $GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'];
-        parent::__construct('redirect_enabled', 'seo_page_enabled');
+        parent::__construct('redirect_enabled', 'seo_page_enabled', 'html_enabled');
     }
 
 }
@@ -40,8 +40,12 @@ function addSeoUrlPro($data) {
             $data['cat_seo_name'] = 'cat/' . $true_link;
         }
 
+        if ($PHPShopSeourlOption->getParam('html_enabled') == 2)
+            $html = null;
+        else
+            $html = '.html';
 
-        $Tab3 = $PHPShopGUI->setField("Ссылка:", $PHPShopGUI->setInput("text", "cat_seo_name_new", $data['cat_seo_name'], "left", false, false, false, false, '/', '.html'), 1, 'Можно использовать вложенные ссылки /sony/plazma/televizor');
+        $Tab3 = $PHPShopGUI->setField("Ссылка:", $PHPShopGUI->setInput("text", "cat_seo_name_new", $data['cat_seo_name'], "left", false, false, false, false, '/', $html), 1, 'Можно использовать вложенные ссылки /sony/plazma/televizor');
 
 
         if ($PHPShopSeourlOption->getParam('redirect_enabled') == 2)

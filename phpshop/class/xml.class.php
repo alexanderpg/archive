@@ -14,29 +14,28 @@ function array2iconv(&$value) {
  */
 function xml2array($filename, $keyName = false, $file = true) {
 
-    if ($file)
-        $data = @implode("", @file($filename));
-    else
+    if ($file) {
+        $xml = file($filename);
+        if (!empty($xml))
+            $data = implode("", $xml);
+    } else
         $data = $filename;
 
-    if (function_exists('simplexml_load_string')){
+    if (function_exists('simplexml_load_string')) {
         $json = json_decode(json_encode((array) simplexml_load_string($data)), 1);
         array_walk_recursive($json, 'array2iconv');
-    }
-    else
-        echo ('Не найдена компонента SimpleXML<br>');
+    } else
+        echo ('SimpleXML not found<br>');
 
-    
+
 
     if ($keyName) {
         if (strpos($keyName, '.')) {
             $keys = explode(".", $keyName);
             return $json[$keys[0]][$keys[1]];
-        }
-        else
+        } else
             return $json[$keyName];
-    }
-    else
+    } else
         return $json;
 }
 
@@ -74,9 +73,9 @@ function readDatabase($filename, $keyName, $file = true) {
         $data = implode("", file($filename));
     else
         $data = $filename;
-    
+
     $xmlencode = 'UTF-8';
-    $tdb=null;
+    $tdb = null;
 
     // Hook PHP 5.3, 5.4
     if ($xmlencode == 'UTF-8') {
@@ -94,13 +93,12 @@ function readDatabase($filename, $keyName, $file = true) {
         if ($key == $keyName) {
             $molranges = $val;
 
-            for ($i = 0; $i < count($molranges); $i+=2) {
+            for ($i = 0; $i < count($molranges); $i += 2) {
                 $offset = $molranges[$i] + 1;
                 $len = $molranges[$i + 1] - $offset;
                 $tdb[] = parseDatabase(array_slice($values, $offset, $len));
             }
-        }
-        else
+        } else
             continue;
     }
     return $tdb;

@@ -5,7 +5,14 @@ include($_classPath . "class/obj.class.php");
 PHPShopObj::loadClass(array("base", "order", "system", "inwords", "delivery", "date", "valuta", "lang"));
 
 $PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini");
-$PHPShopBase->chekAdmin();
+
+// Авторизация
+if (strstr($_GET['orderID'], '-')) {
+    $id = (int) explode("-", $_GET['orderID'])[0];
+    $s = (string) explode("-", $_GET['orderID'])[1];
+}
+if (empty($s) or ! $PHPShopBase->checkFile($s, $id))
+    $PHPShopBase->chekAdmin();
 
 $PHPShopSystem = new PHPShopSystem();
 $PHPShopBase->checkMultibase("../../../../");
@@ -61,6 +68,8 @@ $LoadBanc = unserialize($LoadItems['System']['bank']);
 <head>
     <title><?php echo __("Гарантийное обязательство") . " &#8470;" . $chek_num ?></title>
     <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+    <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+    <link rel="icon" href="../../favicon.ico"> 
     <link href="style.css" type=text/css rel=stylesheet>
     <script src="../../../lib/templates/print/js/html2pdf.bundle.min.js"></script>
 </head>
@@ -81,7 +90,8 @@ $LoadBanc = unserialize($LoadItems['System']['bank']);
                     <TD align=right>
                         <BLOCKQUOTE>
                             <P><SPAN class=style4><?php echo $LoadBanc['org_adres'] ?>, <? _e("телефон");
-echo " " . $LoadItems['System']['tel'] ?> </SPAN></P></BLOCKQUOTE></TD></TR>
+echo " " . $LoadItems['System']['tel']
+?> </SPAN></P></BLOCKQUOTE></TD></TR>
                 <TR>
                     <TD align=right>
                         <BLOCKQUOTE>

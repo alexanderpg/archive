@@ -227,6 +227,7 @@
                 </ul>
 
                 <!-- Categories Links Ends -->
+                
                 <!-- Фасетный фильтр -->
                 <div class="hide" id="faset-filter">
                     <div class="side-heading filter-title">{Фильтр товаров }<a href="?" id="faset-filter-reset" data-toggle="tooltip" data-placement="top" title="{Сбросить фильтр}"><span class="glyphicon glyphicon-remove"></span></a></div>                    
@@ -247,7 +248,7 @@
                                     </div>
                                 </div>
                                 <p></p>
-                                <div id="slider-range"></div>
+                                <div id="slider-range" class="slider-range"></div>
                             </form>
                         </div>
                     </div>

@@ -2059,8 +2059,8 @@ ol.breadcrumb li active {
     margin-bottom: 50px;
 }
 
-div#slider-range,
-div#slider-range-2 {
+div.slider-range,
+div.slider-range-2 {
     height: 4px;
     background: var(--color);
     border: none;

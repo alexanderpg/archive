@@ -202,7 +202,7 @@ button {
   padding: 0.3125rem 0rem 0rem 0rem;
 }
 
-#slider-range {
+.slider-range {
  
   margin-top: 0.625rem; 
 }
@@ -4744,31 +4744,31 @@ background-size: 0.75rem 0.75rem;height:0.75rem}
   border-top: 0;
 }
 
-#slider-range.ui-slider-horizontal {
+.slider-range.ui-slider-horizontal {
   height: 0.25rem;
 }
 
-#slider-range.ui-widget-content {
+.slider-range.ui-widget-content {
   background: #eaeaea;
   border: none;
 }
 
-#slider-range.ui-widget-content .ui-slider-handle.ui-corner-all {
+.slider-range.ui-widget-content .ui-slider-handle.ui-corner-all {
   border-radius: 50%;
 }
 
-#slider-range.ui-widget-content .ui-state-default,
-#slider-range.ui-widget-content .ui-widget-content .ui-state-default,
-#slider-range.ui-widget-content .ui-widget-header .ui-state-default {
+.slider-range.ui-widget-content .ui-state-default,
+.slider-range.ui-widget-content .ui-widget-content .ui-state-default,
+.slider-range.ui-widget-content .ui-widget-header .ui-state-default {
   background-image: none;
 }
 
-#slider-range.ui-widget-content .ui-slider-handle {
+.slider-range.ui-widget-content .ui-slider-handle {
   top: -0.25rem;
  
 }
 
-#slider-range.ui-widget-content .ui-slider-handle {
+.slider-range.ui-widget-content .ui-slider-handle {
   width: 0.75rem;
   height: 0.75rem;
   outline: none !important;

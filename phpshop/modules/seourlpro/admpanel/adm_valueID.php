@@ -1,5 +1,21 @@
 <?php
 
+// Настройки модуля
+class PHPShopSeourlOption extends PHPShopArray {
+
+    function __construct() {
+        $this->objType = 3;
+        $this->checkKey = true;
+
+        // Память настроек
+        $this->memory = __CLASS__;
+
+        $this->objBase = $GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'];
+        parent::__construct('html_enabled');
+    }
+
+}
+
 function addSeoBrandURL($data) {
     global $PHPShopGUI;
 
@@ -13,11 +29,18 @@ function addSeoBrandURL($data) {
             $data["sort_seo_name"] = PHPShopString::toLatin($data["name"]);
             $data["sort_seo_name"] = str_replace("_", "-", $data["sort_seo_name"]);
         }
-        $Tab = $PHPShopGUI->setField("Ссылка:", $PHPShopGUI->setInput("text", "sort_seo_name_value", $data['sort_seo_name'], "left", false, false, "form-control", false, '/brand/', '.html'), 1);
+
+        $PHPShopSeourlOption = new PHPShopSeourlOption();
+        if ($PHPShopSeourlOption->getParam('html_enabled') == 2)
+            $html = null;
+        else
+            $html = '.html';
+
+        $Tab = $PHPShopGUI->setField("Ссылка:", $PHPShopGUI->setInput("text", "sort_seo_name_value", $data['sort_seo_name'], "left", false, false, "form-control", false, '/brand/', $html), 1);
 
 
         $PHPShopGUI->tab_key = 105;
-        $PHPShopGUI->addTab(['SEO', $Tab,true]);
+        $PHPShopGUI->addTab(['SEO', $Tab, true]);
     }
     elseif ($vendorCategory['virtual'] == 1) {
         if (empty($data["sort_seo_name"])) {
@@ -29,9 +52,8 @@ function addSeoBrandURL($data) {
 
 
         $PHPShopGUI->tab_key = 105;
-        $PHPShopGUI->addTab(['SEO', $Tab,true]);
+        $PHPShopGUI->addTab(['SEO', $Tab, true]);
     }
-    
 }
 
 $addHandler = array(

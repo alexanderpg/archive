@@ -600,7 +600,6 @@ class PHPShopYml {
  */
 function setHeader() {
     $this->xml .= '<?xml version="1.0" encoding="' . $this->encoding . '"?>
-<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
 <yml_catalog date="' . date(DATE_RFC3339) . '">
 <shop>
 <name>' . $this->PHPShopSystem->getName() . '</name>
@@ -688,13 +687,21 @@ function setProducts() {
     // Учет модуля SEOURL
     if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
         $seourlpro_enabled = true;
-    }
+        $html_enabled = (new PHPShopOrm($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system']))->getOne(['html_enabled'])['html_enabled'];
+    } else
+        $html_enabled = 1;
+
+    if ($html_enabled == 2)
+        $html = null;
+    else
+        $html = '.html';
 
     // Передавать параметр
     if (isset($_GET['from']))
         $from = '?from=yml';
     else
         $from = null;
+
 
     foreach ($product as $val) {
 
@@ -705,10 +712,6 @@ function setProducts() {
 
         // Стандартный урл
         $url = '/shop/UID_' . $val['id'];
-
-        // SEOURL
-        if (!empty($seourl_enabled))
-            $url .= '_' . PHPShopString::toLatin($val['name']);
 
         // SEOURLPRO
         if (!empty($seourlpro_enabled)) {
@@ -769,7 +772,7 @@ function setProducts() {
 
         $xml = '
 <offer id="' . $val['id'] . '" available="' . $available . '" ' . $group_id . $type . $retailQuantity . '>
- <url>' . $this->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . $url . '.html' . $group_postfix . '</url>
+ <url>' . $this->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . $url . $html . $group_postfix . '</url>
       <price>' . $val['price'] . '</price>';
 
         // Старая цена

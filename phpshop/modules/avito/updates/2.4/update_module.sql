@@ -13,3 +13,6 @@ PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
 ALTER TABLE `phpshop_sort_categories` ADD `attribute_avitoapi` varchar(255) NOT NULL;
+
+/* 2.7 */
+ALTER TABLE `phpshop_modules_avito_system` ADD `stop_words` text;

@@ -19,7 +19,13 @@ document.addEventListener('YaNddWidgetPointSelected', function (data) {
         },
         dataType: "json",
         async: false,
-        success: function (json) {}
+        success: function (json) {
+            if (json['success']) {
+                location.reload();
+            } else {
+                console.log(json['error'])
+            }
+        }
     });
 
 

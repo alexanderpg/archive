@@ -1,0 +1,1 @@
+ALTER TABLE `phpshop_modules_cdekwidget_system` ADD `webhook` enum('0','1') DEFAULT '0';

@@ -92,7 +92,7 @@ if (empty($prices)) {
             'shipment' => $shipment,
         ];
 
-        $url = $_SERVER['SERVER_NAME'] . '/phpshop/modules/cdekwidget/api/PHPShopCdekService.php?' . http_build_query($query);
+        $url = $_SERVER['SERVER_NAME'].$PHPShopBase->getParam('dir.dir'). '/phpshop/modules/cdekwidget/api/PHPShopCdekService.php?' . http_build_query($query);
         $result = $DeliveryWidget->get($url);
 
         $sdek_price = round($result['result']['price']);

@@ -35,9 +35,9 @@ function toLatin_hook($str) {
 
     foreach ($chars as $val)
         if (empty($_Array[$val]))
-            $new_str.=$val;
+            $new_str .= $val;
         else
-            $new_str.=$_Array[$val];
+            $new_str .= $_Array[$val];
 
     return preg_replace('([^a-z0-9_\.-])', '', $new_str);
 }
@@ -92,11 +92,28 @@ function CID_Product_seourlpro_hook($obj, $row, $rout) {
             $obj->set('odnotipDisp', null);
             $obj->setError404();
             return true;
-        } elseif ($url == $url_pack or $url == $url_nav or $url == $url_old_seo or $url == $url_old_seo_nav) {
+        } 
+        
+        // Редирект со старых ссылок
+        elseif ($url == $url_pack or $url == $url_nav or $url == $url_old_seo or $url == $url_old_seo_nav) {
+
+            // Убираем окончание .html
+            if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+                $html = '.html';
+            else
+                $html = null;
+
+
             if ($url_true != '/')
-                header('Location: ' . $obj->getValue('dir.dir') . $url_true_nav . '.html' . $url_query, true, 301);
+                header('Location: ' . $obj->getValue('dir.dir') . $url_true_nav . $html . $url_query, true, 301);
             else
                 $obj->setError404();
+            return true;
+        }
+        
+        // Редирект без .html
+        elseif($url == $url_true and strstr($_SERVER['REQUEST_URI'],".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
+            header('Location: ' . $obj->getValue('dir.dir') . $url_true, true, 301);
             return true;
         }
     }
@@ -104,7 +121,7 @@ function CID_Product_seourlpro_hook($obj, $row, $rout) {
 
     if ($rout == 'END') {
         // Учет модуля Mobile
-        if (!empty($_GET['mobile']) and $_GET['mobile'] == 'true' and !empty($GLOBALS['SysValue']['base']['mobile']['mobile_system'])) {
+        if (!empty($_GET['mobile']) and $_GET['mobile'] == 'true' and ! empty($GLOBALS['SysValue']['base']['mobile']['mobile_system'])) {
             header('Location: ' . $obj->getValue('dir.dir') . '/shop/CID_' . $obj->PHPShopNav->getId() . '.html', true, 302);
             return true;
         }
@@ -120,7 +137,7 @@ function CID_Category_seourlpro_hook($obj, $dataArray, $rout) {
     $seo_name = $obj->PHPShopCategory->getParam('cat_seo_name');
 
     if ($rout == 'START') {
-        
+
         if (!empty($seo_name))
             $url_true = '/' . $seo_name;
         else
@@ -153,10 +170,25 @@ function CID_Category_seourlpro_hook($obj, $dataArray, $rout) {
             $obj->set('odnotipDisp', null);
             $obj->setError404();
             return true;
-        } elseif ($url == $url_pack or $url == $url_old_seo) {
-            header('Location: ' . $obj->getValue('dir.dir') . $url_true . '.html' .  $url_query, true, 301);
+        } 
+        // Редирект со старых ссылок
+        elseif ($url == $url_pack or $url == $url_old_seo) {
+
+            // Убираем окончание .html
+            if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+                $html = '.html';
+            else
+                $html = null;
+
+            header('Location: ' . $obj->getValue('dir.dir') . $url_true . $html . $url_query, true, 301);
             return true;
         }
+        // Редирект без .html
+        elseif($url == $url_true and strstr($_SERVER['REQUEST_URI'],".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
+            header('Location: ' . $obj->getValue('dir.dir') . $url_true, true, 301);
+            return true;
+        }
+        
     }
 
     if ($rout == 'END') {
@@ -173,7 +205,7 @@ function CID_Category_seourlpro_hook($obj, $dataArray, $rout) {
         seoPaginatorFeatures($obj);
 
         // Учет модуля Mobile
-        if (!empty($_GET['mobile']) and $_GET['mobile'] == 'true' and !empty($GLOBALS['SysValue']['base']['mobile']['mobile_system'])) {
+        if (!empty($_GET['mobile']) and $_GET['mobile'] == 'true' and ! empty($GLOBALS['SysValue']['base']['mobile']['mobile_system'])) {
             header('Location: ' . $obj->getValue('dir.dir') . '/shop/CID_' . $obj->PHPShopNav->getId() . '.html', true, 302);
             return true;
         }
@@ -201,13 +233,28 @@ function UID_seourlpro_hook($obj, $row, $rout) {
             $obj->set('breadCrumbs', null);
             $obj->set('odnotipDisp', null);
             $obj->setError404();
-        } elseif ($url == $url_pack or $url == $url_old_seo) {
-            header('Location: ' . $obj->getValue('dir.dir').$url_true . '.html', true, 301);
+        } 
+        // Редирект со старых ссылок
+        elseif ($url == $url_pack or $url == $url_old_seo) {
+
+            // Убираем окончание .html
+            if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+                $html = '.html';
+            else
+                $html = null;
+
+            header('Location: ' . $obj->getValue('dir.dir') . $url_true . $html, true, 301);
+            return true;
+        }
+        
+        // Редирект без .html
+        elseif($url == $url_true and strstr($_SERVER['REQUEST_URI'],".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
+            header('Location: ' . $obj->getValue('dir.dir') . $url_true, true, 301);
             return true;
         }
 
         // Учет модуля Mobile
-        if (!empty($_GET['mobile']) and $_GET['mobile'] == 'true' and !empty($GLOBALS['SysValue']['base']['mobile']['mobile_system'])) {
+        if (!empty($_GET['mobile']) and $_GET['mobile'] == 'true' and ! empty($GLOBALS['SysValue']['base']['mobile']['mobile_system'])) {
             header('Location: ' . $obj->getValue('dir.dir') . '/shop/UID_' . $obj->PHPShopNav->getId() . '.html', true, 302);
             return true;
         }
@@ -218,8 +265,7 @@ function catalog_content_hook($obj, $data) {
     seoPaginatorFeatures($obj);
 }
 
-function seoPaginatorFeatures($obj)
-{
+function seoPaginatorFeatures($obj) {
     // Настройки модуля
     $seourl_option = $GLOBALS['PHPShopSeoPro']->getSettings();
 
@@ -235,7 +281,7 @@ function seoPaginatorFeatures($obj)
             }
 
             // Добавление номера страниц в имя каталога
-            $obj->set('catalogCategory', ' - '.__('страница').' ' . $page, true);
+            $obj->set('catalogCategory', ' - ' . __('страница') . ' ' . $page, true);
         }
 
         // Создание переменной точного адреса canonical для отсеивания дублей

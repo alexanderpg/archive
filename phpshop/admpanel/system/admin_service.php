@@ -66,10 +66,14 @@ function actionStart() {
     $cache_seo_value[] = array(__('HTML страницы целиком' . $disabled_cache_info), 1, $option['cache_seo'], $disabled_cache);
     $cache_seo_value[] = array(__('Только статические элементы' . $disabled_cache_info), 2, $option['cache_seo'], $disabled_cache);
 
+     if ($GLOBALS['PHPShopBase']->codBase == 'utf-8' and empty($disabled_cache))
+         $disabled_cache_utf='disabled="disabled"';
+     else $disabled_cache_utf=$disabled_cache;
 
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Быстродействие', $PHPShopGUI->setField("Хранение кеша", $PHPShopGUI->setSelect('option[cache]', $cache_value)) .
             $PHPShopGUI->setField("Тип кеша для пользователей", $PHPShopGUI->setSelect('option[cache_mod]', $cache_mod_value)) .
-            $PHPShopGUI->setField("Тип кеша для поисковых ботов", $PHPShopGUI->setSelect('option[cache_seo]', $cache_seo_value)) .
+            $PHPShopGUI->setField("Тип кеша для поисковых ботов", $PHPShopGUI->setSelect('option[cache_seo]', $cache_seo_value) . '<br>' .
+                    $PHPShopGUI->setCheckbox('option[cache_seo_utf]', 1, 'Кодировка UTF-8 для ботов', $option['cache_seo_utf'], $disabled_cache_utf)) .
             $PHPShopGUI->setField("Кол-во дней хранение кеша", $PHPShopGUI->setSelect('option[cache_time]', $cache_time_value, 50, true) . '<br>' .
                     $PHPShopGUI->setCheckbox('cache_clean', 1, 'Очистить кеш', 0, $disabled_cache)) .
             $PHPShopGUI->setField("Оптимизация кода", $PHPShopGUI->setCheckbox('option[cache_compres]', 1, 'Удаление комментариев и форматирования из HTML кода страниц', $option['cache_compres'])) .
@@ -86,7 +90,10 @@ function actionStart() {
 
 
 
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Индексирование', $PHPShopGUI->setField('Robots.txt', $PHPShopGUI->setTextarea('service_robots', $robots, false, $width = false, 500))
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Индексирование', 
+            $PHPShopGUI->setField('Метатег для Яндекс Вебмастер', $PHPShopGUI->setInputText(null, 'option[service_yandex_metatag]', $option['service_yandex_metatag'])) .
+            $PHPShopGUI->setField('Метатег для Google Search Console', $PHPShopGUI->setInputText(null, 'option[service_google_metatag]', $option['service_google_metatag'])) .
+            $PHPShopGUI->setField('Robots.txt', $PHPShopGUI->setTextarea('service_robots', $robots, false, $width = false, 500))
     );
 
 
@@ -128,7 +135,7 @@ function actionUpdate() {
     $option = unserialize($data['admoption']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.service_enabled', 'option.min', 'option.cache_debug', 'option.cache_compres');
+    $PHPShopOrm->updateZeroVars('option.service_enabled', 'option.min', 'option.cache_debug', 'option.cache_compres','option.cache_seo_utf');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

@@ -65,6 +65,15 @@ function actionStart() {
                 $PHPShopGUI->setField("Включить VK ID", $PHPShopGUI->setCheckbox('option[vk_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью VK ID на сайте', $option['vk_id_enabled'])), 'in', true
         );
     }
+    
+    // Wappi
+    if (empty($hideSite)) {
+        
+        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Wappi', $PHPShopGUI->setField('ID каскада', $PHPShopGUI->setInputText(false, 'option[wappi_id]', $option['wappi_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи выдаются через <a href="https://wappi.pro/registration?ref=0d81b19d" target="_blank">Кабинет разработчика</a>')) .
+                $PHPShopGUI->setField('Токен API', $PHPShopGUI->setInputText(false,'option[wappi_token]', $option['wappi_token'], 300)) .
+                $PHPShopGUI->setField("Включить Wappi", $PHPShopGUI->setCheckbox('option[wappi_enabled]', 1, 'Использовать авторизацию и оповещения с помощью Wappi на сайте', $option['wappi_enabled'])), 'in', true
+        );
+    }
 
 
     // Google Analitiks
@@ -194,7 +203,7 @@ function actionUpdate() {
     $option = unserialize($data['admoption']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled', 'option.vk_id_enabled','option.smartcaptcha_enabled');
+    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled', 'option.vk_id_enabled','option.smartcaptcha_enabled','option.wappi_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

@@ -512,12 +512,13 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_seourlpro_system` (
   `seo_news_enabled` enum('1','2') DEFAULT '1',
   `seo_page_enabled` enum('1','2') DEFAULT '1',
   `redirect_enabled` enum('1','2') DEFAULT '1',
+  `html_enabled` enum('1','2') default '1',
   `version` varchar(64) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_modules_seourlpro_system` (`id`, `paginator`, `seo_brands_enabled`, `cat_content_enabled`, `seo_news_enabled`, `seo_page_enabled`, `redirect_enabled`, `version`) VALUES
-(1, '2', '2', '1', '2', '2', '1', '2.1');
+(1, '2', '2', '1', '2', '2', '1', '2.3');
 
 DROP TABLE IF EXISTS `phpshop_modules_sticker_forms`;
 CREATE TABLE IF NOT EXISTS `phpshop_modules_sticker_forms` (
@@ -657,6 +658,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_newsletter` (
   `date` int(11) DEFAULT '0',
   `servers` INT(11) DEFAULT '0',
   `recipients` text NULL,
+  `bot_message` TEXT NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
@@ -753,6 +755,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_order_status` (
   `num` int(11) DEFAULT '0',
   `bot_action` enum('0','1') DEFAULT '0',
   `external_code` VARCHAR(64) NOT NULL,
+  `bot_message` TEXT NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 

@@ -2,6 +2,7 @@
 
 $TitlePage = __('Редактирование Рассылки') . ' #' . $_GET['id'];
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['newsletter']);
+PHPShopObj::loadClass("bot");
 
 function actionStart() {
     global $PHPShopGUI, $PHPShopSystem, $PHPShopModules, $result_message;
@@ -45,7 +46,7 @@ function actionStart() {
     // Редактор 1
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('content_new');
-    $oFCKeditor->Height = '550';
+    $oFCKeditor->Height = '800';
     $oFCKeditor->Value = $data['content'];
 
     // Содержание закладки 1
@@ -86,7 +87,14 @@ function actionStart() {
 
     $Tab1 .= $PHPShopGUI->setCollapse('Точечная рассылка', $Tab3);
 
-    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail') . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
+
+    $message_var = 'Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании';
+
+    // Текст уведомления в мессенджеры
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст уведомления в мессенджеры", $PHPShopGUI->setTextarea('bot_message_new', $data['bot_message'], true, false, 150) . $PHPShopGUI->setHelp($message_var));
+
+
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail') . $PHPShopGUI->setHelp($message_var));
 
 
     // Запрос модуля на закладку
@@ -185,7 +193,6 @@ function actionUpdate($option = false) {
         }
     }
 
-
     // Рассылка новости
     if (!empty($_POST['template'])) {
 
@@ -263,7 +270,7 @@ function actionUpdate($option = false) {
         else
             $where['servers'] = '=' . (int) $_POST['servers_new'];
 
-        $data = $PHPShopOrm->select(array('id', 'mail', 'name', 'password'), $where, array('order' => 'id desc'), array('limit' => $limit));
+        $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'id desc'), array('limit' => $limit));
 
         if (is_array($data))
             foreach ($data as $row) {
@@ -276,12 +283,27 @@ function actionUpdate($option = false) {
 
                 $PHPShopMail = new PHPShopMail($row['mail'], $from, $title, '', true, true);
                 $content_message = PHPShopParser::file('tpl/sendmail.mail.tpl', true);
+                $tel = $row['tel'];
+                $bot_message = $_POST['bot_message_new'];
 
-                if (!empty($content_message)) {
+                if (!empty($content)) {
                     if ($PHPShopMail->sendMailNow($content_message))
                         $n++;
                     else
                         $error++;
+                }
+                
+                if (!empty($tel) and ! empty($bot_message)) {
+                    $PHPShopWappi = new PHPShopWappi();
+
+                    PHPShopParser::set('user', $row['name']);
+                    PHPShopParser::set('email', $row['mail']);
+                    $message = preg_replace_callback("/@([a-zA-Z0-9_]+)@/", 'PHPShopParser::SysValueReturn', $bot_message);
+                    $result = $PHPShopWappi->cascade(PHPShopString::win_utf8($message), $tel);
+
+                    if($result['response']['status'] == 'done')
+                        $n++;
+                    else $error++;
                 }
             }
     }
@@ -322,10 +344,10 @@ function actionUpdate($option = false) {
         // Чистка дубликатов
         if (!empty($_POST['recipients_new'])) {
             $recipients = explode(",", $_POST['recipients_new']);
-            if (is_array($recipients)){
-                
-                foreach($recipients as $mail)
-                    $recipients_clean[$mail]=$mail;
+            if (is_array($recipients)) {
+
+                foreach ($recipients as $mail)
+                    $recipients_clean[$mail] = $mail;
 
                 $_POST['recipients_new'] = implode(",", $recipients_clean);
             }

@@ -8,7 +8,7 @@ function sitemaptime($nowtime) {
 }
 
 // Создание sitemap
-function setGeneration($ssl=false) {
+function setGeneration($ssl = false) {
     global $PHPShopModules;
 
     $stat_products = null;
@@ -21,10 +21,11 @@ function setGeneration($ssl=false) {
     $seo_news_enabled = false;
     $seo_page_enabled = false;
     $seo_brands_enabled = false;
-    
-    if($ssl)
+
+    if ($ssl)
         $http = 'https';
-    else $http = 'http';
+    else
+        $http = 'http';
 
     // Учет модуля SEOURL
     if (!empty($GLOBALS['SysValue']['base']['seourl']['seourl_system'])) {
@@ -36,20 +37,25 @@ function setGeneration($ssl=false) {
         $seourlpro_enabled = true;
 
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system']);
-        $settings = $PHPShopOrm->select(array('seo_news_enabled, seo_page_enabled', 'seo_brands_enabled'), array('id' => "='1'"));
+        $settings = $PHPShopOrm->select(array('seo_news_enabled, seo_page_enabled', 'seo_brands_enabled','html_enabled'), array('id' => "='1'"));
         if ($settings['seo_news_enabled'] == 2)
             $seo_news_enabled = true;
         if ($settings['seo_page_enabled'] == 2)
             $seo_page_enabled = true;
-        if($settings['seo_brands_enabled'] == 2)
+        if ($settings['seo_brands_enabled'] == 2)
             $seo_brands_enabled = true;
 
-        include_once dirname(dirname(__DIR__)) .'/seourlpro/inc/option.inc.php';
+        if ($settings['html_enabled'] == 2)
+            $html = null;
+        else
+            $html = '.html';
+
+        include_once dirname(dirname(__DIR__)) . '/seourlpro/inc/option.inc.php';
     }
 
     // Библиотека
     $title = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-    $title.= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    $title .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
     // Страницы
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['page']);
@@ -57,12 +63,12 @@ function setGeneration($ssl=false) {
 
     if (is_array($data))
         foreach ($data as $row) {
-            $stat_pages.= '<url>' . "\n";
-            $stat_pages.= '<loc>'.$http.'://' . $_SERVER['SERVER_NAME'] . '/page/' . $row['link'] . '.html</loc>' . "\n";
-            $stat_pages.= '<lastmod>' . sitemaptime($row['datas']) . '</lastmod>' . "\n";
-            $stat_pages.= '<changefreq>weekly</changefreq>' . "\n";
-            $stat_pages.= '<priority>1.0</priority>' . "\n";
-            $stat_pages.= '</url>' . "\n";
+            $stat_pages .= '<url>' . "\n";
+            $stat_pages .= '<loc>' . $http . '://' . $_SERVER['SERVER_NAME'] . '/page/' . $row['link'] . $html.'</loc>' . "\n";
+            $stat_pages .= '<lastmod>' . sitemaptime($row['datas']) . '</lastmod>' . "\n";
+            $stat_pages .= '<changefreq>weekly</changefreq>' . "\n";
+            $stat_pages .= '<priority>1.0</priority>' . "\n";
+            $stat_pages .= '</url>' . "\n";
         }
 
     // Страницы каталоги
@@ -86,11 +92,11 @@ function setGeneration($ssl=false) {
                     $url = '/page/' . $row['page_cat_seo_name'];
             }
 
-            $stat_pages.= '<url>' . "\n";
-            $stat_pages.= '<loc>'.$http.'://' . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
-            $stat_pages.= '<changefreq>weekly</changefreq>' . "\n";
-            $stat_pages.= '<priority>0.5</priority>' . "\n";
-            $stat_pages.= '</url>' . "\n";
+            $stat_pages .= '<url>' . "\n";
+            $stat_pages .= '<loc>' . $http . '://' . $_SERVER['SERVER_NAME'] . $url . $html.'</loc>' . "\n";
+            $stat_pages .= '<changefreq>weekly</changefreq>' . "\n";
+            $stat_pages .= '<priority>0.5</priority>' . "\n";
+            $stat_pages .= '</url>' . "\n";
         }
 
     // Новости
@@ -114,12 +120,12 @@ function setGeneration($ssl=false) {
                     $url = '/news/' . $row['news_seo_name'];
             }
 
-            $stat_news.= '<url>' . "\n";
-            $stat_news.= '<loc>'.$http.'://' . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
-            $stat_news.= '<lastmod>' . sitemaptime(PHPShopDate::GetUnixTime($row['datas'])) . '</lastmod>' . "\n";
-            $stat_news.= '<changefreq>daily</changefreq>' . "\n";
-            $stat_news.= '<priority>0.5</priority>' . "\n";
-            $stat_news.= '</url>' . "\n";
+            $stat_news .= '<url>' . "\n";
+            $stat_news .= '<loc>' . $http . '://' . $_SERVER['SERVER_NAME'] . $url .$html. '</loc>' . "\n";
+            $stat_news .= '<lastmod>' . sitemaptime(PHPShopDate::GetUnixTime($row['datas'])) . '</lastmod>' . "\n";
+            $stat_news .= '<changefreq>daily</changefreq>' . "\n";
+            $stat_news .= '<priority>0.5</priority>' . "\n";
+            $stat_news .= '</url>' . "\n";
         }
 
     // Товары
@@ -129,7 +135,7 @@ function setGeneration($ssl=false) {
 
     if (is_array($data))
         foreach ($data as $row) {
-            $stat_products.= '<url>' . "\n";
+            $stat_products .= '<url>' . "\n";
 
 
             // Стандартный урл
@@ -137,7 +143,7 @@ function setGeneration($ssl=false) {
 
             // SEOURL
             if (!empty($seourl_enabled))
-                $url.= '_' . PHPShopString::toLatin($row['name']);
+                $url .= '_' . PHPShopString::toLatin($row['name']);
 
             //  SEOURLPRO
             if (!empty($seourlpro_enabled)) {
@@ -148,11 +154,11 @@ function setGeneration($ssl=false) {
             }
 
 
-            $stat_products.= '<loc>'.$http.'://' . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
-            $stat_products.= '<lastmod>' . sitemaptime($row['datas']) . '</lastmod>' . "\n";
-            $stat_products.= '<changefreq>daily</changefreq>' . "\n";
-            $stat_products.= '<priority>1.0</priority>' . "\n";
-            $stat_products.= '</url>' . "\n";
+            $stat_products .= '<loc>' . $http . '://' . $_SERVER['SERVER_NAME'] . $url . $html.'</loc>' . "\n";
+            $stat_products .= '<lastmod>' . sitemaptime($row['datas']) . '</lastmod>' . "\n";
+            $stat_products .= '<changefreq>daily</changefreq>' . "\n";
+            $stat_products .= '<priority>1.0</priority>' . "\n";
+            $stat_products .= '</url>' . "\n";
         }
 
     // Каталоги
@@ -168,7 +174,7 @@ function setGeneration($ssl=false) {
 
             // SEOURL
             if ($seourl_enabled)
-                $url.= '_' . PHPShopString::toLatin($row['name']);
+                $url .= '_' . PHPShopString::toLatin($row['name']);
 
             //  SEOURLPRO
             if (!empty($seourlpro_enabled)) {
@@ -178,21 +184,21 @@ function setGeneration($ssl=false) {
                     $url = '/' . $row['cat_seo_name'];
             }
 
-            $stat_products.= '<url>' . "\n";
-            $stat_products.= '<loc>'.$http.'://' . $_SERVER['SERVER_NAME'] . $url . '.html</loc>' . "\n";
-            $stat_products.= '<changefreq>weekly</changefreq>' . "\n";
-            $stat_products.= '<priority>0.5</priority>' . "\n";
-            $stat_products.= '</url>' . "\n";
+            $stat_products .= '<url>' . "\n";
+            $stat_products .= '<loc>' . $http . '://' . $_SERVER['SERVER_NAME'] . $url .$html. '</loc>' . "\n";
+            $stat_products .= '<changefreq>weekly</changefreq>' . "\n";
+            $stat_products .= '<priority>0.5</priority>' . "\n";
+            $stat_products .= '</url>' . "\n";
         }
 
-    if($seourlpro_enabled && $seo_brands_enabled) {
+    if ($seourlpro_enabled && $seo_brands_enabled) {
         $brandsOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['sort_categories']);
         $brandsIds = array();
         $result = $brandsOrm->getList(array('id'), array('brand' => '="1"'));
         foreach ($result as $value) {
             $brandsIds[] = $value['id'];
         }
-        if(count($brandsIds) > 0) {
+        if (count($brandsIds) > 0) {
             $brandValuesOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['sort']);
 
             $brandValues = $brandValuesOrm->getList(array('sort_seo_name'), array(
@@ -201,22 +207,22 @@ function setGeneration($ssl=false) {
             ));
 
             foreach ($brandValues as $brandValue) {
-                $brands.= '<url>' . "\n";
-                $brands.= '<loc>'.$http.'://' . $_SERVER['SERVER_NAME'] . '/brand/' . $brandValue['sort_seo_name'] . '.html</loc>' . "\n";
-                $brands.= '<changefreq>weekly</changefreq>' . "\n";
-                $brands.= '<priority>0.5</priority>' . "\n";
-                $brands.= '</url>' . "\n";
+                $brands .= '<url>' . "\n";
+                $brands .= '<loc>' . $http . '://' . $_SERVER['SERVER_NAME'] . '/brand/' . $brandValue['sort_seo_name'] .$html. '</loc>' . "\n";
+                $brands .= '<changefreq>weekly</changefreq>' . "\n";
+                $brands .= '<priority>0.5</priority>' . "\n";
+                $brands .= '</url>' . "\n";
             }
         }
     }
 
-    $sitemap = $title . $stat_pages . $stat_news . $stat_products . $brands  . '</urlset>';
+    $sitemap = $title . $stat_pages . $stat_news . $stat_products . $brands . '</urlset>';
 
     // Запись в файл
     if (fwrite(@fopen('../../UserFiles/Files/sitemap.xml', "w+"), $sitemap))
-        echo '<div class="alert alert-success" id="rules-message"  role="alert">'.__('Файл').' <strong>sitemap.xml</strong> '.__('успешно создан').'</div>';
+        echo '<div class="alert alert-success" id="rules-message"  role="alert">' . __('Файл') . ' <strong>sitemap.xml</strong> ' . __('успешно создан') . '</div>';
     else
-        echo '<div class="alert alert-danger" id="rules-message"  role="alert">'.__('Ошибка сохранения файла в папке').' UserFiles/File/ !</div>';
+        echo '<div class="alert alert-danger" id="rules-message"  role="alert">' . __('Ошибка сохранения файла в папке') . ' UserFiles/File/ !</div>';
 }
 
 // Функция обновления
@@ -227,7 +233,7 @@ function actionUpdate() {
 // Функция обновления
 function actionUpdateSSl() {
 
-    setGeneration($ssl=true);
+    setGeneration($ssl = true);
 }
 
 // Начальная функция загрузки
@@ -235,7 +241,7 @@ function actionStart() {
     global $PHPShopGUI, $PHPShopOrm, $TitlePage, $select_name;
 
     $PHPShopGUI->action_button['Создать'] = array(
-        'name' => __('Создать').' '.'Sitemap',
+        'name' => __('Создать') . ' ' . 'Sitemap',
         'action' => 'saveID',
         'class' => 'btn  btn-default btn-sm navbar-btn',
         'type' => 'submit',
@@ -243,7 +249,7 @@ function actionStart() {
     );
 
     $PHPShopGUI->action_button['Создать SSL'] = array(
-        'name' => __('Создать').' '.'Sitemap SSL',
+        'name' => __('Создать') . ' ' . 'Sitemap SSL',
         'action' => 'saveIDssl',
         'class' => 'btn  btn-default btn-sm navbar-btn',
         'type' => 'submit',
@@ -251,14 +257,14 @@ function actionStart() {
     );
 
     $PHPShopGUI->action_button['Открыть'] = array(
-        'name' => __('Открыть').' '.'Sitemap',
+        'name' => __('Открыть') . ' ' . 'Sitemap',
         'action' => '../../UserFiles/Files/sitemap.xml',
         'class' => 'btn  btn-default btn-sm navbar-btn btn-action-panel-blank',
         'type' => 'button',
         'icon' => 'glyphicon glyphicon-export'
     );
 
-    $PHPShopGUI->setActionPanel($TitlePage, $select_name, array('Создать','Создать SSL', 'Открыть', 'Закрыть'));
+    $PHPShopGUI->setActionPanel($TitlePage, $select_name, array('Создать', 'Создать SSL', 'Открыть', 'Закрыть'));
 
 // Выборка
     $data = $PHPShopOrm->select();
@@ -272,15 +278,14 @@ function actionStart() {
         </ol>';
     $Tab1 = $PHPShopGUI->setInfo($Info);
 
-    $Tab2 = $PHPShopGUI->setPay(false,true);
+    $Tab2 = $PHPShopGUI->setPay(false, true);
 
 // Вывод формы закладки
     $PHPShopGUI->setTab(array("Основное", $Tab1), array("О Модуле", $Tab2));
 
 // Вывод кнопок сохранить и выход в футер
-    $ContentFooter =
-            $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
-            $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit").
+    $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
+            $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit") .
             $PHPShopGUI->setInput("submit", "saveIDssl", "Применить", "right", 80, "", "but", "actionUpdateSSL.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);

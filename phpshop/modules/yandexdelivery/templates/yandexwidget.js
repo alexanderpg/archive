@@ -21,7 +21,7 @@ function yandexwidgetStart() {
 
 document.addEventListener('YaNddWidgetPointSelected', function (data) {
     $.ajax({
-        url: '/phpshop/modules/yandexdelivery/ajax/price.php',
+        url: ROOT_PATH+'/phpshop/modules/yandexdelivery/ajax/price.php',
         type: 'post',
         data: {delivery_variant_id: data.detail.id,weight: $('input[name="yandexdelivery_weight"]').val()},
         success: function (approx_price) {

@@ -6,7 +6,8 @@
 function index_selection_hook($obj) {
 
     // Настройки модуля
-    $seourl_option = $GLOBALS['PHPShopSeoPro']->getSettings();;
+    $seourl_option = $GLOBALS['PHPShopSeoPro']->getSettings();
+    ;
 
     if ($seourl_option["seo_brands_enabled"] == 2) {
         header('Location: ' . $obj->getValue('dir.dir') . "/brand/", true, 301);
@@ -22,7 +23,8 @@ function v_hook($obj, $data, $rout) {
     if ($rout == "START") {
 
         // Настройки модуля
-        $seourl_option = $GLOBALS['PHPShopSeoPro']->getSettings();;
+        $seourl_option = $GLOBALS['PHPShopSeoPro']->getSettings();
+        ;
 
         if ($seourl_option["seo_brands_enabled"] == 2) {
 
@@ -41,14 +43,27 @@ function v_hook($obj, $data, $rout) {
                             $vendor = $PHPShopOrm->select(array("*"), array("id=" => $value));
 
                             if (!empty($vendor["sort_seo_name"])) {
-                                header('Location: ' . $obj->getValue('dir.dir') . "/brand/" . $vendor["sort_seo_name"] . '.html', true, 301);
+                                
+                                // Убираем окончание .html
+                                if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+                                    $html = '.html';
+                                else
+                                    $html = null;
+                                
+                                header('Location: ' . $obj->getValue('dir.dir') . "/brand/" . $vendor["sort_seo_name"] . $html, true, 301);
                             } else {
                                 $seoUrl = strtolower($GLOBALS['PHPShopSeoPro']->setLatin($vendor['name']));
                                 $PHPShopOrm->update(array("sort_seo_name_new" => "$seoUrl"), array('id' => '=' . $vendor['id']));
-                                header('Location: ' . $obj->getValue('dir.dir') . "/brand/" . $seoUrl . '.html', true, 301);
+
+                                // Убираем окончание .html
+                                if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+                                    $html = '.html';
+                                else
+                                    $html = null;
+
+                                header('Location: ' . $obj->getValue('dir.dir') . "/brand/" . $seoUrl . $html, true, 301);
                             }
-                          return true;   
-                            
+                            return true;
                         }
                     }
                 }

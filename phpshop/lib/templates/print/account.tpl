@@ -5,6 +5,7 @@
         <title>{Счет на оплату}</title>
         <meta name="robots" content="noindex, nofollow">
         <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+        <link rel="icon" href="/apple-touch-icon.png"> 
         <style>
 		body{
     background-color: #9e9e9e;

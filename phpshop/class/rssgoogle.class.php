@@ -316,7 +316,16 @@ class PHPShopRssGoogle {
         // Учет модуля SEOURLPRO
         if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
             $seourlpro_enabled = true;
-        }
+            $html_enabled = (new PHPShopOrm($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system']))->getOne(['html_enabled'])['html_enabled'];
+        } else
+            $html_enabled = 1;
+
+
+        if ($html_enabled == 2)
+            $html = null;
+        else
+            $html = '.html';
+
 
         // Передавать параметр
         if (isset($_GET['from']))
@@ -344,7 +353,7 @@ class PHPShopRssGoogle {
             $xml = '
       <item> 
       <title><![CDATA[' . $this->cleanStr($val['name']) . ']]></title> 
-      <link>' . $this->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . $url . '.html' . $from . '</link> 
+      <link>' . $this->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . $url . $html . $from . '</link> 
       <description>' . $this->cleanStr($val['description']) . '</description>
       <g:image_link>' . $this->ssl . $_SERVER['SERVER_NAME'] . $val['picture'] . '</g:image_link> 
       <g:price>' . $val['price'] . ' ' . $this->defvalutaiso . '</g:price> 

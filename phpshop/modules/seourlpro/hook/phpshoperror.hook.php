@@ -10,7 +10,14 @@ function index_error_hook() {
     $PHPShopOrm->mysql_error = false;
     $data = $PHPShopOrm->select(array('id'), array('cat_seo_name_old' => '="' . $pathinfo['path'] . '"'), false, array('limit' => 1));
     if (is_array($data)) {
-        header('Location: /shop/CID_' . $data['id'] . '.html', true, 301);
+
+        // Убираем окончание .html
+        if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+            $html = '.html';
+        else
+            $html = null;
+
+        header('Location: /shop/CID_' . $data['id'] . $html, true, 301);
         return true;
     }
     // Товары
@@ -19,8 +26,15 @@ function index_error_hook() {
         $PHPShopOrm->debug = false;
         $PHPShopOrm->mysql_error = false;
         $data = $PHPShopOrm->select(array('id'), array('prod_seo_name_old' => '="' . $pathinfo['path'] . '"'), false, array('limit' => 1));
-        if (is_array($data)){
-            header('Location: /shop/UID_' . $data['id'] . '.html', true, 301);
+        if (is_array($data)) {
+
+            // Убираем окончание .html
+            if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 1)
+                $html = '.html';
+            else
+                $html = null;
+
+            header('Location: /shop/UID_' . $data['id'] . $html, true, 301);
             return true;
         }
     }

@@ -76,7 +76,7 @@ function actionStart() {
         $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить цены', 'Сохранить и закрыть']);
     }
 
-    $Tab1 .= $PHPShopGUI->setField($PHPShopGUI->setLink($Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/products.php', 'Пароль защиты XML'), $PHPShopGUI->setInputText('', 'password_new', $data['password']));
+    $Tab1 .= $PHPShopGUI->setField($PHPShopGUI->setLink($Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/products.php', 'Пароль защиты XML','_blank', false, false, false, false, false), $PHPShopGUI->setInputText('', 'password_new', $data['password']));
     $Tab1 .= $PHPShopGUI->setField('Сервер изображений', $PHPShopGUI->setInputText('https://', 'image_url_new', $data['image_url']));
     $Tab1 .= $PHPShopGUI->setField('Карта проезда', $PHPShopGUI->setTextarea('map_url_new', $data['map_url']), 1, 'URL изображний через запятую');
 
@@ -86,7 +86,23 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Адрес', $PHPShopGUI->setInputText(false, 'address_new', $data['address']));
     $Tab1 .= $PHPShopGUI->setField('Широта местоположения', $PHPShopGUI->setInputText(false, 'latitude_new', $data['latitude']));
     $Tab1 .= $PHPShopGUI->setField('Долгота местоположения', $PHPShopGUI->setInputText(false, 'longitude_new', $data['longitude']));
-    $Tab1 .= $PHPShopGUI->setField('Удаление слов из описания', $PHPShopGUI->setTextarea('preview_description_template_new', $data['preview_description_template']), 1, 'Слова для удаления через запятую');
+    $Tab1 .= $PHPShopGUI->setField('Удаление слов из описания', $PHPShopGUI->setTextarea('stop_words_new', $data['stop_words']), 1, 'Слова для удаления через запятую');
+    $Tab1 .= $PHPShopGUI->setField('Шаблон генерации описания', '<div id="avitotitleShablon">
+<textarea class="form-control avito-shablon" name="preview_description_template_new" rows="3" style="max-width: 600px;height: 70px;">' . $data['preview_description_template'] . '</textarea>
+    <div class="btn-group" role="group" aria-label="...">
+    <input  type="button" value="' . __('Описание') . '" onclick="AvitoShablonAdd(\'@Content@\')" class="btn btn-default btn-sm">
+    <input  type="button" value="' . __('Краткое описание') . '" onclick="AvitoShablonAdd(\'@Description@\')" class="btn btn-default btn-sm">
+    <input  type="button" value="' . __('Характеристики') . '" onclick="AvitoShablonAdd(\'@Attributes@\')" class="btn btn-default btn-sm">
+<input  type="button" value="' . __('Каталог') . '" onclick="AvitoShablonAdd(\'@Catalog@\')" class="btn btn-default btn-sm">
+<input  type="button" value="' . __('Подкаталог') . '" onclick="AvitoShablonAdd(\'@Subcatalog@\')" class="btn btn-default btn-sm">
+<input  type="button" value="' . __('Товар') . '" onclick="AvitoShablonAdd(\'@Product@\',)" class="btn btn-default btn-sm">
+<input  type="button" value="' . __('Артикул') . '" onclick="AvitoShablonAdd(\'@Article@\',)" class="btn btn-default btn-sm">
+    </div>
+</div>
+<script>function AvitoShablonAdd(variable) {
+    var shablon = $(".avito-shablon").val() + " " + variable;
+    $(".avito-shablon").val(shablon);
+}</script>');
 
     $export_value[] = ['Цены и склад', 0, $data['export']];
     $export_value[] = ['Цены', 1, $data['export']];
