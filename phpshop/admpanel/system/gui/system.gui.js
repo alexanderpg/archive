@@ -164,14 +164,22 @@ $().ready(function() {
     
     
     // Выбор captcha
+    $('body').on('change', '[name="option[smartcaptcha_enabled]"]', function () {
+         if ($(this).prop('checked') === true){
+             $('[name="option[recaptcha_enabled]"]').bootstrapToggle('off');
+             $('[name="option[hcaptcha_enabled]"]').bootstrapToggle('off');
+         }
+    });
     $('body').on('change', '[name="option[hcaptcha_enabled]"]', function () {
          if ($(this).prop('checked') === true){
              $('[name="option[recaptcha_enabled]"]').bootstrapToggle('off');
+             $('[name="option[smartcaptcha_enabled]"]').bootstrapToggle('off');
          }
     });
     $('body').on('change', '[name="option[recaptcha_enabled]"]', function () {
          if ($(this).prop('checked') === true){
              $('[name="option[hcaptcha_enabled]"]').bootstrapToggle('off');
+             $('[name="option[smartcaptcha_enabled]"]').bootstrapToggle('off');
          }
     });
     

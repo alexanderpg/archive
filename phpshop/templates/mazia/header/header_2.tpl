@@ -1,6 +1,6 @@
 @php
 if($GLOBALS['PHPShopNav']->objNav['path'] != "index")
-  $GLOBALS['mazia_header'] = "header-sticky header-static";
+$GLOBALS['mazia_header'] = "header-sticky header-static";
 else $GLOBALS['mazia_header'] = "black-sticky header-sticky";
 php@
 
@@ -41,8 +41,8 @@ php@
                                 else $GLOBALS['catalogmenu_col'] = 12;
 
                                 php@
-
-                                <li class="position-static"><a href="javascript:void(0)"><span>{Каталог} <i class="fal fa-angle-down"></i></span></a>
+                                
+                                <li class="position-static @hideSite@"><a href="javascript:void(0)"><span>{Каталог} <i class="fal fa-angle-down"></i></span></a>
                                     <div class="mega-menu">
                                         <div class="row">
                                             <div class="col-xl-@php echo $GLOBALS['catalogmenu_col']; php@">
@@ -60,7 +60,7 @@ php@
                                         </div>
                                     </div>
                                 </li>
-                                <li class="@php __hide('topBrands'); php@">
+                                <li class="@php __hide('topBrands'); php@ @hideSite@">
                                     <a href="javascript:void(0)">
                                         <span>{Бренды} <i class="fal fa-angle-down"></i></span>
                                     </a>
@@ -75,13 +75,24 @@ php@
                                 <a href="/"><img src="@logo@" alt=""></a>
                             </div>
 
-                            <ul class="white-content hidden-md">
 
-                                <li class="@php __hide('topMenu'); php@"><a href="javascript:void(0)"><span>{Навигация} <i
+
+                                                             
+
+                            <ul class="white-content hidden-md ">
+
+                                <!-- Catalog  Menu-->
+                                @topcatMenu@
+                                <!-- End Catalog  Menu-->
+                                @php
+                                if(!empty(PHPShopParser::get('hideSite')))
+                                echo PHPShopParser::get('topMenu');
+                                php@
+
+                                <li class="@php __hide('topMenu'); php@ @hideSite@"><a href="javascript:void(0)" ><span>{Навигация} <i
                                                 class="fal fa-angle-down"></i></span> </a>
                                     <ul class="submenu">
                                         @topMenu@
-
                                     </ul>
                                 </li>
                             </ul>
@@ -94,9 +105,6 @@ php@
                         </nav>
                     </div>
                 </div>
-
-
-
 
                 <div class="col-xl-3 col-lg-3 col-6">
                     <div class="header-right">
@@ -130,9 +138,9 @@ php@
                                     </div>
                                 </div>
                             </li>
-                            <li><a href="/users/wishlist.html" data-toggle="tooltip" data-placement="bottom" title="{Избранное}"><i class="fal fa-heart"><span class="wishlistcount">@wishlistCount@</span></i></a></li>
-                            <li><a class="d-none d-xl-block" href="/compare/" data-toggle="tooltip" data-placement="bottom" title="{Сравнить}"><i class="fal fa-balance-scale-right"><span class="numcompare">@numcompare@</span></i></a></li>
-                            <li><a href="/order/"><i class="fal fa-shopping-bag"><span class="cartnum" id="num">@num@</span></i></a>
+                            <li class="@hideSite@"><a href="/users/wishlist.html" data-toggle="tooltip" data-placement="bottom" title="{Избранное}"><i class="fal fa-heart"><span class="wishlistcount">@wishlistCount@</span></i></a></li>
+                            <li class="@hideSite@"><a class="d-none d-xl-block" href="/compare/" data-toggle="tooltip" data-placement="bottom" title="{Сравнить}"><i class="fal fa-balance-scale-right"><span class="numcompare">@numcompare@</span></i></a></li>
+                            <li class="@hideCatalog@"><a href="/order/"><i class="fal fa-shopping-bag"><span class="cartnum" id="num">@num@</span></i></a>
                                 <div class="minicart @php __hide('num'); php@">
                                     <div class="minicart-body">
                                         <div class="minicart-content">
@@ -157,7 +165,7 @@ php@
             <div id="mobile-menu">
                 <ul>
 
-                    <li><a  class="pl-3" href="javascript:void(0)">{Каталог}</a>
+                    <li class="@hideSite@"><a  class="pl-3" href="javascript:void(0)">{Каталог}</a>
 
                         <ul class="pl-4">
                             <li>

@@ -47,8 +47,8 @@
                             <div class="desc">
                                 <p>@productDes@</p>
 
-                                <a href="/shop/UID_@productUid@.html" class="list-add-cart-btn text-capitalize mt-40  @elementCartOptionHide@">@productSale@</a>
-                                <a href="/shop/UID_@productUid@.html" class="list-add-cart-btn text-capitalize mt-40 addToCartList @elementCartHide@" data-uid="@productUid@">@productSale@</a>
+                                <a href="/shop/UID_@productUid@.html" class="list-add-cart-btn text-capitalize mt-40  @elementCartOptionHide@ @hideCatalog@">@productSale@</a>
+                                <a href="/shop/UID_@productUid@.html" class="list-add-cart-btn text-capitalize mt-40 addToCartList @elementCartHide@ @hideCatalog@" data-uid="@productUid@">@productSale@</a>
                                <a href="#" class="wishlist pr-10 addToWishList @elementCartHide@" data-uid="@productUid@" title="{Отложить}"><span><i class="fal fa-heart"></i></span></a>
                                 <a href="#" title="{Сравнить}" class="addToCompareList" data-uid="@productUid@"><span><i class="fal fa-abacus"></i></span></a>
                             </div>

@@ -5,7 +5,7 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с Ozon Seller API
  * @author PHPShop Software
- * @version 3.0
+ * @version 3.1
  * @package PHPShopModules
  * @todo https://docs.ozon.ru/api/seller/#tag/Environment
  */
@@ -597,7 +597,7 @@ class OzonSeller {
      * Атрибуты товара из Ozon
      */
     public function getProductAttribures($product_id, $flag = 'product_id', $limit = 1) {
-        
+
         if (!is_array($product_id))
             $product = [$product_id];
         else
@@ -1067,8 +1067,19 @@ class OzonSeller {
             } else
                 $offer_id = $prod['id'];
 
+            // Атрибуты
+            $attributes = $this->getAttributes($prod)['attributes'];
+
+            // Тип товара
+            if (is_array($attributes)) {
+                foreach ($attributes as $attribute) {
+                    if ($attribute['id'] == 8229)
+                        $type_id = $attribute['values'][0]['dictionary_value_id'];
+                }
+            }
+
             $params['items'][] = [
-                "attributes" => $this->getAttributes($prod)['attributes'],
+                "attributes" => $attributes,
                 //"barcode" => (string) $prod['barcode_ozon'],
                 "description_category_id" => (int) $this->getAttributes($prod)['category'],
                 "color_image" => "",
@@ -1088,7 +1099,8 @@ class OzonSeller {
                 "vat" => (string) $this->vat,
                 "weight" => (int) $prod['weight'],
                 "weight_unit" => "g",
-                "width" => (int) $prod['width']
+                "width" => (int) $prod['width'],
+                "type_id" => (int) $type_id
             ];
 
 

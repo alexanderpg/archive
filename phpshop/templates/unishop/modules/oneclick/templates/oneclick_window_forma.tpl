@@ -18,7 +18,7 @@
 
                     @oneclick_captcha@
                     <div class="form-group">
-                        <input type="checkbox" value="on" name="rule" class="req" checked="checked"> @rule@
+                        <input type="checkbox" value="on" name="rule" class="req" required=""> @rule@
                     </div>
                 </div>
                 <div class="modal-footer">

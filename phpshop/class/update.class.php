@@ -3,15 +3,11 @@
 /**
  * Библиотека обновления файлов
  * @author PHPShop Software
- * @version 1.2
+ * @version 2.0
  * @package PHPShopClass
  */
 class PHPShopUpdate {
 
-    /**
-     * Режим работы с файлами через php. Требует права на редактирование.
-     * @var bool 
-     */
     var $local_update = true;
     var $_endPoint;
     var $_log;
@@ -19,39 +15,18 @@ class PHPShopUpdate {
     var $_backup_path = '../../backup/';
     var $_test_file = 'index.php';
     var $base_update_enabled = false;
-    var $_user_ftp_dir;
-    var $_user_ftp_chmod;
-    var $_user_ftp_re_chmod;
 
-    function __construct() {
+    public function __construct() {
 
         include_once('../lib/zip/pclzip.lib.php');
-
         $this->path = $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/';
-        
-        /*
-        $this->_user_ftp_host = $GLOBALS['SysValue']['user_ftp']['host'];
-        $this->_user_ftp_login = $GLOBALS['SysValue']['user_ftp']['login'];
-        $this->_user_ftp_password = $GLOBALS['SysValue']['user_ftp']['password'];
-        $this->_user_ftp_chmod = $GLOBALS['SysValue']['user_ftp']['chmod'];
-        $this->_user_ftp_re_chmod = $GLOBALS['SysValue']['user_ftp']['re_chmod'];
-        $this->_endPoint = $_SERVER['SERVER_NAME'];
-        $this->_user_ftp_chmod = $GLOBALS['SysValue']['user_ftp']['chmod'];
-         
-
-        if ($this->islocal())
-            $this->_user_ftp_dir = $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'];
-        else
-            $this->_user_ftp_dir = $GLOBALS['SysValue']['user_ftp']['dir'];
-        */
-
         set_time_limit($this->_timeLimit);
     }
 
     /**
      * Обновление БД модулей
      */
-    function updateModules() {
+    public function updateModules() {
         global $PHPShopModules;
 
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['modules']);
@@ -71,9 +46,9 @@ class PHPShopUpdate {
                 if (!empty($data_mod['version']) and $info['version'] > $data_mod['version']) {
                     $PHPShopModules->path = $row['path'];
                     $PHPShopModules->getUpdate($data_mod['version']);
-                    
-                    if($PHPShopOrm->update(array('version_new' => $info['version'])))
-                      $this->log("Обновление базы данных модуля \"" . $info['name'] . "\" до версии " . $info['version'] . " выполнено", 'success');
+
+                    if ($PHPShopOrm->update(array('version_new' => $info['version'])))
+                        $this->log("Обновление базы данных модуля \"" . $info['name'] . "\" до версии " . $info['version'] . " выполнено", 'success');
                 }
             }
         }
@@ -82,103 +57,47 @@ class PHPShopUpdate {
     /**
      *  Локальный запуск.
      */
-    function islocal() {
+    public function islocal() {
         if ($this->local_update or ( $_SERVER["SERVER_ADDR"] == "127.0.0.1" and getenv("COMSPEC")))
             return true;
     }
 
     /**
-     * Изменение прав на файлы
-     */
-    function chmod($path, $chmod) {
-
-        if ($this->islocal()) {
-            return true;
-        } else {
-
-            if (ftp_site($this->user_ftp_stream, "CHMOD " . $chmod . " " . $this->_user_ftp_dir . '/' . $path))
-                return true;
-            else
-                return false;
-        }
-    }
-
-    /**
      *  Создание папки
      */
-    function mkdir($path) {
-
-        if ($this->islocal()) {
-            if (mkdir($this->path . $path))
-                return true;
-            else
-                return false;
-        } else {
-
-            if (ftp_mkdir($this->user_ftp_stream, $this->_user_ftp_dir . '/' . $path)) {
-                return true;
-            } else
-                return false;
-        }
+    public function mkdir($path) {
+        if (@mkdir($this->path . $path))
+            return true;
+        else
+            return false;
     }
 
     /**
      *  Удаление файла
      */
-    function delete($path = null) {
+    public function delete($path = null) {
 
         if (!$path)
             return false;
 
-        if ($this->islocal()) {
-            if (@unlink($this->path . $path))
-                return true;
-            else
-                return false;
-        } else {
-
-            if (ftp_delete($this->user_ftp_stream, $this->_user_ftp_dir . '/' . $path))
-                return true;
-            else
-                return false;
-        }
+        if (@unlink($this->path . $path))
+            return true;
+        else
+            return false;
     }
 
     /**
      *  Проверка работы с zip 
      */
-    function isReady() {
+    public function isReady() {
 
         if (!$this->islocal()) {
-
-            if (!$this->user_ftp_stream = ftp_connect($this->_user_ftp_host)) {
-                $this->log('Не удаётся соединиться с сервером ' . $this->_user_ftp_host, 'warning', 'remove');
-                return false;
-            }
-
-            if (!ftp_login($this->user_ftp_stream, $this->_user_ftp_login, $this->_user_ftp_password)) {
-                $this->log("Ошибка авторизации с сервером " . $this->_user_ftp_host, 'warning', 'remove');
-                return false;
-            }
-
-            if (!ftp_pasv($this->user_ftp_stream, true)) {
-                $this->log("Невозможно установить пассивный режим с сервером " . $this->_user_ftp_host, 'warning', 'remove');
-                return false;
-            }
-
-            if (!empty($this->_user_ftp_dir) and ! ftp_chdir($this->user_ftp_stream, $this->_user_ftp_dir)) {
-                $this->log("Не удаётся найти указанную папку " . $this->_user_ftp_dir, 'warning', 'remove');
-                return false;
-            }
-
-            // Права записи на корневую папку
-            //$this->chmod(null, $this->_user_ftp_chmod);
 
             $archive = new PclZip($this->path . 'test_update.zip');
             $v_list = $archive->add($this->path . $this->_test_file, PCLZIP_OPT_REMOVE_PATH, $this->path);
 
             if ($v_list == 0) {
-                $this->log('Не удаётся создать файл для тестирования Zip обновления, нет прав на изменение папок и файлов. Используйте утилиту <a href="http://phpshop.ru/loads/files/setup.exe" target="_blank" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-cloud-download"></span> Updater.exe</a> для работы с обновлениями PHPShop.', 'warning', 'remove');
+                $this->log('Не удаётся создать файл для тестирования Zip обновления, нет прав на изменение папок и файлов. Используйте ручное обновление из <a href="https://docs.phpshop.ru/ustanovka-i-obnovlenie/obnovlenie-phpshop#obnovlenie-v-ruchnom-rezhime-iz-arkhiva" target="_blank" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-cloud-download"></span> архива</a>.', 'warning', 'remove');
                 return false;
             }
 
@@ -194,7 +113,7 @@ class PHPShopUpdate {
     /**
      *  Распаковка архива
      */
-    function installFiles($file = 'temp/update.zip', $status = 'обновления', $path = '../../') {
+    public function installFiles($file = 'temp/update.zip', $status = 'обновления', $path = '../../') {
 
         $archive = new PclZip($this->_backup_path . $file);
         if ($archive->extract(PCLZIP_OPT_PATH, $path, PCLZIP_CB_PRE_EXTRACT, 'preExtractCallBack')) {
@@ -204,15 +123,12 @@ class PHPShopUpdate {
             $this->log("Не удаётся распаковать файлы " . $status, 'warning', 'remove');
             return false;
         }
-
-        // Возвращаем права на корневую папку
-        //$this->chmod(null, $this->_user_ftp_re_chmod);
     }
 
     /**
      * Очистка временных файлов /temp/
      */
-    function cleanTemp() {
+    public function cleanTemp() {
 
         $this->delete('backup/temp/config_update.txt');
         $this->delete('backup/temp/upd_conf.txt');
@@ -229,7 +145,7 @@ class PHPShopUpdate {
     /**
      * Обновление БД
      */
-    function installBD() {
+    public function installBD() {
         global $PHPShopGUI;
 
         if (file_exists("dumper/backup/update.sql")) {
@@ -243,11 +159,8 @@ class PHPShopUpdate {
     /**
      * Обновление config.ini
      */
-    function installConfig($config = false) {
+    public function installConfig($config = false) {
         global $PHPShopBase;
-
-        // Права на изменение файла
-        $this->chmod("phpshop/inc/config.ini", $this->_user_ftp_chmod);
 
         if (!is_array($config))
             $config = parse_ini_file_true($this->_backup_path . "temp/config_update.txt", 1);
@@ -285,7 +198,7 @@ class PHPShopUpdate {
 
                 if (!empty($s) and strstr($s, 'phpshop')) {
                     fwrite($f, $s);
-                    $this->log("Конфигурационный файл обновлен");
+                    //$this->log("Конфигурационный файл обновлен");
                 }
 
                 fclose($f);
@@ -293,22 +206,15 @@ class PHPShopUpdate {
                 $this->log("Не удаётся обновить файл конфигурации phpshop/inc/config.ini. Нет прав на изменение файла.", 'warning', 'remove');
         } else
             $this->log("Не удаётся обновить файл конфигурации phpshop/inc/config.ini. Ошибка парсинга файла.", 'warning', 'remove');
-
-
-        // Восстановление прав
-        $this->chmod("phpshop/inc/config.ini", $this->_user_ftp_re_chmod);
     }
 
     /**
      *  Создание резервной копии файлов
      */
-    function backupFiles() {
+    public function backupFiles() {
 
         // Создание папки
         $this->mkdir('backup/backups/' . $GLOBALS['SysValue']['upload']['version']);
-
-        // Права на папку
-        $this->chmod($this->_user_ftp_dir . '/backup/backups/' . $GLOBALS['SysValue']['upload']['version'], $this->_user_ftp_chmod);
 
         if ($this->base_update_enabled) {
             if (!copy($this->_backup_path . "temp/restore.sql", $this->_backup_path . 'backups/' . $GLOBALS['SysValue']['upload']['version'] . '/restore.sql'))
@@ -352,16 +258,13 @@ class PHPShopUpdate {
             }
 
             $this->log("Резервная копия файлов создана");
-
-            // Права на папку
-            $this->chmod($this->_user_ftp_dir . '/backup/backups/' . $GLOBALS['SysValue']['upload']['version'], $this->_user_ftp_re_chmod);
         }
     }
 
     /**
      * Анализ карты обновления
      */
-    function map() {
+    public function map() {
 
         // Обновление БД присутствует
         if ($this->base_update_enabled) {
@@ -372,56 +275,64 @@ class PHPShopUpdate {
             }
         }
 
-
         // Анализ файл конфига апдейта
         if (!$this->map = parse_ini_file_true($this->_backup_path . "temp/upd_conf.txt", 1)) {
-            $this->log("Не удаётся провести анализ конфига обновлений");
+            $this->log("Не удаётся провести анализ конфига обновлений", 'warning', 'remove');
             return false;
         }
     }
 
+    public function downloadFile($path, $url) {
+
+        $newfname = $path;
+
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ),
+        );
+
+        $file = @fopen($url, 'rb', false, stream_context_create($arrContextOptions));
+
+        if ($file) {
+            $newf = fopen($newfname, 'wb');
+            if ($newf) {
+                while (!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                }
+            }
+        }
+        if ($file) {
+            fclose($file);
+        }
+        if ($newf) {
+            fclose($newf);
+            return true;
+        }
+    }
+
     /**
-     * Загрузка обновления с FTP
+     * Загрузка обновления
      */
-    function ftpConnect() {
+    public function load() {
 
-        if (!$this->ftp_stream = ftp_connect($this->ftp_host)) {
-            $this->log('Не удаётся соедиться с сервером', 'warning', 'remove');
-            return false;
-        }
-
-        if (!ftp_login($this->ftp_stream, $this->ftp_login, $this->ftp_password)) {
-            $this->log("Ошибка авторизации", 'warning', 'remove');
-            return false;
-        }
-
-        if (!ftp_pasv($this->ftp_stream, true)) {
-            $this->log("Невозможно установить пассивный режим", 'warning', 'remove');
-            return false;
-        }
-
-        if (!ftp_chdir($this->ftp_stream, $this->ftp_folder)) {
-            $this->log("Не удаётся найти указанную версию обновления " . intval($this->ftp_folder), 'warning', 'remove');
-            return false;
-        }
-
-        if (!ftp_get($this->ftp_stream, $this->path . '/backup/temp/upd_conf.txt', 'upd_conf.txt', FTP_BINARY)) {
+        if (!$this->downloadFile($this->path . '/backup/temp/upd_conf.txt', $this->url . 'upd_conf.txt')) {
             $this->log("Ошибка загрузки файла конфигураций обновления", 'warning', 'remove');
             return false;
         }
 
-        if (@ftp_get($this->ftp_stream, $this->path . '/backup/temp/update.sql', 'update.sql', FTP_BINARY)) {
+        if ($this->downloadFile($this->path . '/backup/temp/update.sql', $this->url . 'update.sql')) {
             $this->log("Загружен файл обновления базы данных. Требуется обновление базы данных.");
-            ftp_get($this->ftp_stream, $this->path . '/backup/temp/restore.sql', 'restore.sql', FTP_BINARY);
+            $this->downloadFile($this->path . '/backup/temp/restore.sql', $this->url . 'restore.sql');
             $this->base_update_enabled = true;
         }
 
-
-        if (ftp_get($this->ftp_stream, $this->path . '/backup/temp/config_update.txt', 'config_update.txt', FTP_BINARY)) {
+        if ($this->downloadFile($this->path . '/backup/temp/config_update.txt', $this->url . 'config_update.txt')) {
             $this->log("Загружен конфигурационный файл");
         }
 
-        if (ftp_get($this->ftp_stream, $this->path . '/backup/temp/update.zip', 'update.zip', FTP_BINARY)) {
+        if ($this->downloadFile($this->path . '/backup/temp/update.zip', $this->url . 'update.zip')) {
             $this->log("Загружен архив файлов для обновления");
         }
 
@@ -431,19 +342,16 @@ class PHPShopUpdate {
     /**
      *  Проверка наличия обновления
      */
-    function checkUpdate() {
+    public function checkUpdate() {
 
         $update_enable = xml2array(UPDATE_PATH, "update", true);
+
         if ($update_enable) {
             $this->update_status = $update_enable['status'];
             $this->version = $update_enable['name'];
             if ($this->update_status != 'no_update') {
 
-                $this->ftp_host = $update_enable['ftp_host'];
-                $this->ftp_login = $update_enable['ftp_login'];
-                $this->ftp_password = $update_enable['ftp_password'];
-                $this->ftp_folder = $update_enable['os'] . "/" . $update_enable['num'];
-
+                $this->url = $update_enable['url'];
                 $this->content = $update_enable['content']['item'];
 
                 $this->btn_class = 'btn btn-primary btn-sm navbar-btn update-start';
@@ -459,7 +367,7 @@ class PHPShopUpdate {
     /**
      * Проверка бекапа БД
      */
-    function checkBD() {
+    public function checkBD() {
 
         if (file_exists("dumper/backup/upload_dump.sql.gz")) {
             $this->log('Бекап базы данных выполнен');
@@ -467,15 +375,15 @@ class PHPShopUpdate {
             $this->log('Бекап базы данных не выполнен', 'warning', 'remove');
     }
 
-    function log($text, $class = 'success', $icon = 'ok') {
+    public function log($text, $class = 'success', $icon = 'ok') {
         $this->_log .= '<div class="alert alert-' . $class . '" role="alert"><span class="glyphicon glyphicon-' . $icon . '-sign"></span> ' . __($text) . '</div>';
     }
 
-    function fulllog($text) {
+    public function fulllog($text) {
         $this->_fulllog .= $text . '<br>';
     }
 
-    function getLog() {
+    public function getLog() {
         return $this->_log;
     }
 
@@ -485,10 +393,8 @@ class PHPShopUpdate {
  * Удаление файлов перед заменой.
  */
 function preExtractCallBack($p_event, $p_header) {
-    if ($p_header['folder'] != 1 and !getenv("COMSPEC")) {
+    if ($p_header['folder'] != 1 and ! getenv("COMSPEC")) {
         unlink($p_header['filename']);
     }
     return 1;
 }
-
-?>

@@ -464,7 +464,7 @@ if (!empty($_COOKIE['fullscreen'])) {
                                 <a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-expanded="false"><?php _e('Веб-сайт'); ?> <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="?path=page.catalog"><?php _e('Страницы'); ?><span class="dropdown-header"><?php _e('Создание и публикация страниц'); ?></span></a></li>
-                                    <li><a href="?path=photo.catalog"><?php _e('Фотогалерея'); ?><span class="dropdown-header"><?php _e('Фотогалерея изображений на сайте'); ?></span></a></li>
+                                    <li><a href="?path=photo.catalog"><?php _e('Фотогалерея'); ?><span class="dropdown-header"><?php _e('Фотогалерея изображений и видео'); ?></span></a></li>
                                     <li><a href="?path=menu"><?php _e('Текстовые блоки'); ?><span class="dropdown-header"><?php _e('Вывод текстовых блоков в блок-меню'); ?></span></a></li>
                                     <li><a href="?path=gbook"><?php _e('Отзывы о сайте'); ?><span class="dropdown-header"><?php _e('Отзывы пользователей о сайте'); ?></span></a></li>
                                     <li><a href="?path=news"><?php _e('Новости'); ?><span class="dropdown-header"><?php _e('Новостная лента сайта'); ?></span></a></li>

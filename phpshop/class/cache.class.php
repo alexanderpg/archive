@@ -13,6 +13,12 @@ class PHPShopCache {
     public function __construct($cache_key) {
         global $PHPShopSystem;
 
+        $this->PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['bot']);
+
+        // Блокировка
+        $this->block_ip = explode(",", $PHPShopSystem->getSerilizeParam('admoption.block_ip'));
+        $this->block_bot = $PHPShopSystem->getSerilizeParam('admoption.block_bot');
+
         $this->cache_key = $cache_key;
         $this->type = $PHPShopSystem->getSerilizeParam('admoption.cache');
         $this->time = $PHPShopSystem->getSerilizeParam('admoption.cache_time');
@@ -28,18 +34,17 @@ class PHPShopCache {
         $this->debug = $PHPShopSystem->getSerilizeParam('admoption.cache_debug');
         $this->mod = $PHPShopSystem->getSerilizeParam('admoption.cache_mod');
         $this->compres = $PHPShopSystem->getSerilizeParam('admoption.cache_compres');
-        
+
         // Bot
         if ($this->checkBot()) {
             $this->mod = $this->seo;
         }
         // User
-        elseif($this->mod > 0) {
+        elseif ($this->mod > 0) {
             // Переход на частичный кэш
-            if ((is_array($_SESSION['cart']) and count($_SESSION['cart']) > 0) or ! empty($_SESSION['UsersId']) or ( is_array($_SESSION['wishlist']) and count($_SESSION['wishlist']) > 0) or ( is_array($_SESSION['compare']) and count($_SESSION['compare']) > 0)){
+            if ((is_array($_SESSION['cart']) and count($_SESSION['cart']) > 0) or ! empty($_SESSION['UsersId']) or ( is_array($_SESSION['wishlist']) and count($_SESSION['wishlist']) > 0) or ( is_array($_SESSION['compare']) and count($_SESSION['compare']) > 0)) {
                 $this->mod = 2;
             }
-                
         }
 
         // Memcached
@@ -68,13 +73,13 @@ class PHPShopCache {
         }
 
         // Удаление html кеша
-        if (!empty($_GET['cache']) and $_GET['cache'] == 'clean' and ! empty($this->cache_key) and !empty($_SESSION['idPHPSHOP'])) {
+        if (!empty($_GET['cache']) and $_GET['cache'] == 'clean' and ! empty($this->cache_key) and ! empty($_SESSION['idPHPSHOP'])) {
             $this->delete($this->cache_key);
         }
     }
 
     public function valid_element($name) {
-        if (!in_array($name, ['usersDisp', 'specMain', 'specMainIcon', 'captcha', 'wishlist', 'pageCss', 'skin', 'cloud']))
+        if (!in_array($name, ['usersDisp', 'specMain', 'specMainIcon', 'captcha', 'wishlist', 'pageCss', 'skin', 'cloud','topBrands']))
             return true;
     }
 
@@ -124,7 +129,7 @@ class PHPShopCache {
     }
 
     public function flush() {
-        if ($this->enabled){
+        if ($this->enabled) {
             $this->cache->flush();
         }
     }
@@ -211,16 +216,77 @@ class PHPShopCache {
     }
 
     public function valid_url() {
-        if ((count($_POST) == 0 and empty($_COOKIE['UserChecked']) and !in_array(parse_url($_SERVER['REQUEST_URI'])['path'],['/search/'])) or $this->mod == 2){
+        if ((count($_POST) == 0 and empty($_COOKIE['UserChecked']) and ! in_array(parse_url($_SERVER['REQUEST_URI'])['path'], ['/search/'])) or $this->mod == 2) {
             return true;
+        }
+    }
+
+    function checkService() {
+        if ($this->PHPShopSystem->ifSerilizeParam('admoption.service_enabled', 1)) {
+
+            $ip = explode(",", $this->PHPShopSystem->getSerilizeParam('admoption.service_ip'));
+            if (is_array($ip) and in_array(trim($_SERVER['REMOTE_ADDR']), $ip))
+                return;
+            else {
+
+                $title = $this->PHPShopSystem->getSerilizeParam('admoption.service_title');
+                $message = $this->PHPShopSystem->getSerilizeParam('admoption.service_content');
+
+                if (empty($title))
+                    $title = '503 Service Temporarily Unavailable';
+
+                if (empty($message))
+                    $message = 'Website is under construction';
+
+
+                PHPShopParser::set('message', $message);
+                PHPShopParser::set('title', $title);
+                header('HTTP/1.1 503 Service Temporarily Unavailable');
+                header('Status: 503 Service Temporarily Unavailable');
+                exit(PHPShopParser::file($_SERVER['DOCUMENT_ROOT'] . '/phpshop/lib/templates/error/service.tpl', false, true, true));
+            }
+        }
+    }
+
+    public function checkBlockBot($name, $userAgent) {
+
+        if ($this->block_bot > 0) {
+
+            $data = $this->PHPShopOrm->getOne(['*'], ['name' => '="' . $name . '"']);
+            if (is_array($data)) {
+                if ($data['enabled'] == 0)
+                    return true;
+            } elseif ($this->block_bot == 2) {
+                $this->PHPShopOrm->insert(['name_new' => $name, 'description_new' => $userAgent, 'date_new' => time(), 'enabled_new' => '1']);
+            } elseif ($this->block_bot == 1) {
+                return true;
+            }
+        }
+    }
+
+    public function checkBlockIP() {
+
+        if (is_array($this->block_ip) and in_array(trim($_SERVER['REMOTE_ADDR']), $this->block_ip)) {
+            header("HTTP/1.0 404 Not Found");
+            header("Status: 404 Not Found");
+            exit;
         }
     }
 
     public function checkBot() {
 
-        if (!empty($_SERVER['HTTP_USER_AGENT']))
+        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
             $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        else
+            preg_match('/(\S+bot)([\/ ]([0-9.])|(;)+)/i', $userAgent, $bot);
+
+            if (!empty($bot[1])) {
+                if ($this->checkBlockBot($bot[1], $userAgent)) {
+                    header('HTTP/1.0 403 Forbidden', true, 403);
+                    header("Status: 403 Forbidden");
+                    exit;
+                }
+            }
+        } else
             $userAgent = null;
 
         $botPatterns = [
@@ -264,13 +330,13 @@ class PHPShopFileCache {
     public function get($key) {
         $file = $_SERVER['DOCUMENT_ROOT'] . $this->dir . $key;
         if (file_exists($file)) {
-            
+
             // Проверка даты
-            if($this->check_time){
-                if((filemtime($file) + $this->time * 60 * 60 * 24) > time())
-                 return file_get_contents($file);   
-            }
-            else return file_get_contents($file);
+            if ($this->check_time) {
+                if ((filemtime($file) + $this->time * 60 * 60 * 24) > time())
+                    return file_get_contents($file);
+            } else
+                return file_get_contents($file);
         }
     }
 

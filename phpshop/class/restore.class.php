@@ -3,7 +3,7 @@
 /**
  * Библиотека восстановления файлов
  * @author PHPShop Software
- * @version 1.3
+ * @version 2.0
  * @package PHPShopClass
  */
 class PHPShopRestore extends PHPShopUpdate {
@@ -11,7 +11,7 @@ class PHPShopRestore extends PHPShopUpdate {
     var $_restore_path = '../../';
     var $_restore_version;
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -19,7 +19,7 @@ class PHPShopRestore extends PHPShopUpdate {
      *  Проверка существования бекапа
      */
 
-    function checkRestore($version) {
+    public function checkRestore($version) {
         if (file_exists($this->_backup_path . 'backups/' . intval($version) . '/files.zip')) {
             $this->_restore_version = $version;
             return true;
@@ -29,7 +29,7 @@ class PHPShopRestore extends PHPShopUpdate {
     /**
      *  Восстановление базы
      */
-    function restoreBD() {
+    public function restoreBD() {
         global $PHPShopGUI;
 
         if (file_exists($this->_backup_path . 'backups/' . $this->_restore_version . '/restore.sql')) {
@@ -48,21 +48,14 @@ class PHPShopRestore extends PHPShopUpdate {
     /**
      *  Восстановления файла из бекапа
      */
-    function restoreFiles() {
-
-        // Права на изменение файла
-        $this->chmod("phpshop/inc/config.ini", $this->_user_ftp_chmod);
-
+    public function restoreFiles() {
         $this->installFiles('backups/' . $this->_restore_version . '/files.zip', $status = 'восстановления', $this->_restore_path);
-
-        // Права на изменение файла
-        $this->chmod("phpshop/inc/config.ini", $this->_user_ftp_re_chmod);
     }
 
     /**
      *  Восстановления конфига. Понижение версии.
      */
-    function restoreConfig() {
+    public function restoreConfig() {
         $config['upload']['version'] = $this->_restore_version;
         $this->installConfig($config);
     }

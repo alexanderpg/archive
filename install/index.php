@@ -70,16 +70,16 @@ function getDump($file) {
 function getDumpUpdate($dir) {
     global $value;
     if (is_dir('update/' . $dir)) {
-        $value[] = array($dir, $dir, false);
+        $value[$dir] = array($dir, $dir, false);
     }
 }
 
 PHPShopObj::loadClass('file');
 PHPShopObj::loadClass('text');
-$value[] = array('Выбрать...', '', true);
+$value[] = array('Выбрать...', '', 'selected');
 $warning = $done = null;
 PHPShopFile::searchFile('./update/', 'getDumpUpdate');
-
+sort($value);
 $update_select = PHPShopText::select('version_update', $value, 200, null, false, false);
 
 // Обновление
@@ -586,7 +586,7 @@ dbase="mybase";         # имя базы</pre>
                                                     <p>8.5. Настоящее Лицензионное Соглашение также распространяется на все обновления, предоставляемые пользователю в рамках технической поддержки.</p>
                                                     <h4>9. Реквизиты</h4>
                                                     <p>Индивидуальный Предприниматель Туренко Денис Леонидович, 
-                                                        <br />ОГРНИП 317774600500544 <br />ИНН 505307534990 <br />Р/с 40802810202490001590 в АО "АЛЬФА-БАНК" <br />К/с 30101810200000000593 <br />БИК 044525593 <br />Тел.:+7 (495) 989-11-15; Адрес: 109431 г. Москва, Жулебинский бульвар, д.33. к.1</p>
+                                                        <br />ОГРНИП 317774600500544 <br />ИНН 505307534990 <br />Р/с 40802810202490001590 в АО "АЛЬФА-БАНК" <br />К/с 30101810200000000593 <br />БИК 044525593 <br />Тел.:+7 (495) 989-11-15</p>
                                                 </div>
 
                                                 <!-- Обновление -->

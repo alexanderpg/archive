@@ -316,7 +316,7 @@
                             @review_captcha@
                         </div>
                     </div>
-                    <p class="small"><label><input name="rule" value="1" required="" checked="" type="checkbox">
+                    <p class="small"><label><input name="rule" value="1" required=""  type="checkbox">
                             @rule@</label></p>
                     <div class="form-group">
                         <div class=""></div>
@@ -410,7 +410,7 @@
                             @captcha@
                         </div>
                     </div>
-                    <p class="small"><label><input name="rule" value="1" required="" checked="" type="checkbox">@rule@</label></p>
+                    <p class="small"><label><input name="rule" value="1" required=""  type="checkbox">@rule@</label></p>
                     <div class="form-group">
                         <div class=""></div>
                         <div class="">
@@ -455,7 +455,7 @@
                     </div>
                     <div class="form-group">
                         <p class="small">
-                            <input type="checkbox" value="on" name="rule" class="req" checked="checked"> 
+                            <input type="checkbox" value="on" name="rule" class="req" > 
                             {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
                         </p>
                     </div>    <div class="form-group">

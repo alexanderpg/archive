@@ -34,7 +34,7 @@
         </div>
         <div class="order-page-top-totals-paymetnt-with-discount">
             <span class="order-page-top-label-left">{К оплате с учетом скидки}: </span>
-            <span  class="order-page-top-label-right"><span id="WeightSumma" class="hidden">@cart_weight@</span><span id="TotalSumma">@total@</span> <span class="rubznak">@currency@</span></span>
+            <span  class="order-page-top-label-right"><span id="WeightSumma" class="hidden">@cart_weight@</span><span id="VolumeWeightSumma" class="hidden">@cart_volume_weight@</span><span id="TotalSumma">@total@</span> <span class="rubznak">@currency@</span></span>
         </div>
     </div>
 </div>

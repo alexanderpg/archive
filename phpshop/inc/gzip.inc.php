@@ -1,10 +1,13 @@
 <?php
 
 /**
- * Сжатие и кэш
+ * Сжатие и кеширование
  */
 $cache_key = md5(str_replace("www.", "", getenv('SERVER_NAME')) . parse_url($_SERVER['REQUEST_URI'])['path']);
 $PHPShopCache = new PHPShopCache($cache_key);
+
+// Блокировка IP
+$PHPShopCache->checkBlockIP();
 $PHPShopCache->init();
 
 // URL

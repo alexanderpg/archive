@@ -40,13 +40,16 @@ function getFileInfo($file) {
         $i++;
         $stat = stat("../../backup/backups/" . $file . '/files.zip');
         $version=null;
+       
 
         foreach (str_split($file) as $w)
             $version .= $w . '.';
+        
+        $num_version_restore = str_replace('.', '',$version);
         $version = __('Версия') . ' ' . substr($version, 0, strlen($version) - 1);
-
-
-        if ($GLOBALS['SysValue']['upload']['version'] > $file)
+       
+        
+        if ($GLOBALS['SysValue']['upload']['version'] - $num_version_restore == 1)
             $menu = array('restore', '|', 'log', 'id' => $file);
         else {
             $menu = array('log', 'id' => $file);
@@ -54,7 +57,7 @@ function getFileInfo($file) {
         }
 
 
-        $PHPShopInterface->setRow(array('name' => $version, 'align' => 'left'), PHPShopDate::get($stat['mtime'], true), array('name' => number_format($stat['size'], 0, ',', ' ') . ' ' . __('байт')), array('action' => $menu, 'align' => 'right'));
+        $PHPShopInterface->setRow(array('name' => $version, 'align' => 'left'), PHPShopDate::get($stat['mtime'], true), array('name' => number_format($stat['size'], 0, ',', ' ') . ' ' . __('байт'), 'align' => 'center'), array('action' => $menu, 'align' => 'right'));
     }
 }
 
@@ -87,7 +90,7 @@ function actionStart() {
         $PHPShopInterface->checkbox_action = false;
 
 
-        $PHPShopInterface->setCaption(array("Имя файла", "35%"), array("Дата", "15%"), array("Размер файлов", "15%"), array("", "7%", array('align' => 'right')));
+        $PHPShopInterface->setCaption(array("Имя файла", "35%"), array("Дата", "15%"), array("Размер файлов", "15%", array('align' => 'center')), array("", "7%", array('align' => 'right')));
         PHPShopFile::searchFile("../../backup/backups/", 'getFileInfo');
 
 

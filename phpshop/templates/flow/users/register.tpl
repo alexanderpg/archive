@@ -24,7 +24,7 @@
     <br>
     <div class="form-group">
         <p class="small">
-            <input type="checkbox" value="on" name="rule" class="req" checked="checked" required> 
+            <input type="checkbox" value="on" name="rule" class="req"  required> 
             {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
         </p>
     </div>

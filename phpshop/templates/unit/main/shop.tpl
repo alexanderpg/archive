@@ -666,7 +666,7 @@
                         </div>
                         <p class="small">
                             <label>
-                                <input name="rule" value="1" required="" checked="" type="checkbox">
+                                <input name="rule" value="1" required=""  type="checkbox">
                                 @rule@
                             </label>
                         </p>

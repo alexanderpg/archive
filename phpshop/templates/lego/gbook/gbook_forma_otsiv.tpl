@@ -38,7 +38,7 @@
         
         <textarea name="otsiv_new" class="form-control" maxlength="500" placeholder="{Сообщение}" required=""></textarea>
     </div>
-    <p class="small"><label><input name="rule" value="1" required="" checked="" type="checkbox"> @rule@</label></p>
+    <p class="small"><label><input name="rule" value="1" required=""  type="checkbox"> @rule@</label></p>
 	@captcha@
 	<br>
     <div class="form-group">

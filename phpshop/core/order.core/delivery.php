@@ -228,12 +228,12 @@ class PHPShopOrderDelivery {
             PHPShopParser::set('deliveryActive', 'active');
             PHPShopParser::set('deliveryChecked', 'checked');
             if(is_null($selectedId)) {
-                $html .= '<IMG onload="UpdateDeliveryJq(' . (int) $delivery['id'] . ',this);" SRC="' . $this->getTemplateAsset('images/shop/flag_green.gif') . '"  style="display:none;">';
+                $html .= '<IMG onload="UpdateDeliveryJq(' . (int) $delivery['id'] . ');" SRC="' . $this->getTemplateAsset('images/shop/flag_green.gif') . '"  style="display:none;">';
             } else {
                 if(!$isFolderSelected) { // Завершаем выбор только если выбрана НЕ папка
                     $this->deliverySelected = true;
                 } else {
-                    $html .= '<IMG onload="UpdateDeliveryJq(' . (int) $delivery['id'] . ',this);" SRC="' . $this->getTemplateAsset('images/shop/flag_green.gif') . '"  style="display:none;">';
+                    $html .= '<IMG onload="UpdateDeliveryJq(' . (int) $delivery['id'] . ');" SRC="' . $this->getTemplateAsset('images/shop/flag_green.gif') . '"  style="display:none;">';
                 }
             }
         }
@@ -298,7 +298,7 @@ class PHPShopOrderDelivery {
             return ''; // На уровне выше только 1 элемент. Кнопка не нужна.
         }
 
-        return __('Выбрано') . ': ' . $parent['city'] . ' <A href="javascript:UpdateDeliveryJq(\'' . $parent['PID'] . '\',this)"><img src="' . $this->getTemplateAsset('images/shop/check_green.svg') . '" alt="" border="0" align="absmiddle">&nbsp;' . __('Выбрать другой способ доставки') . '</A> <BR><BR> ';
+        return __('Выбрано') . ': ' . $parent['city'] . ' <A href="javascript:UpdateDeliveryJq(\'' . $parent['PID'] . '\')"><img src="' . $this->getTemplateAsset('images/shop/check_green.svg') . '" alt="" border="0" align="absmiddle">&nbsp;' . __('Выбрать другой способ доставки') . '</A> <BR><BR> ';
     }
 
     private function getTemplateAsset($asset)

@@ -3787,8 +3787,6 @@ transition: all 0.3s;
     color: #fff;
 }
 
-
-
 .catalog-block {
   padding-top: 0.9375rem;
   padding-bottom: 1.25rem;
@@ -3900,3 +3898,5 @@ width: 20%;
 .main-navbar-list-catalog-wrapper small{
     display: none;
 }
+
+.smart-captcha {height: 100px;margin-bottom:10px;max-width:250px}

@@ -45,8 +45,9 @@ html {
   font-size: 16px;
 }
 
-html {
-	overflow-y: scroll;
+
+#body{
+    overflow-y: scroll;
 }
 
 .left-block-list > li > a:hover,
@@ -424,6 +425,10 @@ span.sale-icon-content {
   padding: 0rem;
   top: 0.3125rem;
   left: 0.75rem;
+}
+
+body.modal-open{
+    margin-right: -17px;
 }
 
 #cartlink {
@@ -6621,3 +6626,5 @@ color: #8c98a4;
         width:95%;
     }
 }
+
+.smart-captcha {height: 100px;margin-bottom:10px;max-width:250px}

@@ -1,4 +1,4 @@
-<h2 class="page-title hide">{Ошибка оплаты}</h2>
+<h3>{Ошибка оплаты}</h3>
 
 <div>
 <b>{Возможные причины}:</b>
@@ -11,6 +11,6 @@
 <b>{Что делать}:</b>
 <ol>
 	<li>{Проверьте, правильно ли набран адрес}.
-	<li>{Обратитесь к} <img src="images/icon_email.gif" alt="" width="16" height="16" border="0" align="absmiddle" hspace="3"><a href="mailto:@adminMail@>?subject=Ошибка оплаты заказа №@orderNum@ через платежную систему">{администратору}</a>.
+	<li>{Обратитесь к} <a href="mailto:@adminMail@>?subject=Ошибка оплаты заказа №@orderNum@ через платежную систему">{администратору}</a>.
 </ol>
 </div>

@@ -8,7 +8,7 @@ if (!defined("OBJENABLED")) {
 /**
  * Библиотека доставки
  * @author PHPShop Software
- * @version 1.4
+ * @version 1.5
  * @package PHPShopClass
  */
 class PHPShopDelivery extends PHPShopObj {
@@ -58,10 +58,11 @@ class PHPShopDelivery extends PHPShopObj {
     /**
      * Расчет стоимости доставки
      * @param float $sum сумма заказа
-     * @param float $weight вес заказа
+     * @param int $weight вес заказа
+     * @param int $vweight объемный вес заказа
      * @return float
      */
-    function getPrice($sum, $weight = 0) {
+    function getPrice($sum, $weight = 0, $vweight = 0) {
 
         if ($this->mod_price !== false)
             return $this->mod_price;
@@ -85,11 +86,19 @@ class PHPShopDelivery extends PHPShopObj {
             }
         }
 
-        if ($row['taxa'] > 0) {
+        // Такса за вес
+        if (!empty($row['taxa'])) {
+
+            // Объемный вес больше
+            if ($vweight > $weight)
+                $weight = $vweight;
+
+            // Вес
             $addweight = $weight - $this->fee;
             if ($addweight < 0) {
                 $addweight = 0;
             }
+
             $result = $row['price'] + ceil($addweight / $this->fee) * $row['taxa'];
         } else {
             $result = $row['price'];

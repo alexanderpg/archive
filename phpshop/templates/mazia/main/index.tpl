@@ -79,7 +79,7 @@
         <!-- ========== MAIN CONTENT ========== -->
         <main id="content" role="main">
 
-            <section class="banner-2 mt-30 two-item">
+            <section class="banner-2 mt-30 two-item @hideSite@">
                 <div class="container container-1430">
                     <div class="row">
                         @leftCatalTable@
@@ -107,7 +107,7 @@
             </section>
 
             <!-- main product sections tart -->
-            <section class="main-product mt-50 mb-50">
+            <section class="main-product mt-50 mb-50 @hideSite@">
                 <div class="container container-1430">
                     <ul class="nav nav-pills mb-3">
                         <li class="nav-item">
@@ -130,7 +130,7 @@
             <!-- main product sections end -->
 
             <!-- Promo Section -->
-            <div class="container container-1430 space-2 space-lg-2 @php __hide('productDay'); php@">
+            <div class="container container-1430 space-2 space-lg-2 @php __hide('productDay'); php@ @hideSite@">
                 <div class="container gray-border-top pb-30 pt-35"></div>
                 <div class="row">
                     <div class="col-lg-6 mb-5 mb-lg-0">
@@ -268,12 +268,12 @@
                                                 <ul class="nav nav-sm nav-x-0 flex-column">
                                                     @php if($_SESSION['UsersId']) echo '
                                                     <li class="nav-item"><a class="nav-link" href="/users/">{Настройки}</a></li>
-                                                    <li class="nav-item"><a class="nav-link" href="/users/order.html">{Отследить заказ}</a></li>
+                                                    <li class="nav-item @hideCatalog@"><a class="nav-link" href="/users/order.html">{Отследить заказ}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/users/message.html">{Связь с менеджерами}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="?logout=true">{Выйти}</a></li>
                                                     ';
                                                     else echo '
-                                                    <li class="nav-item"><a class="js-hs-unfold-invoker nav-link" href="javascript:;" data-toggle="modal" data-target="#userModal">{Отследить заказ}</a></li>
+                                                    <li class="nav-item @hideCatalog@"><a class="js-hs-unfold-invoker nav-link" href="javascript:;" data-toggle="modal" data-target="#userModal">{Отследить заказ}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/users/">{Зарегистрироваться}</a></li>
                                                     ';
                                                     php@
@@ -301,7 +301,7 @@
 
                                                 <!-- Nav Link -->
                                                 <ul class="nav nav-sm nav-x-0 flex-column">
-                                                    <li class="nav-item"><a class="nav-link" href="/price/">{Прайс-лист}</a></li>
+                                                    <li class="nav-item @hideCatalog@"><a class="nav-link" href="/price/">{Прайс-лист}</a></li>
                                                     <li class="nav-item  @php __hide('miniNews'); php@"><a class="nav-link" href="/news/">{Новости}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/gbook/">{Отзывы}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/forma/">{Форма связи}</a></li>
@@ -353,7 +353,7 @@
                             @returncall_captcha@
                             <div class="form-group">
                                 <p class="small">
-                                    <input type="checkbox" value="on" name="rule" class="req" checked="checked"> 
+                                    <input type="checkbox" value="on" name="rule" class="req" > 
                                     {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
                                 </p>
                             </div>

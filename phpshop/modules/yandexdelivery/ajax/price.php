@@ -13,17 +13,32 @@ PHPShopObj::loadClass("order");
 PHPShopObj::loadClass("modules");
 PHPShopObj::loadClass("lang");
 
-
-$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini",true,true);
+$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, true);
 
 $YandexDelivery = new YandexDelivery();
 $data = new YandexDeliveryOrderData();
+$dimensions = $YandexDelivery->getDimensions($_SESSION['cart']);
 
-$weight = (int) $_POST['weight'];
-if(empty($weight))
-    $weight=$YandexDelivery->options['weight'];
+if (!empty($_POST['weight']))
+    $data->weight = (int) $_POST['weight'];
+else $data->weight = (int) $YandexDelivery->options['weight'];
 
-$data->weight = $weight;
+if (!empty($dimensions['length']))
+    $data->length = (int) $dimensions['length'];
+else $data->length = (int) $YandexDelivery->options['length'];
+
+if (!empty($dimensions['length']))
+    $data->length = (int) $dimensions['length'];
+else $data->length = (int) $YandexDelivery->options['length'];
+
+if (!empty($dimensions['height']))
+    $data->height = (int) $dimensions['height'];
+else $data->height = (int) $YandexDelivery->options['height'];
+
+if (!empty($dimensions['width']))
+    $data->width = (int) $dimensions['height'];
+else $data->width = (int)$YandexDelivery->options['width'];
+
 $data->delivery_variant_id = $_POST['delivery_variant_id'];
 $YandexDelivery->options['paid'] = 1;
 echo $YandexDelivery->getApproxDeliveryPrice($data);

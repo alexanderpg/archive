@@ -192,19 +192,20 @@ function addToWishList(product_id, parent_id = 0) {
 function UpdateDeliveryJq(xid, param, stop_hook) {
 
     var sum = $("#OrderSumma").val();
-    var wsum = $("#WeightSumma").html();
+    var wsum = Number($("#WeightSumma").text());
+    var vwsum = Number($("#VolumeWeightSumma").text());
 
     if (param === undefined) {
         param = '';
     }
-
+    
     $("form[name='forma_order'] input[name=dostavka_metod]").attr('disabled', true);
     $(this).html(waitText);
 
     $.ajax({
         url: ROOT_PATH + '/phpshop/ajax/delivery.php',
         type: 'post',
-        data: 'type=json&xid=' + xid + '&sum=' + sum + '&wsum=' + wsum + param,
+        data: 'type=json&xid=' + xid + '&sum=' + sum + '&wsum=' + wsum + '&vwsum=' + vwsum + param,
         dataType: 'json',
         success: function (json) {
             if (json['success']) {

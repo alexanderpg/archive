@@ -211,12 +211,12 @@
                                                 <ul class="nav nav-sm nav-x-0 flex-column">
                                                     @php if($_SESSION['UsersId']) echo '
                                                     <li class="nav-item"><a class="nav-link" href="/users/">{Настройки}</a></li>
-                                                    <li class="nav-item"><a class="nav-link" href="/users/order.html">{Отследить заказ}</a></li>
+                                                    <li class="nav-item @hideCatalog@"><a class="nav-link" href="/users/order.html">{Отследить заказ}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/users/message.html">{Связь с менеджерами}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="?logout=true">{Выйти}</a></li>
                                                     ';
                                                     else echo '
-                                                    <li class="nav-item"><a class="js-hs-unfold-invoker nav-link" href="javascript:;" data-toggle="modal" data-target="#userModal">{Отследить заказ}</a></li>
+                                                    <li class="nav-item @hideCatalog@"><a class="js-hs-unfold-invoker nav-link" href="javascript:;" data-toggle="modal" data-target="#userModal">{Отследить заказ}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/users/">{Зарегистрироваться}</a></li>
                                                     ';
                                                     php@
@@ -244,7 +244,7 @@
 
                                                 <!-- Nav Link -->
                                                 <ul class="nav nav-sm nav-x-0 flex-column">
-                                                    <li class="nav-item"><a class="nav-link" href="/price/">{Прайс-лист}</a></li>
+                                                    <li class="nav-item @hideCatalog@"><a class="nav-link" href="/price/">{Прайс-лист}</a></li>
                                                     <li class="nav-item  @php __hide('miniNews'); php@"><a class="nav-link" href="/news/">{Новости}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/gbook/">{Отзывы}</a></li>
                                                     <li class="nav-item"><a class="nav-link" href="/forma/">{Форма связи}</a></li>
@@ -297,7 +297,7 @@
                             @returncall_captcha@
                             <div class="form-group">
                                 <p class="small">
-                                    <input type="checkbox" value="on" name="rule" class="req" checked="checked"> 
+                                    <input type="checkbox" value="on" name="rule" class="req" > 
                                     {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
                                 </p>
                             </div>

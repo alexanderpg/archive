@@ -3,7 +3,7 @@
 /**
  * Обработчик успешной оплаты
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopCore
  */
 class PHPShopSuccess extends PHPShopCore {
@@ -76,7 +76,7 @@ class PHPShopSuccess extends PHPShopCore {
     /**
      *  Сообщение об успешном платеже
      */
-    function message() {
+    function message($title=false, $content=false) {
 
         $PHPShopOrm = new PHPShopOrm($this->getValue('base.payment_systems'));
         $PHPShopOrm->debug = $this->debug;

@@ -3,7 +3,7 @@
 /**
  * Элемент стандартных системных переменных
  * @author PHPShop Software
- * @version 2.1
+ * @version 2.3
  * @package PHPShopElements
  */
 class PHPShopCoreElement extends PHPShopElements {
@@ -42,17 +42,6 @@ class PHPShopCoreElement extends PHPShopElements {
                 header('Status: 503 Service Temporarily Unavailable');
                 exit(PHPShopParser::file($_SERVER['DOCUMENT_ROOT'] . '/phpshop/lib/templates/error/service.tpl', false, true, true));
             }
-        }
-
-        // Блокировка IP
-        $block_ip = explode(",", $this->PHPShopSystem->getSerilizeParam('admoption.block_ip'));
-        if (is_array($block_ip) and in_array(trim($_SERVER['REMOTE_ADDR']), $block_ip)) {
-
-            header("HTTP/1.0 404 Not Found");
-            header("Status: 404 Not Found");
-            if (file_exists('./404.html'))
-                include_once('./404.html');
-            exit;
         }
     }
 
@@ -1937,7 +1926,6 @@ class PHPShopPhotoElement extends PHPShopElements {
                     else
                         $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_preview.tpl', true);
                 }
-
             }
         return $dis;
     }
@@ -1956,17 +1944,43 @@ class PHPShopRecaptchaElement extends PHPShopElements {
     public $secret = '6LdhAiYUAAAAAGzO0wlENkavrN49gFhHiHqH9vkv';
     public $public = '6LdhAiYUAAAAAO1uc9b8KfotAyfoInSrWuygbQKC';
     protected $api = 'https://www.google.com/recaptcha/api/siteverify';
+    
     // Общие ключи Hcaptcha         
     public $hsecret = '0xba1b193f433F4656778a3C7a96326CA412769E3D';
     public $hpublic = '6756c855-3f50-4360-a799-4f7b4855c927';
     protected $hapi = 'https://hcaptcha.com/siteverify';
+    
+    // Общие ключи SmartCaptcha         
+    public $smartsecret = '';
+    public $smartpublic = '';
+    protected $smartapi = 'https://smartcaptcha.yandexcloud.net/validate';
 
     public function __construct() {
 
         parent::__construct();
 
+        // Smartcaptcha
+        if ($this->PHPShopSystem->ifSerilizeParam('admoption.smartcaptcha_enabled')) {
+
+            $public = $this->PHPShopSystem->getSerilizeParam('admoption.smartcaptcha_pkey');
+            if (!empty($public))
+                $this->public = $public;
+            else
+                $this->public = $this->smartpublic;
+
+            $secret = $this->PHPShopSystem->getSerilizeParam('admoption.smartcaptcha_skey');
+            if (!empty($secret))
+                $this->secret = $secret;
+            else
+                $this->secret = $this->smartsecret;
+
+            if (isset($_POST['smart-token']))
+                $this->check = $_POST['smart-token'];
+
+            $this->api = $this->smartapi;
+        }
         // Recaptcha
-        if ($this->PHPShopSystem->ifSerilizeParam('admoption.recaptcha_enabled')) {
+        elseif ($this->PHPShopSystem->ifSerilizeParam('admoption.recaptcha_enabled')) {
 
             $public = $this->PHPShopSystem->getSerilizeParam('admoption.recaptcha_pkey');
             if (!empty($public))
@@ -2003,16 +2017,48 @@ class PHPShopRecaptchaElement extends PHPShopElements {
     }
 
     /**
-     * Проверка правильности заполнения каптчи
+     * Проверка правильности заполнения каптчи Recaptcha, Hcaptcha
      * @return boolean
      */
     public function check() {
         if (!empty($this->check)) {
-            $res = $this->request();
 
-            if (!empty($res['success']))
-                return true;
+            // Smartcaptcha
+            if ($this->PHPShopSystem->ifSerilizeParam('admoption.smartcaptcha_enabled')) {
+                $res = $this->request_smart();
+
+                if ($res->status == 'ok' and $res->host == $_SERVER['SERVER_NAME'])
+                    return true;
+            }
+            // Recaptcha, Hcaptcha
+            else {
+                $res = $this->request();
+
+                if (!empty($res['success']))
+                    return true;
+            }
         }
+    }
+
+    /**
+     * Проверка правильности заполнения каптчи Smart Captcha
+     * @return boolean
+     */
+    protected function request_smart() {
+        $ch = curl_init($this->api);
+        $args = [
+            "secret" => $this->secret,
+            "token" => $this->check,
+            "ip" => $_SERVER['REMOTE_ADDR']
+        ];
+        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($args));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($result);
     }
 
     /**
@@ -2065,31 +2111,27 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     protected function request() {
 
+
         $rout = "?secret=" . $this->secret . "&response=" . $this->check;
 
-        // Локальный режим
-        if ($_SERVER["SERVER_ADDR"] == "127.0.0.1" and getenv("COMSPEC")) {
-            $responsecontent = file_get_contents($this->api . $rout);
-        } else {
-            $data_string = $rout;
-            $ch = curl_init();
+        $data_string = $rout;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->api . $rout);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string)
+        ));
 
-            curl_setopt($ch, CURLOPT_URL, $this->api . $rout);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($data_string)
-            ));
+        $output = curl_exec($ch);
+        curl_close($ch);
 
-            $output = curl_exec($ch);
-            curl_close($ch);
+        $response = explode("\r\n\r\n", $output);
+        $responsecontent = $response[1];
 
-            $response = explode("\r\n\r\n", $output);
-            $responsecontent = $response[1];
-        }
 
         return json_decode($responsecontent, true);
     }
@@ -2105,14 +2147,17 @@ class PHPShopRecaptchaElement extends PHPShopElements {
         // Каптча включена
         if (!$this->PHPShopSystem->ifSerilizeParam('admoption.user_captcha_enabled')) {
 
-            if ($this->PHPShopSystem->ifSerilizeParam('admoption.recaptcha_enabled')) {
+            if ($this->PHPShopSystem->ifSerilizeParam('admoption.smartcaptcha_enabled')) {
+                $dis = '<div id="smartcaptcha_' . $name . '" class="smart-captcha" data-sitekey="' . $this->public . '"></div>';
+                $this->recaptcha = true;
+            } elseif ($this->PHPShopSystem->ifSerilizeParam('admoption.recaptcha_enabled')) {
                 $dis = '<div id="recaptcha_' . $name . '" data-size="' . $size . '" data-key="' . $this->public . '"></div>';
                 $this->recaptcha = true;
             } else if ($this->PHPShopSystem->ifSerilizeParam('admoption.hcaptcha_enabled')) {
                 $dis = '<div id="hcaptcha_' . $name . '" data-size="' . $size . '" data-key="' . $this->public . '"></div>';
                 $this->recaptcha = true;
             } else {
-                $dis = '<img src="phpshop/lib/captcha/captcha.php" align="left" style="margin-right:10px"> <input type="text" name="key" class="form-control" placeholder="' . __('Код с картинки') . '..." style="width:100px" required="">';
+                $dis = '<div><img src="phpshop/lib/captcha/captcha.php" align="left" style="margin-right:10px" alt=""> <input type="text" name="key" class="form-control" placeholder="' . __('Код с картинки') . '" style="width:150px" required=""></div>';
                 $this->recaptcha = false;
             }
         } else
@@ -2133,34 +2178,6 @@ class PHPShopRecaptchaElement extends PHPShopElements {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 }
-
-?>

@@ -25,7 +25,7 @@
                     <div class="form-group">
                         <textarea class="form-control" name="returncall_mod_message" placeholder="{Сообщение}"></textarea>
                     </div>
-<p class="small"><label><input type="checkbox" value="on" name="rule" class="req" checked="checked">  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
+<p class="small"><label><input type="checkbox" value="on" name="rule" class="req" >  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
                     @returncall_captcha@
                 </div>
                 <div class="modal-footer">

@@ -8,7 +8,7 @@
         <input type="text" name="oneclick_mod_tel" class="form-control" placeholder="{Телефон}..." required="">
     </div>
     <p>@oneclick_captcha@</p>
-	<p class="small"><label><input name="rule" value="1" required="" checked="" type="checkbox"> @rule@</label></p>
+	<p class="small"><label><input name="rule" value="1" required=""  type="checkbox"> @rule@</label></p>
     <div class="text-center">
         <input type="hidden" name="oneclick_mod_product_id" value="@productUid@">
         <input type="hidden" name="oneclick_mod_send" value="1">

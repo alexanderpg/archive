@@ -76,7 +76,7 @@
 
                             <!-- В корзину -->
 
-                            <div class=" py-2 px-3 mb-4 @elementCartHide@">
+                            <div class=" py-2 px-3 mb-4 @elementCartHide@ @hideCatalog@">
                                 <div class="js-quantity-counter row align-items-center">
                                     <form action="#" method="POST">
                                         <input type="number" class="mb-20" value="1" name="quant[1]"  min="1" style="margin-right: 20px; width: 119px;">
@@ -85,7 +85,7 @@
                                 </div>
                             </div> 
 
-                            <div class=" py-2 px-3 mb-4 @elementCartOptionHide@">
+                            <div class=" py-2 px-3 mb-4 @elementCartOptionHide@ @hideCatalog@">
                                 <div class="js-quantity-counter row align-items-center">
                                     <form action="#" method="POST">
                                         <input type="number" class="mb-20" value="1" name="quant[1]"  min="1" style="margin-right: 20px; width: 119px;">
@@ -95,7 +95,7 @@
                             </div> 
                             <!-- Кнопка Под заказ -->
                             @ComStartNotice@
-                            <div class="mb-4 mt-4">
+                            <div class="mb-4 mt-4 @hideCatalog@">
                                 <a class="list-add-cart-btn red-hover-btn border-0" href="/users/notice.html?productId=@productUid@" title="@productNotice@">{Уведомить}</a>
                             </div>
                             @ComEndNotice@ 

@@ -50,6 +50,7 @@
                         <span class="d-block font-size-1 mr-3">{Вес}</span>
                         <div class="media-body text-right">
                             <span class="text-dark font-weight-bold"><span id="WeightSumma">@cart_weight@</span> {г}</span>
+                            <span id="VolumeWeightSumma" class="d-none">@cart_volume_weight@</span>
                         </div>
                     </div>
 

@@ -53,6 +53,7 @@
                             <th>{Вес}</th>
                             <td>
                                 <span id="WeightSumma">@cart_weight@</span> {г}
+                                <span id="VolumeWeightSumma" class="d-none">@cart_volume_weight@</span>
                             </td>
                         </tr>
                         <tr>

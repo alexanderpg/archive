@@ -95,7 +95,7 @@ if (empty($prices)) {
         $url = $_SERVER['SERVER_NAME'] . '/phpshop/modules/cdekwidget/api/PHPShopCdekService.php?' . http_build_query($query);
         $result = $DeliveryWidget->get($url);
 
-        $sdek_price = $result['result']['price'];
+        $sdek_price = round($result['result']['price']);
         $sdek_days = [
             $result['result']['deliveryPeriodMin'],
             $result['result']['deliveryPeriodMax'],

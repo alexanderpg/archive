@@ -60,8 +60,6 @@
 
                     // Выравнивание ячеек товара
                     setEqualHeight(".thumbnail .description");
-                    // Коррекция знака рубля
-                    //setRubznak();
 
                     count = next_page;
 

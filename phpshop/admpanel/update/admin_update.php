@@ -7,7 +7,7 @@ $PHPShopUpdate = new PHPShopUpdate();
 
 $License = @parse_ini_file_true("../../license/" . PHPShopFile::searchFile("../../license/", 'getLicense'), 1);
 
-define("UPDATE_PATH", "http://www.phpshop.ru/update/update5.php?from=" . $License['License']['DomenLocked'] . "&version=" . $GLOBALS['SysValue']['upload']['version'] . "&support=" . $License['License']['SupportExpires'] . '&serial=' . $License['License']['Serial'] . '&path=update');
+define("UPDATE_PATH", "http://www.phpshop.ru/update/update6.php?from=" . $License['License']['DomenLocked'] . "&version=" . $GLOBALS['SysValue']['upload']['version'] . "&support=" . $License['License']['SupportExpires'] . '&serial=' . $License['License']['Serial'] . '&path=update');
 
 // Функция обновления
 function actionUpdate() {
@@ -21,15 +21,15 @@ function actionUpdate() {
     // Проверка создания/удаления архивов
     if ($PHPShopUpdate->isReady()) {
 
-        // Соединение с FTP
-        $PHPShopUpdate->ftpConnect();
-
+        // Загрузка файлов
+        $PHPShopUpdate->load();
+        
         // Анализ карты обновления
         $PHPShopUpdate->map();
 
         // Бекап файлов для восстановления
         $PHPShopUpdate->backupFiles();
-
+        
         // Распаковка архива
         if ($PHPShopUpdate->installFiles() and ! $PHPShopUpdate->base_update_enabled) {
             $TitlePage .= ' - ' . __('Выполнено');
@@ -87,6 +87,7 @@ function actionStart() {
     if ($PHPShopUpdate->update_status == 'active' and empty($update_result)) {
 
         if (is_array($PHPShopUpdate->content)) {
+
             $result_content = '<ul class="list-group">';
 
             foreach ($PHPShopUpdate->content as $text)

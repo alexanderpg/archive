@@ -237,7 +237,7 @@ $().ready(function () {
         data.push({name: $(this).attr('data-edit'), value: escape($(this).val())});
         data.push({name: 'rowID', value: $(this).attr('data-id')});
         data.push({name: 'editID', value: 1});
-        data.push({name: 'actionList[editID]', value: 'actionUpdate'});
+        data.push({name: 'actionList[editID]', value: 'actionUpdate.sort.edit'});
 
         $(this).css('text-decoration', 'underline').css('text-decoration-style', 'dashed');
 

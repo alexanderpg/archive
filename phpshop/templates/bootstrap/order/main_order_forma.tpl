@@ -15,7 +15,7 @@
         </div>
         <div class="panel-body">
             @authData@ @noAuth@                  
-<label><input type="checkbox" value="on" name="rule" class="req" checked="checked">  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
+<label><input type="checkbox" value="on" name="rule" class="req" required="">  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
                            </label>
         </div>
     </div>

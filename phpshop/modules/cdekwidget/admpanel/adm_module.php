@@ -108,7 +108,7 @@ function actionStart() {
     }
 
     $Tab1 = $PHPShopGUI->setField('Аккаунт интеграции', $PHPShopGUI->setInputText(false, 'account_new', $data['account'], 300));
-    $Tab1 .= $PHPShopGUI->setField('Пароль интеграции', $PHPShopGUI->setInput("password", 'password_new', $data['password'], false, 300));
+    $Tab1 .= $PHPShopGUI->setField('Пароль интеграции', $PHPShopGUI->setInputText(false, 'password_new', $data['password'],300));
     $Tab1 .= $PHPShopGUI->setField('Режим разработки', $PHPShopGUI->setCheckbox("test_new", 1, "Отправка данных на тестовую среду СДЭК", $data["test"]));
     $Tab1 .= $PHPShopGUI->setField('Только регионы РФ', $PHPShopGUI->setCheckbox("russia_only_new", 1, "Отображать в виджете только города России", $data["russia_only"]));
     $Tab1 .= $PHPShopGUI->setField('Статус для отправки', $PHPShopGUI->setSelect('status_new', $status, 300));

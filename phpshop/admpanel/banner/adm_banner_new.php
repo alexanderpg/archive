@@ -289,6 +289,3 @@ $PHPShopGUI->getAction();
 // Вывод формы при старте
 $PHPShopGUI->setLoader($_POST['editID'], 'actionStart');
 ?>
-
-
-

@@ -181,7 +181,7 @@ function actionSelect() {
     $command[] = array('Прайс-лист', 1, false);
     $command[] = array('База Excel', 2, false);
 
-    $PHPShopGUI->_CODE .= '<p class="text-muted">Вы можете редактировать одновременно несколько записей. Выберите записи из списка выше, отметьте галочкой поля, которые нужно отредактировать, и нажмите на кнопку "Редактировать выбранные".</p><p class="text-muted"><a href="#" id="select-all">Выбрать все</a> | <a href="#" id="select-none">Снять выделение со всех</a></p>';
+    $PHPShopGUI->_CODE .= '<p class="text-muted">' . __('Вы можете редактировать одновременно несколько записей. Выберите записи из списка выше, отметьте галочкой поля, которые нужно отредактировать, и нажмите на кнопку "Редактировать выбранные".</p><p class="text-muted"><a href="#" id="select-all">Выбрать все</a> | <a href="#" id="select-none">Снять выделение со всех</a>') . '</p>';
 
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['orders']);
     $data = $PHPShopOrm->select(array('*'), false, false, array('limit' => 1));
@@ -191,7 +191,7 @@ function actionSelect() {
 
             if ((!in_array($key, $key_stop))) {
                 if (!empty($key_name[$key])) {
-                    $name = __($key_name[$key]);
+                    $name = $key_name[$key];
                     $select = 0;
                 } else {
                     $name = $key;

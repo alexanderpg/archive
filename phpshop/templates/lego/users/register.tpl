@@ -25,7 +25,7 @@
         <label>{Повторите пароль}</label>
         <input type="password" name="password_new2"  class="form-control" required="">
         <span class="glyphicon glyphicon-remove form-control-feedback hide" aria-hidden="true"></span
-        <p class="small"><label><input type="checkbox" value="on" name="rule" class="req" checked="checked" required>  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
+        <p class="small"><label><input type="checkbox" value="on" name="rule" class="req"  required>  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
     </div>
     <div>
         @captcha@

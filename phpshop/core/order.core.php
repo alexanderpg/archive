@@ -6,7 +6,7 @@ $PHPShopOrder = new PHPShopOrderFunction();
 /**
  * Обработчик оформления заказа
  * @author PHPShop Software
- * @version 1.6
+ * @version 1.7
  * @package PHPShopCore
  */
 class PHPShopOrder extends PHPShopCore {
@@ -172,6 +172,7 @@ class PHPShopOrder extends PHPShopCore {
         $this->set('cart_sum', $sum_cart);
         $this->set('cart_sum_discount_off', number_format($sum_discount_off, $PHPShopOrder->format, '.', ''));
         $this->set('cart_weight', $this->PHPShopCart->getWeight());
+        $this->set('cart_volume_weight', $this->PHPShopCart->getVolumeWeight());
 
         // Стоимость доставки
         PHPShopObj::loadClass('delivery');

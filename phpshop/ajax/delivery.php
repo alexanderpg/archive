@@ -21,14 +21,14 @@ $PHPShopOrder = new PHPShopOrderFunction();
 $PHPShopLang = new PHPShopLang(array('locale' => $_SESSION['lang'], 'path' => 'shop'));
 
 // Модули
-$PHPShopModules = new PHPShopModules($_classPath . "modules/",false,"../../");
+$PHPShopModules = new PHPShopModules($_classPath . "modules/", false, "../../");
 
 // Подключаем библиотеку доставки
 require_once $_classPath . "core/order.core/delivery.php";
 
 $PHPShopDelivery = new PHPShopDelivery((int) $_REQUEST['xid']);
 
-$GetDeliveryPrice = $PHPShopDelivery->getPrice($_REQUEST['sum'], floatval($_REQUEST['wsum']));
+$GetDeliveryPrice = $PHPShopDelivery->getPrice($_REQUEST['sum'], (int) $_REQUEST['wsum'], (int) $_REQUEST['vwsum']);
 $GetDeliveryPrice *= $PHPShopSystem->getDefaultValutaKurs(true);
 
 $PHPShopCart = new PHPShopCart();

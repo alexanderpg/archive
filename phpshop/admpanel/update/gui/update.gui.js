@@ -95,6 +95,18 @@ $(document).ready(function () {
         $('#product_edit').append('<input type="hidden" name="saveID" value="1">');
         $('#product_edit').submit();
     });
+    
+    // Активация из списка dropdown
+    $("body").on('mouseenter', '.data-row', function () {
+        $(this).find('#dropdown_action').show();
+        $(this).find('.editable').removeClass('input-hidden');
+        $(this).find('.media-object').addClass('image-shadow');
+    });
+    $("body").on('mouseleave', '.data-row', function () {
+        $(this).find('#dropdown_action').hide();
+        $(this).find('.editable').addClass('input-hidden');
+        $(this).find('.media-object').removeClass('image-shadow');
+    });
 
 
     if (typeof ($.cookie('data_length')) == 'undefined')
@@ -105,12 +117,15 @@ $(document).ready(function () {
     var table = $('#data').dataTable({
         "lengthMenu": data_length,
         "paging": true,
-        "ordering": false,
+        "ordering": true,
         "info": false,
         "language": locale.dataTable,
+        order: [
+            [0, 'desc'],
+        ],
         "aaSorting": [],
         "columnDefs": [
-            {"orderable": false, "targets": 0}
+            {"orderable": true, "targets": 1}
         ]
 
     });

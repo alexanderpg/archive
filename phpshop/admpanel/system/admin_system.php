@@ -402,46 +402,7 @@ function actionStart() {
             $PHPShopGUI->setField("Быстрый поиск", $PHPShopGUI->setSelect('option[search_enabled]', $search_enabled_value, null, true), 1, 'Поиск в верхнем правом углу панели управления', $hideCatalog)
     );
 
-    if (!class_exists('Memcached')) {
-        $disabled_memcached = 'disabled="disabled"';
-    }
-
-    if (empty($_SESSION['mod_pro'])) {
-        $disabled_cache = 'disabled="disabled"';
-        $disabled_cache_info = ' (только для Pro)';
-    }
-
-    $cache_value[] = array(__('Файловая система'), 2, $option['cache']);
-    $cache_value[] = array(__('База данных MySQL'), 3, $option['cache']);
-    $cache_value[] = array(__('Сервер кеширования Memcached'), 1, $option['cache'], $disabled_memcached);
-
-    $cache_time_value = $PHPShopGUI->setSelectValue($option['cache_time'], 10);
-
-    if (empty($option['cache_gzip']))
-        $option['cache_gzip'] = 1;
-    $cache_gzip_value = $PHPShopGUI->setSelectValue($option['cache_gzip'], 9);
-
-    $cache_mod_value[] = array(__('Не используется'), 0, $option['cache_seo']);
-    $cache_mod_value[] = array(__('HTML страницы целиком' . $disabled_cache_info), 1, $option['cache_mod'], $disabled_cache);
-    $cache_mod_value[] = array(__('Только статические элементы' . $disabled_cache_info), 2, $option['cache_mod'], $disabled_cache);
-
-    $cache_seo_value[] = array(__('Не используется'), 0, $option['cache_seo']);
-    $cache_seo_value[] = array(__('HTML страницы целиком' . $disabled_cache_info), 1, $option['cache_seo'], $disabled_cache);
-    $cache_seo_value[] = array(__('Только статические элементы' . $disabled_cache_info), 2, $option['cache_seo'], $disabled_cache);
-
-
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Настройка быстройдействия', $PHPShopGUI->setField("Хранение кеша", $PHPShopGUI->setSelect('option[cache]', $cache_value)) .
-            $PHPShopGUI->setField("Тип кеша для пользователей", $PHPShopGUI->setSelect('option[cache_mod]', $cache_mod_value)) .
-            $PHPShopGUI->setField("Тип кеша для поисковых ботов", $PHPShopGUI->setSelect('option[cache_seo]', $cache_seo_value)) .
-            $PHPShopGUI->setField("Кол-во дней хранение кеша", $PHPShopGUI->setSelect('option[cache_time]', $cache_time_value, 50, true) . '<br>' .
-                    $PHPShopGUI->setCheckbox('cache_clean', 1, 'Очистить кэш', 0, $disabled_cache)) .
-            $PHPShopGUI->setField("Оптимизация кода", $PHPShopGUI->setCheckbox('option[cache_compres]', 1, 'Удаление комментариев и форматирования из HTML кода страниц', $option['cache_compres'])) .
-            $PHPShopGUI->setField("GZIP сжатие", $PHPShopGUI->setSelect('option[cache_gzip]', $cache_gzip_value, 50, true)) .
-            $PHPShopGUI->setField("Счетчик", $PHPShopGUI->setCheckbox('option[cache_debug]', 1, 'Показать время генерации страниц', $option['cache_debug'])) .
-            $PHPShopGUI->setField("Оптимизация статических файлов", $PHPShopGUI->setCheckbox('option[min]', 1, 'Удаление комментариев и форматирования из JS и CSS файлов', $option['min']))
-    );
-
-
+  
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 
@@ -483,7 +444,7 @@ function actionUpdate() {
     unset($option['support_notice']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.user_calendar', 'option.cloud_enabled', 'option.digital_product_enabled', 'option.parent_price_enabled', 'option.user_skin', 'option.user_mail_activate', 'option.user_mail_activate_pre', 'option.user_price_activate', 'option.mail_smtp_enabled', 'option.mail_smtp_debug', 'option.multi_currency_search', 'option.mail_smtp_auth', 'option.sklad_enabled', 'option.rule_enabled', 'option.catlist_enabled', 'option.filter_cache_enabled', 'option.filter_products_count', 'option.chat_enabled', 'option.new_enabled', 'option.sklad_sum_enabled', 'option.user_servers_control', 'option.user_phone_mask_enabled', 'option.user_items_activate', 'option.ajax_scroll', 'option.ajax_scroll_paginator', 'option.fast_view', 'option.auto_discount_disabled', 'option.chat_support', 'option.user_captcha_enabled', 'option.user_cookie_enabled', 'option.user_cookie_mobile_enabled', 'option.odnotip', 'option.sklad_sort_enabled', 'option.nowbuy_enabled', 'option.yandex_speller_enabled', 'option.yandexcloud_enabled', 'option.ip_enabled', 'option.min', 'option.cache_debug', 'option.cache_compres');
+    $PHPShopOrm->updateZeroVars('option.user_calendar', 'option.cloud_enabled', 'option.digital_product_enabled', 'option.parent_price_enabled', 'option.user_skin', 'option.user_mail_activate', 'option.user_mail_activate_pre', 'option.user_price_activate', 'option.mail_smtp_enabled', 'option.mail_smtp_debug', 'option.multi_currency_search', 'option.mail_smtp_auth', 'option.sklad_enabled', 'option.rule_enabled', 'option.catlist_enabled', 'option.filter_cache_enabled', 'option.filter_products_count', 'option.chat_enabled', 'option.new_enabled', 'option.sklad_sum_enabled', 'option.user_servers_control', 'option.user_phone_mask_enabled', 'option.user_items_activate', 'option.ajax_scroll', 'option.ajax_scroll_paginator', 'option.fast_view', 'option.auto_discount_disabled', 'option.chat_support', 'option.user_captcha_enabled', 'option.user_cookie_enabled', 'option.user_cookie_mobile_enabled', 'option.odnotip', 'option.sklad_sort_enabled', 'option.nowbuy_enabled', 'option.yandex_speller_enabled', 'option.yandexcloud_enabled', 'option.ip_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

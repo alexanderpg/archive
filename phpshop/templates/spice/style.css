@@ -4037,3 +4037,5 @@ overflow: hidden;
         width:95%;
     }
 }
+
+.smart-captcha {height: 100px;margin-bottom:10px;max-width:250px}

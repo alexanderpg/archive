@@ -3,7 +3,7 @@
 /**
  * Библиотека YML
  * @author PHPShop Software
- * @version 1.8
+ * @version 1.9
  * @package PHPShopClass
  */
 class PHPShopYml {
@@ -248,8 +248,6 @@ class PHPShopYml {
         // Не выводить скрытые каталоги
         if (isset($_GET['getall']) or isset($_GET['retailcrm']))
             $where = null;
-        else
-            $where['skin_enabled'] = "!='1'";
 
         // Мультибаза
         if (defined("HostID"))

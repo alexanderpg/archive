@@ -19,7 +19,7 @@
         <div class="form-group">
             <textarea name="content" placeholder="{Сообщение}" class="form-control" required="">@php  echo $_POST['content']; php@</textarea>
         </div>
-        <p class="small"><label><input type="checkbox" value="on" name="rule" class="req" checked="checked" required>  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
+        <p class="small"><label><input type="checkbox" value="on" name="rule" class="req"  required>  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
 
         <div class="form-group">
             @captcha@

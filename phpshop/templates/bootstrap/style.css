@@ -2505,3 +2505,5 @@ body.modal-open{
 .solid-menus small{
     display: none;
 }
+
+.smart-captcha {height: 100px;margin-bottom:10px;max-width:250px}

@@ -35,8 +35,8 @@
                         </span>
 
                         <div class="switcher-item">
-                            <a href="/shop/UID_@productUid@.html" class="add-cart text-capitalize @elementCartOptionHide@">@productSale@</a>
-                            <a href="/shop/UID_@productUid@.html" class="add-cart text-capitalize addToCartList @elementCartHide@" data-uid="@productUid@">@productSale@</a>
+                            <a href="/shop/UID_@productUid@.html" class="add-cart text-capitalize @elementCartOptionHide@ @hideCatalog@">@productSale@</a>
+                            <a href="/shop/UID_@productUid@.html" class="add-cart text-capitalize addToCartList @elementCartHide@ @hideCatalog@" data-uid="@productUid@">@productSale@</a>
                         </div>
 
                     </div>

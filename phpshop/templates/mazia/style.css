@@ -605,7 +605,7 @@ header.header ul.white-content > li > a {
 }
 
 header.header ul li {
-    display: inline-block !important;
+    display: inline-block;
     position: relative;
 }
 header.header ul li a {
@@ -4990,3 +4990,4 @@ input:focus,button:focus,.form-control:focus,label.focus {
 .filter-item-hide{
     color: #ddd !important;
 }
+.smart-captcha {height: 100px;margin-bottom:10px;max-width:250px}

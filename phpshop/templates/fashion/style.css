@@ -777,3 +777,5 @@ color: #4e5360 !important;
         margin-right: 0px;
     }
 }
+
+.smart-captcha {height: 100px;margin-bottom:10px;max-width:250px}

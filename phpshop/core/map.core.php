@@ -7,7 +7,7 @@
  * @package PHPShopCore
  */
 class PHPShopMap extends PHPShopCore {
-    
+
     var $empty_index_action = false;
 
     /**
@@ -36,8 +36,7 @@ class PHPShopMap extends PHPShopCore {
             $hook = $this->setHook(__CLASS__, __FUNCTION__, array('val' => $val, 'dir' => $dir, 'name' => $name));
             if ($hook) {
                 return $hook;
-            }
-            else
+            } else
                 $this->memory_set(__CLASS__ . '.' . __FUNCTION__, 0);
         }
 
@@ -69,10 +68,10 @@ class PHPShopMap extends PHPShopCore {
                 if (empty($vid)) {
                     if (empty($sup)) {
 
-                        $dis.=PHPShopText::li($name, $this->seourl($val, 'category', $name));
+                        $dis .= PHPShopText::li($name, $this->seourl($val, 'category', $name));
                     } else {
-                        $dis.=PHPShopText::li(PHPShopText::b($name));
-                        $dis.=$sup;
+                        $dis .= PHPShopText::li(PHPShopText::b($name));
+                        $dis .= $sup;
                     }
                 }
             }
@@ -84,7 +83,7 @@ class PHPShopMap extends PHPShopCore {
      * Категории товаров
      */
     function category() {
-        
+
         $where['skin_enabled'] = "!='1'";
 
         // Мультибаза
@@ -103,9 +102,9 @@ class PHPShopMap extends PHPShopCore {
                     $name = $this->PHPShopCategoryArray->getParam($val . '.name');
                     $sup = $this->subcategory($val);
                     if (!empty($sup))
-                        $dis.=PHPShopText::p(PHPShopText::b($name) . $sup);
+                        $dis .= PHPShopText::p(PHPShopText::b($name) . $sup);
                     else
-                        $dis.=PHPShopText::p(PHPShopText::a($this->seourl($val, 'category', $name), PHPShopText::b($name), $name));
+                        $dis .= PHPShopText::p(PHPShopText::a($this->seourl($val, 'category', $name), PHPShopText::b($name), $name));
                 }
             }
         }
@@ -126,10 +125,10 @@ class PHPShopMap extends PHPShopCore {
                     $sup = $this->subcategory_page($val);
                     $name = $this->PHPShopPageCategoryArray->getParam($val . '.name');
                     if (empty($sup)) {
-                        $dis.=PHPShopText::li($name, $this->seourl($val, 'category_page', $name));
+                        $dis .= PHPShopText::li($name, $this->seourl($val, 'category_page', $name));
                     } else {
-                        $dis.=PHPShopText::li(PHPShopText::b($name));
-                        $dis.=$sup;
+                        $dis .= PHPShopText::li(PHPShopText::b($name));
+                        $dis .= $sup;
                     }
                 }
             }
@@ -150,10 +149,10 @@ class PHPShopMap extends PHPShopCore {
                 $sup = $this->subcategory_page($val);
                 $name = $this->PHPShopPageCategoryArray->getParam($val . '.name');
                 if (empty($sup)) {
-                    $dis.=PHPShopText::p(PHPShopText::a($this->seourl($val, 'category_page', $name), PHPShopText::b($name), $name));
+                    $dis .= PHPShopText::p(PHPShopText::a($this->seourl($val, 'category_page', $name), PHPShopText::b($name), $name));
                 } else {
-                    $dis.=PHPShopText::b($name);
-                    $dis.=$sup;
+                    $dis .= PHPShopText::b($name);
+                    $dis .= $sup;
                 }
             }
         }
@@ -196,8 +195,12 @@ class PHPShopMap extends PHPShopCore {
     function index() {
 
         // Перехват модуля
-        if ($this->setHook(__CLASS__, __FUNCTION__, false, 'START'))        
+        if ($this->setHook(__CLASS__, __FUNCTION__, false, 'START'))
             return true;
+
+        // Тип работы
+        if ($this->PHPShopSystem->getParam("shop_type") > 0)
+            return $this->setError404();
 
         // Категории товаров
         $this->category();
@@ -207,7 +210,7 @@ class PHPShopMap extends PHPShopCore {
 
         // Акции
         if (!$this->get('hideSite'))
-        $this->special();
+            $this->special();
 
         // Новости
         $this->news();

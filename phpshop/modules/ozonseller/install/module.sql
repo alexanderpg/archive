@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_system` (
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','0','0','2.3');
+INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','0','0','2.5');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_log` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -44,12 +44,12 @@ ALTER TABLE `phpshop_orders` ADD `ozonseller_order_data` varchar(255) DEFAULT ''
 ALTER TABLE `phpshop_categories` ADD `category_ozonseller` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_sort_categories` ADD `attribute_ozonseller` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_products` ADD `export_ozon` enum('0','1') DEFAULT '0';
-ALTER TABLE `phpshop_products` ADD `export_ozon_task_id` int(11) DEFAULT 0;
+ALTER TABLE `phpshop_products` ADD `export_ozon_task_id` BIGINT DEFAULT 0;
 ALTER TABLE `phpshop_products` ADD `price_ozon` float DEFAULT '0';
 ALTER TABLE `phpshop_products` ADD `export_ozon_task_status` varchar(64) default '';
 ALTER TABLE `phpshop_products` ADD `barcode_ozon` varchar(255) DEFAULT '';
-ALTER TABLE `phpshop_products` ADD `export_ozon_id` int(11) DEFAULT 0;
-ALTER TABLE `phpshop_products` ADD `sku_ozon` int(11) DEFAULT 0;
+ALTER TABLE `phpshop_products` ADD `export_ozon_id` BIGINT DEFAULT '0';
+ALTER TABLE `phpshop_products` ADD `sku_ozon` BIGINT DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_export` (
 `id` int(11) NOT NULL AUTO_INCREMENT,

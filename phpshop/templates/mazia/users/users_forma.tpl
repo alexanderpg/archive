@@ -28,33 +28,33 @@
                 </ul>
                 <!-- End List -->
 
-                <h6 class="text-cap small">{Товары}</h6>
+                <h6 class="text-cap small @hideSite@">{Товары}</h6>
 
-               <!-- List -->
-                    <ul class="nav nav-sub nav-sm  nav-list-y-2 mb-0">
-                        <li class="nav-item">
-                            <a class="" href="/order/">
-                                <i class="fas fa-shopping-cart nav-icon"></i>
-                                {Корзина}
-                                <b class="badge badge-soft-dark badge-pill nav-link-badge cartnum">@num@</b>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="" href="/compare/">
-                                <i class="fas fa-cogs nav-icon"></i>
-                                {Сравнить}
-                                <b class="badge badge-soft-dark badge-pill nav-link-badge numcompare">@numcompare@</b>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="" href="/users/wishlist.html">
-                                <i class="fas fa-heart nav-icon"></i>
-                                {Избранное}
-                                <b class="badge badge-soft-dark badge-pill nav-link-badge wishlistcount">@wishlistCount@</b>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- End List -->
+                <!-- List -->
+                <ul class="nav nav-sub nav-sm  nav-list-y-2 mb-0">
+                    <li class="nav-item @hideCatalog@">
+                        <a class="" href="/order/">
+                            <i class="fas fa-shopping-cart nav-icon"></i>
+                            {Корзина}
+                            <b class="badge badge-soft-dark badge-pill nav-link-badge cartnum">@num@</b>
+                        </a>
+                    </li>
+                    <li class="nav-item @hideSite@">
+                        <a class="" href="/compare/">
+                            <i class="fas fa-cogs nav-icon"></i>
+                            {Сравнить}
+                            <b class="badge badge-soft-dark badge-pill nav-link-badge numcompare">@numcompare@</b>
+                        </a>
+                    </li>
+                    <li class="nav-item @hideSite@">
+                        <a class="" href="/users/wishlist.html">
+                            <i class="fas fa-heart nav-icon"></i>
+                            {Избранное}
+                            <b class="badge badge-soft-dark badge-pill nav-link-badge wishlistcount">@wishlistCount@</b>
+                        </a>
+                    </li>
+                </ul>
+                <!-- End List -->
 
             </div>
         </div>

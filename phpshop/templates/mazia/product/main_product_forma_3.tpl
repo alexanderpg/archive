@@ -33,7 +33,7 @@
                         <span class="text-body small ml-1 @php __hide('productPriceOld'); php@" ><del>@productPriceOld@</del></span>
                     </span>
 
-                    <div class="switcher-item">
+                    <div class="switcher-item @hideCatalog@">
                         <a href="/shop/UID_@productUid@.html" class="add-cart text-capitalize @elementCartOptionHide@">@productSale@</a>
                         <a href="#" class="add-cart text-capitalize addToCartList @elementCartHide@" data-uid="@productUid@">@productSale@</a>
                     </div>

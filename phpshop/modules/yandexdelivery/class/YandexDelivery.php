@@ -263,6 +263,16 @@ class YandexDelivery {
             'tariff' => 'self_pickup',
             'total_assessed_price' => (int) ($data->total_price * 100),
             'total_weight' => (int) ($data->weight),
+            'places' => [
+                [
+                    'physical_dims' => [
+                        'dx' => (int) $data->length, //cm
+                        'dy' => (int) $data->height,
+                        'dz' => (int) $data->width,
+                        'weight_gross' => (int) $data->weight, //gram
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->request('/api/b2b/platform/pricing-calculator', $request);
@@ -272,7 +282,7 @@ class YandexDelivery {
             'response' => $response
         ];
 
-        //$this->log($log, null, '/api/b2b/platform/pricing-calculator', null);
+        $this->log($log, null, '/api/b2b/platform/pricing-calculator', null);
 
         $pricing_total = explode(' ', (int) $response['pricing_total'])[0];
 

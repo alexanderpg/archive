@@ -8,7 +8,7 @@ if (!defined("OBJENABLED")) {
 /**
  * Корзина товаров
  * @author PHPShop Software
- * @version 2.1
+ * @version 2.2
  * @package PHPShopClass
  */
 class PHPShopCart {
@@ -54,7 +54,7 @@ class PHPShopCart {
         if ($import_cart)
             $this->_CART = $import_cart;
         else {
-            if (empty($_SESSION['cart']) or !is_array($_SESSION['cart'])) {
+            if (empty($_SESSION['cart']) or ! is_array($_SESSION['cart'])) {
                 $_SESSION['cart'] = array();
             }
             $this->_CART = &$_SESSION['cart'];
@@ -93,7 +93,7 @@ class PHPShopCart {
                 "name" => str_replace('&#43;', '+', $name),
                 "price" => $this->getCartProductPrice($objProduct),
                 "price_n" => $this->getCartProductPrice($objProduct, 'price_n'),
-                "price_purch" => $this->applyCurrency($objProduct->getParam("price_purch"),true),
+                "price_purch" => $this->applyCurrency($objProduct->getParam("price_purch"), true),
                 "uid" => $objProduct->getParam("uid"),
                 "num" => abs($this->_CART[$xid]['num'] + $num),
                 "ed_izm" => $objProduct->getParam("ed_izm"),
@@ -103,9 +103,9 @@ class PHPShopCart {
                 "type" => $objProduct->getParam("type")
             );
 
-            $weight = $objProduct->getParam("weight");
-            if (!empty($weight))
-                $cart['weight'] = $weight;
+            // Объемный вес
+            if (!empty($objProduct->getParam("length")) and !empty($objProduct->getParam("width")) and !empty($objProduct->getParam("height")))
+                $cart['volume_weight'] = (int)($objProduct->getParam("length")*$objProduct->getParam("width")*$objProduct->getParam("height"))/5;
 
             if (!empty($parentID)) {
                 $objID = $cart['parent'] = intval($parentID);
@@ -128,7 +128,7 @@ class PHPShopCart {
             // Учет свойств товара
             if (!empty($_REQUEST['addname']))
                 $cart['name'] = $cart['name'] . '-' . $_REQUEST['addname'];
-            
+
             // Журнал
             $this->log = $cart;
 
@@ -147,12 +147,12 @@ class PHPShopCart {
 
                 // сообщение для вывода во всплывающее окно
                 $this->message = __("Ошибка добавления") . " <a href='" . $GLOBALS['SysValue']['dir']['dir'] . "/shop/UID_$objID.html' class='alert-link'>$name</a> 
-            " . __("в вашу") . " " . __("корзину") . ", ".__('товар отсутствует на складе');
+            " . __("в вашу") . " " . __("корзину") . ", " . __('товар отсутствует на складе');
 
                 $this->log['status'] = false;
             }
         }
-        
+
         return true;
     }
 
@@ -194,12 +194,23 @@ class PHPShopCart {
 
     /**
      * Вес корзины
-     * @return float
+     * @return int
      */
     function getWeight() {
         $weight = 0;
         foreach ($this->_CART as $val)
-            $weight += (int)$val['num'] * (int)$val['weight'];
+            $weight += (int) $val['num'] * (int) $val['weight'];
+        return $weight;
+    }
+    
+     /**
+     * Объемный вес корзины
+     * @return int
+     */
+    function getVolumeWeight() {
+        $weight = 0;
+        foreach ($this->_CART as $val)
+            $weight += (int) $val['num'] * (int) $val['volume_weight'];
         return $weight;
     }
 
@@ -360,15 +371,14 @@ class PHPShopCart {
         return $PHPShopOrder->ReturnSumma($this->getSum(), $PHPShopOrder->ChekDiscount($this->getSum()));
     }
 
-    public function isItemInCart($productId)
-    {
+    public function isItemInCart($productId) {
         foreach ($this->_CART as $product) {
             // Товар в корзине
-            if((int) $product['id'] === (int) $productId) {
+            if ((int) $product['id'] === (int) $productId) {
                 return true;
             }
             // В корзине подтип товара
-            if(isset($product['parent']) && (int) $product['parent'] === (int) $productId) {
+            if (isset($product['parent']) && (int) $product['parent'] === (int) $productId) {
                 return true;
             }
         }
@@ -405,7 +415,7 @@ class PHPShopCart {
         $promotions = $PHPShopPromotions->getPrice($product->objRow);
 
         $prices = [
-            'price'  => $product->getParam('price'),
+            'price' => $product->getParam('price'),
             'price2' => $product->getParam('price2'),
             'price3' => $product->getParam('price3'),
             'price4' => $product->getParam('price4'),
@@ -415,11 +425,11 @@ class PHPShopCart {
 
         if (is_array($promotions)) {
             $prices[$priceColumn] = $promotions[$column];
-            if(!empty($promotions['price_n'])) {
+            if (!empty($promotions['price_n'])) {
                 $price_n = $promotions['price_n'];
             }
         } else {
-            if($column !== 'price_n') {
+            if ($column !== 'price_n') {
                 $prices[$priceColumn] = $product->getParam($priceColumn);
             }
         }
@@ -435,8 +445,7 @@ class PHPShopCart {
     /**
      * Применение курса к сумме.
      */
-    private function applyCurrency($sum, $order)
-    {
+    private function applyCurrency($sum, $order) {
         global $PHPShopSystem;
 
         // Если выбрана другая валюта
@@ -448,6 +457,7 @@ class PHPShopCart {
 
         return $sum * $kurs;
     }
+
 }
 
 ?>

@@ -627,6 +627,7 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                     $this->ImageSrc = explode("#", $CsvToArray[3])[1];
                     $CsvToArray[3] = explode("#", $CsvToArray[3])[0];
                 }
+                else $this->ImageSrc = "jpg";
 
                 if (!empty($_GET['cml']))
                     $last_id = $this->getIdForImagesExternalCode($CsvToArray[17]);
@@ -931,6 +932,7 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                     $this->ImageSrc = explode("#", $CsvToArray[3])[1];
                     $CsvToArray[3] = explode("#", $CsvToArray[3])[0];
                 }
+                else  $this->ImageSrc="jpg";
 
                 $sql .= "pic_small='" . $this->ImagePlus($CsvToArray[3]) . "_1s." . $this->ImageSrc . "',
             pic_big='" . $this->ImagePlus($CsvToArray[3]) . "_1." . $this->ImageSrc . "',";
