@@ -6,14 +6,6 @@
 +-------------------------------------+
 */
 
-
-function UpdateNumOrder($uid){
-$last_num = substr($uid, -2);
-$total=strlen($uid);
-$ferst_num = substr($uid,0,($total-2));
-return $ferst_num."-".$last_num;
-}
-
 // ROBOXchange
 if(isset($crc)){
 
@@ -45,13 +37,6 @@ $mH=substr($d_hash1,2,strlen($d_hash1));
 $mT=substr($mH,0,strlen($mH)-5);
 $inv_id=base64_decode($mT);
 }
-// Interkassa
-elseif(isset($ik_payment_id)){
-
-$my_crc = "NoN";
-$crc = "NoN";
-$inv_id = $ik_payment_id;
-}
 else { 
 $my_crc=1;
 $crc=2;
@@ -68,8 +53,6 @@ if (strtoupper(@$my_crc) != strtoupper(@$crc))
 }
 else {
 $inv_id=TotalClean($inv_id,4);
-$inv_id=UpdateNumOrder($inv_id);
-
 // Приверяем сущ. заказа
 $sql="select uid from ".$SysValue['base']['table_name1']." where uid='$inv_id'";
 $result=mysql_query($sql);

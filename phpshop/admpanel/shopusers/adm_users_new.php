@@ -33,21 +33,6 @@ $dis
 return @$disp;
 }
 
-
-// Авторизуем из корзины
-if(isset($visitorID)){
-$sql="select * from $table_name1 where id=$visitorID limit 0, 1";
-$result=mysql_query($sql);
-$row = mysql_fetch_array($result);
-
-    $id=$row['id'];
-	$order=unserialize($row['orders']);
-
-$user="user".$visitorID;
-$pass=substr(abs(crc32(rand(0,100))),0,6);
-}
-
-
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -115,14 +100,14 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,580);
 <tr>
 	<td>Login</td>
 	<td width="10"></td>
-	<td><input type="text" name="login_new"  style="width:250px;" value="<?=@$user;?>"></td>
+	<td><input type="text" name="login_new"  style="width:250px;"></td>
 	<td rowspan="2" valign="top" style="padding-left:10">
 	</td>
 </tr>
 <tr>
 	<td>Password</td>
 	<td width="10"></td>
-	<td><input type="text" name="password_new" style="width:250px;" value="<?=@$pass;?>"></td>
+	<td><input type="text" name="password_new" style="width:250px;"></td>
 </tr>
 </table>
 
@@ -139,34 +124,33 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,580);
 <tr>
 	<td>E-mail:
 	</td>
-	<td><input type="text" name="mail_new" style="width:350px" value="<?=@$order['Person']['mail'];?>"></td>
+	<td><input type="text" name="mail_new" style="width:350px"></td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>Контактное лицо</span>:
 	</td>
-	<td><input type="text" name="name_new" style="width:350px" 
-	value="<?=@$order['Person']['name_person'];?>"></td>
+	<td><input type="text" name="name_new" style="width:350px"></td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>Компания</span>: </td>
-	<td><input type="text" name="company_new" style="width:350px;" value="<?=@$order['Person']['org_name'];?>"></td>
+	<td><input type="text" name="company_new" style="width:350px;"></td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>ИНН</span>: </td>
-	<td><input type="text" name="inn_new" style="width:350px;" value="<?=@$order['Person']['org_inn'];?>"></td>
+	<td><input type="text" name="inn_new" style="width:350px;"></td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>КПП</span>: </td>
-	<td><input type="text" name="kpp_new" style="width:350px;" value="<?=@$order['Person']['org_kpp'];?>"></td>
+	<td><input type="text" name="kpp_new" style="width:350px;"></td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>Телефон</span>: </td>
 	<td><input type="text" name="tel_code_new" style="width:50px;"> -
-	<input type="text" name="tel_new" style="width:290px;" value="<?=@$order['Person']['tel_code']." ".$order['Person']['tel_name'];?>"></td>
+	<input type="text" name="tel_new" style="width:290px;"></td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>Адрес</span>: </td>
-	<td><textarea style="width:350px; height:50px;" name="adres_new"><?=@$order['Person']['adr_name'];?></textarea></td>
+	<td><textarea style="width:350px; height:50px;" name="adres_new"></textarea></td>
 </tr>
 </table>
 
@@ -178,12 +162,8 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,580);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('shopusersID')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
 	<input type="submit" name="editID" value="OK" class=but>
-	<input type="hidden" name="orderID"  value="<?=@$visitorID;?>">
 	<input type="reset" name="btnLang" name="delID" value="Сбросить" class=but>
 	<input type="button" name="btnLang" value="Отмена" onClick="return onCancel();" class=but>
 	</td>
@@ -199,43 +179,6 @@ $sql="INSERT INTO ".$SysValue['base']['table_name27']."
 VALUES ('','$login_new','".base64_encode($password_new)."','".date("U")."','$mail_new','$name_new','$company_new','$inn_new','$tel_new','$adres_new','$enabled_new','$status_new',
 '$kpp_new','$tel_code_new')";
 $result=mysql_query($sql)or @die("Невозможно изменить запись");
-
-
-// Обвновляем данные заказа
-$sql2="select id from ".$SysValue['base']['table_name27']." where login='$login_new' limit 0, 1";
-$result2=mysql_query($sql2) or @die($sql2);
-$row = mysql_fetch_array($result2);
-$id_user=$row['id'];
-
-mysql_query("UPDATE ".$SysValue['base']['table_name1']." SET user=$id_user where id=$orderID") ;
-
-
-// Шлем мыло клиенту
-$codepage  = "windows-1251";     
-$header_adm  = "MIME-Version: 1.0\n";
-$header_adm .= "From:  User Activation <donotreply@".str_replace("www.","",$SERVER_NAME).">\n";
-$header_adm .= "Content-Type: text/plain; charset=$codepage\n";
-$header_adm .= "X-Mailer: PHP/";
-$zag_adm=$LoadItems['System']['name']." - Регистрации пользователя ".$_POST['name_new'];
-$content_adm="
-Доброго времени!
---------------------------------------------------------
-
-Администратор рассмсотрел вашу заявку и добавил 
-Вас в авторизованные пользователи $SERVER_NAME
-
-Личный кабинет
---------------
-Адрес: http://$SERVER_NAME/users/
-Логин: ".$login_new."
-Пароль: ".$password_new."
-
-
-Дата/время: ".date("d-m-y H:i a")."
-";
-mail($_POST['mail_new'],$zag_adm, $content_adm, $header_adm);
-
-
 echo"
 <script>
 DoReloadMainWindow('shopusers');

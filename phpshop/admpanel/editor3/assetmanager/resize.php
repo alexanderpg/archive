@@ -12,14 +12,12 @@ $table_name19=$SysValue['base']['table_name19'];
 @mysql_connect ("$host", "$user_db", "$pass_db")or @die("Невозможно подсоединиться к базе");
 mysql_select_db("$dbase")or @die("Невозможно подсоединиться к базе");
 
-
-require("../../watermark/watermarkFunc.php");
 require("../../connect.php");
 require("../../enter_to_admin.php");
 include("settings.php");
 
 
-function SaveImg2($img, $option)
+function SaveImg2($img)
 
 {
 $font="../../../../phpshop/lib/font/norobot_font.ttf";
@@ -34,7 +32,6 @@ $font="../../../../phpshop/lib/font/norobot_font.ttf";
 				{
 					$ftype = "gif";
 					$f = $img[path] . $img[name].".gif";
-					$b = $img[path] . $img[name_big].".gif";
 					$t = $img[path] . $img[tname].".gif";
 					$type = true;
 				}
@@ -42,7 +39,6 @@ $font="../../../../phpshop/lib/font/norobot_font.ttf";
 				{
 					$ftype = "jpeg";
 					$f = $img[path] . $img[name].".jpg";
-					$b = $img[path] . $img[name_big].".jpg";
 					$t = $img[path] . $img[tname].".jpg";
 					$type = true;
 				}
@@ -52,8 +48,6 @@ $font="../../../../phpshop/lib/font/norobot_font.ttf";
 						$errinfo[] = "Недопустимый формат файла (Разрешено: GIF и JPEG)";
 						$type = false;
 					}
-					
-				
 
 
 // Если есть данные по тумбнейлу - он нужен :)	
@@ -189,18 +183,6 @@ imagegif($dst_imgt, "$t");
 															//Уменьшаем
 														// Присмотреться к работе
 																$src_img = imagecreatefromgif("$f");
-																
-																// копируем исходную картинку
-					
-																if ($option['image_save_source'] == 1){	
-																	$src_img1 = imagecreatefromgif("$f");																
-																    $dst_img1 = WatermarkFactory($src_img1, $option, 3);
-																	imagegif($dst_img1, "$b");
-																	@chmod("$b", 0644); 
-																	imagedestroy ($src_img1);													
-																	 
-																}
-																
 																$dst_img =imagecreatetruecolor($new_w,$new_h);
 																imagecolortransparent($dst_img);
 																imagecopyresampled($dst_img,$src_img,0,0,0,0,$new_w,$new_h,imagesx($src_img),imagesy($src_img));
@@ -218,7 +200,42 @@ imagegif($dst_imgt, "$t");
 												
 
 
-													$dst_img = WatermarkFactory($dst_img, $option, 1);
+													if (($img[wm])&&($new_h>=$img[minwater])&&($new_w>=$img[minwater]))
+													{
+													// WATERMARK
+													
+														$mark_v = $img[wmargin]/2;
+														$mark_v1 = $mark_v-1;
+														$mark_h = $new_h - $img[wmargin];
+														$mark_h2 = $new_h - $img[wmargin]-1;
+
+														$rgb = imagecolorat($dst_img,$mark_v,$mark_h);
+														//$rgb = imagecolorsforindex($dst_img, $rgb);
+														$r = ($rgb >> 16) & 0xFF;
+														$g = ($rgb >> 8) & 0xFF;
+														$b = $rgb & 0xFF;
+
+														$max = min($r, $g, $b);
+														$min = max($r, $g, $b);
+														$lightness = (double)(($max + $min) / 2);
+
+														if ($lightness >= 0.5)
+															{													
+															$tc = ImageColorAllocate($dst_img, 255, 255, 255);
+															$tc2 = ImageColorAllocate($dst_img, 0, 0, 0);
+															}
+															else 
+																{
+																$tc = ImageColorAllocate($dst_img, 0, 0, 0);
+																$tc2 = ImageColorAllocate($dst_img, 255, 255,255);
+																}
+// Рисуем Ватермарк на русском GIF
+imagettftext($dst_img, $img[size], 0, $mark_v, $mark_h, $tc, $font, $img[wm]);
+imagettftext($dst_img, $img[size], 0, $mark_v1, $mark_h2, $tc2, $font, $img[wm]);
+
+//ImageString ($dst_img, 2, $mark_v, $mark_h, $img[wm], $tc);
+//ImageString ($dst_img, 2, $mark_v1, $mark_h2, $img[wm], $tc2);
+													}
 
 													if ($tumb)
 														{
@@ -233,7 +250,41 @@ imagegif($dst_imgt, "$t");
 															imagefilledrectangle($dst_imgt, 0, 0, $new_t_w, $new_t_h,$bg);
 															imagecopyresized($dst_imgt, $src_img, 0, 0, 0, 0, $new_t_w, $new_t_h,imagesx($src_img),imagesy($src_img));	
 															 */
-															$dst_imgt = WatermarkFactory($dst_imgt, $option, 2);
+																	 if (($img[wm])&&($img[twm])&&($new_t_h>=$img[tminwater])&&($new_t_w>=$img[tminwater]))
+																	{
+																	// TUMBNAIL WATERMARK
+																		$mark_v = $img[wmargin]/2;
+																		$mark_v1 = $mark_v-1;
+																		$mark_h = $new_h - $img[twmargin];
+																		$mark_h2 = $new_h - $img[twmargin]-1;
+
+																		$rgb = imagecolorat($dst_imgt,$mark_v,$mark_h);
+																		$r = ($rgb >> 16) & 0xFF;
+																		$g = ($rgb >> 8) & 0xFF;
+																		$b = $rgb & 0xFF;
+
+																		$max = min($r, $g, $b);
+																		$min = max($r, $g, $b);
+																		$lightness = (double)(($max + $min) / 510.0);
+
+																		if ($lightness > 0.5)
+																			{
+																			$tc = ImageColorAllocate($dst_imgt, 255, 255, 255);
+																			$tc2 = ImageColorAllocate($dst_imgt, 0, 0, 0);
+																			}
+																			else 
+																				{
+																				$tc = ImageColorAllocate($dst_imgt, 0, 0, 0);
+																				$tc2 = ImageColorAllocate($dst_imgt, 255, 255,255);
+																				}
+																				
+// Рисуем Ватермарк на русском тумба GIF
+imagettftext($dst_imgt, $img[sizet], 0, $mark_v, $mark_h, $tc, $font, $img[wm]);
+imagettftext($dst_imgt, $img[sizet], 0, $mark_v1, $mark_h2, $tc2, $font, $img[wm]);
+
+//ImageString ($dst_imgt, 1, $mark_v, $mark_h, $img[wm], $tc);
+//ImageString ($dst_imgt, 1, $mark_v1, $mark_h2, $img[wm], $tc2);
+																	}
 
 															imagegif($dst_imgt, "$t",$img[tq]);
 															
@@ -250,26 +301,44 @@ imagegif($dst_imgt, "$t");
 									// JPEG ======= JPEG ======= JPEG ======= JPEG ======= JPEG ======= JPEG ======= JPEG ======= JPEG 
 											if ($ftype == "jpeg")
 												{											
-												
-												$src_img = imagecreatefromjpeg("$f");
-												
-												// копируем исходную картинку
-					
-																if ($option['image_save_source'] == 1){																																	
-																	$src_img1 = imagecreatefromjpeg("$f");
-																    $dst_img1 = WatermarkFactory($src_img1, $option, 3);
-																	imagejpeg($dst_img1, "$b",100);
-																	@chmod("$b", 0644); 
-																	imagedestroy ($src_img1); 
-																}
-																
 												$dst_img = imagecreatetruecolor($new_w,$new_h);
-												
+												$src_img = imagecreatefromjpeg("$f");
 												imagecopyresampled($dst_img,$src_img,0,0,0,0,$new_w,$new_h,imagesx($src_img),imagesy($src_img)); 										
-												
+													if (($img[wm])&&($new_h>=$img[minwater])&&($new_w>=$img[minwater]))
+													{
+													// WATERMARK
+														$mark_v = $img[wmargin]/2;
+														$mark_v1 = $mark_v-1;
+														$mark_h = $new_h - $img[wmargin];
+														$mark_h2 = $new_h - $img[wmargin]-1;
 
-												$dst_img = WatermarkFactory($dst_img, $option, 1);
+														$rgb = imagecolorat($dst_img,$mark_v,$mark_h);
+														$r = ($rgb >> 16) & 0xFF;
+														$g = ($rgb >> 8) & 0xFF;
+														$b = $rgb & 0xFF;
 
+														$max = min($r, $g, $b);
+														$min = max($r, $g, $b);
+														$lightness = (double)(($max + $min) / 510.0);
+
+														if ($lightness > 0.5)
+															{
+															$tc = ImageColorAllocate($dst_img, 255, 255, 255);
+															$tc2 = ImageColorAllocate($dst_img, 0, 0, 0);
+															}
+															else 
+																{
+																$tc = ImageColorAllocate($dst_img, 0, 0, 0);
+																$tc2 = ImageColorAllocate($dst_img, 255, 255,255);
+																}
+
+// Рисуем Ватермарк на русском JPG
+imagettftext($dst_img, $img[size], 0, $mark_v, $mark_h, $tc, $font, $img[wm]);
+imagettftext($dst_img, $img[size], 0, $mark_v1, $mark_h2, $tc2, $font, $img[wm]);
+																
+//ImageString ($dst_img, 2, $mark_v, $mark_h, $img[wm], $tc);
+//ImageString ($dst_img, 2, $mark_v1, $mark_h2, $img[wm], $tc2);
+													}
 												imagejpeg($dst_img, "$f",$img[q]);
                                                 @chmod("$f", 0644); 
 													if ($tumb)
@@ -277,7 +346,43 @@ imagegif($dst_imgt, "$t");
 															$dst_imgt = imagecreatetruecolor($new_t_w,$new_t_h);
 															imagecopyresampled($dst_imgt,$src_img,0,0,0,0,$new_t_w,$new_t_h,imagesx($src_img),imagesy($src_img));
 													
-															$dst_imgt = WatermarkFactory($dst_imgt, $option, 2);
+																if (($img[wm])&&($img[twm])&&($new_t_h>=$img[tminwater])&&($new_t_w>=$img[tminwater]))
+																	{
+																	// TUMBNAIL WATERMARK
+																		$mark_v = $img[twmargin]/2;
+																		$mark_v1 = $mark_v-1;
+																		$mark_h = $new_t_h - $img[twmargin];
+																		$mark_h2 = $new_t_h - $img[twmargin]-1;
+
+																		$rgb = imagecolorat($dst_imgt,$mark_v,$mark_h);
+																		$r = ($rgb >> 16) & 0xFF;
+																		$g = ($rgb >> 8) & 0xFF;
+																		$b = $rgb & 0xFF;
+
+																		$max = min($r, $g, $b);
+																		$min = max($r, $g, $b);
+																		$lightness = (double)(($max + $min) / 510.0);
+
+																		if ($lightness > 0.5)
+																			{
+																			$tc = ImageColorAllocate($dst_imgt, 255, 255, 255);
+																			$tc2 = ImageColorAllocate($dst_imgt, 0, 0, 0);
+																			}
+																			else 
+																				{
+																				$tc = ImageColorAllocate($dst_imgt, 0, 0, 0);
+																				$tc2 = ImageColorAllocate($dst_imgt, 255, 255,255);
+																				}
+	
+	
+// Рисуем Ватермарк на русском тумба JPG
+imagettftext($dst_imgt, $img[sizet], 0, $mark_v, $mark_h, $tc, $font, $img[wm]);
+imagettftext($dst_imgt, $img[sizet], 0, $mark_v1, $mark_h2, $tc2, $font, $img[wm]);	
+																	
+//ImageString ($dst_imgt, 1, $mark_v, $mark_h, $img[wm], $tc);
+//ImageString ($dst_imgt, 1, $mark_v1, $mark_h2, $img[wm], $tc2);
+
+																	}
 
 															imagejpeg($dst_imgt, "$t",$img[tq]);
 															imagedestroy ($dst_imgt);
@@ -401,7 +506,6 @@ $GetSystems=GetSystems();
 <LINK href="../../css/texts.css" type=text/css rel=stylesheet>
 <script language="JavaScript" src="../../java/javaMG.js" type="text/javascript"></script>
 <SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
-
 <script> 
 DoResize(<? echo $GetSystems['width_icon']?>,350,200);
 </script>
@@ -455,7 +559,6 @@ $img[utmpname] = $_FILES['userfile']['tmp_name'];	  // Временный файл
 $img[path] = $mycF."/";  // Куда сохранять
 $img[tpath] = $mycF."/"; // Куда сохранять тумбнейл
 $img[name] = "img".$_REQUEST['id']."_$myRName";// Имя под которым сохранить (без расширения)
-$img[name_big] = "img".$_REQUEST['id']."_".$myRName."_big";// Имя под которым сохранить исходную картинку (без расширения)
 $img[tname] = "img".$_REQUEST['id']."_".$myRName."s";	  // Имя тумбнейла (без расширения)
 $img[q] = $Admoption[width_podrobno]; // Качество
 $img[tq] = $Admoption[width_kratko]; // Качество тумбы
@@ -475,7 +578,7 @@ $img[th] = $Admoption[img_th];							// Макс. высота тумбнейла
 $img[maxsize] = 1024000;		// Макс. размер в Кб
 
 
-$SaveImg=SaveImg2($img,$Admoption);
+$SaveImg=SaveImg2($img);
 
 
 if ($img[ufiletyle]=="image/gif") $ftype = "gif";
@@ -491,25 +594,21 @@ mysql_query("INSERT INTO ".$SysValue['base']['table_name35']." VALUES ('','".$_R
 echo "
 <script>
 
-
 function DoUpdateFotoList(xid) {
 var req = new Subsys_JsHttpRequest_Js();
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
+				if (req.responseJS) {
 					window.opener.document.getElementById('fotolist').innerHTML = req.responseJS.interfaces;
-// Стандартную форму обновляем
-window.opener.document.getElementById('pic_small').value='".$mycReturn."/".$img[name]."s.".$ftype."';
-window.opener.document.getElementById('pic_big').value='".$mycReturn."/".$img[name].".".$ftype."';
+                //self.close();
+				}
 			}
 		}
+		req.caching = false;
 		// Подготваливаем объект.
-		req.open(null, '".$SysValue['dir']['dir']."/phpshop/admpanel/product/action.php?do=update', true);
+		req.open('POST', '".$SysValue['dir']['dir']."/phpshop/admpanel/product/action.php?do=update', true);
 		req.send( {  xid: xid } );
 }
-
-
-
-
 
 
 DoUpdateFotoList(".$_REQUEST['id'].");

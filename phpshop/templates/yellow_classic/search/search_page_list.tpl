@@ -1,22 +1,20 @@
+<div id="bg_catalog_1">Расширенный поиск</div>
+<div id="bglist"></div>	
 
-<div id="bg_catalog_1" style="margin-top:10px">Расширенный поиск</div>
-<div id="bglist"></div>
-
-
-<div id=allspec><a href="/">Главная</a> /  Расширенный поиск
-
-</div>
 <br>
 <TABLE cellpadding="0" cellspacing="0" width="100%" class="text_1">
 					<TR>
 						<TD style="padding-left:10" colspan="2">	
-						<FORM method="post" name="forma_search" action="/search/">	
 						<table>
-					
+	<FORM method="post" name="forma_search" action="/search/">					
 <tr>
 	<td>
 	Введите слово:<br>
-	<INPUT style="WIDTH:400px" maxLength="100" name="words" value="@searchString@">
+	<INPUT style="WIDTH:350px" maxLength="100" name="words" value="@searchString@">
+	</td>
+	<td>
+	Выберете каталог:<br>
+	@searchPageCategory@
 	</td>
 	<td>
 	<br>
@@ -24,28 +22,15 @@
 	
 	</td>
 </tr>
-<tr>
-	<td colspan="2">
-	Выберете каталог:<br>
-	@searchPageCategory@
-	</td>
-	
-</tr>
-<tr>
-	<td colspan="2" id="sort">
-	<table cellpadding="0" cellspacing="0"><tr>@searchPageSort@</tr></table>
-	</td>
-	
-</tr>
  <tr>
-   <td colspan="2"><b>Логика поиска:</b>
+   <td colspan="3"><b>Логика поиска:</b>
 <input type="Radio" value="1" name="set" @searchSetA@>и &nbsp;<input type="Radio" value="2" name="set" @searchSetB@ >или
-&nbsp;&nbsp;&nbsp;/ &nbsp;&nbsp;<b>Область:</b> <input type="Radio" value="1" name="pole" @searchSetC@>Наименование &nbsp;<input type="Radio" value="2" name="pole" @searchSetD@ >Учитывать все
+&nbsp;&nbsp;&nbsp;/ &nbsp;&nbsp;<b>Область поиска:</b> <input type="Radio" value="1" name="pole" @searchSetC@>Наименование &nbsp;<input type="Radio" value="2" name="pole" @searchSetD@ >Учитывать все
 
 </td>
 </tr>  
-
-</table></FORM>
+</FORM>
+</table>
 						</TD>
 					</TR>
 					<TR>

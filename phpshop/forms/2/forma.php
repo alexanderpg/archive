@@ -1,8 +1,6 @@
 <?
 session_start();
 
-// Сбербанк
-
 // Парсируем установочный файл
 $SysValue=parse_ini_file("./../../inc/config.ini",1);
   while(list($section,$array)=each($SysValue))
@@ -25,16 +23,6 @@ include("../../inc/mail.inc.php");
 // Подключаем кеш
 $LoadItems=CacheReturnBase($sid);
 
-function dataV($nowtime){
-$Months = array("01"=>"января","02"=>"февраля","03"=>"марта", 
- "04"=>"апреля","05"=>"мая","06"=>"июня", "07"=>"июля",
- "08"=>"августа","09"=>"сентября",  "10"=>"октября",
- "11"=>"ноября","12"=>"декабря");
-$curDateM = date("m",$nowtime); 
-$t=date("d",$nowtime).".".$curDateM.".".date("y",$nowtime).""; 
-return $t;
-}
-
 // Подключаем реквизиты
 $SysValue['bank']=unserialize($LoadItems['System']['bank']);
 $pathTemplate=$SysValue['dir']['templates'].chr(47).$_SESSION['skin'];
@@ -42,14 +30,14 @@ $pathTemplate=$SysValue['dir']['templates'].chr(47).$_SESSION['skin'];
 if($org_name=="") $org_name=$name_person;
 
 if(isset($tip) and isset($orderId) and isset($datas)){
-$orderId=TotalClean($orderId,5);
+$orderId=TotalClean($orderId,1);
 $UsersId=TotalClean($_SESSION['UsersId'],1);
 
 if(@$tip==2)
-$sql="select * from ".$SysValue['base']['table_name1']." where id='$orderId' and datas=".$datas;
+$sql="select * from ".$SysValue['base']['table_name1']." where id=$orderId and datas=".$datas;
 
 if(@$tip==1 and isset($_SESSION['UsersId']))
-$sql="select * from ".$SysValue['base']['table_name1']." where id='$orderId' and user=$UsersId";
+$sql="select * from ".$SysValue['base']['table_name1']." where id=$orderId and user=$UsersId";
 
 @$result=mysql_query($sql);
 @$row = mysql_fetch_array(@$result);
@@ -60,9 +48,9 @@ if($num==0) exit("Неавторизованный пользователь!");
 	$ouid=$row['uid'];
 	$order=unserialize($row['orders']);
 	@$sum=number_format($order['Cart']['sum'],"2",".","");
-	 $name_person=$order['Person']['name_person'];
+	
 	$ChekDiscount=ChekDiscount($sum);
-	$deliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum,$order['Cart']['weight']);
+	$deliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum);
     //$Summa=GetPriceOrder($ChekDiscount[1])+$deliveryPrice;
 	$Summa=(ReturnSummaBeznal($sum,$order['Person']['discount'])+$deliveryPrice);
  sscanf(number_format($Summa,"2",".",""), "%d.%s", $sum_rub, $sum_kop); // получаем копейки
@@ -77,24 +65,7 @@ for ($i=0,$n=1; $i<count($cid); $i++,$n++)
   $j=$cid[$i];
    @$sum+=$cart[$j]['price']*$cart[$j]['num'];
    @$num+=$cart[$j]['num'];
-
-//Определение и суммирование веса
- $goodid=$cart[$j]['id'];
- $goodnum=$cart[$j]['num'];
- $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
- $wresult=mysql_query($wsql);
- $wrow=mysql_fetch_array($wresult);
- $cweight=$wrow['weight']*$goodnum;
- if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
- $weight+=$cweight;
-
-
   }
-
-//Обнуляем вес товаров, если хотя бы один товар был без веса
-if ($zeroweight) {$weight=0;}
-
-
  @$nds=number_format($sum*18/118,"2",".","");
  @$sum=number_format($sum,"2",".","");
  
@@ -102,7 +73,7 @@ if ($zeroweight) {$weight=0;}
  $ChekDiscount=ChekDiscount($sum);
  
  // Доставка
- $deliveryPrice=GetDeliveryPrice($_GET['delivery'],$sum,$weight);
+ $deliveryPrice=GetDeliveryPrice($_GET['delivery'],$sum);
  
  // получаем копейки
  $Summa=(ReturnSummaBeznal($sum,$ChekDiscount[0])+$deliveryPrice);
@@ -110,10 +81,6 @@ if ($zeroweight) {$weight=0;}
   }
 if(!$_SESSION['sid']) header("Location: /");
 $GetIsoValutaOrder=GetIsoValutaOrder();
-
-
-if(!$datas) $datas=date("d-m-y");
-else $datas=dataV($datas);
 ?>
 <html>
 <head>
@@ -220,7 +187,7 @@ window.resizeTo(650, 550);
 			<tr>
 				<td><table width=100%>
 					<td style="padding-right: 5px;" nowrap>Назначение платежа</td>
-					<td class=data width=100%>Оплата заказа № <?=@$ouid?> от <?=$datas?></td>
+					<td class=data width=100%>Оплата заказа № <?=@$ouid?> от <?=date("d-m-y")?></td>
 				</table></td>
 			</tr>
 <?
@@ -338,7 +305,7 @@ window.resizeTo(650, 550);
 			<tr>
 				<td><table width=100%>
 					<td style="padding-right: 5px;" nowrap>Назначение платежа</td>
-					<td class=data width=100%>Оплата заказа № <?=@$ouid?> от <?=$datas?></td>
+					<td class=data width=100%>Оплата заказа № <?=@$ouid?> от <?=date("d-m-y")?></td>
 				</table></td>
 			</tr>
 			<tr>
@@ -400,7 +367,7 @@ window.resizeTo(650, 550);
 	</tr>
 </table>
 <?
-//session_unregister('cart');
+session_unregister('cart');
 ?>
 </body>
 </html>

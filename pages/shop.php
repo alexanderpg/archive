@@ -7,15 +7,14 @@ if($SysValue['nav']['nav']=="CID"){
    
   // Проверка вложенности
   $podcatalog_id = array_keys($LoadItems['CatalogKeys'],$SysValue['nav']['id']);
-  if(count($podcatalog_id)>0) {
-	$SysValue['other']['DispShop']=DispCatalogTree($SysValue['nav']['id']);
-	$SysValue['other']['DispShop'].=DispKratko($podcatalog_id,1,$SysValue['nav']['id']);       //MOD!!
-  } else {
-	$SysValue['other']['DispShop']=DispKratko($SysValue['nav']['id']);
-  }
+  if(count($podcatalog_id)>0)
+     $SysValue['other']['DispShop']=DispCatalogTree($SysValue['nav']['id']);
+    else $SysValue['other']['DispShop']=DispKratko($SysValue['nav']['id']);
   }
        elseif($SysValue['nav']['nav']=="UID")
           $SysValue['other']['DispShop']=DispPodrobno($SysValue['nav']['id']);
+             /*elseif($SysValue['nav']['nav']=="SIDI")
+               $SysValue['other']['DispShop']=DispSellerInfo($SysValue['nav']['id']);*/
 			       else include("pages/error.php");
 				   
 

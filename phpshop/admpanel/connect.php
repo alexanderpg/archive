@@ -1,38 +1,16 @@
 <?
 
 // Парсируем установочный файл
-$SysValue = parse_ini_file(dirname(__FILE__) . "/../../phpshop/inc/config.ini",1);
-
+if(@parse_ini_file("../../phpshop/inc/config.ini",1))
+$SysValue=parse_ini_file("../../phpshop/inc/config.ini",1);
+ elseif(@parse_ini_file("../../../phpshop/inc/config.ini",1))
+    $SysValue=parse_ini_file("../../../phpshop/inc/config.ini",1);
+	  elseif(@parse_ini_file("../../../../phpshop/inc/config.ini",1))
+	      $SysValue=parse_ini_file("../../../../phpshop/inc/config.ini",1);
+	     else $SysValue=@parse_ini_file("../../../../../phpshop/inc/config.ini",1);
+		 
 $RegTo = $SysValue['license']['regto'];
 $ProductName=$SysValue['license']['product_name'];
-$ProductNameVersion=$SysValue['license']['product_name']." (сборка ".$SysValue['upload']['version'].")";
-
-
-// Вывод валюты в выборе для загрузки товаров
-function ChoiceValuta(){
-global $SysValue;
-$sql="select * from ".$SysValue['base']['table_name24']." WHERE enabled='1' order by num";
-$result=mysql_query($sql);
-while ($row = mysql_fetch_array($result))
-    {
-	$vid=$row['id'];
-	$vname=$row['name'];
-	$vcode=$row['code'];
-	$viso=$row['iso'];
-	$vkurs=$row['kurs'];
-	$venabled=$row['enabled'];
-	if($vkurs == 1) $selected="selected"; else $selected="";
-    @$dis.="<option value=".$vid." $selected>".$viso."</option>";
-}
-$disp='
-<select id="tip_16">
-'.$dis.'
-</select>';
-return $disp;
-}
-
-
-
 
 // Отрезаем до точки
 function mySubstr($str,$a){
@@ -45,26 +23,15 @@ return substr($str, 0, $T+1);
 
 
 // Вывод доставки
-function GetDeliveryPrice($deliveryID,$sum,$weight=0){
+function GetDeliveryPrice($deliveryID,$sum){
 global $SysValue;
 $sql="select * from ".$SysValue['base']['table_name30']." where id='$deliveryID'";
 $result=mysql_query($sql);
 $row = mysql_fetch_array($result);
 
-if($row['price_null_enabled'] == 1 and $sum>=$row['price_null']) {
-	return 0;
-} else {
-	if ($row['taxa']>0) {
-		$addweight=$weight-500;
-		if ($addweight<0) {$addweight=0;}
-		$addweight=ceil($addweight/500)*$row['taxa'];
-		$endprice=$row['price']+$addweight;
-		return $at.$endprice;
-	} else {
-		return $row['price'];
-	}
-}
-
+if($row['price_null_enabled'] == 1 and $sum>=$row['price_null'])
+  return 0;
+  else return $row['price'];
 }
 
 // Вывод доставки
@@ -85,8 +52,8 @@ $Months = array("01"=>"января","02"=>"февраля","03"=>"марта",
 $curDateM = date("m",$nowtime); 
 if($flag=="true")
 $t=date("d",$nowtime)." ".$Months[$curDateM]." ".date("Y",$nowtime)."г.".date("H:s ",$nowtime); 
-elseif($flag=="shot") $t=date("d",$nowtime).".".$curDateM.".".date("Y",$nowtime)."г. ".date("H:s ",$nowtime); 
-elseif($flag=="update") $t=date("d",$nowtime)."-".$curDateM."-".date("Y",$nowtime); 
+elseif($flag=="shot") $t=date("d",$nowtime).".".$curDateM.". ".date("Y",$nowtime)."г. ".date("H:s ",$nowtime); 
+elseif($flag=="update") $t=date("d",$nowtime).".".$curDateM.".".date("y",$nowtime); 
 else $t=date("d",$nowtime)." ".$Months[$curDateM]." ".date("Y",$nowtime)."г."; 
 return $t;
 }
@@ -140,13 +107,6 @@ function TotalClean($str,$flag)// чистка
 	  }
 }
 
-// Чистим
-function CleanStr($str){
-	  $str=str_replace("/","|",$str);
-	  $str=str_replace("\"","*",$str);
-	  $str=str_replace("'","*",$str);
-	  return htmlspecialchars(stripslashes($str));
-}
 
 function GetSystems()// вывод настроек
 {
@@ -194,9 +154,6 @@ $result=mysql_query($sql);
 $row = mysql_fetch_array($result);
 return $row['code'];
 }
-
-
-
 
 function GetIsoValutaOrder(){
 global $SysValue;
@@ -306,5 +263,6 @@ $table_name32=$SysValue['base']['table_name32'];
 
 
 // Обновление
+define("PATH",$SysValue['update']['path']."update2.php?from=".@$SERVER_NAME);
 define("TIME_LIMIT", 600);
 ?>

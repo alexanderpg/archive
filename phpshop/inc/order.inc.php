@@ -31,14 +31,10 @@ return number_format($sum,"2",".","");
 }
 
 function ReturnSummaNal($sum,$disc){ // Поправки по курсу наличными
-global $LoadItems;
-$formatPrice = unserialize($LoadItems['System']['admoption']);
-$format=$formatPrice['price_znak'];
-
 $kurs=GetKursOrderNal();
 $sum*=$kurs;
 $sum=$sum-($sum*$disc/100);
-return number_format($sum,$format,".","");
+return number_format($sum,"2",".","");
 }
 
 
@@ -78,8 +74,8 @@ while($row = mysql_fetch_array($result)){
 }
 $userdiscount=GetUsersDiscount(@$_SESSION['UsersStatus']);
 if($userdiscount>@$maxdiscount) @$maxdiscount=$userdiscount;
-$sum=$mysum-($mysum*@$maxdiscount/100);
-$array=array(0+@$maxdiscount,number_format($sum,"2",".",""));
+$sum=$mysum-($mysum*$maxdiscount/100);
+$array=array(0+$maxdiscount,number_format($sum,"2",".",""));
 return $array;
 }
 
@@ -135,24 +131,16 @@ return  $LoadItems['Valuta'][$valuta]['kurs'];
 
 
 
-function GetPriceValuta($price,$formats=0,$baseinputvaluta=""){ // Цена с учетом валюты
+function GetPriceValuta($price,$formats=0){ // Цена с учетом валюты
 global $SysValue,$LoadItems,$_SESSION;
 $formatPrice = unserialize($LoadItems['System']['admoption']);
 
 $format=$formatPrice['price_znak'];
 
-//получаем исходную цену
-if ($baseinputvaluta) { //Если прислали баз. валюту
-	if ($baseinputvaluta!==$LoadItems['System']['dengi']) {//Если присланная валюта отличается от базовой
-		$price=$price/$LoadItems['Valuta'][$baseinputvaluta]['kurs']; //Приводим цену в базовую валюту
-	}
-} //Если прислали баз. валюту
-//получаем исходную цену
-
 if(isset($_SESSION['valuta'])) $valuta=$_SESSION['valuta'];
   else $valuta=$LoadItems['System']['dengi'];
 
-$price=$price*$LoadItems['Valuta'][$valuta]['kurs'];
+$price*=$LoadItems['Valuta'][$valuta]['kurs'];
 return number_format($price,$format,'.', ' ');
 }
 
@@ -177,29 +165,13 @@ class OrderWrite {
       $j=$cid[$i];
       @$sum+=$cart[$j]['price']*$cart[$j]['num'];
       @$num+=$cart[$j]['num'];
-
-//Определение и суммирование веса
- $goodid=$cart[$j]['id'];
- $goodnum=$cart[$j]['num'];
- $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
- $wresult=mysql_query($wsql);
- $wrow=mysql_fetch_array($wresult);
- $cweight=$wrow['weight']*$goodnum;
- if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
- $weight+=$cweight;
       }
-
-//Обнуляем вес товаров, если хотя бы один товар был без веса
-if ($zeroweight) {$weight=0;}
-
-
       @$sum=number_format($sum,"2",".","");
 	  
 	  $array=array(
 	  "cart"=>$cart,
 	  "num"=>@$num,
 	  "sum"=>$sum,
-	  "weight"=>@$weight,
 	  "dostavka"=>$Delivery);
 	  
 	  $this->NUM = @$num;
@@ -209,9 +181,7 @@ if ($zeroweight) {$weight=0;}
 	  
 	  function CleanStr($str){
 	  $str=str_replace("/","|",$str);
-	  $str=str_replace("\\","|",$str);
 	  $str=str_replace("\"","*",$str);
-	  $str=str_replace("'","*",$str);
 	  return htmlspecialchars(stripslashes($str));
 	  }
 	  
