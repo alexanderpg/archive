@@ -4,7 +4,8 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.8
+ * @todo https://hmarketing.ru/blog/bitrix/zaprosy-obmena/
+ * @version 4.0
  */
 class CommerceMLLoader {
 
@@ -16,6 +17,7 @@ class CommerceMLLoader {
     var $cleanup_import_directory = true;
     var $cleanup_time = 3600;
     var $exchange_image_path = "/UserFiles/Image/";
+    var $exchange_file_path = "/UserFiles/Files/";
 
     public function __construct() {
         global $PHPShopSystem;
@@ -594,6 +596,7 @@ class CommerceMLLoader {
                     // Картинка
                     $image_count = 0;
                     $image = null;
+                    $files = [];
 
                     if (isset($item->Картинка) and ! empty($this->exchange_image)) {
 
@@ -605,35 +608,45 @@ class CommerceMLLoader {
 
                             if ((string) $i == '@attributes')
                                 continue;
-                            
+
                             $ext = pathinfo($img, PATHINFO_EXTENSION);
 
-                            $new_name = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.'.$ext;
-                            $new_name_s = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . 's.'.$ext;
-                            $new_name_big = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '_big.'.$ext;
+                            // Картинки
+                            if (in_array($ext, array('gif', 'png', 'jpg', 'jpeg', 'webp'))) {
 
-                            // Тубнейл
-                            $thumb = new PHPThumb(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img);
-                            $thumb->setOptions(array('jpegQuality' => $this->width_kratko));
-                            $thumb->resize($this->img_tw, $this->img_th);
-                            $thumb->save($_SERVER['DOCUMENT_ROOT'] . $this->exchange_image_path . $this->image_result_path . $new_name_s);
+                                $new_name = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.' . $ext;
+                                $new_name_s = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . 's.' . $ext;
+                                $new_name_big = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '_big.' . $ext;
 
-                            // Основное
-                            $thumb = new PHPThumb(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img);
-                            $thumb->setOptions(array('jpegQuality' => $this->width_kratko));
-                            $thumb->resize($this->img_w, $this->img_h);
-                            $thumb->save($_SERVER['DOCUMENT_ROOT'] . $this->exchange_image_path . $this->image_result_path . $new_name);
+                                // Тубнейл
+                                $thumb = new PHPThumb(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img);
+                                $thumb->setOptions(array('jpegQuality' => $this->width_kratko));
+                                $thumb->resize($this->img_tw, $this->img_th);
+                                $thumb->save($_SERVER['DOCUMENT_ROOT'] . $this->exchange_image_path . $this->image_result_path . $new_name_s);
 
-                            // Исходное
-                            if (!empty($this->image_save_source))
-                                copy(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img, $this->exchange_image_path . $this->image_result_path . $new_name_big);
+                                // Основное
+                                $thumb = new PHPThumb(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img);
+                                $thumb->setOptions(array('jpegQuality' => $this->width_kratko));
+                                $thumb->resize($this->img_w, $this->img_h);
+                                $thumb->save($_SERVER['DOCUMENT_ROOT'] . $this->exchange_image_path . $this->image_result_path . $new_name);
 
-                            $image = $this->image_result_path . 'img' . $this->crc32((string) $item->Ид[0]);
-                            
-                            if($ext != 'jpg')
-                                $image.='#'.$ext;
-                            
-                            $image_count++;
+                                // Исходное
+                                if (!empty($this->image_save_source))
+                                    copy(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img, $this->exchange_image_path . $this->image_result_path . $new_name_big);
+
+                                $image = $this->image_result_path . 'img' . $this->crc32((string) $item->Ид[0]);
+
+                                if ($ext != 'jpg')
+                                    $image .= '#' . $ext;
+
+                                $image_count++;
+                            }
+                            // Файлы
+                            else {
+                               $file_name = 'file' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.' . $ext;
+                               copy(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img, $_SERVER['DOCUMENT_ROOT'].$this->exchange_file_path . $file_name);
+                               $files[]=$file_name;
+                            }
                         }
                     }
 
@@ -682,6 +695,10 @@ class CommerceMLLoader {
                     } else {
                         $parent_enabled = 0;
                     }
+                    
+                    // Дополнительные файлы
+                    if(count($files)>0)
+                        $image.='|'. implode(',', $files);
 
                     $this->product_array[(string) $item->Ид[0]] = array($uid, (string) $item->Наименование[0], $description, $image, $content, $image_count, "", "", "", "", "", "", $weight, "", "", $category, "", (string) $item->Ид[0], $parent_enabled);
 
@@ -924,9 +941,11 @@ class CommerceMLLoader {
 
                             foreach ((array) $item->Картинка as $i => $img) {
 
-                                $new_name = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.jpg';
-                                $new_name_s = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . 's.jpg';
-                                $new_name_big = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '_big.jpg';
+                                $ext = pathinfo($img, PATHINFO_EXTENSION);
+
+                                $new_name = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.' . $ext;
+                                $new_name_s = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . 's.' . $ext;
+                                $new_name_big = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '_big.' . $ext;
 
                                 // Тубнейл
                                 $thumb = new PHPThumb(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img);
@@ -945,6 +964,10 @@ class CommerceMLLoader {
                                     copy(dirname(__FILE__) . $this->exchange_path . '/' . self::$upload1c . $img, $this->exchange_image_path . $this->image_result_path . $new_name_big);
 
                                 $image = $this->image_result_path . 'img' . $this->crc32((string) $item->Ид[0]);
+
+                                if ($ext != 'jpg')
+                                    $image .= '#' . $ext;
+
                                 $image_count++;
                             }
                         }

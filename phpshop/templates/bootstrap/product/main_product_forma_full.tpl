@@ -29,7 +29,7 @@
                 @ComStartNotice@
                 <div class="outStock @hideCatalog@">@productOutStock@</div>
                 @ComEndNotice@
-                <div class="pull-right">@oneclick@</div>
+                <div class="pull-right">@pricerequest@ @oneclick@</div>
                
                 <p><br></p>
                 <div>

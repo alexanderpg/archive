@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с Яндекс.Маркет API
  * @author PHPShop Software
- * @version 2.0
+ * @version 2.1
  * @package PHPShopClass
  * @subpackage RestApi
  * @todo https://yandex.ru/dev/market/partner-marketplace-cd/doc/dg/reference/post-campaigns-id-offer-mapping-entries-updates.html
@@ -330,7 +330,7 @@ class YandexMarket {
             else
                 $campaign = $this->options['campaign_id'];
 
-            if (is_array($products)) {
+            if (is_array($products) and !empty($campaign)) {
                 foreach ($products as $product) {
 
                     // Ключ обновления 
@@ -396,7 +396,7 @@ class YandexMarket {
             else
                 $campaign = $this->options['campaign_id'];
 
-            if (is_array($products)) {
+            if (is_array($products) and !empty($campaign)) {
                 foreach ($products as $product) {
 
                     // Ключ обновления 

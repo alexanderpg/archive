@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_vkseller_system` (
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_vkseller_system` VALUES (1, '', '',1,0,'1','','','','1','','YML','0','',0,'','',0, '1.3');
+INSERT INTO `phpshop_modules_vkseller_system` VALUES (1, '', '',1,0,'1','','','','1','','YML','0','',0,'','',0, '1.4');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_vkseller_log` (
 `id` int(11) NOT NULL AUTO_INCREMENT,

@@ -93,7 +93,7 @@ class PHPShopBrand extends PHPShopShopCore {
                     $PHPShopOrmSort->update(array("sort_seo_name_new" => "$seoLink"), array('id' => '=' . $key));
                     $brands .= PHPShopText::li($value, $GLOBALS['PHPShopSeoPro']->setLatin($value) . '.html');
                 } else
-                    $brands .= PHPShopText::li($value, '/brand/' . $arrSeo[$value] . '.html');
+                    $brands .= PHPShopText::li($value, $GLOBALS['SysValue']['dir']['dir'].'/brand/' . $arrSeo[$value] . '.html');
             }
         } else
             return $this->setError404();

@@ -65,10 +65,8 @@ function actionUpdate() {
 
     // Корректировка пустых значений
     $PHPShopOrm->updateZeroVars('enabled_new');
-    
-    if(!empty($_POST['enabled_new']))
-        $_POST['date_block_new']=time();
-    else $_POST['date_block_new']=0;
+   
+    $_POST['date_block_new']=time();
 
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);

@@ -19,7 +19,10 @@ function tab_multibase($val,$size,$multiple=true) {
     else $name='servers[]';
 
     $data[1000] = array('host'=>'Главный сайт', 'id'=>1000);
+    
+
     $server = preg_split('/i/', $val['servers'], -1, PREG_SPLIT_NO_EMPTY);
+    
     if (is_array($data)) {
         foreach ($data as $row) {
             $sel=false;
@@ -30,7 +33,7 @@ function tab_multibase($val,$size,$multiple=true) {
                 }
             $value[] = array(PHPShopString::check_idna($row['host'],true), $row['id'], $sel);
         }
-        return  $PHPShopGUI->setSelect($name, $value, $size, true, false, false, false, false,$multiple);
+        return  $PHPShopGUI->setSelect($name, $value, $size, false, false, false, false, false,$multiple);
     }
     else return $PHPShopGUI->setHelp('Нет дополнительных витрин. <a href="?path=system.servers&action=new">Создать витрину</a>.');
     

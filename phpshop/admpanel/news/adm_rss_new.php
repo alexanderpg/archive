@@ -4,7 +4,7 @@ $TitlePage = __('Создание RSS канала');
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['rssgraber']);
 
 function actionStart() {
-    global $PHPShopGUI, $PHPShopModules,$TitlePage;
+    global $PHPShopGUI, $PHPShopModules, $TitlePage;
 
     // Выборка
     $data['start_date'] = time();
@@ -12,7 +12,7 @@ function actionStart() {
     $data['enabled'] = 1;
     $data['day_num'] = 1;
     $data['news_num'] = 3;
-    $data = $PHPShopGUI->valid($data,'link','servers');
+    $data = $PHPShopGUI->valid($data, 'link', 'servers');
 
     $PHPShopGUI->field_col = 2;
 
@@ -27,13 +27,13 @@ function actionStart() {
             $PHPShopGUI->setField("Дата завершения", $PHPShopGUI->setInputDate("end_date_new", PHPShopDate::get($data['end_date']))) .
             $PHPShopGUI->setField("Забирать новости", $PHPShopGUI->setInputText(null, "day_num_new", $data['day_num'], 100, 'в день')) .
             $PHPShopGUI->setField("Новостей в заборе", $PHPShopGUI->setInputText(null, "news_num_new", $data['news_num'], 100, 'за раз')) .
-            $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/')).
+            $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/')) .
             $PHPShopGUI->setField("Статус", $PHPShopGUI->setRadio("enabled_new", 1, "Вкл.", $data['enabled']) . $PHPShopGUI->setRadio("enabled_new", 0, "Выкл.", $data['enabled']) . '&nbsp;&nbsp;');
 
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1,true,false,true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
@@ -49,13 +49,13 @@ function actionStart() {
 // Функция обновления
 function actionInsert() {
     global $PHPShopOrm, $PHPShopModules;
-    
+
     // Мультибаза
-    if (is_array($_POST['servers'])){
+    if (is_array($_POST['servers'])) {
         $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and !strstr($v, ','))
-                $_POST['servers_new'].="i" . $v . "i";
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
+                $_POST['servers_new'] .= "i" . $v . "i";
     }
 
     if (!empty($_POST['start_date_new']))

@@ -27,16 +27,12 @@ if (!empty($dimensions['length']))
     $data->length = (int) $dimensions['length'];
 else $data->length = (int) $YandexDelivery->options['length'];
 
-if (!empty($dimensions['length']))
-    $data->length = (int) $dimensions['length'];
-else $data->length = (int) $YandexDelivery->options['length'];
-
 if (!empty($dimensions['height']))
     $data->height = (int) $dimensions['height'];
 else $data->height = (int) $YandexDelivery->options['height'];
 
 if (!empty($dimensions['width']))
-    $data->width = (int) $dimensions['height'];
+    $data->width = (int) $dimensions['width'];
 else $data->width = (int)$YandexDelivery->options['width'];
 
 $data->delivery_variant_id = $_POST['delivery_variant_id'];

@@ -3,7 +3,7 @@
 /**
  * Вывод сортировок для товаров таблицей
  * @author PHPShop Software
- * @version 1.9
+ * @version 2.0
  * @package PHPShopCoreFunction
  * @param obj $obj объект класса
  * @return mixed
@@ -84,7 +84,7 @@ function sort_table($obj, $row) {
                     // SEOUrl
                     if (!empty($row['sort_seo_name']) and ! empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
                         if ($seourl_option["seo_brands_enabled"] == 2)
-                            $obj->set('brandPageLink', '/brand/' . $row['sort_seo_name'] . '.html');
+                            $obj->set('brandPageLink', $GLOBALS['SysValue']['dir']['dir'].'/brand/' . $row['sort_seo_name'] . '.html');
                         else
                             $obj->set('brandPageLink', '/selection/?v[' . $row['category'] . ']=' . $row['id']);
                     } else
@@ -145,7 +145,7 @@ function sort_table($obj, $row) {
                                 foreach ($arrayVendorValue[$idCategory]['id'] as $valueId) {
 
                                     if (!empty($arrayVendorValue[$idCategory]['seo_name'][$valueId]))
-                                        $arr[] = PHPShopText::a('/brand/' . $arrayVendorValue[$idCategory]['seo_name'][$valueId] . '.html', PHPShopText::span($arrayVendorValue[$idCategory]['name'][$valueId],'itemprop="value"'),$arrayVendorValue[$idCategory]['name'][$valueId]);
+                                        $arr[] = PHPShopText::a($GLOBALS['SysValue']['dir']['dir'].'/brand/' . $arrayVendorValue[$idCategory]['seo_name'][$valueId] . '.html', PHPShopText::span($arrayVendorValue[$idCategory]['name'][$valueId],'itemprop="value"'),$arrayVendorValue[$idCategory]['name'][$valueId]);
                                     else
                                         $arr[] = PHPShopText::a('/selection/?v[' . $idCategory . ']=' . $valueId, PHPShopText::span($arrayVendorValue[$idCategory]['name'][$valueId],'itemprop="value"'));
                                 }

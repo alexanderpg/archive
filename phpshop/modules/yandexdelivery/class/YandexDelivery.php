@@ -375,12 +375,14 @@ class YandexDelivery {
         //Выбираем оффер доставки и подтверждаем
         if (!empty($offers[0])) {
             $status = __('Успешная передача заказа');
-            $confirm = $this->confirmOrder($offers[0]['offer_id']);
+            $this->confirmOrder($offers[0]['offer_id']);
+            $confirm = true;
             $this->updateStatus($data->order_id);
             $log['result'] = $offers[0];
         } else {
             $status = __('Ошибка передачи заказа');
             $log['result'] = $result;
+            $confirm = false;
         }
 
         $log['params'] = $params;

@@ -149,8 +149,7 @@
                                 @topBrands@
                                 @topcatMenu@
                                 @topMenu@
-
-
+                                
                                 <li class="visible-xs"><a href="/news/">{Новости}</a></li>
                             </ul>
                         </div>

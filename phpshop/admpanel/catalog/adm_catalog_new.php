@@ -300,11 +300,12 @@ function actionInsert() {
     $_POST['sort_new'] = serialize($_POST['sort_new']);
 
     // Мультибаза
-    $_POST['servers_new'] = "";
-    if (is_array($_POST['servers']))
+    if (is_array($_POST['servers'])) {
+        $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and ! strstr($v, ','))
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
                 $_POST['servers_new'] .= "i" . $v . "i";
+    }
 
     // Доп каталоги
     $_POST['dop_cat_new'] = "";
@@ -411,8 +412,8 @@ function iconAdd() {
         $file_ext = PHPShopSecurity::getExt($file_name);
         $file_name = PHPShopString::toLatin(str_replace('.' . $file_ext, '', PHPShopString::utf8_win1251($file_name))) . '.' . $file_ext;
 
-        if (in_array($file_ext, array('gif', 'png', 'jpg', 'jpeg', 'svg','webp'))) {
-            if(copy($file, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path. $file_name)){
+        if (in_array($file_ext, array('gif', 'png', 'jpg', 'jpeg', 'svg', 'webp'))) {
+            if (copy($file, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path . $file_name)) {
                 $file = $GLOBALS['dir']['dir'] . $path . $file_name;
             }
         }

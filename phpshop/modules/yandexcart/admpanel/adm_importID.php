@@ -153,9 +153,9 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Валюта', $valuta_area);
 
     $Tab_size = $PHPShopGUI->setField("Вес", $PHPShopGUI->setInputText(null, 'weight_new', $product_info['weightDimensions']['weight'], 100, __('г&nbsp;&nbsp;&nbsp;&nbsp;')));
-    $Tab_size .= $PHPShopGUI->setField("Высота", $PHPShopGUI->setInputText(null, 'height_new', $product_info['weightDimensions']['height'] / 100, 100, __('cм')));
-    $Tab_size .= $PHPShopGUI->setField("Ширина", $PHPShopGUI->setInputText(null, 'width_new', $product_info['weightDimensions']['width'] / 100, 100, __('cм')));
-    $Tab_size .= $PHPShopGUI->setField("Длина", $PHPShopGUI->setInputText(null, 'length_new', $product_info['weightDimensions']['depth'] / 100, 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Высота", $PHPShopGUI->setInputText(null, 'height_new', $product_info['weightDimensions']['height'] / 10, 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Ширина", $PHPShopGUI->setInputText(null, 'width_new', $product_info['weightDimensions']['width'] / 10, 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Длина", $PHPShopGUI->setInputText(null, 'length_new', $product_info['weightDimensions']['depth'] / 10, 100, __('cм')));
 
     $Tab1 = $PHPShopGUI->setCollapse('Данные', $Tab1);
     $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_size);

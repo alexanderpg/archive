@@ -3,7 +3,7 @@
 /**
  * Элемент выбора витрины
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopElements
  */
 class PHPShopShowcaseElement extends PHPShopElements {
@@ -17,20 +17,29 @@ class PHPShopShowcaseElement extends PHPShopElements {
 
     public function index() {
 
-        if (defined("HostID") or defined("HostMain")) {
+        //if (defined("HostID") or defined("HostMain")) {
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['servers']);
             $data = $PHPShopOrm->getList(array('*'), array('enabled' => "='1'"), array('order' => 'name'));
             $dis = null;
             if (is_array($data))
                 foreach ($data as $row) {
+
                     $this->set('ShowcaseName', $row['name']);
                     $this->set('ShowcaseHost', $row['host']);
+
+                    // Перехват модуля
+                    $this->setHook(__CLASS__, __FUNCTION__, $row,'MIDDLE');
+
                     $dis .= $this->parseTemplate($this->getValue('templates.showcase_menu_element'));
                 }
 
             $this->set('ShowcaseList', $dis);
+            
+            // Перехват модуля
+            $this->setHook(__CLASS__, __FUNCTION__, $row,'END');    
+            
             return $this->parseTemplate($this->getValue('templates.showcase_menu'));
-        }
+        //}
     }
 
 }

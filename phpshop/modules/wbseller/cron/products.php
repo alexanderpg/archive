@@ -40,14 +40,21 @@ $PHPShopModules = new PHPShopModules($_classPath . "modules/");
 $options = (new PHPShopOrm($PHPShopModules->getParam("base.wbseller.wbseller_system")))->getOne(['*']);
 
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-$data = $PHPShopOrm->getList(['*'], ['export_wb' => '>0', 'export_wb_id' => '>0'], ['order' => 'datas desc'], ['limit' => 1000]);
+$data = $PHPShopOrm->getList(['*'], ['export_wb' => "='1'", 'export_wb_id' => '>0'], ['order' => 'datas desc'], ['limit' => 1000]);
 
-if (is_array($data)) {
+// Проверка уникальности ключа обновления
+if(is_array($data)){
+    foreach($data as $row){
+        $data_uniq[(int) $row['export_wb_id']] = $row;
+    }
+}
+
+if (is_array($data_uniq)) {
 
     include_once dirname(__FILE__) . '/../class/WbSeller.php';
     $WbSeller = new WbSeller();
 
-    foreach ($data as $prod) {
+    foreach ($data_uniq as $prod) {
 
         // price columns
         $price = $prod['price'];

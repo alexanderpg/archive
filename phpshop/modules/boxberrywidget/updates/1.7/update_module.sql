@@ -1,1 +1,0 @@
-ALTER TABLE `phpshop_modules_boxberrywidget_system` ADD `paid` enum('0','1') DEFAULT '0';

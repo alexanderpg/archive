@@ -175,11 +175,12 @@ function actionInsert() {
     global $PHPShopOrm, $PHPShopModules;
 
     // Мультибаза
-    $_POST['servers_new'] = "";
-    if (is_array($_POST['servers']))
+    if (is_array($_POST['servers'])) {
+        $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and ! strstr($v, ','))
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
                 $_POST['servers_new'] .= "i" . $v . "i";
+    }
 
     if (empty($_POST['flag_new']))
         $_POST['flag_new'] = 0;

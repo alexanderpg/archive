@@ -33,7 +33,8 @@ function tab_info($data) {
   <h4>ќбновление цен и остатков товаров в Avito по API</h4>
    Avito обновл€ет сама автоматически цены и остатки через XML-файлы раз в час. ƒл€ обновлени€ данных по своему расписанию следует настроить обновление данных по API. ќстатки и цены выгружаютс€ по API так же при редактировании карточки товара.
    <ol>
-  <li>ƒл€ автоматической выгрузки цен (при наличии <kbd>AvitoID</kbd>) и остатков товаров в Avito по расписанию следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">«адачи</a> с адресом запускаемого файла <code>phpshop/modules/avito/cron/products.php</code>.</li>
+  <li>ƒл€ автоматической выгрузки цен (при наличии <kbd>AvitoID</kbd>) по расписанию следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">«адачи</a> с адресом запускаемого файла <code>phpshop/modules/avito/cron/prices.php</code>.</li>
+    <li>ƒл€ автоматической выгрузки остатков товаров в Avito по расписанию следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">«адачи</a> с адресом запускаемого файла <code>phpshop/modules/avito/cron/items.php</code>.</li>
     <li>ƒл€ автоматической синхронизации <kbd>AvitoID</kbd> дл€ обновлени€ цен у товаров по API следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">«адачи</a> с адресом запускаемого файла <code>phpshop/modules/avito/cron/sync.php</code>.</li>
   </ol>
 

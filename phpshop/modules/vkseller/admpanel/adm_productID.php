@@ -26,7 +26,7 @@ function addVksellerProductTab($data) {
     $tab .= $PHPShopGUI->setField('Цена VK', $PHPShopGUI->setInputText(null, 'price_vk_new', $data['price_vk'], 150, $valuta_def_name), 2);
 
     if (!empty($data['export_vk_id']))
-        $tab .= $PHPShopGUI->setField('VK ID', $PHPShopGUI->setInputText(null, 'export_vk_id_new', $data['export_vk_id'], 150, $PHPShopGUI->setLink('https://vk.com/market-' . $VkSeller->owner_id . '?screen=cart&w=product-' . $VkSeller->owner_id . '_' . $data['export_vk_id'] . '%2Fquery', '<span class=\'glyphicon glyphicon-eye-open\'></span>', '_blank', false, __('Перейте на сайт ВКонтакте'))));
+        $tab .= $PHPShopGUI->setField('VK ID', $PHPShopGUI->setInputText(null, 'export_vk_id_new', $data['export_vk_id'], 150, $PHPShopGUI->setLink('https://vk.ru/market-' . $VkSeller->owner_id . '?screen=cart&w=product-' . $VkSeller->owner_id . '_' . $data['export_vk_id'] . '%2Fquery', '<span class=\'glyphicon glyphicon-eye-open\'></span>', '_blank', false, __('Перейте на сайт ВКонтакте'))));
 
     $PHPShopGUI->addTab(array("ВКонтакте", $tab, true));
 }

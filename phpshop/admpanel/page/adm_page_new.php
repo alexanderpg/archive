@@ -37,7 +37,7 @@ function treegenerator($array, $i, $curent) {
 }
 
 function actionStart() {
-    global $PHPShopGUI, $PHPShopSystem, $PHPShopModules, $TitlePage,$hideSite;
+    global $PHPShopGUI, $PHPShopSystem, $PHPShopModules, $TitlePage, $hideSite;
 
     // Начальные данные
     $data = array();
@@ -110,7 +110,7 @@ function actionStart() {
 
     $SelectValue[] = array('Вывод в каталоге', 1, $data['enabled']);
     $SelectValue[] = array('Заблокировать', 0, $data['enabled']);
-    
+
     $Tab_description = $PHPShopGUI->setCollapse('Заголовок', $PHPShopGUI->setInput("text", "name_new", $data['name']));
 
     // Содержание закладки 1
@@ -127,8 +127,8 @@ function actionStart() {
 
     // Содержание закладки 3
     if ($data['category'] != 2000) {
-        $Tab3 = $PHPShopGUI->setField("Title", $PHPShopGUI->setTextarea("title_new", $data['title']).$PHPShopGUI->setAIHelpButton('title_new',70,'page_title'));
-        $Tab3 .= $PHPShopGUI->setField("Description", $PHPShopGUI->setTextarea("description_new", $data['description']).$PHPShopGUI->setAIHelpButton('description_new',80,'page_descrip'));
+        $Tab3 = $PHPShopGUI->setField("Title", $PHPShopGUI->setTextarea("title_new", $data['title']) . $PHPShopGUI->setAIHelpButton('title_new', 70, 'page_title'));
+        $Tab3 .= $PHPShopGUI->setField("Description", $PHPShopGUI->setTextarea("description_new", $data['description']) . $PHPShopGUI->setAIHelpButton('description_new', 80, 'page_descrip'));
         $Tab3 .= $PHPShopGUI->setField("Keywords", $PHPShopGUI->setTextarea("keywords_new", $data['keywords']));
         $Tab_seo = $PHPShopGUI->setCollapse('SEO / Мета-данные', $Tab3);
 
@@ -150,8 +150,8 @@ function actionStart() {
         // Дата
         $Tab_dop .= $PHPShopGUI->setField("Дата", $PHPShopGUI->setInputDate("datas_new", PHPShopDate::get($data['datas'])));
 
-        if(empty($hideSite))
-        $Tab_dop .= $PHPShopGUI->setField('Рекомендуемые товары для совместной продажи', $PHPShopGUI->setTextarea('odnotip_new', $data['odnotip'], false, false, false, __('Укажите ID товаров или воспользуйтесь') . ' <a href="#" data-target="#odnotip_new"  class="btn btn-sm btn-default tag-search"><span class="glyphicon glyphicon-search"></span> ' . __('поиском товаров') . '</a>'));
+        if (empty($hideSite))
+            $Tab_dop .= $PHPShopGUI->setField('Рекомендуемые товары для совместной продажи', $PHPShopGUI->setTextarea('odnotip_new', $data['odnotip'], false, false, false, __('Укажите ID товаров или воспользуйтесь') . ' <a href="#" data-target="#odnotip_new"  class="btn btn-sm btn-default tag-search"><span class="glyphicon glyphicon-search"></span> ' . __('поиском товаров') . '</a>'));
 
         // Анонс
         $oFCKeditor2 = new Editor('preview_new');
@@ -169,12 +169,12 @@ function actionStart() {
 
     // Вывод формы закладки
     if (!empty($data['category']) and $data['category'] != 2000 and $data['category'] != 1000) {
-        $Tab_content = $PHPShopGUI->setCollapse("Анонс", $oFCKeditor2->AddGUI().$PHPShopGUI->setAIHelpButton('preview_new',100,'page_description'));
-        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI().$PHPShopGUI->setAIHelpButton('content_new',300,'page_content'));
+        $Tab_content = $PHPShopGUI->setCollapse("Анонс", $oFCKeditor2->AddGUI() . $PHPShopGUI->setAIHelpButton('preview_new', 100, 'page_description'));
+        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'page_content'));
         $PHPShopGUI->setTab(array("Основное", $Tab_description . $Tab_info . $Tab_seo . $Tab_content . $Tab_dop . $Tab_sec, true, false, true));
     } else {
 
-        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI().$PHPShopGUI->setAIHelpButton('content_new',300,'page_content'));
+        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'page_content'));
 
         if ($data['category'] == 2000)
             $grid = false;
@@ -211,11 +211,12 @@ function actionInsert() {
         $_POST['datas_new'] = PHPShopDate::GetUnixTime($_POST['datas_new']);
 
     // Мультибаза
-    $_POST['servers_new'] = "";
-    if (is_array($_POST['servers']))
+    if (is_array($_POST['servers'])) {
+        $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and ! strstr($v, ','))
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
                 $_POST['servers_new'] .= "i" . $v . "i";
+    }
 
     $_POST['icon_new'] = iconAdd();
 

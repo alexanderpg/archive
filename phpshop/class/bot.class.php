@@ -3,7 +3,7 @@
 /**
  * Библиотека Dialog Bot
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopClass
  */
 class PHPShopBot {
@@ -584,7 +584,7 @@ class PHPShopVKBot extends PHPShopBot {
         return $out;
     }
 
-    private function request($method, $data = array(), $path = 'https://api.vk.com/method/') {
+    private function request($method, $data = array(), $path = 'https://api.vk.ru/method/') {
         $curl = curl_init();
         $data['access_token'] = $this->token;
         $data['v'] = $this->version;
@@ -918,7 +918,7 @@ class PHPShopTelegramBot extends PHPShopBot {
 /**
  * Библиотека Wappi API
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopClass
  */
 class PHPShopWappi {
@@ -937,6 +937,10 @@ class PHPShopWappi {
         $this->enabled = $this->PHPShopSystem->getSerilizeParam('admoption.wappi_enabled');
         if ($this->token == '' or $this->id == '')
             $this->enabled = 0;
+
+        $this->max_profile_id = $this->PHPShopSystem->getSerilizeParam('admoption.wappi_max_id');
+        $this->telegram_profile_id = $this->PHPShopSystem->getSerilizeParam('admoption.wappi_telegram_id');
+        $this->whatsapp_profile_id = $this->PHPShopSystem->getSerilizeParam('admoption.wappi_whatsapp_id');
     }
 
     private function format_phone($phone) {
@@ -952,20 +956,75 @@ class PHPShopWappi {
     }
 
     /**
+     * Отправка в Whatsapp
+     */
+    public function send_whatsapp($text, $phone) {
+
+        if (!empty($this->whatsapp_profile_id)) {
+
+            $message = json_encode([
+                "recipient" => $this->format_phone($phone),
+                "body" => $text,
+            ]);
+
+            return $this->post($message, '/api/async/message/send?profile_id=' . $this->whatsapp_profile_id);
+        }
+    }
+
+    /**
+     * Отправка в Telegram
+     */
+    public function send_telegram($text, $phone) {
+
+        if (!empty($this->telegram_profile_id)) {
+
+            $message = json_encode([
+                "recipient" => $this->format_phone($phone),
+                "body" => $text,
+            ]);
+
+            return $this->post($message, '/tapi/async/message/send?profile_id=' . $this->telegram_profile_id);
+        }
+    }
+
+    /**
+     * Отправка в MAX
+     */
+    public function send_max($text, $phone) {
+
+        if (!empty($this->max_profile_id)) {
+
+            $message = json_encode([
+                "recipient" => $this->format_phone($phone),
+                "body" => $text,
+            ]);
+
+            return $this->post($message, '/maxapi/sync/message/send?profile_id=' . $this->max_profile_id);
+        }
+    }
+
+    /**
      * Отправка каскадом
      */
     public function cascade($text, $phone, $file_name = null, $url = null, $caption = null) {
 
-        $message = json_encode([
-            "recipient" => $this->format_phone($phone),
-            "cascade_id" => $this->cascade_id,
-            "body" => $text,
-            "caption" => $caption,
-            "file_name" => $file_name,
-            "url" => $url
-        ]);
+        if (!empty($this->cascade_id)) {
+            $message = json_encode([
+                "recipient" => $this->format_phone($phone),
+                "cascade_id" => $this->cascade_id,
+                "body" => $text,
+                "caption" => $caption,
+                "file_name" => $file_name,
+                "url" => $url
+            ]);
 
-        return $this->post($message, '/csender/cascade/send');
+            return $this->post($message, '/csender/cascade/send');
+        }
+        else {
+            $this->send_max($text, $phone);
+            $this->send_whatsapp($text, $phone);
+            $this->send_telegram($text, $phone);
+        }
     }
 
     private function post($param, $path) {

@@ -30,8 +30,8 @@ function actionStart() {
             $PHPShopGUI->setField("Виджет", $PHPShopGUI->setCheckbox('option[metrica_widget]', 1, 'Включить виджет статистики в панель инструментов', $option['metrica_widget']))
             , 'in', false
     );
-    
-        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Безопасность Яндекс SmartCaptcha', $PHPShopGUI->setField("SmartCaptcha", $PHPShopGUI->setCheckbox('option[smartcaptcha_enabled]', 1, 'Включить режим усиленной проверки от ботов', $option['smartcaptcha_enabled'])) .
+
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Безопасность Яндекс SmartCaptcha', $PHPShopGUI->setField("SmartCaptcha", $PHPShopGUI->setCheckbox('option[smartcaptcha_enabled]', 1, 'Включить режим усиленной проверки от ботов', $option['smartcaptcha_enabled'])) .
             $PHPShopGUI->setField("Ключ клиента", $PHPShopGUI->setInputText(null, "option[smartcaptcha_pkey]", $option['smartcaptcha_pkey'], 300)) .
             $PHPShopGUI->setField("Ключ сервера", $PHPShopGUI->setInputText(null, "option[smartcaptcha_skey]", $option['smartcaptcha_skey'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://yandex.cloud/ru/docs/smartcaptcha/quickstart" target="_blank">Кабинет разработчика</a>'))
     );
@@ -58,23 +58,22 @@ function actionStart() {
 
     // VK ID
     if (empty($hideSite)) {
-        $get_token = 'https://oauth.vk.com/authorize?client_id=' . $option['vk_id'] . '&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=video,offline&response_type=token&v=5.52';
-        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('VK ID', $PHPShopGUI->setField('ID приложения', $PHPShopGUI->setInputText(false, 'option[vk_id]', $option['vk_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://id.vk.com/about/business/go" target="_blank">Кабинет разработчика</a>')) .
+        $get_token = 'https://oauth.vk.ru/authorize?client_id=' . $option['vk_id'] . '&display=page&redirect_uri=https://oauth.vk.ru/blank.html&scope=video,offline&response_type=token&v=5.52';
+        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('VK ID', $PHPShopGUI->setField('ID приложения', $PHPShopGUI->setInputText(false, 'option[vk_id]', $option['vk_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://id.vk.ru/about/business/go" target="_blank">Кабинет разработчика</a>')) .
                 $PHPShopGUI->setField('Токен доступа', $PHPShopGUI->setTextarea('option[vk_id_token]', $option['vk_id_token'], false, 300, '100') . $PHPShopGUI->setHelp('Используется для передачи отзывов из группы VK. Получить <a href="' . $get_token . '" id="client_token" target="_blank">Персональный токен</a>')) .
                 $PHPShopGUI->setField('Сервисный ключ', $PHPShopGUI->setInputText(false, 'option[vk_id_apikey]', $option['vk_id_apikey'], 300)) .
                 $PHPShopGUI->setField("Включить VK ID", $PHPShopGUI->setCheckbox('option[vk_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью VK ID на сайте', $option['vk_id_enabled'])), 'in', true
         );
     }
-    
-    // Wappi
-    if (empty($hideSite)) {
-        
-        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Wappi', $PHPShopGUI->setField('ID каскада', $PHPShopGUI->setInputText(false, 'option[wappi_id]', $option['wappi_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи выдаются через <a href="https://wappi.pro/registration?ref=0d81b19d" target="_blank">Кабинет разработчика</a>')) .
-                $PHPShopGUI->setField('Токен API', $PHPShopGUI->setInputText(false,'option[wappi_token]', $option['wappi_token'], 300)) .
-                $PHPShopGUI->setField("Включить Wappi", $PHPShopGUI->setCheckbox('option[wappi_enabled]', 1, 'Использовать авторизацию и оповещения с помощью Wappi на сайте', $option['wappi_enabled'])), 'in', true
-        );
-    }
 
+    // Wappi
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Wappi', $PHPShopGUI->setField('Токен API', $PHPShopGUI->setInputText(false, 'option[wappi_token]', $option['wappi_token'], 300) . $PHPShopGUI->setHelp('Персональные ключи выдаются через <a href="https://wappi.pro/registration?ref=0d81b19d" target="_blank">Кабинет разработчика</a>')) .
+            $PHPShopGUI->setField('ID каскада', $PHPShopGUI->setInputText(false, 'option[wappi_id]', $option['wappi_id'], 300)) .
+            $PHPShopGUI->setField('ID профиля Whatsapp', $PHPShopGUI->setInputText(false, 'option[wappi_whatsapp_id]', $option['wappi_whatsapp_id'], 300)) .
+            $PHPShopGUI->setField('ID профиля Telegram', $PHPShopGUI->setInputText(false, 'option[wappi_telegram_id]', $option['wappi_telegram_id'], 300)) .
+            $PHPShopGUI->setField('ID профиля Max', $PHPShopGUI->setInputText(false, 'option[wappi_max_id]', $option['wappi_max_id'], 300)) .
+            $PHPShopGUI->setField("Включить Wappi", $PHPShopGUI->setCheckbox('option[wappi_enabled]', 1, 'Использовать авторизацию и оповещения с помощью Wappi на сайте', $option['wappi_enabled'])), 'in', true
+    );
 
     // Google Analitiks
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Статистика посещений Google', $PHPShopGUI->setField('Идентификатор отслеживания', $PHPShopGUI->setInputText('UA-', 'option[google_id]', $option['google_id'], 300, false, false, false, 'XXXXX-Y') .
@@ -135,14 +134,13 @@ function actionStart() {
 
         if (empty($option['memcached_port']))
             $option['memcached_port'] = '11211';
-        
+
         $test = "PHPShop";
 
         if (class_exists('Memcached')) {
             $cache = new Memcached();
             $cache->addServer($option['memcached_server'], $option['memcached_port']);
             $cache->set("test_key", $test, 60);
-            
         } else if (class_exists('Memcache')) {
             $cache = new Memcache();
             $cache->addServer($option['memcached_server'], $option['memcached_port']);
@@ -203,7 +201,7 @@ function actionUpdate() {
     $option = unserialize($data['admoption']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled', 'option.vk_id_enabled','option.smartcaptcha_enabled','option.wappi_enabled');
+    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled', 'option.vk_id_enabled', 'option.smartcaptcha_enabled', 'option.wappi_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

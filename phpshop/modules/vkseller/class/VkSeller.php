@@ -5,13 +5,13 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с VK Товары API
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopModules
- * @todo https://dev.vk.com/method/market
+ * @todo https://dev.vk.ru/method/market
  */
 class VkSeller {
 
-    const API_URL = 'https://api.vk.com/method/';
+    const API_URL = 'https://api.vk.ru/method/';
     const IMPORT_PRODUCT = 'market.add';
     const GET_TREE = 'market.getCategories';
     const GET_UPLOAD_SERVER = 'photos.getMarketUploadServer';
@@ -90,12 +90,12 @@ class VkSeller {
 
         $_SESSION['code_verifier'] = $code_verifier;
 
-        header('Location: https://id.vk.com/authorize?response_type=code&client_id=' . $this->client_id . '&scope=' . $scope . '&redirect_uri=' . $this->ssl . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] . '&state=' . $state . '&code_challenge=' . $code_challenge . '&code_challenge_method=S256');
+        header('Location: https://id.vk.ru/authorize?response_type=code&client_id=' . $this->client_id . '&scope=' . $scope . '&redirect_uri=' . $this->ssl . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'] . '&state=' . $state . '&code_challenge=' . $code_challenge . '&code_challenge_method=S256');
     }
 
     public function getToken() {
 
-        $api = 'https://id.vk.com/oauth2/auth';
+        $api = 'https://id.vk.ru/oauth2/auth';
 
         $ch = curl_init();
         $header = [
@@ -141,7 +141,7 @@ class VkSeller {
             $code_verifier = rtrim(strtr(base64_encode($verifier_bytes), "+/", "-_"), "=");
             $state = substr($code_verifier, 0, 32);
 
-            $api = 'https://id.vk.com/oauth2/auth';
+            $api = 'https://id.vk.ru/oauth2/auth';
 
             $ch = curl_init();
             $header = [
@@ -547,7 +547,7 @@ class VkSeller {
         $log['params'] = $params;
         $log['result'] = $result;
 
-        //$this->log($log, null, $method);
+        $this->log($log, null, $method);
 
         return $result;
     }

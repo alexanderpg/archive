@@ -1,6 +1,6 @@
 <!-- Hero Section -->
 <div class="container space-top-1 space-top-sm-1" itemscope itemtype="http://schema.org/Product">
-    <meta itemprop="image" content="@productImgBigFoto@">
+    <meta itemprop="image" content="@productImg@">
     <div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
         <meta itemprop="ratingValue" content="@productRatingValue@">
         <meta itemprop="ratingCount" content="@productRatingCount@">

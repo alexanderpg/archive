@@ -41,7 +41,7 @@
                 </div>
             </div>
             <a class="btn btn-sm btn-outline-primary btn-pill transition-3d-hover @elementCartOptionHide@ @hideCatalog@" href="/shop/UID_@productUid@.html">@productSale@</a>
-            <button type="button" class="btn btn-sm btn-outline-primary btn-pill transition-3d-hover addToCartList @elementCartHide@ @hideCatalog@">@flowProductSale@</button>
+            <button type="button" class="btn btn-sm btn-outline-primary btn-pill transition-3d-hover addToCartList @elementCartHide@ @hideCatalog@" data-uid="@productUid@">@flowProductSale@</button>
         </div>
     </div>
     <!-- End Product -->

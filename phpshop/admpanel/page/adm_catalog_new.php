@@ -22,18 +22,18 @@ function treegenerator($array, $i, $parent) {
                 $selected = null;
 
             if (empty($check['select'])) {
-                $tree_select.='<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
+                $tree_select .= '<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
                 $i = 1;
             } else {
-                $tree_select.='<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
+                $tree_select .= '<option value="' . $k . '" ' . $selected . '>' . $del . $v . '</option>';
             }
 
-            $tree.='<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
+            $tree .= '<tr class="treegrid-' . $k . ' treegrid-parent-' . $parent . ' data-tree">
 		<td><a href="?path=page.catalog&id=' . $k . '">' . $v . '</a></td>
                     </tr>';
 
-            $tree_select.=$check['select'];
-            $tree.=$check['tree'];
+            $tree_select .= $check['select'];
+            $tree .= $check['tree'];
         }
     }
 
@@ -48,12 +48,12 @@ function actionStart() {
 
     // Размер названия поля
     $PHPShopGUI->field_col = 2;
-    $PHPShopGUI->addJSFiles('./js/jquery.treegrid.js', './js/bootstrap-datetimepicker.min.js','./page/gui/page.gui.js');
+    $PHPShopGUI->addJSFiles('./js/jquery.treegrid.js', './js/bootstrap-datetimepicker.min.js', './page/gui/page.gui.js');
 
     // Начальные данные
     $data = array();
     $data['num'] = 1;
-    $data = $PHPShopGUI->valid($data,'name','servers','menu','icon','title','description','keywords','content','parent_to');
+    $data = $PHPShopGUI->valid($data, 'name', 'servers', 'menu', 'icon', 'title', 'description', 'keywords', 'content', 'parent_to');
 
     $PHPShopGUI->setActionPanel($TitlePage, false, array('Создать и редактировать', 'Сохранить и закрыть'));
 
@@ -90,7 +90,7 @@ function actionStart() {
         foreach ($tree_array[0]['sub'] as $k => $v) {
             $check = treegenerator(@$tree_array[$k], 1, $k);
 
-            $tree.='<tr class="treegrid-' . $k . ' data-tree">
+            $tree .= '<tr class="treegrid-' . $k . ' data-tree">
 		<td><a href="?path=page.catalog&id=' . $k . '">' . $v . '</a></td>
                     </tr>';
 
@@ -98,14 +98,14 @@ function actionStart() {
                 $selected = 'selected';
             else
                 $selected = null;
-            
-            $tree_select.='<option value="' . $k . '"  ' . $selected . '>' . $v . '</option>';
 
-            $tree_select.=$check['select'];
-            $tree.=$check['tree'];
+            $tree_select .= '<option value="' . $k . '"  ' . $selected . '>' . $v . '</option>';
+
+            $tree_select .= $check['select'];
+            $tree .= $check['tree'];
         }
-    $tree_select.='</select>';
-    $tree.='</table>
+    $tree_select .= '</select>';
+    $tree .= '</table>
         <script>
     var cat="' . intval($_GET['cat']) . '";
     </script>';
@@ -113,14 +113,14 @@ function actionStart() {
     // Выбор каталога
     //$Tab_info.= $PHPShopGUI->setField("Размещение", $tree_select);
 
-    $Tab_info.=$PHPShopGUI->setField("Приоритет", $PHPShopGUI->setInputText(false, 'num_new', $data['num'], '100'));
-    
-    $Tab_info.=$PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
+    $Tab_info .= $PHPShopGUI->setField("Приоритет", $PHPShopGUI->setInputText(false, 'num_new', $data['num'], '100'));
+
+    $Tab_info .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
     $Tab_info .= $PHPShopGUI->setField("Опции вывода", $PHPShopGUI->setCheckbox('menu_new', 1, 'Главное меню', $data['menu']));
 
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab_info);
-    
-        // Иконка
+
+    // Иконка
     $Tab_icon = $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['icon'], "icon_new", false));
     $Tab1 .= $PHPShopGUI->setCollapse('Иконка', $Tab_icon);
 
@@ -202,12 +202,13 @@ function actionInsert() {
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);
 
     // Мультибаза
-    $_POST['servers_new'] = "";
-    if (is_array($_POST['servers']))
+    if (is_array($_POST['servers'])) {
+        $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and !strstr($v, ','))
-                $_POST['servers_new'].="i" . $v . "i";
-            
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
+                $_POST['servers_new'] .= "i" . $v . "i";
+    }
+
     $_POST['icon_new'] = iconAdd();
 
     $action = $PHPShopOrm->insert($_POST);

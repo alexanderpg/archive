@@ -169,7 +169,11 @@ function getTableCaption() {
 
     // Дополнительный склад
     $PHPShopOrmWarehouse = new PHPShopOrm($GLOBALS['SysValue']['base']['warehouses']);
-    $dataWarehouse = $PHPShopOrmWarehouse->select(array('*'), array('enabled' => "='1'"), array('order' => 'num DESC'), array('limit' => 100));
+    $Warehouses = $PHPShopOrmWarehouse->select(array('*'), array('enabled' => "='1'"), array('order' => 'num DESC'), array('limit' => 100));
+    
+    foreach($Warehouses as $warehouse){
+        $dataWarehouse[$warehouse['id']]=$warehouse;
+    }
 
     // Убираем меню если много полей
     $count_view = 0;
@@ -202,9 +206,9 @@ function getTableCaption() {
         ["Ст. цена", "10%", ['view' => (int) $memory['catalog.option']['price_n']]],
         ["Зак. цена", "10%", ['view' => (int) $memory['catalog.option']['price_purch']]],
         ["Кол-во", "10%", ['view' => (int) $memory['catalog.option']['item']]],
-        [@$dataWarehouse[0]['name'], "10%", ['view' => (int) $memory['catalog.option']['items1']]],
-        [@$dataWarehouse[1]['name'], "10%", ['view' => (int) $memory['catalog.option']['items2']]],
-        [@$dataWarehouse[2]['name'], "10%", ['view' => (int) $memory['catalog.option']['items3']]],
+        [$dataWarehouse[1]['name'], "10%", ['view' => (int) $memory['catalog.option']['items1']]],
+        [$dataWarehouse[2]['name'], "10%", ['view' => (int) $memory['catalog.option']['items2']]],
+        [$dataWarehouse[3]['name'], "10%", ['view' => (int) $memory['catalog.option']['items3']]],
         ["Характеристики", "25%", ['view' => (int) $memory['catalog.option']['sort']]]
     ];
 

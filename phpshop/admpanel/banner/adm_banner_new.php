@@ -81,7 +81,7 @@ function treegenerator($array, $i, $curent, $dop_cat_array) {
 
 // Стартовый вид
 function actionStart() {
-    global $PHPShopGUI, $PHPShopSystem, $PHPShopOrm, $PHPShopModules,$shop_type;
+    global $PHPShopGUI, $PHPShopSystem, $PHPShopOrm, $PHPShopModules, $shop_type;
 
     // Выборка
     $data['flag'] = 1;
@@ -155,8 +155,8 @@ function actionStart() {
     $tree_select_dop = '<select class="selectpicker show-menu-arrow hidden-edit" data-live-search="true" data-container="body"  data-style="btn btn-default btn-sm" name="dop_cat[]" data-width="100%" multiple><option value="0">' . $CategoryArray[0]['name'] . '</option>' . $tree_select_dop . '</select>';
 
     // Дополнительные каталоги
-    if(empty($shop_type))
-    $Tab2 .= $PHPShopGUI->setField('Каталоги', $tree_select_dop . $PHPShopGUI->setHelp('Баннер выводится только в заданных каталогах.'));
+    if (empty($shop_type))
+        $Tab2 .= $PHPShopGUI->setField('Каталоги', $tree_select_dop . $PHPShopGUI->setHelp('Баннер выводится только в заданных каталогах.'));
 
     // Описание 
     $Tab1 .= $PHPShopGUI->setField("Описание", $PHPShopGUI->setTextarea('description_new', $data['description']));
@@ -165,7 +165,7 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField("Цель", $PHPShopGUI->setInput("text", "link_new", $data['link']) . $PHPShopGUI->setHelp("Пример: /pages/info.html или https://google.com"));
 
     // Цвет
-    $Tab1 .= $PHPShopGUI->setField("Инверсия цвета", $PHPShopGUI->setInputText(null, "color_new", (int)$data['color'], 100, '%'));
+    $Tab1 .= $PHPShopGUI->setField("Инверсия цвета", $PHPShopGUI->setInputText(null, "color_new", (int) $data['color'], 100, '%'));
 
     // Иконка
     $Tab1 .= $PHPShopGUI->setField("Изображение для фона", $PHPShopGUI->setIcon($data['image'], "image_new", false));
@@ -222,7 +222,7 @@ function actionInsert() {
     if (is_array($_POST['servers'])) {
         $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and ! strstr($v, ','))
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
                 $_POST['servers_new'] .= "i" . $v . "i";
     }
 

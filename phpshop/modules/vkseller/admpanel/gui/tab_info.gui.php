@@ -22,7 +22,7 @@ function tab_info($data) {
       <h4>Настройки параметров работы по модели API</h4>
         <h5>Настройка приложения</h5>
          <ol>
-         <li><a href="https://id.vk.com/about/business/go" target="_blank">Создать приложение</a> с любым именем</li>
+         <li><a href="https://id.vk.ru/about/business/go" target="_blank">Создать приложение</a> с любым именем</li>
          <li>В поле <b>Платформа</b> выбрать "Сайт".</li>
          <li>В поле <b>Сообщество</b> выбрать свое сообщество ВКонтакте, если его нет, то следует его создать.</li>
          <li>В поле <b>Базовый домен</b> указать имя своего сайта <code>' . $_SERVER['SERVER_NAME'].$GLOBALS['SysValue']['dir']['dir'].'</code></li>

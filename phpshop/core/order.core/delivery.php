@@ -183,8 +183,33 @@ class PHPShopOrderDelivery {
                 sprintf(__('Для данного способа доставки сумма в корзине должна быть больше: %s %s'), (int) $delivery['sum_min'], $PHPShopSystem->getDefaultValutaCode(true))
             );
         }
+        
+        // Сумма длин сторон
+        if ((int) $delivery['sum_side_max'] > 0 && $PHPShopCart->getMaxSumSide() > (int) $delivery['sum_side_max']) {
+            throw new \Exception(__('Превышена максимальная сумма длин сторон '.$delivery['sum_side_max'].' см'));
+        }
+        
+        // Максимальная длина
+        if ((int) $delivery['length_max'] > 0 && $PHPShopCart->getMaxLength() > (int) $delivery['length_max']) {
+            throw new \Exception(__('Превышена максимальная длина '.$delivery['length_max'].' см'));
+        }
+        
+        // Максимальная высота
+        if ((int) $delivery['height_max'] > 0 && $PHPShopCart->getMaxHeight() > (int) $delivery['height_max']) {
+            throw new \Exception(__('Превышена максимальная высота '.$delivery['height_max'].' см'));
+        }
+        
+        // Максимальная ширина
+        if ((int) $delivery['width_max'] > 0 && $PHPShopCart->getMaxWidth() > (int) $delivery['width_max']) {
+            throw new \Exception(__('Превышена максимальная ширина '.$delivery['width_max'].' см'));
+        }
+
 
         $weight = $PHPShopCart->getWeight();
+        $volume_weight = $PHPShopCart->getVolumeWeight();
+        
+        if($volume_weight > $weight)
+            $weight=$volume_weight;
 
         if((int) $weight > 0) {
             if ((int) $delivery['weight_max'] > 0 && (int) $delivery['weight_max'] <= $weight) {

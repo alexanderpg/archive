@@ -3,7 +3,7 @@
 /**
  * Библиотека AvitoXML
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopClass
  */
 class AvitoXML {
@@ -259,7 +259,7 @@ class AvitoXML {
         if (!empty($queryMultibase))
             $where .= ' ' . $queryMultibase;
 
-        $result = $PHPShopOrm->query("select * from " . $GLOBALS['SysValue']['base']['products'] . " where " . $where . " enabled='1' and sklad!='1' and parent_enabled='0'");
+        $result = $PHPShopOrm->query("select * from " . $GLOBALS['SysValue']['base']['products'] . " where " . $where . " enabled='1' and parent_enabled='0'");
         if ($result)
             while ($row = mysqli_fetch_array($result)) {
 
@@ -325,7 +325,7 @@ class AvitoXML {
                     "items" => $row['items'],
                     "price_avito" => round($row['price_avito'], (int) $this->format),
                     "baseinputvaluta" => $row['baseinputvaluta'],
-                    "items1" => $row['items1'],
+                    "sklad" => $row['sklad'],
                     "name_avito" => $row['name_avito'],
                     "export_avito_id" => $row['export_avito_id'],
                     "vendor_array" => unserialize($row['vendor_array'])
@@ -399,6 +399,14 @@ class AvitoXML {
     <Description>' . PHPShopString::win_utf8($val['content']) . '</Description>
     <Price>' . $val['price'] . '</Price>';
 
+            // Доступность
+            if ($val['sklad'] == 1)
+                $availability = PHPShopString::win_utf8('Под заказ');
+            else
+                $availability = PHPShopString::win_utf8('В наличии');
+
+            $xml .= '<Availability>' . $availability . '</Availability>';
+
             // Категория и тип
             $slug = $this->Catalog[$val['category']]['category_avitoapi'];
             $parent = $CategoryAvitoArray->getParam($slug . '.parent_to');
@@ -471,11 +479,11 @@ class AvitoXML {
 
         return $this->xml;
     }
-    
+
     /**
      * Характеристики для шаблона описания
      */
-     private function sort_table($product) {
+    private function sort_table($product) {
 
         $category = new PHPShopCategory((int) $product['category']);
 

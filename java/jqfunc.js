@@ -198,7 +198,7 @@ function UpdateDeliveryJq(xid, param, stop_hook) {
     if (param === undefined) {
         param = '';
     }
-    
+
     $("form[name='forma_order'] input[name=dostavka_metod]").attr('disabled', true);
     $(this).html(waitText);
 
@@ -493,11 +493,20 @@ $(document).ready(function () {
         });
 
         $.each(obj[str], function (index, value) {
+
             if (value != "") {
                 name = "input[name='" + index + "']";
                 $(name).val(value);
                 $(name).removeClass('reqActiv');
+
+                //  œœ ‰Îˇ »œ
+                if (index == 'org_inn_new' && value.length == 12) {
+                    $("input[name='org_kpp_new']").removeClass('req').attr('disabled', true);
+                    ;
+                }
             }
+
+
         });
     }).change();
 
@@ -617,6 +626,12 @@ function showSuggestion(suggestion) {
         return;
     }
     $("input[name='org_inn_new']").val(data.inn);
+
+    //  œœ ‰Îˇ »œ
+    if (data.inn.length == 12) 
+        $("input[name='org_kpp_new']").removeClass('req').attr('disabled', true);
+    else $("input[name='org_kpp_new']").addClass('req').attr('disabled', false);
+
     $("input[name='org_kpp_new']").val(data.kpp);
     $("input[name='org_yur_adres_new']").val(data.address.value);
     $("input[name='org_fakt_adres_new']").val(data.address.value);

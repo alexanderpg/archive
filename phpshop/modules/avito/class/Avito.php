@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с Avito API
  * @author PHPShop Software
- * @version 2.0
+ * @version 2.1
  * @package PHPShopModules
  * @todo https://www.avito.ru/autoload/documentation/templates/111801?fileFormat=xml
  * @todo https://developers.avito.ru/api-catalog/auth/documentation
@@ -125,6 +125,7 @@ class Avito {
      */
     public function updatePrices($product) {
 
+        $i=0;
         if ($this->export != 2) {
 
             if (is_array($product)) {
@@ -160,12 +161,15 @@ class Avito {
                         'result' => $result
                     ];
 
-
                     // Журнал
                     $this->log($log, $method);
+                    
+                    $i++;
                 }
             }
         }
+        
+        return $i;
     }
 
     /**

@@ -104,27 +104,6 @@ function tab_rules($row, $autofill = false) {
                                 <td>-</td>
                             </tr>
                             <tr>
-                            <td>'.__('—сылки').'</td>
-                                <td>' . $PHPShopGUI->setCheckbox('links_rul_1', 1, false, rules_checked($status['links'], 0)) . '</td>
-                                <td>' . $PHPShopGUI->setCheckbox('links_rul_2', 1, false, rules_checked($status['links'], 1)) . '</td>
-                                <td>' . $PHPShopGUI->setCheckbox('links_rul_3', 1, false, rules_checked($status['links'], 2)) . '</td>
-                                <td>-</td>
-                            </tr> 
-                            <tr>
-                            <td>'.__('ѕрайс-лист').'</td>
-                                <td>' . $PHPShopGUI->setCheckbox('csv_rul_1', 1, false, rules_checked($status['csv'], 0)) . '</td>
-                                <td>' . $PHPShopGUI->setCheckbox('csv_rul_2', 1, false, rules_checked($status['csv'], 1)) . '</td>
-                                <td>' . $PHPShopGUI->setCheckbox('csv_rul_3', 1, false, rules_checked($status['csv'], 2)) . '</td>
-                                <td>-</td>
-                            </tr>
-                            <tr>
-                            <td>'.__('ќпрос').'</td>
-                                <td>' . $PHPShopGUI->setCheckbox('opros_rul_1', 1, false, rules_checked($status['opros'], 0)) . '</td>
-                                <td>' . $PHPShopGUI->setCheckbox('opros_rul_2', 1, false, rules_checked($status['opros'], 1)) . '</td>
-                                <td>' . $PHPShopGUI->setCheckbox('opros_rul_3', 1, false, rules_checked($status['opros'], 2)) . '</td>
-                                <td>-</td>
-                            </tr> 
-                            <tr>
                             <td>'.__('–ейтинг').'</td>
                                 <td>' . $PHPShopGUI->setCheckbox('rating_rul_1', 1, false, rules_checked($status['rating'], 0)) . '</td>
                                 <td>' . $PHPShopGUI->setCheckbox('rating_rul_2', 1, false, rules_checked($status['rating'], 1)) . '</td>
@@ -132,7 +111,7 @@ function tab_rules($row, $autofill = false) {
                                 <td>-</td>
                             </tr>
                             <tr>
-                            <td>'.__('Ёкспорт / »мпорт данных').'</td>
+                            <td>'.__('Ёкспорт и импорт данных').'</td>
                                 <td>' . $PHPShopGUI->setCheckbox('exchange_rul_1', 1, false, rules_checked($status['exchange'], 0)) . '</td>
                                 <td>' . $PHPShopGUI->setCheckbox('exchange_rul_2', 1, false, rules_checked($status['exchange'], 1)) . '</td>
                                 <td></td>
@@ -146,7 +125,7 @@ function tab_rules($row, $autofill = false) {
                                 <td>-</td>
                             </tr>
                             <tr>
-                            <td>'.__('¬алюты').'</td>
+                            <td>'.__('¬алюты и склады').'</td>
                                 <td>' . $PHPShopGUI->setCheckbox('currency_rul_1', 1, false, rules_checked($status['currency'], 0)) . '</td>
                                 <td>' . $PHPShopGUI->setCheckbox('currency_rul_2', 1, false, rules_checked($status['currency'], 1)) . '</td>
                                 <td>' . $PHPShopGUI->setCheckbox('currency_rul_3', 1, false, rules_checked($status['currency'], 2)) . '</td>
@@ -160,7 +139,7 @@ function tab_rules($row, $autofill = false) {
                                 <td>-</td>
                             </tr> 
                             <tr>
-                            <td>'.__('ћультибаза').'</td>
+                            <td>'.__('¬итрины').'</td>
                                 <td>' . $PHPShopGUI->setCheckbox('servers_rul_1', 1, false, rules_checked($status['servers'], 0)) . '</td>
                                 <td>' . $PHPShopGUI->setCheckbox('servers_rul_2', 1, false, rules_checked($status['servers'], 1)) . '</td>
                                 <td>' . $PHPShopGUI->setCheckbox('servers_rul_3', 1, false, rules_checked($status['servers'], 2)) . '</td>

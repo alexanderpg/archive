@@ -1817,7 +1817,7 @@ img.template:hover{
         position: fixed;
         margin: 0;
         overflow: auto;
-        background-color: #3498db;
+        background-color: var(--color);
         z-index: 999;
     }
     .header-wrap.inner #main-menu.main-menu-fix .container {

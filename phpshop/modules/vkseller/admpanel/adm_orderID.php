@@ -49,7 +49,7 @@ function actionStart() {
 
     $user = $VkSeller->getUser($order_info['user_id'])['response'][0]['screen_name'];
 
-    $Tab1 .= $PHPShopGUI->setField("Покупатель", $PHPShopGUI->setText($PHPShopGUI->setLink('https://vk.com/' . $user, PHPShopString::utf8_win1251($order_info['recipient']['name']), '_blank', false, false, false, false, false), "left", false, false));
+    $Tab1 .= $PHPShopGUI->setField("Покупатель", $PHPShopGUI->setText($PHPShopGUI->setLink('https://vk.ru/' . $user, PHPShopString::utf8_win1251($order_info['recipient']['name']), '_blank', false, false, false, false, false), "left", false, false));
     $Tab1 .= $PHPShopGUI->setField("Телефон", $PHPShopGUI->setText(PHPShopString::utf8_win1251($order_info['recipient']['phone']), "left", false, false));
     $Tab1 .= $PHPShopGUI->setField("Доставка", $PHPShopGUI->setText(PHPShopString::utf8_win1251($order_info['delivery']['address']), "left", false, false));
     $Tab1 .= $PHPShopGUI->setField("Оплата", $PHPShopGUI->setText(PHPShopString::utf8_win1251($order_info['payment']['status']), "left", false, false));

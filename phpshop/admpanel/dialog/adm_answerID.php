@@ -1,6 +1,6 @@
 <?php
 
-$TitlePage = __('Редактирование Ответа').' #' . $_GET['id'];
+$TitlePage = __('Редактирование Ответа') . ' #' . $_GET['id'];
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['dialog_answer']);
 
 // Заполняем выбор
@@ -23,7 +23,7 @@ function actionStart() {
     // Выборка
     $data = $PHPShopOrm->select(array('*'), array('id' => '=' . intval($_GET['id'])));
 
-    $PHPShopGUI->setActionPanel(__("Редактирование Ответа") .": ". $data['name'], array('Удалить'), array('Сохранить', 'Сохранить и закрыть'));
+    $PHPShopGUI->setActionPanel(__("Редактирование Ответа") . ": " . $data['name'], array('Удалить'), array('Сохранить', 'Сохранить и закрыть'));
     $PHPShopGUI->field_col = 2;
 
     // Редактор 1
@@ -40,20 +40,19 @@ function actionStart() {
             $PHPShopGUI->setField("Подсказка в чате", $PHPShopGUI->setRadio("view_new", 1, "Включить", $data['view']) . $PHPShopGUI->setRadio("view_new", 2, "Выключить", $data['view'])) .
             $PHPShopGUI->setField("Позиция", $PHPShopGUI->setSelect("num_new", $Select1, 50));
 
-    $Tab1.=$PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
+    $Tab1 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
 
-    $Tab1.= $PHPShopGUI->setField("Содержание", $oFCKeditor->AddGUI());
+    $Tab1 .= $PHPShopGUI->setField("Содержание", $oFCKeditor->AddGUI());
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true,false,true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true));
 
 
     // Вывод кнопок сохранить и выход в футер
-    $ContentFooter =
-            $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .
+    $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .
             $PHPShopGUI->setInput("button", "delID", "Удалить", "right", 70, "", "but", "actionDelete.shopusers.edit") .
             $PHPShopGUI->setInput("submit", "editID", "Сохранить", "right", 70, "", "but", "actionUpdate.shopusers.edit") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionSave.shopusers.edit");
@@ -79,13 +78,12 @@ function actionUpdate() {
     global $PHPShopOrm, $PHPShopModules;
 
     // Мультибаза
-    if (is_array($_POST['servers'])){
+    if (is_array($_POST['servers'])) {
         $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and !strstr($v, ','))
-                $_POST['servers_new'].="i" . $v . "i";
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
+                $_POST['servers_new'] .= "i" . $v . "i";
     }
-
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);
 

@@ -49,7 +49,7 @@ function actionStart() {
     $PHPShopDelivery = new PHPShopDelivery();
 
     // Размер названия поля
-    $PHPShopGUI->field_col = 4;
+    $PHPShopGUI->field_col = 5;
     $PHPShopGUI->addJSFiles('./js/jquery.treegrid.js', './delivery/gui/delivery.gui.js');
 
     // Выборка
@@ -218,16 +218,22 @@ function actionStart() {
     // Внешний код
     $Tab1 .= $PHPShopGUI->setCollapse('Интеграция', $PHPShopGUI->setField('Внешний код', $PHPShopGUI->setInputText(null, 'external_code_new', $data['external_code'], '100%')));
 
-    // Сумма заказа
+    // Блокировка
     if (empty($data['is_folder'])) {
         $Tab2 .= $PHPShopGUI->setField("Блокировка при стоимости более", $PHPShopGUI->setInputText(null, "sum_max_new", $data['sum_max'], 150, $PHPShopSystem->getDefaultValutaCode()));
         $Tab2 .= $PHPShopGUI->setField("Блокировка при стоимости менее", $PHPShopGUI->setInputText(null, "sum_min_new", $data['sum_min'], 150, $PHPShopSystem->getDefaultValutaCode()));
         $Tab2 .= $PHPShopGUI->setField("Блокировка при весе более", $PHPShopGUI->setInputText(null, "weight_max_new", $data['weight_max'], 150, __('грамм')));
         $Tab2 .= $PHPShopGUI->setField("Блокировка при весе менее", $PHPShopGUI->setInputText(null, "weight_min_new", $data['weight_min'], 150, __('грамм')));
+
+        // Объемы
+        $Tab2 .= $PHPShopGUI->setField("Блокировка при длине более", $PHPShopGUI->setInputText(null, "length_max_new", $data['length_max'], 150, __('см')));
+        $Tab2 .= $PHPShopGUI->setField("Блокировка при высоте более", $PHPShopGUI->setInputText(null, "height_max_new", $data['height_max'], 150, __('см')));
+        $Tab2 .= $PHPShopGUI->setField("Блокировка при ширине более", $PHPShopGUI->setInputText(null, "width_max_new", $data['width_max'], 150, __('см')));
+        $Tab2 .= $PHPShopGUI->setField("Блокировка при сумме сторон более", $PHPShopGUI->setInputText(null, "sum_side_max_new", $data['sum_side_max'], 150, __('см')));
     }
 
     if (!$catalog)
-        $Tab1 .= $PHPShopGUI->setCollapse('Блокировка', $Tab2);
+        $Tab1 .= $PHPShopGUI->setCollapse('Блокировки', $Tab2);
 
     // Цены
     if (!$catalog)
@@ -323,10 +329,9 @@ function actionUpdate() {
     if (is_array($_POST['servers'])) {
         $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and ! strstr($v, ',') and ! empty($v))
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
                 $_POST['servers_new'] .= "i" . $v . "i";
     }
-
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);
     $PHPShopOrm->debug = false;

@@ -1,5 +1,5 @@
 <div id="usersError" class="d-none">@usersError@</div>
-<form method="post" name="user_forma_register" class="template-sm w-50">
+<form method="post" name="user_forma_register" class="template-sm col-lg-5 col-md-6 col-sm-7 col-xs-12">
     <span id="user_error">@user_error@</span>
     <div class="form-group">
         <input type="text"  placeholder="{Имя}" name="name_new" value="@php echo $_POST['name_new']; php@"  class="form-control" required="" >
@@ -30,7 +30,7 @@
     </div>
     <p>
         <input type="hidden" value="1" name="add_user">
-        <button type="reset" class="btn btn-soft-primary">{Очистить}</button>
+        <button type="reset" class="btn btn-soft-primary mb-2">{Очистить}</button>
         <button type="submit" class="btn btn-primary transition-3d-hover">{Регистрация пользователя}</button>
     </p>
 

@@ -2181,7 +2181,7 @@ img.template:hover{
         position: fixed;
         margin: 0;
         overflow: auto;
-        background-color: #3498db;
+        background-color: var(--color);
     }
     .header-wrap.inner #main-menu.main-menu-fix .container {
         margin: 0;

@@ -253,7 +253,7 @@ class PHPShopSeoPro {
         
         // Убираем окончание .html
         if ($GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2)
-          $replace = ['/\.html"/i' => '"'];
+          $replace = ['/\.html"/i' => '"','/\.html\?/' => '?'];
         else $replace=false;
 
         ob_start();

@@ -168,7 +168,7 @@
                                 <tr>
                                     <td align="center" height="60"
                                         style="font-size: 18px; color: #464646; font-weight: 400; border-radius:4px;font-family:    Helvetica, sans-serif; letter-spacing: 1px; ">
-                                        {Для активации личного кабинета}, {перейдите по} <a href="http://@serverPath@users/useractivate.html?key=@user_key@">{ссылке}</a>
+                                        {Для активации личного кабинета}, {перейдите по} <a href="http://@serverPath@/users/useractivate.html?key=@user_key@">{ссылке}</a>
                                     </td>
                                 </tr>
 

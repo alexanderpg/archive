@@ -143,7 +143,7 @@
 				<tr align="center" style="display:block; padding-left:10px;" valign="top">					
 					<td style="word-break: break-word; vertical-align: top; padding-bottom: 0; padding-right: 10px; padding-left: 10px;" valign="top"><a rel="noopener noreferrer" href="https://t.me/phpshop_shopbuider" target="_blank"><img alt="Telegram канал" height="32" src="https://www.phpshop.ru/phpshop/templates/phpshop.ru/images/telegram.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; display: block;" title="Telegram" width="32"></a></td>
 					
-					<td style="word-break: break-word; vertical-align: top; padding-bottom: 0; padding-right: 10px; padding-left: 10px;" valign="top"><a rel="noopener noreferrer" href="https://vk.com/phpshop.public" target="_blank"><img alt="Vkontakte" height="32" src="https://www.phpshop.ru/phpshop/templates/phpshop.ru/images/vk.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; display: block;" title="Vkontakte" width="32"></a></td>
+					<td style="word-break: break-word; vertical-align: top; padding-bottom: 0; padding-right: 10px; padding-left: 10px;" valign="top"><a rel="noopener noreferrer" href="https://vk.ru/phpshop.public" target="_blank"><img alt="Vkontakte" height="32" src="https://www.phpshop.ru/phpshop/templates/phpshop.ru/images/vk.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; display: block;" title="Vkontakte" width="32"></a></td>
 				
 
 				</tr>

@@ -29,6 +29,7 @@
                 @productNotice@                         
             </a>  
             <button class="btn btn-default addToWishList btn-sm btn-block" data-uid="@productUid@">{Отложить}</button>
+            @pricerequest@
 
         </div>
     </div>

@@ -112,7 +112,7 @@ function CID_Product_seourlpro_hook($obj, $row, $rout) {
         }
         
         // Редирект без .html
-        elseif($url == $url_true and strstr($_SERVER['REQUEST_URI'],".html") and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
+        elseif($url == $url_true and (strstr($_SERVER['REQUEST_URI'],".html") and !strstr($_SERVER['REQUEST_URI'],".html/filters/")) and $GLOBALS['PHPShopSeoPro']->getSettings()['html_enabled'] == 2){
             header('Location: ' . $obj->getValue('dir.dir') . $url_true, true, 301);
             return true;
         }

@@ -30,7 +30,7 @@ $client_id = $PHPShopSystem->getSerilizeParam('admoption.vk_id');
 
 if (!empty($_GET['access_token']) and ! empty($client_id)) {
 
-    $api = 'https://id.vk.com/oauth2/user_info';
+    $api = 'https://id.vk.ru/oauth2/user_info';
 
     $ch = curl_init();
     $header = [

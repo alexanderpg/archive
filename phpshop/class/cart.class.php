@@ -99,13 +99,21 @@ class PHPShopCart {
                 "ed_izm" => $objProduct->getParam("ed_izm"),
                 "pic_small" => $objProduct->getParam("pic_small"),
                 "weight" => $objProduct->getParam("weight"),
+                "length" => $objProduct->getParam("length"),
+                "height" => $objProduct->getParam("height"),
+                "width" => $objProduct->getParam("width"),
                 "category" => $objProduct->getParam("category"),
                 "type" => $objProduct->getParam("type")
             );
 
             // Объемный вес
-            if (!empty($objProduct->getParam("length")) and !empty($objProduct->getParam("width")) and !empty($objProduct->getParam("height")))
-                $cart['volume_weight'] = (int)($objProduct->getParam("length")*$objProduct->getParam("width")*$objProduct->getParam("height"))/5;
+            if (!empty($objProduct->getParam("length")) and ! empty($objProduct->getParam("width")) and ! empty($objProduct->getParam("height")))
+                $cart['volume_weight'] = (int) ($objProduct->getParam("length") * $objProduct->getParam("width") * $objProduct->getParam("height")) / 5;
+
+            // Сумма длин сторон
+            if (!empty($objProduct->getParam("length")) and ! empty($objProduct->getParam("width")) and ! empty($objProduct->getParam("height")))
+                $cart['sum_side'] = (int) ($objProduct->getParam("length") + $objProduct->getParam("width") + $objProduct->getParam("height"));
+
 
             if (!empty($parentID)) {
                 $objID = $cart['parent'] = intval($parentID);
@@ -117,7 +125,6 @@ class PHPShopCart {
                 $cart['pic_small'] = $objProductParent->getImage();
                 $cart['parent_uid'] = $objProductParent->getParam('uid');
             }
-
 
             // Проверка кол-ва товара на складе
             if ($this->store_check) {
@@ -202,8 +209,60 @@ class PHPShopCart {
             $weight += (int) $val['num'] * (int) $val['weight'];
         return $weight;
     }
-    
-     /**
+
+    /**
+     * Максимальная высота
+     * @return int
+     */
+    function getMaxWidth() {
+        $width_max = 0;
+        foreach ($this->_CART as $val) {
+            if ($val['width'] > $width_max)
+                $width_max = $val['width'];
+        }
+        return (int) $width_max;
+    }
+
+    /**
+     * Максимальная высота
+     * @return int
+     */
+    function getMaxHeight() {
+        $height_max = 0;
+        foreach ($this->_CART as $val) {
+            if ($val['height'] > $height_max)
+                $height_max = $val['height'];
+        }
+        return (int) $height_max;
+    }
+
+    /**
+     * Максимальная длина
+     * @return int
+     */
+    function getMaxLength() {
+        $length_max = 0;
+        foreach ($this->_CART as $val) {
+            if ($val['length'] > $length_max)
+                $length_max = $val['length'];
+        }
+        return (int) $length_max;
+    }
+
+    /**
+     * Максимальная сумма сторон
+     * @return int
+     */
+    function getMaxSumSide() {
+        $sum_side = 0;
+        foreach ($this->_CART as $val) {
+            if ($val['sum_side'] > $sum_side)
+                $sum_side = $val['sum_side'];
+        }
+        return (int) $sum_side;
+    }
+
+    /**
      * Объемный вес корзины
      * @return int
      */
@@ -211,7 +270,7 @@ class PHPShopCart {
         $weight = 0;
         foreach ($this->_CART as $val)
             $weight += (int) $val['num'] * (int) $val['volume_weight'];
-        return $weight;
+        return (int) $weight;
     }
 
     /**

@@ -134,7 +134,7 @@ function actionStart() {
     $Tab1 = $PHPShopGUI->setField("Название", $PHPShopGUI->setTextarea('name_new', PHPShopString::utf8_win1251($product_info['title'])));
     $Tab1 .= $PHPShopGUI->setField("Артикул", $PHPShopGUI->setInputText(null, 'uid_new', PHPShopString::utf8_win1251($product_info['sku'])));
     $Tab1 .= $PHPShopGUI->setField("Изображения", $icon);
-    $Tab1 .= $PHPShopGUI->setField("VK ID", $PHPShopGUI->setText($PHPShopGUI->setLink('https://vk.com/market-' . $VkSeller->owner_id . '?screen=cart&w=product-' . $VkSeller->owner_id . '_' . $product_info['id'] . '%2Fquery', $product_info['id'])) . $PHPShopGUI->setInput("hidden", "export_wb_id_new", $product_info['nmID']));
+    $Tab1 .= $PHPShopGUI->setField("VK ID", $PHPShopGUI->setText($PHPShopGUI->setLink('https://vk.ru/market-' . $VkSeller->owner_id . '?screen=cart&w=product-' . $VkSeller->owner_id . '_' . $product_info['id'] . '%2Fquery', $product_info['id'])) . $PHPShopGUI->setInput("hidden", "export_wb_id_new", $product_info['nmID']));
     $Tab1 .= $PHPShopGUI->setField("Категория в ВКонтакте", $PHPShopGUI->setText(PHPShopString::utf8_win1251($product_info['category']['section']['name']) . ' &rarr; ' . PHPShopString::utf8_win1251($product_info['category']['name']), "left", false, false) . $PHPShopGUI->setInput("hidden", "category_vkseller", $product_info['category']['id']));
 
     // Выбор каталога

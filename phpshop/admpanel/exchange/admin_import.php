@@ -1228,7 +1228,7 @@ function actionSave() {
 
     // Читаем csv из файлового менеджера
     elseif (!empty($_POST['lfile'])) {
-        $csv_file = $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $_POST['lfile'];
+        $csv_file = $_SERVER['DOCUMENT_ROOT'] .$_POST['lfile'];
         $path_parts = pathinfo($csv_file);
         $csv_file_name = $path_parts['basename'];
     }

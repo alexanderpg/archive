@@ -36,7 +36,7 @@ function treegenerator($array, $i, $curent) {
 }
 
 function actionStart() {
-    global $PHPShopGUI, $PHPShopSystem, $PHPShopModules, $PHPShopOrm,$hideSite;
+    global $PHPShopGUI, $PHPShopSystem, $PHPShopModules, $PHPShopOrm, $hideSite;
 
     // Выборка
     $data = $PHPShopOrm->select(array('*'), array('id' => '=' . intval($_GET['id'])));
@@ -116,13 +116,13 @@ function actionStart() {
 
     $SelectValue[] = array('Вывод в каталоге', 1, $data['enabled']);
     $SelectValue[] = array('Заблокировать', 0, $data['enabled']);
-    
+
     $Tab_description = $PHPShopGUI->setCollapse('Заголовок', $PHPShopGUI->setInput("text", "name_new", $data['name']));
 
     // Содержание закладки 1
     $Tab_info = $PHPShopGUI->setField("Каталог", $tree_select) .
             $PHPShopGUI->setField("Сортировка", $PHPShopGUI->setInputText("№", "num_new", $data['num'], 150)) .
-            $PHPShopGUI->setField("URL Ссылка", $PHPShopGUI->setInputText('/page/', "link_new", $data['link'], '100%', '.html',false, false, 'my-link', false,true)) .
+            $PHPShopGUI->setField("URL Ссылка", $PHPShopGUI->setInputText('/page/', "link_new", $data['link'], '100%', '.html', false, false, 'my-link', false, true)) .
             $PHPShopGUI->setField("Опции вывода:", $PHPShopGUI->setSelect("enabled_new", $SelectValue, 300, true)
     );
 
@@ -133,8 +133,8 @@ function actionStart() {
 
     // Содержание закладки 3
     if ($data['category'] != 2000) {
-        $Tab3 = $PHPShopGUI->setField("Title", $PHPShopGUI->setTextarea("title_new", $data['title']).$PHPShopGUI->setAIHelpButton('title_new',70,'page_title'));
-        $Tab3 .= $PHPShopGUI->setField("Description", $PHPShopGUI->setTextarea("description_new", $data['description']).$PHPShopGUI->setAIHelpButton('description_new',80,'page_descrip'));
+        $Tab3 = $PHPShopGUI->setField("Title", $PHPShopGUI->setTextarea("title_new", $data['title']) . $PHPShopGUI->setAIHelpButton('title_new', 70, 'page_title'));
+        $Tab3 .= $PHPShopGUI->setField("Description", $PHPShopGUI->setTextarea("description_new", $data['description']) . $PHPShopGUI->setAIHelpButton('description_new', 80, 'page_descrip'));
         $Tab3 .= $PHPShopGUI->setField("Keywords", $PHPShopGUI->setTextarea("keywords_new", $data['keywords']));
         $Tab_seo = $PHPShopGUI->setCollapse('SEO / Мета-данные', $Tab3);
 
@@ -147,7 +147,7 @@ function actionStart() {
 
     // Иконка
     if (!empty($data['category']) and $data['category'] != 2000 and $data['category'] != 1000)
-        $Tab_dop = $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['icon'], "icon_new", false,['load' => true, 'server' => true, 'url' => true, 'multi' => false, 'search' => true]));
+        $Tab_dop = $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['icon'], "icon_new", false, ['load' => true, 'server' => true, 'url' => true, 'multi' => false, 'search' => true]));
 
 
     // Рекомендуемые товары
@@ -175,12 +175,12 @@ function actionStart() {
 
     // Вывод формы закладки
     if (!empty($data['category']) and $data['category'] != 2000 and $data['category'] != 1000) {
-        $Tab_content = $PHPShopGUI->setCollapse("Анонс", $oFCKeditor2->AddGUI().$PHPShopGUI->setAIHelpButton('preview_new',100,'page_description'));
-        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI().$PHPShopGUI->setAIHelpButton('content_new',300,'page_content'));
+        $Tab_content = $PHPShopGUI->setCollapse("Анонс", $oFCKeditor2->AddGUI() . $PHPShopGUI->setAIHelpButton('preview_new', 100, 'page_description'));
+        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'page_content'));
         $PHPShopGUI->setTab(array("Основное", $Tab_description . $Tab_info . $Tab_seo . $Tab_content . $Tab_dop . $Tab_sec, true, false, true));
     } else {
 
-        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI().$PHPShopGUI->setAIHelpButton('content_new',300,'page_content'));
+        $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'page_content'));
 
         if ($data['category'] == 2000)
             $grid = false;
@@ -220,7 +220,7 @@ function actionUpdate() {
     if (is_array($_POST['servers'])) {
         $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and ! strstr($v, ','))
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
                 $_POST['servers_new'] .= "i" . $v . "i";
     }
 
@@ -237,9 +237,9 @@ function actionUpdate() {
         }
         $_POST['odnotip_new'] = implode(',', $odnotip);
     }
-    
-    if(empty($_POST['link_new']))
-        $_POST['link_new']='page'.$_POST['rowID'];
+
+    if (empty($_POST['link_new']))
+        $_POST['link_new'] = 'page' . $_POST['rowID'];
 
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);
@@ -295,8 +295,8 @@ function iconAdd() {
         $file_ext = PHPShopSecurity::getExt($file_name);
         $file_name = PHPShopString::toLatin(str_replace('.' . $file_ext, '', PHPShopString::utf8_win1251($file_name))) . '.' . $file_ext;
 
-        if (in_array($file_ext, array('gif', 'png', 'jpg', 'jpeg', 'svg','webp'))) {
-            if(copy($file, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path. $file_name)){
+        if (in_array($file_ext, array('gif', 'png', 'jpg', 'jpeg', 'svg', 'webp'))) {
+            if (copy($file, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path . $file_name)) {
                 $file = $GLOBALS['dir']['dir'] . $path . $file_name;
             }
         }

@@ -8,11 +8,11 @@ function actionStart() {
 
     // Размер названия поля
     $PHPShopGUI->field_col = 3;
-    
+
     // Выборка
     $data['datas'] = PHPShopDate::get();
-    $data['zag'] = __('Новость за ') . $data['datas'].' '.__('число');
-    $data = $PHPShopGUI->valid($data,'kratko','podrob','icon','odnotip','servers');
+    $data['zag'] = __('Новость за ') . $data['datas'] . ' ' . __('число');
+    $data = $PHPShopGUI->valid($data, 'kratko', 'podrob', 'icon', 'odnotip', 'servers');
 
     // datetimepicker
     $PHPShopGUI->addJSFiles('./js/jquery.tagsinput.min.js', './js/bootstrap-datetimepicker.min.js', './js/jquery.waypoints.min.js', './news/gui/news.gui.js');
@@ -20,7 +20,7 @@ function actionStart() {
 
     $PHPShopGUI->setActionPanel($TitlePage, false, array('Сохранить и закрыть'));
 
-       // Редактор 1
+    // Редактор 1
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('kratko_new');
     $oFCKeditor->Height = '300';
@@ -39,11 +39,11 @@ function actionStart() {
     $Tab2 .= $PHPShopGUI->setField("Витрины", $PHPShopGUI->loadLib('tab_multibase', $data, 'catalog/'));
 
     // Рекомендуемые товары
-    if(empty($hideSite))
-    $Tab1 .= $PHPShopGUI->setField('Рекомендуемые товары', $PHPShopGUI->setTextarea('odnotip_new', $data['odnotip'], false, false, 00, __('Укажите ID товаров или воспользуйтесь') . ' <a href="#" data-target="#odnotip_new"  class="btn btn-sm btn-default tag-search"><span class="glyphicon glyphicon-search"></span> ' . __('поиском товаров') . '</a>'));
+    if (empty($hideSite))
+        $Tab1 .= $PHPShopGUI->setField('Рекомендуемые товары', $PHPShopGUI->setTextarea('odnotip_new', $data['odnotip'], false, false, 00, __('Укажите ID товаров или воспользуйтесь') . ' <a href="#" data-target="#odnotip_new"  class="btn btn-sm btn-default tag-search"><span class="glyphicon glyphicon-search"></span> ' . __('поиском товаров') . '</a>'));
 
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1);
-    $Tab1 .= $PHPShopGUI->setCollapse("Анонс", $oFCKeditor->AddGUI().$PHPShopGUI->setAIHelpButton('kratko_new',300,'news_description'));
+    $Tab1 .= $PHPShopGUI->setCollapse("Анонс", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('kratko_new', 300, 'news_description'));
 
     // Редактор 2
     $oFCKeditor2 = new Editor('podrob_new');
@@ -51,13 +51,13 @@ function actionStart() {
     $oFCKeditor2->Value = $data['podrob'];
 
     $Tab1 .= $PHPShopGUI->setCollapse('Дополнительно', $Tab2);
-    $Tab1 .= $PHPShopGUI->setCollapse("Подробно", '<div>' . $oFCKeditor2->AddGUI() .$PHPShopGUI->setAIHelpButton('podrob_new',300,'news_content'). '</div>');
+    $Tab1 .= $PHPShopGUI->setCollapse("Подробно", '<div>' . $oFCKeditor2->AddGUI() . $PHPShopGUI->setAIHelpButton('podrob_new', 300, 'news_content') . '</div>');
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true,false,true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("submit", "saveID", "ОК", "right", 70, "", "but", "actionInsert.news.create");
@@ -77,14 +77,15 @@ function actionInsert() {
         $_POST['datau_new'] = PHPShopDate::GetUnixTime($_POST['datas_new']);
 
     // Мультибаза
-    $_POST['servers_new'] = "";
-    if (is_array($_POST['servers']))
+    if (is_array($_POST['servers'])) {
+        $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and !strstr($v, ','))
-                $_POST['servers_new'].="i" . $v . "i";
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and ! strstr($_POST['servers_new'], "i" . $v . "i"))
+                $_POST['servers_new'] .= "i" . $v . "i";
+    }
 
-    $_POST['icon_new'] = iconAdd();        
-            
+    $_POST['icon_new'] = iconAdd();
+
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);
 

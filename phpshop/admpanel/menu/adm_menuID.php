@@ -191,13 +191,13 @@ function actionUpdate() {
     if (is_array($_POST['servers'])) {
         $_POST['servers_new'] = "";
         foreach ($_POST['servers'] as $v)
-            if ($v != 'null' and ! strstr($v, ','))
+            if ($v != 'null' and ! strstr($v, ',') and $v != null and !strstr($_POST['servers_new'],"i" . $v . "i"))
                 $_POST['servers_new'] .= "i" . $v . "i";
     }
 
     // Доп каталоги
     $_POST['dop_cat_new'] = "";
-    if (is_array($_POST['dop_cat']) and $_POST['dop_cat'][0] != 'null') {
+    if (is_array($_POST['dop_cat']) and $_POST['dop_cat'][0] != 'null' and $_POST['dop_cat'][0] != null) {
         $_POST['dop_cat_new'] = "#";
         foreach ($_POST['dop_cat'] as $v)
             if ($v != 'null' and ! strstr($v, ','))

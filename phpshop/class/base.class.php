@@ -81,6 +81,7 @@ class PHPShopBase {
         $this->selectBase();
 
         $GLOBALS['SysValue'] = &$this->SysValue;
+        $GLOBALS['dir']['dir'] = $GLOBALS['SysValue']['dir']['dir'];
         if ($connectdb)
             $this->link_db = $this->connect($connectdb);
     }

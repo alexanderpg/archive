@@ -8,7 +8,7 @@ if (!defined("OBJENABLED")) {
 /**
  * Áèáëèîòåêà äàííûõ ïî òîâàğàì
  * @author PHPShop Software
- * @version 1.5
+ * @version 1.6
  * @package PHPShopObj
  */
 class PHPShopProduct extends PHPShopObj {
@@ -24,6 +24,7 @@ class PHPShopProduct extends PHPShopObj {
         $this->cache = true;
         $this->debug = false;
         $this->cache_format = [];
+        $this->var=$var;
 
         // Ó÷åò ïîäòèïîâ äëÿ âûáîğêè ïî àğòèêóëó
         if (empty($var)) {
@@ -192,7 +193,7 @@ class PHPShopProduct extends PHPShopObj {
         }
 
         // Îáíîâëÿåì äàííûå
-        $PHPShopOrm->update($product_update, ['id' => '=' . (int) $this->objID]);
+        $PHPShopOrm->update($product_update, [$this->var => '=' . (int) $this->objID]);
 
         // Åñëè òîâàğ ïîäòèï
         if($parent > 0) {
@@ -247,7 +248,7 @@ class PHPShopProduct extends PHPShopObj {
                 $mainProductUpdate['items_new'] = $mainProduct->getParam('items') - $count;
 
                 // Îáíîâëÿåì äàííûå
-                $PHPShopOrm->update($mainProductUpdate, ['id' => '=' . (int) $parent]);
+                $PHPShopOrm->update($mainProductUpdate, [$this->var => '=' . (int) $parent]);
             }
         }
     }

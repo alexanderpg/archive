@@ -297,5 +297,5 @@ $PHPShopNtCatalogElement->init('leftCatalTableNt');
 
 // меню брендов
 $PHPShopBrandsElement = new PHPShopBrandsElement();
-$PHPShopBrandsElement->init('topBrands');
+//$PHPShopBrandsElement->init('topBrands');
 ?>

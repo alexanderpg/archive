@@ -5,7 +5,7 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с Ozon Seller API
  * @author PHPShop Software
- * @version 3.1
+ * @version 3.2
  * @package PHPShopModules
  * @todo https://docs.ozon.ru/api/seller/#tag/Environment
  */
@@ -23,7 +23,7 @@ class OzonSeller {
     const GET_FBO_ORDER = '/v2/posting/fbo/get';
     const GET_WAREHOUSE_LIST = '/v1/warehouse/list';
     const UPDATE_PRODUCT_STOCKS = '/v2/products/stocks';
-    const GET_PRODUCT_LIST = '/v2/product/list';
+    const GET_PRODUCT_LIST = '/v3/product/list'; // 22.08.2025
     const GET_PRODUCT = '/v3/product/info/list'; // 25.12.2024
     const GET_PRODUCT_DESCRIPTION = "/v1/product/info/description";
     const GET_PRODUCT_ATTRIBUTES = '/v4/product/info/attributes'; // 25.12.2024

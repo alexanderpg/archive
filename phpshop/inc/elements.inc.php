@@ -1199,7 +1199,7 @@ class PHPShopTextElement extends PHPShopElements {
         $objBase = $GLOBALS['SysValue']['base']['page'];
         $PHPShopOrm = new PHPShopOrm($objBase);
         $PHPShopOrm->debug = $this->debug;
-        $data = $PHPShopOrm->select(array('name', 'link'), $where, array('order' => 'num'), array("limit" => 20));
+        $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'num'), array("limit" => 20));
         if (is_array($data))
             foreach ($data as $row) {
 

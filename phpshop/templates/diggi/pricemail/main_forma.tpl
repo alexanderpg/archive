@@ -31,42 +31,42 @@
         <div class="">
         </div>
         <div class="">
-            <input placeholder="{Ссылка на товар с меньшей ценой}" type="text" name="link_to_page" value="@php  echo $_POST[link_to_page]; php@" class="form-control"  required="">
+            <input placeholder="{Ссылка на товар с меньшей ценой}" type="text" name="link_to_page" value="@php  echo $_POST['link_to_page']; php@" class="form-control"  required="">
         </div>
     </div>
     <div class="form-group">
         <div class="">
         </div>
         <div class="">
-            <input placeholder="{Имя}" type="text" name="name_person" value="@php  echo $_POST[name_person]; php@" class="form-control"  required="">
+            <input placeholder="{Имя}" type="text" name="name_person" value="@php  echo $_POST['name_person']; php@" class="form-control"  required="">
         </div>
     </div>
     <div class="form-group">
         <div class="">
         </div>
         <div class="">
-            <input placeholder="E-mail" type="email" name="mail" value="@php  echo $_POST[mail]; php@" class="form-control" required="">
+            <input placeholder="E-mail" type="email" name="mail" value="@php  echo $_POST['mail']; php@" class="form-control" required="">
         </div>
     </div>
     <div class="form-group">
         <div class="">
         </div>
         <div class="">
-            <input placeholder="{Телефон}" type="text" name="tel_name" value="@php  echo $_POST[tel_name]; php@" class="form-control">
+            <input placeholder="{Телефон}" type="text" name="tel_name" value="@php  echo $_POST['tel_name']; php@" class="form-control">
         </div>
     </div>
     <div class="form-group">
         <div class="">
         </div>
         <div class="">
-            <input placeholder="{Компания}" type="text" name="org_name" value="@php  echo $_POST[org_name]; php@" class="form-control">
+            <input placeholder="{Компания}" type="text" name="org_name" value="@php  echo $_POST['org_name']; php@" class="form-control">
         </div>
     </div>
     <div class="form-group">
         <div class="">
         </div>
         <div class="">
-            <textarea placeholder="{Дополнительная информация}" name="adr_name" class="form-control">@php  echo $_POST[adr_name]; php@</textarea>
+            <textarea placeholder="{Дополнительная информация}" name="adr_name" class="form-control">@php  echo $_POST['adr_name']; php@</textarea>
         </div>
     </div>
     <div class="form-group">

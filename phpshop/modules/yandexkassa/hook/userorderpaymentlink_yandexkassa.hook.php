@@ -3,6 +3,7 @@
 include_once dirname(__FILE__) . '/../class/YandexKassa.php';
 
 function userorderpaymentlink_mod_yandexkassa_hook($obj, $PHPShopOrderFunction) {
+    global $PHPShopBase;
 
     if (YandexKassa::isYandexKassaPaymentMethod((int) $PHPShopOrderFunction->order_metod_id)) {
         $YandexKassa = new YandexKassa();
@@ -28,7 +29,7 @@ function userorderpaymentlink_mod_yandexkassa_hook($obj, $PHPShopOrderFunction) 
                 }
             } else {
                 
-                $return = PHPShopText::a("//" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'].'&kassaPay=1#Order', $YandexKassa->options['title'], false, false, 14, false, 'btn btn-primary');
+                $return = PHPShopText::a("//" . $_SERVER['SERVER_NAME'] . str_replace($PHPShopBase->getParam('dir.dir'),'',$_SERVER['REQUEST_URI']).'&kassaPay=1#Order', $YandexKassa->options['title'], false, false, 14, false, 'btn btn-primary');
             }
 
         } elseif (YandexKassa::isYandexKassaPaymentMethod((int) $PHPShopOrderFunction->getSerilizeParam('orders.Person.order_metod'))) {

@@ -59,7 +59,7 @@ function actionStart() {
         );
 
 
-    $PHPShopGUI->setActionPanel(__('Товар') . ': ' . PHPShopString::utf8_win1251($product_info['name']), false, array('Загрузить товар'));
+    $PHPShopGUI->setActionPanel(__('Товар') . ': ' . substr(PHPShopString::utf8_win1251($product_info['name']),0,90), false, array('Загрузить товар'));
 
     // Знак рубля
     if ($PHPShopSystem->getDefaultValutaIso() == 'RUB' or $PHPShopSystem->getDefaultValutaIso() == 'RUR')
@@ -121,6 +121,8 @@ function actionStart() {
     $oFCKeditor->Height = '400';
     $oFCKeditor->Value = PHPShopString::utf8_win1251($OzonSeller->getProductDescription($product_info['id'])['result']['description']);
 
+    $product_info['images'][]=$product_info['primary_image'];
+    
     if (is_array($product_info['images']) and count($product_info['images']) > 0) {
         $icon = null;
         foreach ($product_info['images'] as $img)
@@ -169,9 +171,9 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Валюта', $valuta_area);
 
     $Tab_size = $PHPShopGUI->setField("Вес", $PHPShopGUI->setInputText(null, 'weight_new', $product_info['weight'], 100, __('г&nbsp;&nbsp;&nbsp;&nbsp;')));
-    $Tab_size .= $PHPShopGUI->setField("Высота", $PHPShopGUI->setInputText(null, 'height_new', $product_info['height'] / 100, 100, __('cм')));
-    $Tab_size .= $PHPShopGUI->setField("Ширина", $PHPShopGUI->setInputText(null, 'width_new', $product_info['width'] / 100, 100, __('cм')));
-    $Tab_size .= $PHPShopGUI->setField("Длина", $PHPShopGUI->setInputText(null, 'length_new', $product_info['depth'] / 100, 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Высота", $PHPShopGUI->setInputText(null, 'height_new', $product_info['height'] / 10, 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Ширина", $PHPShopGUI->setInputText(null, 'width_new', $product_info['width'] / 10, 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Длина", $PHPShopGUI->setInputText(null, 'length_new', $product_info['depth'] / 10, 100, __('cм')));
 
     $Tab1 = $PHPShopGUI->setCollapse('Данные', $Tab1);
     $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_size);

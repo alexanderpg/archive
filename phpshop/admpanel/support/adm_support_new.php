@@ -35,7 +35,7 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField("Приоритет", $PHPShopGUI->setSelect('priority', array(array('Низкий', 3), array('Средний', 2), array('Высокий', 1)), 400, true));
     $Tab1 .= $PHPShopGUI->setField("Категория", $PHPShopGUI->setSelect('category', $value, 400, true));
     $Tab1 .= $PHPShopGUI->setField("Тема", $PHPShopGUI->setInput('text.required.10', "subject", null));
-    $Tab1 .= $PHPShopGUI->setField('Сообщение', $PHPShopGUI->setTextarea('message.required.10', null, true, false, 300, false, __('Пожалуйста, опишите Вашу проблему. Для ускорения решения вопроса, сразу предоставьте пароли доступа от Админпанели (логин, пароль) сайта и FTP (имя сервера, логин, пароль)')));
+    $Tab1 .= $PHPShopGUI->setField('Сообщение', $PHPShopGUI->setTextarea('message.required.10', null, true, false, 300, false, __('Пожалуйста, опишите Вашу проблему. Для ускорения решения вопроса, сразу предоставьте пароли доступа от Админпанели (логин, пароль) сайта и FTP/SFTP (имя сервера, логин, пароль)')));
     $Tab1 .= $PHPShopGUI->setField('Файл', $PHPShopGUI->setIcon(null, "attachment", false, array('load' => true, 'server' => true, 'url' => false, 'multi' => false, 'view' => false)));
 
 

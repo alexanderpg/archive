@@ -45,8 +45,23 @@ $count = 0;
 include_once dirname(__FILE__) . '/../class/YandexMarket.php';
 $Market = new YandexMarket();
 
+// Ключ обновления 
+if ($Market->options['type'] == 1)
+    $type = 'id';
+else
+    $type = 'uid';
+
 // Компания 1
-$products = $PHPShopOrm->getList(['*'], ['yml' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+$data = $PHPShopOrm->getList(['*'], ['yml' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+
+// Проверка уникальности ключа обновления
+if (is_array($data)) {
+    foreach ($data as $row) {
+        $products[(int) $row[$type]] = $row;
+    }
+}
+
+
 if (is_array($products) and count($products) > 0) {
 
     // Склад
@@ -59,7 +74,15 @@ if (is_array($products) and count($products) > 0) {
 }
 
 // Компания 2
-$products = $PHPShopOrm->getList(['*'], ['yml_2' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+$data = $PHPShopOrm->getList(['*'], ['yml_2' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+
+// Проверка уникальности ключа обновления
+if (is_array($data)) {
+    foreach ($data as $row) {
+        $products[(int) $row[$type]] = $row;
+    }
+}
+
 if (is_array($products) and count($products) > 0) {
 
     // Склад
@@ -72,7 +95,15 @@ if (is_array($products) and count($products) > 0) {
 }
 
 // Компания 3
-$products = $PHPShopOrm->getList(['*'], ['yml_3' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+$data = $PHPShopOrm->getList(['*'], ['yml_3' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+
+// Проверка уникальности ключа обновления
+if (is_array($data)) {
+    foreach ($data as $row) {
+        $products[(int) $row[$type]] = $row;
+    }
+}
+
 if (is_array($products) and count($products) > 0) {
 
     // Склад

@@ -1,5 +1,3 @@
-<li><a class="" href="#" data-toggle="modal" data-target="#ShowcaseMenu">{Выбрать город}</a></li>
-
 <div class="modal fade" id="ShowcaseMenu" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog" role="document">
 
