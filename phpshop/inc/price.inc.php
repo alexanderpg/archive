@@ -35,7 +35,7 @@ function Vivod_product_price($n)// вывод товаров для прайса
 {
 global $SysValue,$LoadItems,$_SESSION;
 $n=TotalClean($n,1);
-$sql="select id,name,price,sklad,price2,price3,price4,price5,baseinputvaluta from ".$SysValue['base']['table_name2']." where category='$n' and enabled='1' order by name";
+$sql="select id,name,price,sklad,price2,price3,price4,price5,baseinputvaluta from ".$SysValue['base']['table_name2']." where (category='$n' or dop_cat LIKE '%#$n#%') and enabled='1' order by name";
 $result=mysql_query($sql);
 while($row = mysql_fetch_array($result))
 {

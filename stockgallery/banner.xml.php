@@ -6,6 +6,16 @@ mysql_select_db($SysValue['connect']['dbase']);
 @mysql_query("SET NAMES 'cp1251'");
 header('Content-Type: text/xml; charset=utf-8');
 
+// Отрезаем длинный символы
+function SubstrName($str){
+$num=50; // Кол-во максимальное в имени символов
+$len=strlen($str);
+if($len > $num)
+  return substr($str, 0, $num)."...";
+  else return $str;
+}
+
+
 function win_utf8 ($in_text){ 
 $output=""; 
 $other[1025]="Ё"; 
@@ -55,12 +65,12 @@ $XML = ('<?xml version="1.0" encoding="UTF-8"?>
 	<blur>4</blur>
 	<currency>'.win_utf8($LoadItems['Valuta'][$LoadItems['System']['dengi']]['code']).'</currency>
 	<items>');
-$sql="select * from ".$SysValue['base']['table_name2']." where spec='1' and  enabled='1' and parent_enabled='0' order by  RAND() LIMIT 0, 6";
+$sql="select * from ".$SysValue['base']['table_name2']." where spec='1' and  enabled='1' and parent_enabled='0' and sklad!='1'  order by  RAND() LIMIT 0, 6";
 $result=mysql_query($sql);
 $num=mysql_num_rows($result);
 
 if($num<6){
-$sql="select * from ".$SysValue['base']['table_name2']." where enabled='1' and parent_enabled='0' order by  RAND() LIMIT 0, 6";
+$sql="select * from ".$SysValue['base']['table_name2']." where enabled='1' and parent_enabled='0' and sklad!='1' order by  RAND() LIMIT 0, 6";
 $result=mysql_query($sql);
 $num=mysql_num_rows($result);
 }
@@ -70,7 +80,7 @@ $num=mysql_num_rows($result);
 while($row = mysql_fetch_array($result))
     {
     $id=$row['id'];
-	$name=win_utf8($row['name']);
+	$name=win_utf8(SubstrName($row['name']));
 	$baseinputvaluta=$row['baseinputvaluta'];
 	$price=$row['price'];
 	

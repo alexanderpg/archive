@@ -188,8 +188,8 @@ while(@$row = mysql_fetch_array($result))
 	$num++;
 	}
 $disp="
-<table cellpadding=0 bgcolor=808080 border=0 cellspacing=1 width=100% class=\"sortable\" id=\"sort\">
 <form name=\"form_flag\">
+<table cellpadding=0 bgcolor=808080 border=0 cellspacing=1 width=100% class=\"sortable\" id=\"sort\">
 <tr valign=\"top\">
 	<td width=\"100\" id=pane align=center><img  src=\"../icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('product');\"><span name=txtLang  id=txtLang>Вывод</span></td>
     <td width=\"55\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>ID</td>
@@ -200,9 +200,10 @@ $disp="
 </tr>
 ".@$dis."
 
-</form>
+
 
 </table>
+</form>
 <input type=\"hidden\" value=\"$pid\" id=\"catal\" name=\"catal\">
 ".'
 <div class=cMenu id=cMenuNws> 

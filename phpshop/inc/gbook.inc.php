@@ -20,7 +20,7 @@ function Nav_gbook()// Навигация
 global $SysValue,$LoadItems;
 $p=$SysValue['nav']['id']; if(@!$p) $p=1;
 $num_row=$LoadItems['System']['num_row'];
-$num_page=NumFrom("table_name7","");
+$num_page=NumFrom("table_name7","where flag='1'");
 $i=1;
 $num=$num_page/$num_row;
 while ($i<$num+1)
