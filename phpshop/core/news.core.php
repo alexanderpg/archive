@@ -3,7 +3,7 @@
 /**
  * Обработчик новостей
  * @author PHPShop Software
- * @version 1.6
+ * @version 1.7
  * @package PHPShopCore
  */
 class PHPShopNews extends PHPShopCore {
@@ -266,6 +266,12 @@ class PHPShopNews extends PHPShopCore {
         // Определяем переменые
         $this->set('newsData', $row['datas']);
         $this->set('newsZag', $row['zag']);
+
+        if(empty($row['podrob'])){
+            $row['podrob'] = $row['kratko'];
+            $row['kratko']=null;
+        }
+        
         $this->set('newsKratko', $row['kratko']);
         $this->set('newsPodrob', Parser($row['podrob']));
         $this->set('newsIcon', $row['icon']);

@@ -32,8 +32,12 @@ function actionStart() {
                 $icon = '<img src="' . $row['product_image'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
             else
                 $icon = '<img class="media-object" src="./images/no_photo.gif">';
+            
+            if(!empty($row['mail']))
+              $mail= '<br>'.$row['mail'];
+            else $mail=null;
 
-            $PHPShopInterface->setRow($row['id'], array('name' => $icon, 'link' => '?path=modules.dir.oneclick&id=' . $row['id'], 'align' => 'left'), array('name' => $row['product_name'], 'link' => '?path=modules.dir.oneclick&id=' . $row['id']),$row['product_price'].' '.$currency,array('name' => $row['name'], 'link' => '?path=modules.dir.oneclick&id=' . $row['id']), PHPShopDate::get($row['date'], false),   array('action' => array('edit', '|', 'delete', 'id' => $row['id']), 'align' => 'center'), '<span style="color:'.$status_array[$row['status']]['color'].'">'.$status_array[$row['status']]['name'].'</span>');
+            $PHPShopInterface->setRow($row['id'], array('name' => $icon, 'link' => '?path=modules.dir.oneclick&id=' . $row['id'], 'align' => 'left'), array('name' => $row['product_name'], 'link' => '?path=modules.dir.oneclick&id=' . $row['id']),$row['product_price'].' '.$currency,array('name' => $row['name'], 'link' => '?path=modules.dir.oneclick&id=' . $row['id'],'addon'=>$mail), PHPShopDate::get($row['date'], false),   array('action' => array('edit', '|', 'delete', 'id' => $row['id']), 'align' => 'center'), '<span style="color:'.$status_array[$row['status']]['color'].'">'.$status_array[$row['status']]['name'].'</span>');
         }
 
     $PHPShopInterface->Compile();

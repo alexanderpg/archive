@@ -173,6 +173,7 @@
                                             {Сообщение}: @content@ <br>
                                             {Имя}: @name@ <br>
                                             {Телефон}: @tel@ <br>
+                                            <span class="@php __hide('mail'); php@">{E-mail}: @mail@ </span><br>
                                             {Дата}: @date@ <br>
                                         </p>
                                     </td>

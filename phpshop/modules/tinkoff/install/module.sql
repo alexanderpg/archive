@@ -18,5 +18,5 @@ INSERT INTO `phpshop_modules_tinkoff_system` (`id`, `title`, `terminal`, `secret
 (1, 'Платежная система Тинькофф Банка', 'TinkoffBankTest', 'TinkoffBankTest', 'https://securepay.tinkoff.ru/v2', '0', 2.2, 0, 0, '', 'osn');
 
 INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
-(10032, 'Visa, Mastercard (Tinkoff)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tinkoff.png');
+(10032, 'Мир, Visa, Mastercard (Tinkoff)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tinkoff.png');
 

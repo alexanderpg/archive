@@ -1036,7 +1036,7 @@ function actionSave() {
                 // Товары
                 if (empty($subpath[2])) {
 
-                    $yml_array[0] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
+                    $yml_array[] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
 
                     foreach ($xml->shop[0]->offers[0]->offer as $item) {
 
@@ -1137,7 +1137,7 @@ function actionSave() {
                         }
 
 
-                        $yml_array[(int) $item->attributes()->id] = [(int) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
+                        $yml_array[] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
                     }
 
 
@@ -1145,7 +1145,7 @@ function actionSave() {
                 }
                 // Категории
                 else if ($subpath[2] == 'catalog') {
-                    $yml_array[0] = ['Id', 'Наименование', 'Родитель'];
+                    $yml_array[] = ['Id', 'Наименование', 'Родитель'];
                     foreach ($xml->shop[0]->categories[0]->category as $item) {
                         $yml_array[] = [(int) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0]), (int) $item->attributes()->parentId];
                     }

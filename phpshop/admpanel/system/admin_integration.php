@@ -89,6 +89,12 @@ function actionStart() {
                 $PHPShopGUI->setField("Идентификатор отправителя", $PHPShopGUI->setInputText(null, "option[push_id]", $option['push_id'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://console.firebase.google.com/" target="_blank">Firebase.google.com</a>'))
         );
     }
+    
+
+     // Telegram
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Telegram', $PHPShopGUI->setField("Новостной бот", $PHPShopGUI->setCheckbox('option[telegram_news_enabled]', 1, 'Включить передачу новостей из группы', $option['telegram_news_enabled'])) .
+            $PHPShopGUI->setField("Анонс", $PHPShopGUI->setInputText("первые", "option[telegram_news_delim]", $option['telegram_news_delim'], 200,'символов')) .
+            $PHPShopGUI->setField("API-ключ", $PHPShopGUI->setInputText(null, "option[telegram_news_token]", $option['telegram_news_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://docs.phpshop.ru/stranicy/novosti#zagruzka-novostei-iz-telegram" target="_blank">Инструкция</a>')));
 
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Новостная лента', $PHPShopGUI->setField("RSS", $PHPShopGUI->setCheckbox('option[rss_graber_enabled]', 1, 'Загружать новости из внешних RSS каналов', $option['rss_graber_enabled']) . $PHPShopGUI->setHelp('Новостные каналы управляются в  разделе <a href="?path=news.rss">RSS каналы</a>'))
     );
@@ -124,14 +130,14 @@ function actionSave() {
 
 // Функция обновления
 function actionUpdate() {
-    global $PHPShopOrm, $PHPShopModules, $PHPShopSystem;
+    global $PHPShopOrm, $PHPShopModules;
 
     // Выборка
     $data = $PHPShopOrm->select();
     $option = unserialize($data['admoption']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled');
+    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)
@@ -146,9 +152,9 @@ function actionUpdate() {
     }
 
     // Telegram регистрация вебхука
-    if (!empty($option['telegram_enabled']) and ! empty($option['telegram_token'])) {
+    if (!empty($option['telegram_news_enabled']) and ! empty($option['telegram_news_token'])) {
 
-        $url = 'https://api.telegram.org/bot' . $option['telegram_token'] . '/setWebhook?url=https://' . $_SERVER['SERVER_NAME'] . '/bot/telegram.php';
+        $url = 'https://api.telegram.org/bot' . $option['telegram_news_token'] . '/setWebhook?url=https://' . $_SERVER['SERVER_NAME'] . '/bot/telegram-news.php/'.md5($option['telegram_news_token']);
         $сurl = curl_init();
         curl_setopt_array($сurl, array(
             CURLOPT_URL => $url,

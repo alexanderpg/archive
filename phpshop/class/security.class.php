@@ -3,7 +3,7 @@
 /**
  * Библиотека проверки безопасности
  * @author PHPShop Software
- * @version 1.8
+ * @version 1.9
  * @package PHPShopClass
  * @subpackage Helper
  */
@@ -182,9 +182,12 @@ class PHPShopSecurity {
      * @return string
      */
     static function true_search($search, $option = false) {
-        
+
         $count = strlen($search);
-        $search = strtolower($search);
+
+        if (empty($option))
+            $search = strtolower($search);
+
         $i = 0;
         while ($i < ($count / 7)) {
             $search = str_replace("'", "", $search);

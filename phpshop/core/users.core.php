@@ -9,7 +9,7 @@ PHPShopObj::loadClass('delivery');
 /**
  * Обработчик кабинета пользователя
  * @author PHPShop Software
- * @version 2.2
+ * @version 2.3
  * @package PHPShopCore
  */
 class PHPShopUsers extends PHPShopCore {
@@ -32,7 +32,7 @@ class PHPShopUsers extends PHPShopCore {
 
         // Префикс для экшенов методов
         $this->action_prefix = 'action_';
-        
+
         // Элемент формы авторизациии пользователя
         $this->PHPShopUserElement = new PHPShopUserElement();
 
@@ -40,7 +40,7 @@ class PHPShopUsers extends PHPShopCore {
         $this->locale = array();
 
         parent::__construct();
-        
+
         // Каптча выключена
         if ($this->PHPShopSystem->ifSerilizeParam('admoption.user_captcha_enabled'))
             $this->no_captcha = true;
@@ -561,16 +561,16 @@ class PHPShopUsers extends PHPShopCore {
     function action_update_user() {
 
         if (PHPShopSecurity::true_num($_SESSION['UsersId'])) {
-            
+
 
             // запрещаем изменение e-mail
 //            if (!PHPShopSecurity::true_email($_POST['mail_new']))
 //                $this->error[] = $this->lang('error_mail');
             //if (strlen($_POST['name_new']) < 3)
             //  $this->error[] = $this->lang('error_name');
-            
+
             if (!is_array($this->error)) {
-                
+
                 if (!empty($_POST['sendmail_new']))
                     $update['sendmail_new'] = 0;
                 else
@@ -765,7 +765,8 @@ class PHPShopUsers extends PHPShopCore {
 
                 if ($objProduct->getParam("enabled") == 1) {
 
-                    if ($objProduct->getParam("sklad") == 1)
+
+                    if ($objProduct->getParam("sklad") == 1 or ( $this->PHPShopSystem->getSerilizeParam('admoption.user_price_activate') == 1 and empty($_SESSION['UsersId'])))
                         $this->set('prodDisabled', 'disabled');
                     else
                         $this->set('prodDisabled', '');
@@ -797,10 +798,16 @@ class PHPShopUsers extends PHPShopCore {
                         $this->set('wishlistCartHide', null);
                     }
 
-
                     // цена
                     $price = PHPShopProductFunction::GetPriceValuta($objProduct->objRow['id'], array($objProduct->objRow['price'], $objProduct->objRow['price2'], $objProduct->objRow['price3'], $objProduct->objRow['price4'], $objProduct->objRow['price5']), $objProduct->objRow['baseinputvaluta']);
                     $this->set('prodPrice', number_format($price, $this->format, '.', ' '));
+
+                    // Если цены показывать только после авторизации
+                    if ($this->PHPShopSystem->getSerilizeParam('admoption.user_price_activate') == 1 and empty($_SESSION['UsersId'])) {
+                        $this->set('wishlistCartHide', 'hide d-none');
+                        $this->set('prodPrice', null);
+                    }
+
                     $dis .= ParseTemplateReturn('users/wishlist/wishlist_list_one.tpl');
                 }
             }
@@ -876,10 +883,11 @@ class PHPShopUsers extends PHPShopCore {
         $hook = $this->setHook(__CLASS__, __FUNCTION__);
         if ($hook)
             return $hook;
-        
-        if(!empty($_SESSION['UsersId']))
+
+        if (!empty($_SESSION['UsersId']))
             $UsersId = $_SESSION['UsersId'];
-        else $UsersId = null;
+        else
+            $UsersId = null;
 
         if (PHPShopSecurity::true_num($UsersId)) {
             $this->UsersId = $UsersId;
@@ -1042,8 +1050,8 @@ class PHPShopUsers extends PHPShopCore {
             'tel_code_new' => PHPShopSecurity::TotalClean($_POST['tel_code_new']),
             'bot_new' => md5($_POST['login_new'] . time())
         );
-        
-        if(defined('HostID'))
+
+        if (defined('HostID'))
             $insert['servers_new'] = HostID;
 
         // Перехват модуля
@@ -1068,7 +1076,7 @@ class PHPShopUsers extends PHPShopCore {
         if (PHPShopSecurity::true_email($login)) {
             $data = $PHPShopOrm->select(array('id', 'password'), array('mail' => '="' . trim($login) . '"', 'login' => '="' . trim($login) . '"'), array('order' => 'id desc'), array('limit' => 1));
             if (is_array($data) AND PHPShopSecurity::true_num($data['id'])) {
-                
+
                 return $data['id'];
             }
         }

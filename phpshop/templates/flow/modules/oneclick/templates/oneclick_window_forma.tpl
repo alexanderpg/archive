@@ -9,12 +9,13 @@
                 <div class="modal-body">
 
                     <div class="form-group">
-                       
                         <input type="text" name="oneclick_mod_name" class="form-control" placeholder="{Имя}" required="">
                     </div>
                     <div class="form-group">
-                        
                         <input type="text" name="oneclick_mod_tel" class="form-control phone" placeholder="{Телефон}" required="">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="oneclick_mod_mail" class="form-control" placeholder="E-mail" required="">
                     </div>
 					
                     @oneclick_captcha@

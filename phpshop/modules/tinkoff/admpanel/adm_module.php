@@ -66,7 +66,7 @@ function actionStart()
     $info = '
         <h4>Настройка модуля</h4>
         <ol>
-<li>Предоставить необходимые документы и заключить договор с <a href="https://www.tinkoff.ru/business/?utm_source=partner_rko_sme&utm_medium=ptr.act&utm_campaign=sme.partners&partnerId=5-IV4AJGWE#form-application" target="blank">Тинькофф</a>.</li>
+<li>Предоставить необходимые документы и заключить договор с <a href="https://www.tinkoff.ru/kassa/form/partner/phpshop/" target="blank">Тинькофф</a>.</li>
 <li>На закладке настройки ввести предоставленные банком Тинькофф адрес "Шлюза", код "Терминала" и "Секрентый ключ".</li>
 <li>Выбрать режим налогообложения товаров при включенном флаге передаче данных данных для формирования чека.</a></li>
 <li>Выбрать режим налогообложения доставки в карточке редактирования доставки.</a></li>

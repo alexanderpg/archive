@@ -34,7 +34,7 @@ function actionStart() {
 
     // Выборка
     $data = $PHPShopOrm->select(array('*'), array('id' => '=' . intval($_GET['id'])));
-    $PHPShopGUI->field_col = 1;
+    $PHPShopGUI->field_col = 3;
 
     if (!empty($data['product_image']))
         $icon = '<img src="' . $data['product_image'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
@@ -63,6 +63,7 @@ function actionStart() {
     $Tab1.= $PHPShopGUI->setField('Дата', $PHPShopGUI->setInputDate("date_new", PHPShopDate::get($data['date'])));
     $Tab1.= $PHPShopGUI->setField('Имя', $PHPShopGUI->setInputText($data['ip'], 'name_new', $data['name']));
     $Tab1.= $PHPShopGUI->setField('Телефон', $PHPShopGUI->setInputText(false, 'tel_new', $data['tel']));
+    $Tab1.= $PHPShopGUI->setField('E-mail', $PHPShopGUI->setInputText(false, 'mail_new', $data['mail']));
     $Tab1.= $PHPShopGUI->setField('Корзина', $name);
 
     $Tab1.=$PHPShopGUI->setField('Комментарий', $PHPShopGUI->setTextarea('message_new', $data['message']));
@@ -76,7 +77,7 @@ function actionStart() {
 
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true));
 
     $ContentFooter =
             $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .

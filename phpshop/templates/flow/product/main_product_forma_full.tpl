@@ -68,6 +68,8 @@
                 @brandUidDescription@
             </div>
             <!-- End Rating -->
+            
+            @dolyame_product@
 
             <!-- Title -->
             <div class="mb-5 small mb-0">

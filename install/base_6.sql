@@ -382,15 +382,15 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules` (
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_modules` (`path`, `name`, `date`, `servers`) VALUES
-('returncall', 'Return Call', 1652271542, ''),
-('visualcart', 'Visual Cart', 1652271542, ''),
-('productday', 'Товар дня', 1652271542, ''),
-('sticker', 'Sticker', 1652271542, ''),
-('hit', 'Хиты', 1652271542, ''),
-('oneclick', 'One Click', 1652271542, ''),
-('seourlpro', 'SeoUrl', 1652271542, ''),
-('yandexkassa', 'ЮKassa', 1652271542, ''),
-('robokassa', 'Robokassa', 1652271542, '');
+('returncall', 'Return Call', 1711000371, ''),
+('visualcart', 'Visual Cart', 1711000371, ''),
+('productday', 'Товар дня', 1711000371, ''),
+('sticker', 'Sticker', 1711000371, ''),
+('hit', 'Хиты', 1711000371, ''),
+('oneclick', 'One Click', 1711000371, ''),
+('seourlpro', 'SeoUrl', 1711000371, ''),
+('yandexkassa', 'ЮKassa', 1711000371, ''),
+('tinkoff', 'Tinkoff', 1711000371, '');
 
 DROP TABLE IF EXISTS `phpshop_modules_hit_system`;
 CREATE TABLE IF NOT EXISTS `phpshop_modules_hit_system` (
@@ -427,6 +427,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_oneclick_jurnal` (
   `product_image` varchar(64) DEFAULT '',
   `ip` varchar(64) DEFAULT '',
   `status` enum('1','2','3','4') DEFAULT '1',
+  `mail` varchar(64) default '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
@@ -442,13 +443,13 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_oneclick_system` (
   `write_order` enum('0','1') DEFAULT '0',
   `captcha` enum('0','1') DEFAULT '0',
   `status` int(11) DEFAULT '0',
-  `version` varchar(64) DEFAULT '1.6',
+  `version` varchar(64) DEFAULT '1.0',
   `only_available` enum('0','1','2') DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_modules_oneclick_system` (`id`, `enabled`, `title`, `title_end`, `serial`, `windows`, `display`, `write_order`, `captcha`, `status`, `version`, `only_available`) VALUES
-(1, '0', 'Спасибо, Ваш заказ принят!', 'Наши менеджеры свяжутся с Вами для уточнения деталей.', '', '1', '0', '1', '1', 0, '1.6', '0');
+(1, '0', 'Спасибо, Ваш заказ принят!', 'Наши менеджеры свяжутся с Вами для уточнения деталей.', '', '1', '0', '1', '1', 0, '1.8', '0');
 
 DROP TABLE IF EXISTS `phpshop_modules_productday_system`;
 CREATE TABLE IF NOT EXISTS `phpshop_modules_productday_system` (
@@ -621,37 +622,6 @@ CREATE TABLE IF NOT EXISTS `phpshop_payment_systems` (
 
 INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`, `color`, `servers`, `company`) VALUES
 (1, 'Оплата при получении', 'message', '1', 0, '<h3>Благодарим Вас за заказ!</h3>\n<p>В ближайшее время с Вами свяжется наш менеджер для уточнения деталей.</p>', '', '0', '/UserFiles/Image/trial/purse.png', '#000000', '', 0);
-
-
-DROP TABLE IF EXISTS `phpshop_modules_robokassa_system`;
-CREATE TABLE IF NOT EXISTS `phpshop_modules_robokassa_system` (
-  `id` int(11) NOT NULL auto_increment,
-  `status` int(11) NOT NULL,
-  `title` text NOT NULL,
-  `title_sub` text NOT NULL,
-  `merchant_login` varchar(64) NOT NULL default '',
-  `merchant_key` varchar(64) NOT NULL default '',
-  `merchant_skey` varchar(64) NOT NULL default '',
-  `merchant_country` varchar(64) NOT NULL default 'Россия',
-  `dev_mode` enum ('0','1') default '0',
-  `version` varchar(64) DEFAULT '1.0',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
-
-INSERT INTO `phpshop_modules_robokassa_system` (`id`, `status`, `title`, `title_sub`, `merchant_login`, `merchant_key`, `merchant_skey`, `version`, `dev_mode`) VALUES (1, 0, 'Оплатить заказ', 'Заказ находится на ручной проверке.', 'phpshop-test', 'GVLmxkec34f90GSdraZ0', 'eBQ8rxUXwbg6Al361uKE', '1.4', '1');
-
-INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
-(10020, 'Visa, Mastercard, МИР, ЯPay (Robokassa)', 'modules', '0', 0, '<p>Ваш заказ оплачен!</p>', 'Спасибо', '', '/UserFiles/Image/trial/credit.png');
-
-CREATE TABLE IF NOT EXISTS `phpshop_modules_robokassa_log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` int(11) NOT NULL,
-  `message` text NOT NULL,
-  `order_id` int(11) NOT NULL,
-  `status` varchar(255) NOT NULL,
-  `type` varchar(64) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
 DROP TABLE IF EXISTS `phpshop_news`;
 CREATE TABLE IF NOT EXISTS `phpshop_news` (
@@ -1369,7 +1339,7 @@ INSERT INTO `phpshop_modules_yandexkassa_system` (`id`, `status`, `title`, `titl
 (1, 0, 'Оплатить сейчас', 'Оплатите пожалуйста свой заказ', '665601', 'test_IBkYJDzgL1-gaz04YTHNxQekxtaGz6z-7_40u0rRlYs', 1.6);
 
 INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
-(10004, 'ЮKassa', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/yookassa.png');
+(10004, 'Мир, Visa, Mastercard, Юmoney (ЮKassa)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/yookassa.png');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexkassa_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1382,3 +1352,25 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexkassa_log` (
   `type` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
+
+DROP TABLE IF EXISTS `phpshop_modules_tinkoff_system`;
+CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_system` (
+    `id` int(11) NOT NULL auto_increment,
+    `title` text NOT NULL,
+    `terminal` varchar(64) NOT NULL default '',
+    `secret_key` varchar(64) NOT NULL default '',
+    `gateway` varchar(64) NOT NULL default '',
+    `force_payment` enum('0','1') NOT NULL default '0',
+    `version` varchar(64) DEFAULT '2.2',
+    `enabled_taxation` int DEFAULT 0,
+    `status` int(11) NOT NULL,
+    `title_end` text NOT NULL,
+    `taxation` varchar(64) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
+
+INSERT INTO `phpshop_modules_tinkoff_system` (`id`, `title`, `terminal`, `secret_key`, `gateway`, `force_payment`, `version`, `enabled_taxation`, `status`, `title_end`, `taxation`) VALUES
+(1, 'Платежная система Тинькофф Банка', 'TinkoffBankTest', 'TinkoffBankTest', 'https://securepay.tinkoff.ru/v2', '0', 2.2, 0, 0, '', 'osn');
+
+INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
+(10032, 'Мир, Visa, Mastercard (Tinkoff)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tinkoff.png');

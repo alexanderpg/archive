@@ -3,7 +3,7 @@
 /**
  * Библиотека Dialog Bot
  * @author PHPShop Software
- * @version 1.4
+ * @version 1.5
  * @package PHPShopClass
  */
 class PHPShopBot {
@@ -442,6 +442,13 @@ class PHPShopTelegramBot extends PHPShopBot {
         if ($this->token == '')
             $this->enabled = 0;
 
+        $this->news_enabled = $this->PHPShopSystem->getSerilizeParam('admoption.telegram_news_enabled');
+        $this->news_token = $this->PHPShopSystem->getSerilizeParam('admoption.telegram_news_token');
+        if ($this->news_token == '')
+            $this->news_enabled = 0;
+        $this->news_delim = $this->PHPShopSystem->getSerilizeParam('admoption.telegram_news_delim');
+
+
         $this->PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['dialog']);
     }
 
@@ -629,6 +636,60 @@ class PHPShopTelegramBot extends PHPShopBot {
         return 'https://api.telegram.org/file/bot' . $this->token . '/' . $array['result']['file_path'];
     }
 
-}
+    public function check_notification() {
+        if ($_SERVER["PATH_INFO"] == '/' . md5($this->news_token))
+            return true;
+    }
 
-?>
+    public function add_news($message) {
+        
+        $this->token = $this->news_token;
+
+        if (empty($message['caption']))
+            $message['caption'] = $message['text'];
+
+        $PHPShopRSS = new PHPShopOrm($GLOBALS['SysValue']['base']['news']);
+        $message['caption'] = PHPShopString::utf8_win1251($message['caption']);
+        $insert['datas_new'] = PHPShopDate::get();
+        $insert['datau_new'] = time();
+
+
+        // Заголовок
+        $title = explode(PHP_EOL,  $message['caption'])[0];
+        
+        $insert['zag_new'] = $title;
+
+        // Картинка
+        if (is_array($message['photo'])) {
+
+            $small = $message['photo'][1]['file_id'];
+            $big = $message['photo'][count($message['photo']) - 1]['file_id'];
+
+            $image = $this->file($big);
+            $insert['podrob_new'] = '<div><img src="' . $image . '" referrerpolicy="no-referrer" alt="" class="img-responsive img-fluid"></div>';
+            $insert['icon_new'] = $this->file($small);
+        }
+
+        // Видео
+        if (is_array($message['video'])) {
+
+            $thumb = $message['video']['thumb']['file_id'];
+            $video = $message['video']['file_id'];
+
+            $mp4 = $this->file($video);
+            $insert['podrob_new'] = '<div><video src="' . $mp4 . '" controls="controls"></video></div>';
+            $insert['icon_new'] = $this->file($thumb);
+        }
+
+        if (!empty($this->news_delim))
+            $insert['kratko_new'] = nl2br(substr($message['caption'], 0, (int) $this->news_delim) . '...');
+        else
+            $insert['kratko_new'] = nl2br($message['caption']);
+
+        $insert['podrob_new'] .= nl2br($message['caption']);
+
+        if (!empty($title))
+            $PHPShopRSS->insert($insert);
+    }
+
+}

@@ -80,11 +80,7 @@ else
 if (isset($_GET['cat']) or isset($_GET['sub'])) {
 
     if (!empty($_GET['cat']) or $_GET['sub'] == 'csv' or isset($_GET['sub'])) {
-        $where['(category'] = "=" . intval($_GET['cat']) . ' OR dop_cat LIKE \'%#' . intval($_GET['cat']) . '#%\') ';
-    }
-
-    if ($_GET['sub'] === 'csv') {
-        $where['category'] = "='0' or category='1000002'";
+        $where['(category'] = "=" . intval($_GET['cat']) . ' OR category=1000002  OR dop_cat LIKE \'%#' . intval($_GET['cat']) . '#%\') ';
     }
 
     // Ќаправление сортировки из настроек каталога
@@ -261,6 +257,9 @@ if($PHPShopSystem->getParam("shop_type") == 1){
 
 $PHPShopOrm->mysql_error = false;
 $sklad_enabled = $PHPShopSystem->getSerilizeParam('admoption.sklad_enabled');
+//$PHPShopOrm->debug=true;
+
+
 $data = $PHPShopOrm->select(array('*'), $where, $order, $limit);
 if (is_array($data))
     foreach ($data as $row) {

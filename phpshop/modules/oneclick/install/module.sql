@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_oneclick_system` (
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 
-INSERT INTO `phpshop_modules_oneclick_system` VALUES (1,'0','Спасибо, Ваш заказ принят!','Наши менеджеры свяжутся с Вами для уточнения деталей.','','1','0','0','1', '0', '0','1.7');
+INSERT INTO `phpshop_modules_oneclick_system` VALUES (1,'0','Спасибо, Ваш заказ принят!','Наши менеджеры свяжутся с Вами для уточнения деталей.','','1','0','0','1', '0', '0','1.8');
 
 DROP TABLE IF EXISTS `phpshop_modules_oneclick_jurnal`;
 CREATE TABLE `phpshop_modules_oneclick_jurnal` (
@@ -31,5 +31,6 @@ CREATE TABLE `phpshop_modules_oneclick_jurnal` (
   `product_image` varchar(255) default '',
   `ip` varchar(64) default '',
   `status` enum('1','2','3','4') default '1',
+  `mail` varchar(64) default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;

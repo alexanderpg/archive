@@ -92,7 +92,7 @@ function actionStart() {
     );
 
     if (!empty($TechPodUntilUnixTime) and time() > $TechPodUntilUnixTime)
-        $Tab1 .= $PHPShopGUI->setField(false, '</form><form method="post" target="_blank" enctype="multipart/form-data" action="https://www.phpshop.ru/order.html" name="product_upgrade" id="product_support" style="display:none">
+        $Tab1 .= $PHPShopGUI->setField(false, '</form><form method="post" target="_blank" enctype="multipart/form-data" action="https://www.phpshop.ru/order/" name="product_upgrade" id="product_support" style="display:none">
 <input type="hidden" value="supportenterprise" name="addToCartFromPages" id="addToCartFromPages">             
 <input type="hidden" value="' . $DomenLocked . '" name="addToCartFromPagesDomen" id="addToCartFromPagesDomen">
 </form><form><a class="btn btn-sm btn-primary pay-support" href="#" target="_blank"><span class="glyphicon glyphicon-ruble"></span> ' . __('Приобрести техническую поддержку') . '</a>');

@@ -2,8 +2,10 @@
 
 /**
  * Библиотека работы с CommerceML
- * @version 1.3
+ * @version 1.5
  * @package PHPShopClass
+ * https://v8.1c.ru/tekhnologii/obmen-dannymi-i-integratsiya/standarty-i-formaty/protokol-obmena-s-saytom/
+ * https://dev.1c-bitrix.ru/api_help/sale/xml/contragents.php
  */
 class PHPShopCommerceML {
 
@@ -195,6 +197,8 @@ class PHPShopCommerceML {
         global $PHPShopSystem;
 
         $xml = null;
+
+
         if (is_array($data))
             foreach ($data as $row)
                 if (is_array($row)) {
@@ -209,7 +213,27 @@ class PHPShopCommerceML {
                     $status = unserialize($row['status']);
                     $sum = $PHPShopOrder->returnSumma($order['Cart']['sum'], $order['Person']['discount']);
 
-                    $item = null;
+                    $PHPShopDelivery = new PHPShopDelivery($order['Person']['dostavka_metod']);
+
+                    $item = '<Товар>
+		                   <Ид>ORDER_DELIVERY</Ид>
+		                   <Наименование>' . str_replace(['&', '<', '>'], '', $PHPShopDelivery->getCity()) . '</Наименование>
+				   <ЦенаЗаЕдиницу>' . $order['Cart']['dostavka'] . '</ЦенаЗаЕдиницу>
+				   <Количество>1</Количество>
+				   <Сумма>' . $order['Cart']['dostavka'] . '</Сумма>
+				   <Единица>шт</Единица>
+                                   <ЗначенияРеквизитов>
+                                     <ЗначениеРеквизита>
+                                         <Наименование>ВидНоменклатуры</Наименование>
+                                         <Значение>Услуга</Значение>
+                                     </ЗначениеРеквизита>
+                                     <ЗначениеРеквизита>
+                                        <Наименование>ТипНоменклатуры</Наименование>
+                                       <Значение>Услуга</Значение>
+                                     </ЗначениеРеквизита>
+                                   </ЗначенияРеквизитов>
+			     </Товар>';
+
                     if (is_array($order['Cart']['cart']))
                         foreach ($order['Cart']['cart'] as $val) {
 
@@ -219,32 +243,32 @@ class PHPShopCommerceML {
                             if ($this->exchange_key == 'code') {
                                 $code = $val['uid'];
                                 $uid = null;
-                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'],['id'=>'='.$val['id']])['external_code'];
+                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'], ['id' => '=' . $val['id']])['external_code'];
                             }
 
                             if ($this->exchange_key == 'uid') {
                                 $code = null;
                                 $uid = $val['uid'];
-                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'],['id'=>'='.$val['id']])['external_code'];
+                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'], ['id' => '=' . $val['id']])['external_code'];
                             }
 
                             if ($this->exchange_key == 'external') {
                                 $code = null;
                                 $uid = null;
-                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'],['id'=>'='.$val['id']])['external_code'];
+                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'], ['id' => '=' . $val['id']])['external_code'];
                             }
-                            
+
                             // Подтип
-                            if(!empty($val['parent'])){
-                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'],['id'=>'='.$val['parent']])['external_code'].'#'.$id;
+                            if (!empty($val['parent'])) {
+                                $id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['external_code'], ['id' => '=' . $val['parent']])['external_code'] . '#' . $id;
                             }
-                                
+
                             $item .= '<Товар>
 				<Ид>' . $id . '</Ид>
                                 <Код>' . $code . '</Код>
 				<Штрихкод></Штрихкод>
 				<Артикул>' . $uid . '</Артикул>
-				<Наименование>' . $val['name'] . '</Наименование>
+				<Наименование>' . str_replace(['&', '<', '>'], '', $val['name']) . '</Наименование>
 				<ЦенаЗаЕдиницу>' . $val['price'] . '</ЦенаЗаЕдиницу>
 				<Количество>' . $val['num'] . '</Количество>
 				<Сумма>' . $sum . '</Сумма>
@@ -255,29 +279,90 @@ class PHPShopCommerceML {
                     if (empty($row['fio']))
                         $row['fio'] = $row['org_name'];
 
+                    // Адрес доставки
+                    $adr_info = null;
+                    if ($row['city'])
+                        $adr_info .= "город: " . $row['city'];
+                    if ($row['index'])
+                        $adr_info .= ", индекс: " . $row['index'];
+                    if ($row['street'])
+                        $adr_info .= ", улица: " . $row['street'];
+                    if ($row['house'])
+                        $adr_info .= ", дом: " . $row['house'];
+                    if ($row['porch'])
+                        $adr_info .= ", подъезд: " . $row['porch'];
+                    if ($row['door_phone'])
+                        $adr_info .= ", код домофона: " . $row['door_phone'];
+                    if ($row['flat'])
+                        $adr_info .= ", квартира: " . $row['flat'];
+                    if ($row['delivtime'])
+                        $adr_info .= ", время доставки: " . $row['delivtime'];
+                    if ($row['dop_info'])
+                        $adr_info .= ', '.str_replace(['&', '<', '>'], '', $row['dop_info']);
+                    
+
                     $xml .= '
 	<Документ>
                 <Ид>' . $row['id'] . '</Ид>
 		<Номер>' . $row['uid'] . '</Номер>
 		<Дата>' . PHPShopDate::get($row['datas'], false, true) . '</Дата>
+                <Комментарий>' . str_replace(['&', '<', '>'], '', $status['maneger']) . '[Номер документа на сайте: ' . $row['uid'] . ']</Комментарий>
 		<ХозОперация>Заказ товара</ХозОперация>
 		<Роль>Продавец</Роль>
 		<Валюта>' . $PHPShopSystem->getDefaultValutaIso() . '</Валюта>
 		<Сумма>' . $row['sum'] . '</Сумма>
-                <Комментарий>' . $status['maneger'] . '</Комментарий>
                 <Контрагенты>
 		   <Контрагент>
-              <Ид>' . $row['user'] . '</Ид>
+                     <Ид>' . $row['user'] . '</Ид>
 		      <Наименование>' . $row['fio'] . '</Наименование>
 		      <ПолноеНаименование>' . $row['org_name'] . '</ПолноеНаименование>
 		      <ИНН>' . $row['org_inn'] . '</ИНН>
 		      <КПП>' . $row['org_kpp'] . '</КПП>
 		      <Роль>Покупатель</Роль>
+                      <АдресРегистрации>
+                        <Представление>' . $adr_info. '</Представление>
+                        <АдресноеПоле>
+                          <Тип>Город</Тип>
+                          <Значение>' . $row['city'] . '</Значение>
+                        </АдресноеПоле>
+                        <АдресноеПоле>
+                          <Тип>Улица</Тип>
+                          <Значение>' . $row['street'] . '</Значение>
+                        </АдресноеПоле>
+                        <АдресноеПоле>
+                          <Тип>Дом</Тип>
+                          <Значение>' . $row['house'] . '</Значение>
+                        </АдресноеПоле>
+                        <АдресноеПоле>
+                          <Тип>Квартира</Тип>
+                          <Значение>' . $row['flat'] . '</Значение>
+                        </АдресноеПоле>
+                      </АдресРегистрации>
+                        <Контакты>
+			       <Контакт>
+					<Тип>Электронная почта</Тип>
+					<Значение>' . $PHPShopOrder->getMail() . '</Значение>
+				</Контакт>
+				<Контакт>
+					<Тип>Телефон рабочий</Тип>
+					<Значение>' . $row['tel'] . '</Значение>
+				</Контакт>
+			</Контакты>
 		   </Контрагент>
                 </Контрагенты>
 		<Товары>
-' . $item . '
+                  ' . $item . '
 		</Товары>
+                <ЗначенияРеквизитов>
+                  <ЗначениеРеквизита>
+                     <Наименование>Метод оплаты</Наименование>
+                     <Значение>' . $PHPShopOrder->getOplataMetodName() . '</Значение>
+                  </ЗначениеРеквизита>
+                  <ЗначениеРеквизита>
+		      <Наименование>Адрес доставки</Наименование>
+		      <Значение>' . $adr_info . '</Значение>
+		  </ЗначениеРеквизита>
+        </ЗначенияРеквизитов>
 	</Документ>';
                 }
 

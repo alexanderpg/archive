@@ -3,20 +3,18 @@
 /**
  * Обработчик товаров
  * @author PHPShop Software
- * @version 2.4
+ * @version 2.5
  * @package PHPShopShopCore
  */
 class PHPShopShop extends PHPShopShopCore {
 
     /**
      * Режим отладки
-     * @var bool
      */
     var $debug = false;
 
     /**
      * Режим кэширования записей БД, рекомендуется для этого файла true
-     * @var bool
      */
     var $cache = true;
 
@@ -28,33 +26,21 @@ class PHPShopShop extends PHPShopShopCore {
 
     /**
      * Максимальный лимит вывода товаров/каталогов на странице для оптимизации памяти, рекомендуется не более 100
-     * @var int
      */
     var $max_item = 200;
 
     /**
      * Имя функции шаблона вывода фильтров характеристик товара
-     * @var string
      */
     var $sort_template, $cat_template = null;
     var $ed_izm = null;
-
-    /**
-     * Сортировка по цене среди мультивалютных товаров
-     * @var bool
-     */
     var $multi_currency_search = false;
     var $parent_title = 'Размер';
     var $parent_color = 'Цвет';
-
-    /** @var int id текущего каталога */
     var $category;
-
-    /** @var array id подкаталогов */
     var $category_array = array();
-
-    /** @var array выбранные значения фильтра */
     var $selected_filter = [];
+    var $add_main_product_to_parent = false;
 
     /**
      * Конструктор
@@ -577,8 +563,10 @@ class PHPShopShop extends PHPShopShopCore {
 
         // Цена главного товара
         if (is_array($Product) and ! empty($row['price']) and empty($row['priceSklad']) and ( !empty($row['items']) or ( empty($row['items']) and $sklad_status == 1))) {
-            $this->select_value[] = array($row['name'] . " -  (" . $this->price($row) . "
-                    " . $this->currency . ')', $row['id'], $row['items'], $row);
+            
+            // Главный товар в списке подтипов
+            if ($this->add_main_product_to_parent)
+                $this->select_value[] = array($row['name'] . " -  (" . $this->price($row) . "  " . $this->currency . ')', $row['id'], $row['items'], $row);
         }
 
         // Выпадающий список товаров
@@ -920,23 +908,24 @@ function CID_Product($category = null, $mode = false) {
     // Фильтр сортировки по складам
     if ($this->PHPShopSystem->ifSerilizeParam('admoption.sklad_sort_enabled')) {
         if (is_array($this->warehouse)) {
-            
-            
-            $this->warehouse[0]=__('Все склады');
-            
-            $warehouse_sort=null;
+
+
+            $this->warehouse[0] = __('Все склады');
+
+            $warehouse_sort = null;
             foreach ($this->warehouse as $warehouse_id => $warehouse_name) {
                 $this->set('warehouse_id', $warehouse_id);
                 $this->set('warehouse_name', $warehouse_name);
-                
-                if($_GET['w'] == $warehouse_id)
-                     $this->set('warehouse_active', 'active');
-                else  $this->set('warehouse_active', '');
-                    
-                
+
+                if ($_GET['w'] == $warehouse_id)
+                    $this->set('warehouse_active', 'active');
+                else
+                    $this->set('warehouse_active', '');
+
+
                 $warehouse_sort .= parseTemplateReturn('filter/warehouse.tpl');
             }
-            
+
             $this->set('warehouse_sort', $warehouse_sort);
         }
     }

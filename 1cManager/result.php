@@ -1,11 +1,11 @@
 <?php
+
 /**
  * Автономная синхронизация номенклатуры из 1С и CML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.9
+ * @version 4.1
  */
-
 // Авторизация
 include_once("login.php");
 PHPShopObj::loadClass(array("readcsv", "product", "orm", "string"));
@@ -480,6 +480,15 @@ class ReadCsv1C extends PHPShopReadCsvNative {
         return $row['id'];
     }
 
+    // Получения Ид товара по внешнему коду
+    function getIdForImagesExternalCode($code) {
+        global $link_db;
+        $sql = "select id from " . $this->TableName . " where external_code='$code' limit 1";
+        $result = mysqli_query($link_db, $sql);
+        $row = mysqli_fetch_array($result);
+        return $row['id'];
+    }
+
     // Дополнительные склады 10/A#20/B
     function getWarehouse($store) {
         $sql = null;
@@ -610,7 +619,11 @@ class ReadCsv1C extends PHPShopReadCsvNative {
 
             if (!empty($CsvToArray[3])) {
 
-                $last_id = $this->getIdForImages($CsvToArray[0]);
+                if (!empty($_GET['cml']))
+                    $last_id = $this->getIdForImagesExternalCode($CsvToArray[17]);
+                else
+                    $last_id = $this->getIdForImages($CsvToArray[0]);
+
                 $ready_num_img = $this->GetNumFoto($last_id);
 
                 if ($ready_num_img < $CsvToArray[5]) {
@@ -663,6 +676,7 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                 else {
                     if (PHPShopProductFunction::true_parent($CsvToArray[0])) {
                         $sql .= "parent_enabled='1', ";
+                        
                     } else {
                         $sql .= "parent_enabled='0', ";
                     }
@@ -670,7 +684,12 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                     if (strstr($CsvToArray[16], "@")) {
                         $parent_array = explode("@", $CsvToArray[16]);
                         $sql .= "parent='" . $parent_array[0] . "', parent2='" . $parent_array[1] . "',";
-                    } else
+                    } 
+                    elseif (strstr($CsvToArray[16], ",") and PHPShopProductFunction::true_parent($CsvToArray[0])) {
+                        $parent_array = explode(",", $CsvToArray[16]);
+                        $sql .= "parent='" . trim($parent_array[0]) . "', parent2='" . trim($parent_array[1]) . "',";
+                    } 
+                    else
                         $sql .= "parent='" . $CsvToArray[16] . "', ";
                 }
             }
@@ -915,7 +934,12 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                 if (strstr($CsvToArray[16], "@")) {
                     $parent_array = explode("@", $CsvToArray[16]);
                     $sql .= "parent='" . $parent_array[0] . "', parent2='" . $parent_array[1] . "',";
-                } elseif ($CsvToArray[16] != "1")
+                } 
+                elseif (strstr($CsvToArray[16], ",") and PHPShopProductFunction::true_parent($CsvToArray[0])) {
+                    $parent_array = explode(",", $CsvToArray[16]);
+                    $sql .= "parent='" . trim($parent_array[0]) . "', parent2='" . trim($parent_array[1]) . "',";
+                } 
+                elseif ($CsvToArray[16] != "1")
                     $sql .= "parent='" . $CsvToArray[16] . "', ";
             }
 

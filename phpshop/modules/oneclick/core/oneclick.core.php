@@ -171,6 +171,9 @@ class PHPShopOneclick extends PHPShopCore {
         $insert['product_id_new'] = $product->objID;
         $insert['product_price_new'] = $this->getPrice($product);
 
+        if (PHPShopSecurity::true_email($_POST['oneclick_mod_mail']))
+            $insert['mail_new'] = $_POST['oneclick_mod_mail'];
+
         // Запись в базу
         return $this->PHPShopOrm->insert($insert);
     }
@@ -190,7 +193,13 @@ class PHPShopOneclick extends PHPShopCore {
         else
             $phone = PHPShopSecurity::TotalClean($_POST['oneclick_mod_tel'], 2);
 
-        $mail = PHPShopSecurity::TotalClean($_POST['oneclick_mod_mail'], 2);
+        if (PHPShopSecurity::true_email($_POST['oneclick_mod_mail']))
+            $mail = $_POST['oneclick_mod_mail'];
+
+        // Анонимный покупатель
+        if (empty($mail))
+            $mail = 'guest@' . $_SERVER['SERVER_NAME'];
+
         $comment = PHPShopSecurity::TotalClean($_POST['oneclick_mod_message'], 2);
 
         // таблица заказов
@@ -274,7 +283,7 @@ class PHPShopOneclick extends PHPShopCore {
         // Telegram
         $chat_id_telegram = $this->PHPShopSystem->getSerilizeParam('admoption.telegram_admin');
         if (!empty($chat_id_telegram) and $this->PHPShopSystem->ifSerilizeParam('admoption.telegram_order', 1)) {
-            
+
             PHPShopObj::loadClass('bot');
 
             $bot = new PHPShopTelegramBot();
@@ -288,7 +297,7 @@ class PHPShopOneclick extends PHPShopCore {
         // VK
         $chat_id_vk = $this->PHPShopSystem->getSerilizeParam('admoption.vk_admin');
         if (!empty($chat_id_vk) and $this->PHPShopSystem->ifSerilizeParam('admoption.vk_order', 1)) {
-            
+
             PHPShopObj::loadClass('bot');
 
             $bot = new PHPShopVKBot();
@@ -344,6 +353,10 @@ class PHPShopOneclick extends PHPShopCore {
         PHPShopParser::set('tel', PHPShopSecurity::TotalClean($_POST['oneclick_mod_tel'], 2));
         PHPShopParser::set('content', PHPShopSecurity::TotalClean($_POST['oneclick_mod_message'], 2));
         PHPShopParser::set('name', PHPShopSecurity::TotalClean($_POST['oneclick_mod_name'], 2));
+
+        if (PHPShopSecurity::true_email($_POST['oneclick_mod_mail']))
+            PHPShopParser::set('mail', $_POST['oneclick_mod_mail']);
+
         PHPShopParser::set('product', $product->getName() . $productId . $this->getPrice($product) . " " . $this->PHPShopSystem->getDefaultValutaCode());
         PHPShopParser::set('product_id', $product->objID);
         PHPShopParser::set('date', PHPShopDate::dataV(false, false));
