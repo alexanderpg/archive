@@ -1,0 +1,12 @@
+<files *.htm>
+Order Deny,Allow
+Deny From All
+</files>
+<files *.xls>
+Order Deny,Allow
+Deny From All
+</files>
+<files *.doc>
+Order Deny,Allow
+Deny From All
+</files>
