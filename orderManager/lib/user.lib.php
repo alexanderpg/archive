@@ -9,8 +9,8 @@ class UserChek {
 	  var $mailPHPSHOP;
 	  var $OkFlag=0;
 	  
-	  function ChekBase(){
-	  $sql="select * from phpshop_users where enabled='1'";
+	  function ChekBase($table_name){
+	  $sql="select * from $table_name where enabled='1'";
       $result=mysql_query($sql);
       while ($row = mysql_fetch_array($result)){
       if($this->logPHPSHOP==$row['login']){
@@ -27,14 +27,14 @@ class UserChek {
 	  exit("Login Error!");
 	  }
 	  
-	  function UserChek($logPHPSHOP,$pasPHPSHOP){
+	  function UserChek($logPHPSHOP,$pasPHPSHOP,$table_name){
 	  $this->logPHPSHOP=$logPHPSHOP;
 	  $this->pasPHPSHOP=$pasPHPSHOP;
-	  $this->ChekBase();
+	  $this->ChekBase($table_name);
 	  $this->BadUser();
 	  }
 }
 
-$UserChek = new UserChek($log,$pas);
+$UserChek = new UserChek($log,$pas,$SysValue['base']['table_name19']);
 
 ?>

@@ -10,50 +10,44 @@
 function ReturnCIDmeta2($n,$flag,$tip){
 global $LoadItems;
 
+$cat=$LoadItems['Catalog'][$n]['parent_to'];
+
+if($cat != 0){
 if($tip == 0) $Shablon=$LoadItems['System'][$flag.'_shablon'];
 elseif($tip == 1) $Shablon=ReturnData("","where id=".$n,$flag);
 elseif($tip == 2) $Shablon=ReturnData("","where id=".$n,$flag.'_shablon');
+}else {
+       if($tip == 0) $Shablon=$LoadItems['System'][$flag.'_shablon3'];
+       elseif($tip == 1) $Shablon=ReturnData("","where id=".$n,$flag);
+       elseif($tip == 2) $Shablon=ReturnData("","where id=".$n,$flag.'_shablon3');
+       }
 
 if($tip !=1){
-$cat=$LoadItems['Catalog'][$n]['parent_to'];
-@$Catalog=$LoadItems['Catalog'][$cat]['name'];
+
+
+if($cat != 0){
+$Catalog=$LoadItems['Catalog'][$cat]['name'];
 $Podcatalog=$LoadItems['Catalog'][$n]['name'];
 $Title=$LoadItems['System'][$flag];
+
 
 $Shablon=str_replace("@Catalog@", $Catalog, $Shablon);
 $Shablon=str_replace("@Podcatalog@", $Podcatalog, $Shablon);
 $Shablon=str_replace("@System@", $Title, $Shablon);
+}
+ else {
+      $Catalog=$LoadItems['Catalog'][$n]['name'];
+      $Title=$LoadItems['System'][$flag];
+      $Shablon=str_replace("@Catalog@", $Catalog, $Shablon);
+      $Shablon=str_replace("@Podcatalog@", $Podcatalog, $Shablon);
+      $Shablon=str_replace("@System@", $Title, $Shablon);
+ }
 
 if($flag == "keywords"){
 $Generator=GetProductContent("","where id=".$n,"content");
 $Shablon=str_replace("@Generator@", $Generator, $Shablon);}
 }
 
-return $Shablon;
-}
-
-
-// генерация тегов для каталога
-function ReturnCIDImeta($n,$flag,$tip){
-global $LoadItems;
-
-if($tip == 0) $Shablon=$LoadItems['System'][$flag.'_shablon3'];
-elseif($tip == 1) $Shablon=ReturnData("","where id=".$n,$flag);
-elseif($tip == 2) $Shablon=ReturnData("","where id=".$n,$flag.'_shablon');
-//exit($Shablon);
-
-
-if($tip !=1){
-$Catalog=$LoadItems['Catalog'][$n]['name'];
-$Title=$LoadItems['System'][$flag];
-
-$Shablon=str_replace("@Catalog@", $Catalog, $Shablon);
-$Shablon=str_replace("@System@", $Title, $Shablon);
-
-if($flag == "keywords"){
-$Generator=GetProductContent("","where id=".$n,"content");
-$Shablon=str_replace("@Generator@", $Generator, $Shablon);}
-}
 return $Shablon;
 }
 
@@ -119,15 +113,6 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
 	   $keywords=ReturnCIDmeta2($SysValue['nav']['id'],"keywords",$keywords_enabled);
 	   $metas=ReturnCIDmeta2($SysValue['nav']['id'],"descrip",$descrip_enabled);
 	  }
-	  /*
-	  if($SysValue['nav']['nav']=="CIDI"){
-$title_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['title_enabled'];
-$descrip_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['descrip_enabled'];
-$keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enabled'];
-	   $title=ReturnCIDImeta($SysValue['nav']['id'],"title",$title_enabled);
-	   $keywords=ReturnCIDImeta($SysValue['nav']['id'],"keywords",$keywords_enabled);
-	   $metas=ReturnCIDImeta($SysValue['nav']['id'],"descrip",$descrip_enabled);
-	  }*/
 	  if($SysValue['nav']['nav']=="UID") {
 	$title_enabled=$LoadItems['Product'][$SysValue['nav']['id']]['title_enabled'];
 	$descrip_enabled=$LoadItems['Product'][$SysValue['nav']['id']]['descrip_enabled'];
