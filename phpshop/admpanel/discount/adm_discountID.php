@@ -99,6 +99,9 @@ DoResize(<? echo $GetSystems['width_icon']?>,400,270);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('discount')">Справка</BUTTON></BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 <input type="hidden" name="id" value="<?=$id?>" >
 	<input type="submit" name="editID" value="OK" class=but>

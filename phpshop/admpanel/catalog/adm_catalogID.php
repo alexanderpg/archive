@@ -198,6 +198,7 @@ $result=mysql_query($sql);
 	case(1): $rowl="checked"; break;
 	case(2): $row2="checked"; break;
 	case(3): $row3="checked"; break;
+	case(4): $row4="checked"; break;
 	}
 	$content=$row['content'];
 	$servers=$row['servers'];
@@ -333,7 +334,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 	<FIELDSET>
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>аталог</span>:</LEGEND>
 	<div style="padding:10">
-	<input type=text id="myName"  style="width: 550" value="'.Disp_cat($parent_to,$name).'">
+	<input type=text id="myName"  style="width: 500" value="'.Disp_cat($parent_to,$name).'">
 	<input type="hidden" value="'.$parent_to.'" name="parent_to_new" id="myCat">
 <BUTTON style="width: 3em; height: 2.2em; margin-left:5"  onclick="miniWinFull(\'adm_cat.php?category='.$id.'\',300,400);return false;"><img src="../img/icon-move-banner.gif"  width="16" height="16" border="0"></BUTTON>
 	</FIELDSET>
@@ -359,6 +360,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 		<input type="radio" name="num_row_new" value="1" '.$rowl.'>1&nbsp;&nbsp;&nbsp;
 		<input type="radio" name="num_row_new" value="2" '.$row2.'>2&nbsp;&nbsp;&nbsp;
 		<input type="radio" name="num_row_new" value="3" '.$row3.'>3&nbsp;&nbsp;&nbsp; 
+		<input type="radio" name="num_row_new" value="4" '.$row4.'>4&nbsp;&nbsp;&nbsp; 
 </FIELDSET>
 	</td>
 	<td width="10"></td>
@@ -751,6 +753,9 @@ echo ('
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent(\'catalogID\')">Справка</BUTTON></BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 <input type=hidden name=id value='.$id.'>
 <input type=hidden  name=catalogID value='.$id.'>

@@ -164,10 +164,9 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
 	 $keywords=GetProductContent("8","where id='".$SysValue['nav']['id']."'","podrob");
 	 }
 	 else{
-	 $nameSTR=Vivod_page_meta(8,"where id='".$SysValue['nav']['id']."'","zag","kratko");
-     $title=$nameSTR[0]."Новости - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
-	 $metas=$nameSTR[0]."Новости - ".$LoadItems['System']['descrip']." ".$LoadItems['System']['name'];
-	 $keywords=$nameSTR[0]." Новости ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
+     $title="Новости - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $metas="Новости - ".$LoadItems['System']['descrip']." ".$LoadItems['System']['name'];
+	 $keywords=" Новости ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
      }
 	 break;
 

@@ -24,7 +24,7 @@ $info=$row['info'];
 <META http-equiv=Content-Type content="text/html; charset=windows-1251">
 <meta http-equiv="MSThemeCompatible" content="Yes">
 <LINK href="../css/texts.css" type=text/css rel=stylesheet>
-<SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="../../lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 <script language="JavaScript" src="../java/javaMG.js" type="text/javascript"></script>
 <script>
 

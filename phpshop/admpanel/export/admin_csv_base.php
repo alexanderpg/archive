@@ -91,9 +91,7 @@ class ReadCsv1C{
    
 
    
-   // Характеристики
-   $vendor_new=unserialize(base64_decode($CsvToArray[15]));
-   $vendor_array=base64_decode($CsvToArray[15]);
+
    
    
 if(!empty($CheckBase) and $CsvToArray[0]!=""){// Обновляем  
@@ -218,11 +216,12 @@ if($_REQUEST['tip'][14] != 1){ // 14 категория
    if(!empty($CsvToArray[14])) $parent_id = $CsvToArray[14];
     else $parent_id = "1000002";
 }
-if($_REQUEST['tip'][15] != 1){// 15 характеристика
+if($_REQUEST['tip'][15] == 1){// 15 характеристика
 
    // Характеристики
 $vendor_new=unserialize(base64_decode($CsvToArray[15]));
 $vendor_array=base64_decode($CsvToArray[15]);
+
 if(is_array($vendor_new))
 foreach($vendor_new as $k=>$v){
        if(is_array($v)){
@@ -234,9 +233,8 @@ foreach($vendor_new as $k=>$v){
 } 
 
 
-
 $sql="INSERT INTO ".$this->TableName."
-VALUES ('','".$parent_id."','".trim($CsvToArray[1])."','".$CsvToArray[2]."','".$CsvToArray[4]."','".$CsvToArray[7]."','','','".$this->Zero($CsvToArray[9])."','".$enabled."','".$CsvToArray[13]."','','','".$vendor."','".$vendor_array."','1','','','','','".date("U")."','','".$_SESSION['idPHPSHOP']."','','','','','','','','".$this->ImagePlus($CsvToArray[3])."','".$this->ImagePlus($CsvToArray[5])."','','0','','".$CsvToArray[6]."','".$CsvToArray[12]."','".$CsvToArray[8]."','".$CsvToArray[9]."','".$CsvToArray[10]."','".$CsvToArray[11]."','','','')";
+VALUES ('','".$parent_id."','".trim($CsvToArray[1])."','".$CsvToArray[2]."','".$CsvToArray[4]."','".$CsvToArray[7]."','','','".$this->Zero($CsvToArray[9])."','".$enabled."','".$CsvToArray[13]."','','','".$vendor."','".$vendor_array."','1','','','','','".date("U")."','','".$_SESSION['idPHPSHOP']."','','','','','','','','".$this->ImagePlus($CsvToArray[3])."','".$this->ImagePlus($CsvToArray[5])."','','0','','".$CsvToArray[6]."','".$CsvToArray[12]."','".$CsvToArray[8]."','".$CsvToArray[9]."','".$CsvToArray[10]."','".$CsvToArray[11]."','','".$_REQUEST['tip'][16]."','')";
 $result=mysql_query($sql);
  }
    }
@@ -349,6 +347,7 @@ if ($fp) {
 <input type="hidden" id="tip_13" value="'.$_REQUEST['tip'][13].'">
 <input type="hidden" id="tip_14" value="'.$_REQUEST['tip'][14].'">
 <input type="hidden" id="tip_15" value="'.$_REQUEST['tip'][15].'">
+<input type="hidden" id="tip_16" value="'.$_REQUEST['tip'][16].'">
 </form></div>
     ';
   }

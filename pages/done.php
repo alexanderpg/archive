@@ -121,7 +121,7 @@ window.document.getElementById('sum').innerHTML='0';
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1],$cart_list[2]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
 	 $disp=('
 	  <table width=420 align=center bgcolor="#ffffff">
        <tr>
@@ -166,7 +166,7 @@ window.document.getElementById('sum').innerHTML='0';
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1],$cart_list[2]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
 	 $disp=('
 	 <table width=420 align=center bgcolor="#ffffff">
        <tr>
@@ -216,7 +216,7 @@ window.document.getElementById('sum').innerHTML='0';
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1],$cart_list[2]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $mrh_login = $SysValue['roboxchange']['mrh_login'];    //логин
@@ -278,7 +278,7 @@ $disp= "
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $LMI_PAYEE_PURSE = $SysValue['webmoney']['LMI_PAYEE_PURSE'];    //кошелек
@@ -295,7 +295,6 @@ $inv_id = $mrh_ouid[0]."".$mrh_ouid[1];     //номер счета
 //описание покупки
 $inv_desc  = "Оплата заказа №$inv_id";
 $out_summ  = $sum_pol*$SysValue['webmoney']['kurs']; //сумма покупки
-
 
 
 // вывод HTML страницы с кнопкой для оплаты
@@ -348,7 +347,7 @@ $disp= "
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
-     $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
+     $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $LMI_PAYEE_PURSE = $SysValue['z-payment']['LMI_PAYEE_PURSE'];    //кошелек
@@ -411,7 +410,7 @@ $disp= "
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
-     $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
+     $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $MERCHANTNUMBER = $SysValue['rbs']['MERCHANTNUMBER'];    //кошелек
@@ -489,7 +488,7 @@ $disp= "
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
-$sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
+$sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
 //$sum_pol=$cart_list[1];
 
 

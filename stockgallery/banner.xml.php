@@ -53,7 +53,7 @@ $XML = ('<?xml version="1.0" encoding="UTF-8"?>
 	<backgroundImage>/stockgallery/src.jpg</backgroundImage>
 	<titleBlockAlpha>40</titleBlockAlpha>
 	<blur>4</blur>
-	<currency>'.win_utf8("руб.").'</currency>
+	<currency>'.win_utf8($LoadItems['Valuta'][$LoadItems['System']['dengi']]['code']).'</currency>
 	<items>');
 $sql="select * from ".$SysValue['base']['table_name2']." where spec='1' and  enabled='1' and parent_enabled='0' order by  RAND() LIMIT 0, 6";
 $result=mysql_query($sql);
@@ -85,6 +85,11 @@ while($row = mysql_fetch_array($result))
 	
 	
 	$price=($price+(($price*$LoadItems['System']['percent'])/100));
+	
+	$formatPrice = unserialize($LoadItems['System']['admoption']);
+    $format=$formatPrice['price_znak'];
+	$price=round($price,$format);
+	
 	
 	// ≈сли цены показывать только после аторизации
     $admoption=unserialize($LoadItems['System']['admoption']);

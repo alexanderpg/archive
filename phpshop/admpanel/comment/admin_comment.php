@@ -30,16 +30,16 @@ while ($row = mysql_fetch_array($result))
 	
 	@$display.="
 	<tr id=\"r".$id."\" class=row>
-    <td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,530)\">
+    <td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,580)\">
 	$fl
 	</td>
-	<td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,530)\">
+	<td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,580)\">
 	".dataV($data,"true")."
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,530)\">
+	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,580)\">
 	$name
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,530)\">
+	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('comment/adm_commentID.php?id=$id',650,580)\">
 	".mySubstr($content,200)."...
 	</td>
 	<td>
