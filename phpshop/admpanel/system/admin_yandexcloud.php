@@ -14,6 +14,18 @@ function actionStart() {
     // Размер названия поля
     $PHPShopGUI->field_col = 3;
     $PHPShopGUI->addJSFiles('./js/jquery.waypoints.min.js', './system/gui/system.gui.js');
+    
+    $PHPShopGUI->action_select['Помощь AI'] = array(
+        'name' => 'Промт-режим YandexGPT',
+        'action' => 'yandexcloudModal',
+        'icon' => ''
+    );
+    
+    $PHPShopGUI->action_select['Учебник'] = array(
+        'name' => 'Инструкция',
+        'url' => 'https://docs.phpshop.ru/nastroiky/yandex-cloud',
+        'target' => '_blank'
+    );
 
 
     if (empty($_SESSION['yandexcloud']) or $_SESSION['yandexcloud'] < time()) {
@@ -23,7 +35,6 @@ function actionStart() {
             'action' => 'https://www.phpshop.ru/order/order.html?from=' . $_SERVER['SERVER_NAME'] . '#subscription',
             'class' => 'btn btn-primary btn-sm navbar-btn btn-info btn-action-panel-blank',
             'type' => 'submit',
-            'icon' => 'glyphicon glyphicon-ruble'
         );
 
         $PHPShopGUI->setActionPanel($TitlePage, false, ['Подписка']);
@@ -36,7 +47,7 @@ function actionStart() {
         $option['yandexsearch_site_enabled'] = 0;
         $PHPShopOrm->update(['ai_new' => serialize($option)]);
     } else
-        $PHPShopGUI->setActionPanel($TitlePage, false, array('Сохранить'));
+        $PHPShopGUI->setActionPanel($TitlePage, ['Помощь AI','|','Учебник'], ['Сохранить']);
 
 
 
@@ -44,7 +55,7 @@ function actionStart() {
     $yandexgpt_model_value[] = array('YandexGPT Pro', 'yandexgpt/latest', $option['yandexgpt_model']);
 
     // Настройки
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Облако', $PHPShopGUI->setField('Идентификатор', $PHPShopGUI->setInputText(null, 'option[yandexgpt_id]', $option['yandexgpt_id'], 375,'<a target="_blank" href="https://docs.phpshop.ru/nastroiky/yandex-cloud">' . __('Подключить') . '</a>'))
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Облако', $PHPShopGUI->setField('Идентификатор', $PHPShopGUI->setInputText(null, 'option[yandexgpt_id]', $option['yandexgpt_id'], 375))
     );
 
     // AI

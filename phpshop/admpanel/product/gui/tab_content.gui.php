@@ -16,7 +16,7 @@ function tab_content($data) {
     $Tab = $oFCKeditor->AddGUI();
 
     // AI
-    $Tab .= $PHPShopGUI->setAIHelpButton('content_new', 300, 'product_content');
+    $Tab .= $PHPShopGUI->setAIHelpButton('content_new', 500, 'product_content');
 
     return $Tab;
 }

@@ -110,7 +110,7 @@ $key_placeholder = array(
 );
 
 // Стоп лист
-$key_stop = array('id', 'password', 'wishlist', 'datas', 'data_adres', 'sort', 'yml_bid_array', 'vendor', 'status', 'user', 'title_enabled', 'descrip_enabled', 'title_shablon', 'descrip_shablon', 'title_shablon', 'keywords_enabled', 'keywords_shablon', 'parent2','type','prod_seo_name_old');
+$key_stop = array('id', 'password', 'wishlist', 'datas', 'data_adres', 'sort', 'yml_bid_array', 'vendor', 'status', 'user', 'title_enabled', 'descrip_enabled', 'title_shablon', 'descrip_shablon', 'title_shablon', 'keywords_enabled', 'keywords_shablon', 'parent2', 'type', 'prod_seo_name_old');
 
 // Настраиваемые поля
 if (!empty($GLOBALS['SysValue']['base']['productoption']['productoption_system'])) {
@@ -230,7 +230,7 @@ function sortParse($current_sort) {
  * Экшен сохранения
  */
 function actionSave() {
-    global $PHPShopOrm, $PHPShopSystem, $PHPShopModules;
+    global $PHPShopOrm, $PHPShopSystem, $PHPShopModules, $_classPath;
 
     if (is_array($_SESSION['select']['product'])) {
         $val = array_values($_SESSION['select']['product']);
@@ -239,7 +239,6 @@ function actionSave() {
         $where = null;
 
     $PHPShopOrm->debug = false;
-
 
     // Коррекция подтипов при смене каталога у главного товара
     if (!empty($_POST['category_new'])) {
@@ -306,7 +305,6 @@ function actionSave() {
             }
     }
 
-
     // Добавление характеристик
     if (is_array($_POST['vendor_array_add'])) {
         foreach ($_POST['vendor_array_add'] as $k => $valS) {
@@ -320,10 +318,6 @@ function actionSave() {
                 unset($_POST['vendor_array_add'][$k]);
         }
     }
-
-
-    $PHPShopOrm->debug = false;
-
 
     // Изменение характеристик
     if (!empty($_POST['vendor_array_new'])) {
@@ -414,7 +408,7 @@ function actionSave() {
             if (is_array($val)) {
                 foreach ($val as $id) {
                     $dop_cat = $PHPShopOrm->select(['dop_cat'], ['id' => '=' . $id])['dop_cat'];
-                    $PHPShopOrm->update(['dop_cat_new' => $dop_cat . $_POST['dop_cat_new']],['id'=>'='.$id]);
+                    $PHPShopOrm->update(['dop_cat_new' => $dop_cat . $_POST['dop_cat_new']], ['id' => '=' . $id]);
                 }
             }
 
@@ -429,6 +423,191 @@ function actionSave() {
             $files_new[] = @array_map("urldecode", $files);
 
         $_POST['files_new'] = serialize($files_new);
+    }
+
+    // Помощь AI
+    if (isset($_POST['help_ai_content']) or isset($_POST['help_ai_description']) or isset($_POST['help_ai_title']) or isset($_POST['help_ai_descrip']) or isset($_POST['help_ai_pic_big'])) {
+
+        PHPShopObj::loadClass('yandexcloud');
+        $YandexGPT = new YandexGPT();
+        require_once $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/parsedown/Parsedown.php';
+
+        $YandexSearch = new YandexSearch();
+        $yandexsearch_image_num = (int) $PHPShopSystem->getSerilizeParam('ai.yandexsearch_image_num');
+
+        require_once $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/thumb/phpthumb.php';
+        $width_kratko = $PHPShopSystem->getSerilizeParam('admoption.width_kratko');
+        $img_tw = $PHPShopSystem->getSerilizeParam('admoption.img_tw');
+        $img_th = $PHPShopSystem->getSerilizeParam('admoption.img_th');
+
+        if (is_array($val))
+            foreach ($val as $id) {
+
+                $product = $PHPShopOrm->getOne(['name'], ['id' => '=' . (int) $id]);
+                $name = $product['name'];
+
+                // Подробное описание
+                if (isset($_POST['content_new']) and isset($_POST['help_ai_content'])) {
+
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_content_role');
+                    $length = 500;
+                    $result = $YandexGPT->text($name, $system, $PHPShopSystem->getSerilizeParam('ai.yandexgpt_temperature'), $length);
+                    $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
+
+                    $PHPShopOrm->update(['content_new' => PHPShopString::utf8_win1251($text)], ['id' => '=' . (int) $id]);
+                }
+
+                // Краткое описание
+                if (isset($_POST['description_new']) and isset($_POST['help_ai_description'])) {
+
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_description_role');
+                    $length = 200;
+                    $result = $YandexGPT->text($name, $system, $PHPShopSystem->getSerilizeParam('ai.yandexgpt_temperature'), $length);
+                    $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
+                    $text = preg_replace("/\r|\n/", ' ', $text);
+
+                    $PHPShopOrm->update(['description_new' => PHPShopString::utf8_win1251($text)], ['id' => '=' . (int) $id]);
+                }
+
+                // Title Meta
+                if (isset($_POST['title_new']) and isset($_POST['help_ai_title'])) {
+
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_title_role');
+                    $length = 70;
+                    $result = $YandexGPT->text($name, $system, $PHPShopSystem->getSerilizeParam('ai.yandexgpt_temperature'), $length);
+                    $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
+                    $text = preg_replace("/\r|\n/", ' ', $text);
+
+                    $PHPShopOrm->update(['title_new' => PHPShopString::utf8_win1251($text), 'title_enabled_new' => 1], ['id' => '=' . (int) $id]);
+                }
+
+                // Descrip Meta
+                if (isset($_POST['descrip_new']) and isset($_POST['help_ai_descrip'])) {
+
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_descrip_role');
+                    $length = 80;
+                    $result = $YandexGPT->text($name, $system, $PHPShopSystem->getSerilizeParam('ai.yandexgpt_temperature'), $length);
+                    $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
+                    $text = preg_replace("/\r|\n/", ' ', $text);
+
+                    $PHPShopOrm->update(['descrip_new' => PHPShopString::utf8_win1251($text), 'descrip_enabled_new' => 1], ['id' => '=' . (int) $id]);
+                }
+
+                // Поиск в Яндексе
+                if (isset($_POST['pic_big_new']) and isset($_POST['help_ai_pic_big'])) {
+
+                    if ($YandexSearch->init())
+                        $result = $YandexSearch->search_img($name);
+
+                    $data_img = [];
+                    $set_main = false;
+                    if (is_array($result)) {
+
+                        $i = 0;
+
+                        foreach ($result as $images) {
+
+                            if ($i < $yandexsearch_image_num)
+                                $data_img[] = $images['url'];
+                            else
+                                continue;
+
+                            $i++;
+                        }
+                    }
+
+                    // Замена изображений
+                    if (!empty($_POST['export_imgfunc'])) {
+                        $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+                        $PHPShopOrmImg->delete(['parent' => '=' . (int) $id]);
+                    }
+
+                    foreach ($data_img as $k => $img) {
+                        if (!empty($img)) {
+
+                            // Проверка изображения
+                            $checkImage = checkImage($img, (int) $id, false);
+                            $img_save = $checkImage['img'];
+
+                            // Создаем новую
+                            if (empty($checkImage['check'])) {
+
+                                // Файл загружен
+                                if (downloadFile($img, $_SERVER['DOCUMENT_ROOT'] . $img_save))
+                                    $img_load++;
+                                else
+                                    continue;
+
+
+                                // Новое имя
+                                $img = $img_save;
+                                $path_parts = pathinfo($img);
+
+                                // Сохранение в webp
+                                if ($PHPShopSystem->ifSerilizeParam('admoption.image_webp_save') and $path_parts['extension'] != 'webp') {
+
+                                    $thumb = new PHPThumb($_SERVER['DOCUMENT_ROOT'] . $img);
+                                    $thumb->setFormat('WEBP');
+                                    $name_webp = str_replace([".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".WEBP"], '.webp', $img);
+
+                                    $thumb->save($_SERVER['DOCUMENT_ROOT'] . $name_webp);
+                                    @unlink($_SERVER['DOCUMENT_ROOT'] . $img);
+                                    $img = $name_webp;
+                                }
+
+                                // Запись в фотогалерее
+                                $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+                                $PHPShopOrmImg->insert(array('parent_new' => (int) $id, 'name_new' => $img, 'num_new' => $k));
+
+                                $file = $_SERVER['DOCUMENT_ROOT'] . $img;
+                                $name = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $file);
+
+                                if (!file_exists($name) and file_exists($file)) {
+
+                                    // Генерация тубнейла 
+                                    if (!empty($_POST['export_imgproc'])) {
+                                        $thumb = new PHPThumb($file);
+                                        $thumb->setOptions(array('jpegQuality' => $width_kratko));
+                                        $thumb->resize($img_tw, $img_th);
+                                        $thumb->save($name);
+                                    } else
+                                        copy($file, $name);
+                                }
+
+
+
+                                // Главное изображение
+                                if (empty($set_main) and ! empty($img)) {
+
+                                    $pic_big = $img;
+
+                                    // Главное превью
+                                    $pic_small = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $img);
+
+                                    $PHPShopOrm->update(['pic_big_new' => $pic_big, 'pic_small_new' => $pic_small], ['id' => '=' . (int) $id]);
+                                    $set_main = true;
+                                }
+                            } else
+                                continue;
+                        }
+                    }
+                }
+            }
+
+        if (isset($_POST['help_ai_content']))
+            unset($_POST['content_new']);
+
+        if (isset($_POST['help_ai_description']))
+            unset($_POST['description_new']);
+
+        if (isset($_POST['help_ai_title']))
+            unset($_POST['title_new']);
+
+        if (isset($_POST['help_ai_descrip']))
+            unset($_POST['descrip_new']);
+
+        if (isset($_POST['help_ai_pic_big']))
+            unset($_POST['pic_big_new']);
     }
 
     // Дата обновления
@@ -543,6 +722,9 @@ function actionStart() {
     $PHPShopGUI->field_col = 3;
     $select_error = null;
 
+    // Помощь AI
+    $help_ai = ['content', 'description', 'title', 'descrip'];
+
     $PHPShopGUI->_CODE .= $PHPShopGUI->setHelp('Вы можете редактировать одновременно несколько записей. Выберите записи из списка товаров, отметьте галочкой товары, которые нужно отредактировать, и нажмите на кнопку "Редактировать выбранные".<hr>', false);
 
     $PHPShopOrm->sql = 'show fields  from ' . $GLOBALS['SysValue']['base']['products'];
@@ -562,6 +744,22 @@ function actionStart() {
                     $PHPShopGUI->_CODE .= $PHPShopGUI->setField("Дополнительные каталоги", viewCatalog('dop_cat[]', 'multiple') .
                             $PHPShopGUI->setRadio('action', 0, 'Заменить', 1) .
                             $PHPShopGUI->setRadio('action', 1, 'Добавить', 1)
+                    );
+                }
+                // Помощь AI
+                elseif (in_array($val['Field'], $help_ai)) {
+                    $name = $key_name[$val['Field']];
+                    $PHPShopGUI->_CODE .= $PHPShopGUI->setField(ucfirst($name), $PHPShopGUI->setInputArg(getKeyView($val)) .
+                            $PHPShopGUI->setCheckbox('help_ai_' . $val['Field'], 1, 'Помощь AI', 0, $PHPShopGUI->disabled_yandexcloud)
+                    );
+                }
+                // Поиск в Яндексе
+                elseif ($val['Field'] == 'pic_big') {
+                    $name = $key_name[$val['Field']];
+                    $PHPShopGUI->_CODE .= $PHPShopGUI->setField(ucfirst($name), $PHPShopGUI->setInputArg(getKeyView($val)) .
+                            $PHPShopGUI->setCheckbox('help_ai_' . $val['Field'], 1, 'Поиск в Яндексе', 0, $PHPShopGUI->disabled_yandexcloud) .
+                            $PHPShopGUI->setCheckbox('export_imgproc', 1, 'Обработка изображений', 0, $PHPShopGUI->disabled_yandexcloud) .
+                            $PHPShopGUI->setCheckbox('export_imgfunc', 1, 'Заменить старые изображения', 0, $PHPShopGUI->disabled_yandexcloud)
                     );
                 }
                 // Характеристики
@@ -811,6 +1009,81 @@ function actionCleanSort() {
     return array('success' => true, 'count' => $count);
 }
 
+// Проверка изображения
+function checkImage($img, $id, $uniq) {
+    global $PHPShopSystem;
+
+    // Перевод в латиницу
+    $path_parts = pathinfo($img);
+    $path_parts['basename'] = PHPShopFile::toLatin($path_parts['basename']);
+
+    // Папка картинок
+    $path = $PHPShopSystem->getSerilizeParam('admoption.image_result_path');
+
+    // Имя для проверки в фотогалерее
+    $img_check = $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . $path_parts['basename'];
+
+    // Сохранение в webp
+    if ($PHPShopSystem->ifSerilizeParam('admoption.image_webp_save') and $path_parts['extension'] != 'webp') {
+        $img_check = str_replace([".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".WEBP"], '.webp', $img_check);
+    }
+
+    // Новое имя
+    $img = $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . $path_parts['basename'];
+
+    // Проверка существования изображения в фотогалерее
+    $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+    $PHPShopOrmImg->debug = false;
+    $check = $PHPShopOrmImg->select(array('id'), array('name' => '="' . $img_check . '"', 'parent' => '=' . intval($id)), false, array('limit' => 1))['id'];
+
+    // Картинки нет
+    if (!is_array($check)) {
+
+        // Проверка имени файла
+        if (empty($uniq) and file_exists($_SERVER['DOCUMENT_ROOT'] . $img_check)) {
+
+            // Соль
+            $rand = '_' . substr(abs(crc32($img)), 0, 5);
+            $path_parts['basename'] = str_replace([".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".WEBP"], [$rand . ".png", $rand . ".jpg", $rand . ".jpeg", $rand . ".gif", $rand . ".PNG", $rand . ".JPG", $rand . ".JPEG", $rand . ".GIF", $rand . ".WEBP"], $path_parts['basename']);
+        }
+    }
+
+    // Новое имя
+    $img = $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . $path_parts['basename'];
+
+    return ['img' => $img, 'check' => $check];
+}
+
+// Загрузка изображения по ссылке 
+function downloadFile($url, $path) {
+
+    $newfname = $path;
+    $url = iconv("windows-1251", "utf-8//IGNORE", $url);
+
+    $arrContextOptions = array(
+        "ssl" => array(
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ),
+    );
+
+    $file = @fopen($url, 'rb', false, stream_context_create($arrContextOptions));
+    if ($file) {
+        $newf = fopen($newfname, 'wb');
+        if ($newf) {
+            while (!feof($file)) {
+                fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+            }
+        }
+    }
+    if ($file) {
+        fclose($file);
+    }
+    if ($newf) {
+        fclose($newf);
+        return true;
+    }
+}
+
 // Обработка событий
 $PHPShopGUI->getAction();
-?>

@@ -2,7 +2,7 @@
 
 /**
  * Библиотека оформления текста
- * @version 1.5
+ * @version 1.6
  * @package PHPShopClass
  * @subpackage Helper
  */
@@ -17,7 +17,7 @@ class PHPShopText {
         $i = 0;
         $nbsp = null;
         while ($i < $n) {
-            $nbsp.='&nbsp;';
+            $nbsp .= '&nbsp;';
             $i++;
         }
         return $nbsp;
@@ -27,10 +27,15 @@ class PHPShopText {
      * Жирный текст
      * @param string $string текст
      * @param string $style стиль
+     * @param string $option дополнительный атрибут
      * @return string
      */
-    static function b($string, $style = false) {
-        return '<b style="' . $style . '">' . $string . '</b>';
+    static function b($string, $style = false, $option = false) {
+
+        if(!empty($style))
+            $style = ' style="' . $style . '"';
+
+        return '<b ' . $option . $style . '>' . $string . '</b>';
     }
 
     /**
@@ -95,20 +100,20 @@ class PHPShopText {
      * @param string $href ссылка
      * @param string $text текст
      * @param string $title описание
-     * @param string $color цвет
+     * @param string $option цвет
      * @param string $size размер
      * @param string $target ссылка
      * @param string $class класс
-     * @param string $option data-option
+     * @param string $data data-option
      * @return string
      */
-    static function a($href, $text, $title = false, $color = false, $size = false, $target = false, $class = false, $option = false) {
+    static function a($href, $text, $title = false, $option = false, $size = false, $target = false, $class = false, $data = false) {
 
-        $style=null;
+        $style = null;
         if ($size)
-            $style.='font-size:' . $size . 'px;';
+            $style .= 'font-size:' . $size . 'px;';
         if ($color)
-            $style.='color:' . $color;
+            $style .= 'color:' . $color;
         if (empty($title))
             $title = $text;
 
@@ -120,10 +125,12 @@ class PHPShopText {
             $class = ' class="' . $class . '" ';
         if ($style)
             $style = ' style="' . $style . '" ';
+        if ($data)
+            $data = ' data-option="' . $data . '" ';
         if ($option)
-            $option = ' data-option="' . $option . '" ';
+            $option = ' ' . $option . ' ';
 
-        return '<a href="' . $href . '"' . $title . $target . $class . $style . $option . '>' . $text . '</a>';
+        return '<a href="' . $href . '"' . $title . $target . $class . $style . $data . $option . '>' . $text . '</a>';
     }
 
     /**
@@ -174,7 +181,7 @@ class PHPShopText {
     static function h4($string, $class = false) {
         return '<h4 class="' . $class . '">' . $string . '</h4>';
     }
-    
+
     /**
      * Заголовок H5
      * @param string $string текст
@@ -216,8 +223,7 @@ class PHPShopText {
         if (!empty($href)) {
             $text = PHPShopText::a($href, $string);
             $li = '<li class="' . $class . '">' . $text . '</li>';
-        }
-        else
+        } else
             $li = '<li class="' . $class . '">' . $string . '</li>';
         return $li;
     }
@@ -230,9 +236,9 @@ class PHPShopText {
         $Arg = func_get_args();
         $tr = '<tr class="tablerow">';
         foreach ($Arg as $val) {
-            $tr.=PHPShopText::td($val, 'tablerow');
+            $tr .= PHPShopText::td($val, 'tablerow');
         }
-        $tr.='</tr>';
+        $tr .= '</tr>';
         return $tr;
     }
 
@@ -280,8 +286,8 @@ class PHPShopText {
         $select = $caption . ' <select' . $name . $id . $size . ' style="float:' . $float . ';width:' . $width . 'px;height:' . $height . 'px"' . $onchange . $class . '>';
         if (is_array($value))
             foreach ($value as $val)
-                $select.='<option value="' . $val[1] . '" ' . @$val[2] . '>' . $val[0] . '</option>';
-        $select.='</select>';
+                $select .= '<option value="' . $val[1] . '" ' . @$val[2] . '>' . $val[0] . '</option>';
+        $select .= '</select>';
         return $select;
     }
 
@@ -342,9 +348,18 @@ class PHPShopText {
         if (strstr($string, " ")) {
             $string_array = explode(" ", $string);
             return '<span style="text-decoration: line-through">' . number_format($string_array[0], $format, '.', ' ') . '</span> <span class="rubznak">' . $string_array[1] . '</span>';
-        }
-        else
+        } else
             return '<span style="text-decoration: line-through">' . $string . '</span>';
+    }
+
+    /**
+     * Span
+     * @param string $string текст
+     * @param string $option дополнительный атрибут
+     * @return string
+     */
+    static function span($string, $option = false) {
+        return '<span ' . $option . '>' . $string . '</span>';
     }
 
     /**
@@ -403,13 +418,13 @@ class PHPShopText {
      * @param string $cellspacing cellspacing
      * @param string $align выравнивание
      * @param string $width длина
-     * @param string $bgcolor фон
+     * @param string $option дополнительный атрибут
      * @param string $border бордюр
      * @param string $id id
      * @param string $class class
      * @return string
      */
-    static function table($content, $cellpadding = 3, $cellspacing = 1, $align = 'center', $width = '100%', $bgcolor = false, $border = 0, $id = false, $class = false) {
+    static function table($content, $cellpadding = 3, $cellspacing = 1, $align = 'center', $width = '100%', $option = false, $border = 0, $id = false, $class = false) {
         if ($cellpadding)
             $cellpadding = ' cellpadding="' . $cellpadding . '"';
         if ($cellspacing)
@@ -418,16 +433,16 @@ class PHPShopText {
             $align = 'text-align:' . $align . ';';
         if ($width)
             $width = 'width:' . $width . ';';
-        if ($bgcolor)
-            $bgcolor = 'background:' . $bgcolor . ';';
         if ($border)
             $border = 'border:' . $border . 'px;';
         if ($id)
             $id = ' id="' . $id . '"';
         if ($class)
             $class = ' class="' . $class . '"';
+        if($option)
+            $option=' '.$option.' ';
 
-        $style = ' style="' . $align . $width . $bgcolor . $border . '"';
+        $style = ' style="' . $align . $width .  $border . $option.'"';
 
         return '<table ' . $id . $style . $class . '>' . $content . '</table>';
     }

@@ -41,8 +41,8 @@ function setProducts_megamarket_hook($obj, $data) {
     if (!empty($data['val']['oldprice']))
         $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . $data['val']['price'] . '</price><oldprice>' . $data['val']['oldprice'] . '</oldprice>', $data['xml']);
 
-    $options = unserialize($obj->megamarket_options['options']);
-
+    $options = $obj->megamarket_options;
+    
     // price columns
     $price = $data['val']['price'];
     $fee = 0;
@@ -51,12 +51,13 @@ function setProducts_megamarket_hook($obj, $data) {
     // Цена 
     if (!empty($data['val']['price_megamarket'])) {
         $price = $data['val']['price_megamarket'];
-    } elseif (isset($options['price_megamarket']) && (int) $options['price_megamarket'] > 1 && !empty($data['val']['price' . (int) $options['price_megamarket']])) {
-        $price = $data['val']['price' . (int) $options['price_megamarket']];
+    } elseif (isset($options['price']) && (int) $options['price'] > 1 && !empty($data['val']['price' . (int) $options['price']])) {
+        $price = $data['val']['price' . (int) $options['price']];
     }
-    if (isset($options['price_megamarket_fee']) && (float) $options['price_megamarket_fee'] > 0) {
-        $fee = (float) $options['price_megamarket_fee'];
-        $markup = (int) $options['price_megamarket_markup'];
+    
+    if (isset($options['fee']) && (float) $options['fee'] > 0) {
+        $fee = (float) $options['fee'];
+        $markup = (int) $options['markup'];
     }
 
     // Наценка руб.
@@ -110,7 +111,7 @@ function PHPShopYml_megamarket_hook($obj) {
     // Настройки модуля
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['megamarket']['megamarket_system']);
     $obj->megamarket_options = $PHPShopOrm->select();
-
+    
     // Пароль
     if (!empty($obj->megamarket_options['password']))
         if ($_GET['pas'] != $obj->megamarket_options['password'])

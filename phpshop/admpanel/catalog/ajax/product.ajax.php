@@ -256,7 +256,7 @@ if (is_array($memory['catalog.option']))
         if (!empty($view))
             $count_view++;
 
-if ($count_view > 8)
+if ($count_view > 8 and empty($_COOKIE['fullscreen']))
     unset($memory['catalog.option']['menu']);
 
 // Режим каталога

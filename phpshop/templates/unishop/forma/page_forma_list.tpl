@@ -35,7 +35,7 @@
     <div class="form-group">
         <div class=""></div>
         <div class="">
-            <p class="small"><label><input name="rule" value="1" required="" checked="" type="checkbox"> @rule@</label></p>
+            <p class="small"><label><input name="rule" value="1" required="" checked="" type="checkbox" required> @rule@</label></p>
         </div>
     </div>
     <div class="form-group">

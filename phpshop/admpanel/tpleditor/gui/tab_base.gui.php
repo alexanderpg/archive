@@ -104,28 +104,11 @@ function tab_base($data) {
     if (count($data_pic) % 3 != 0)
         $img_list_default .= '</div>';
 
-    // Персональный дизайн
-    $promo = 'Дизайн-бюро <a href="https://www.phpshop.ru/page/portfolio.html" target="_blank">PHPShop.Design</a> делает дизайны только для  PHPShop, а значит, неожиданностей при создании дизайна не произойдет, и  вы получите уникальный профессиональный дизайн в срок, отвечающий всем  требованиям сегодняшнего дня. 
-   <p>     
-<ol>
-        <li>Мы на 100% знаем свою платформу, а это значит, что  Вам не придется переплачивать за часы работы дизайнера, не знакомого с  PHPShop. </li>
-        <li>Мы стараемся учитывать всю функциональность PHPShop  еще на первом этапе его создания, и вы получите работающий  интернет-магазин таким, каким Вы его видите на утвержденном Вами макете. </li>
-        <li>Большинство доработок, ранее требовавших  вмешательства в код платформы, на новой версии PHPShop,  производятся с помощью "дизайн-хуков", - это значит, что в будущем вы сможете обновляться без потери доработок. </li>
-        <li>Мы соблюдаем сроки, и предоставляем гарантии - если  после завершения проекта Вы заметите недочет с нашей стороны  мы  устраним его. </li>
-    </ol>
-    </p>
-    <p>Для заказа персонального дизайна нужно заполнить бриф, в котором вы  формулируете будущий проект, все возникающие вопросы уточнить у наших  консультантов. Cрок создания макета дизайна - 15 рабочих дней.</p>' . '
-    <p>
-    <a href="https://www.phpshop.ru/calculation/brifdesign/?from=' . $_SERVER['SERVER_NAME'] . '" target="_blank" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-share-alt"></span> Бриф на Персональный дизайн интернет-магазина</a></p>';
-
-
     if (!empty($img_list_default)) {
 
         if (stristr($_SESSION['lang'], "utf"))
             $promo = __($promo);
 
-        //$PHPShopGUI->addTab(array('Персональный дизайн', $promo, true));
-        //$PHPShopGUI->setTab(array('Доступные шаблоны', $title_default . $img_list_default, true));
         $PHPShopGUI->_CODE = $title_default . $img_list_default;
     } else
         $disp = $PHPShopGUI->setAlert('Ошибка связи с сервером ' . $skin_base_path, $type = 'warning');
@@ -133,24 +116,3 @@ function tab_base($data) {
 
     return $disp;
 }
-
-function getPayLink($amount, $template) {
-    global $PHPShopSystem;
-
-    $str = array(
-        "url" => getenv('SERVER_NAME'),
-        "template" => $template,
-        "amount" => number_format($amount, 2, '.', ''),
-        "time" => time("U") + (3 * 86400),
-        'name' => $PHPShopSystem->getParam('company')
-    );
-
-    $str = serialize($str);
-    $code = base64_encode($str);
-    $code2 = str_replace("O", "!", $code);
-    $code2 = str_replace("M", "$", $code2);
-
-    return $code2;
-}
-
-?>

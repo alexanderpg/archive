@@ -1284,10 +1284,10 @@ class PHPShopShopCatalogElement extends PHPShopProductElements {
     var $debug = false;
 
     /**
-     * Массив полей для очистки в кэше для оптимизации кэша. Вырезаем описание каталога и YML настройки.
+     * Массив полей для очистки в кэше для оптимизации кэша. Вырезаем описание каталога.
      * @var array
      */
-    var $cache_format = array('content', 'yml_bid_array');
+    var $cache_format = array('content');
     var $memory = true;
 
     /**

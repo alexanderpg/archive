@@ -3,7 +3,7 @@
 /**
  * Библиотека проверки прав администрирования
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopClass
  */
 class PHPShopAdminRule {
@@ -69,16 +69,19 @@ class PHPShopAdminRule {
         $data = $PHPShopOrm->select(array('*'), array('enabled' => "='1'", 'id' => "='" . intval($idPHPSHOP) . "'"), false, array('limit' => 1));
 
         if (is_array($data)) {
+            $status = unserialize($data['status']);
             $hasher = new PasswordHash(8, false);
             if ($_SESSION['logPHPSHOP'] == $data['login']) {
                 if ($hasher->CheckPassword($_SESSION['pasPHPSHOP'], $data['password'])) {
 
                     // Проверка журнала авторизации
                     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['jurnal']);
-                    $jurnal = $PHPShopOrm->select(array('id'), array('ip' => '="' . PHPShopSecurity::TotalClean($_SERVER['REMOTE_ADDR']) . '"', 'user' => "='" . $data['login'] . "'", 'datas' => '>' . (time() - 3600*24*2),'flag'=>"='0'"), false, array('limit' => 1));
+                    $jurnal = $PHPShopOrm->select(array('id'), array('ip' => '="' . PHPShopSecurity::TotalClean($_SERVER['REMOTE_ADDR']) . '"', 'user' => "='" . $data['login'] . "'", 'datas' => '>' . (time() - 3600 * 24 * 2), 'flag' => "='0'"), false, array('limit' => 1));
 
                     if (!empty($jurnal))
-                        return unserialize($data['status']);
+                        return $status;
+                    elseif ((new PHPShopSystem())->getSerilizeParam("admoption.ip_enabled") == 1)
+                        return $status;
                 }
             }
         }
@@ -121,7 +124,7 @@ class PHPShopAdminRule {
      */
     function BadUserFormaWindow() {
         echo'
-          <div class="alert alert-danger" id="rules-message" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span>'. __('<strong>Внимание!</strong> Недостаточно прав для выполнения. <a href="#" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Вернуться</a> или поменять <a href="?path=users&id=' . $_SESSION['idPHPSHOP'] . '&tab=1" class="btn btn-xs btn-primary">Права <span class="glyphicon glyphicon-arrow-right"></span></a> Администратора.').'</div>
+          <div class="alert alert-danger" id="rules-message" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span>' . __('<strong>Внимание!</strong> Недостаточно прав для выполнения. <a href="#" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Вернуться</a> или поменять <a href="?path=users&id=' . $_SESSION['idPHPSHOP'] . '&tab=1" class="btn btn-xs btn-primary">Права <span class="glyphicon glyphicon-arrow-right"></span></a> Администратора.') . '</div>
 ';
         return true;
     }
@@ -156,4 +159,5 @@ class PHPShopAdminRule {
     }
 
 }
+
 ?>

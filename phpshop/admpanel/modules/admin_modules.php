@@ -356,7 +356,7 @@ function actionStart() {
     // Кол-во модулей
     $count_mod = [
         0 => [
-            'pro' => 14,
+            'pro' => 15,
             'template' => 8,
             'seo' => 5,
             'delivery' => 11,
@@ -367,7 +367,7 @@ function actionStart() {
             'credit' => 4,
             'yandex' => 3,
             'sale' => 19,
-            'develop' => 14,
+            'develop' => 15,
             'minus' => -16
         ],
         1 => [
@@ -379,7 +379,7 @@ function actionStart() {
             'crm' => 2,
             'yandex' => 1,
             'sale' => 8,
-            'develop' => 13,
+            'develop' => 14,
             'minus' => -3
         ],
         2 => [
@@ -390,7 +390,7 @@ function actionStart() {
             'crm' => 1,
             'yandex' => 1,
             'sale' => 1,
-            'develop' => 11
+            'develop' => 12
         ]
     ];
 

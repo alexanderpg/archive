@@ -17,18 +17,18 @@
     <div class="form-group">
         <textarea name="content" class="form-control" placeholder="{Сообщение}" required="">@php  echo $_POST['content']; php@</textarea>
     </div>
-                        <div class="form-group">
-                            <p class="small">
-                            <input type="checkbox" value="on" name="rule" class="req" checked="checked"> 
-                            {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
-                            </p>
-                        </div>    <div class="form-group">
-	 @captcha@
-	 <br/>
+    <div class="form-group">
+        <p class="small">
+            <input type="checkbox" value="on" name="rule" class="req" checked="checked" required> 
+            {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
+        </p>
+    </div>    <div class="form-group">
+        @captcha@
+        <br/>
         <span class="pull-right">
             <input type="hidden" name="send" value="1">
             <button type="submit" class="btn btn-primary">{Отправить сообщение}</button>
         </span>
-      
+
     </div>
 </form>    

@@ -1,4 +1,4 @@
-<div class="@hideSite@">
-    <h4 class="heading" style="margin-bottom: 15px">@productOdnotip@</h4>
-    @productOdnotipList@
+<h4 class="heading @hideSite@">@productOdnotip@</h4>
+<div class="@hideSite@ row template-product-list products-list">
+@productOdnotipList@
 </div>

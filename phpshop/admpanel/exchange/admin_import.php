@@ -502,7 +502,7 @@ function csv_update($data) {
                 else
                     $row[strtolower($cols_name)] = $data[$k];
             }
-
+            
             // Телефон пользователя
             if (!empty($row['data_adres'])) {
 
@@ -674,20 +674,20 @@ function csv_update($data) {
 
             // Путь каталога
             if (isset($row['path'])) {
-                if (empty($row['category'])) {
-                    $search = $row['path'];
-                    $category = new PHPShopCategory(0);
-                    $category->getChildrenCategories(100, ['id', 'parent_to', 'name'], false, $search);
+                //if (empty($row['category'])) {
+                $search = $row['path'];
+                $category = new PHPShopCategory(0);
+                $category->getChildrenCategories(100, ['id', 'parent_to', 'name'], false, $search);
 
-                    while (count($category->search) != $category->found) {
-                        $PHPShopOrmCat = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
-                        $PHPShopOrmCat->debug = false;
-                        $category->search_id = $PHPShopOrmCat->insert(array('name_new' => $category->search[$category->found], 'parent_to_new' => $category->search_id));
-                        $category->found++;
-                    }
-
-                    $row['category'] = $category->search_id;
+                while (count($category->search) != $category->found) {
+                    $PHPShopOrmCat = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
+                    $PHPShopOrmCat->debug = false;
+                    $category->search_id = $PHPShopOrmCat->insert(array('name_new' => $category->search[$category->found], 'parent_to_new' => $category->search_id));
+                    $category->found++;
                 }
+
+                $row['category'] = $category->search_id;
+                //}
             }
 
             // Коррекция флага подтипа
@@ -787,7 +787,7 @@ function csv_update($data) {
                 unset($row['pic_big']);
 
                 // Если выключена обработка фото
-                if (isset($_POST['export_imgproc']))
+                if (isset($_POST['export_imgproc']) and $_POST['export_imgload'] == 1)
                     unset($row['pic_small']);
 
                 // Получение ID товара по артикулу при обновлении
@@ -879,7 +879,10 @@ function csv_update($data) {
                                 $row['pic_big'] = $img;
 
                                 // Главное превью
-                                if (empty($row['pic_small']) or isset($_POST['export_imgload']) or isset($_POST['export_imgproc'])) {
+                                if ($_POST['export_imgload'] == 2){
+                                    $row['pic_small'] = $img;
+                                }
+                                else if ($_POST['export_imgload'] == 1 and isset($_POST['export_imgproc'])) {
                                     $row['pic_small'] = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $img);
                                 }
                             }
@@ -894,6 +897,7 @@ function csv_update($data) {
 
             // Создание данных
             if ($_POST['export_action'] == 'insert') {
+                
 
                 $PHPShopOrm->debug = false;
                 $PHPShopOrm->mysql_error = false;
@@ -944,7 +948,7 @@ function csv_update($data) {
                 }
 
                 // Проверки пустого имени
-                if (isset($row['name']) and empty($row['name']))
+                if (empty($row['name']))
                     $uniq = true;
 
                 if (empty($uniq)) {
@@ -1080,6 +1084,23 @@ function csv_update($data) {
     }
 }
 
+// Построение пути каталогов
+function createCategoryPath($category_array, $id, $path = null) {
+
+    if (isset($category_array[$id])) {
+        $path .= '/' . $category_array[$id][0];
+
+        if (isset($category_array[$category_array[$id][1]])) {
+            $path .= '/' . $category_array[$category_array[$id][1]][0];
+
+            $path .= createCategoryPath($category_array, $category_array[$category_array[$id][1]][0], $path);
+            return $path;
+        }
+        
+        return $path;
+    }
+}
+
 // Функция обновления
 function actionSave() {
     global $PHPShopGUI, $PHPShopSystem, $key_name, $key_name, $result_message, $csv_load_count, $subpath, $csv_load, $csv_load_totale, $img_load;
@@ -1210,12 +1231,43 @@ function actionSave() {
 
         PHPShopObj::loadClass('file');
 
-        // Автоопределение
+        // Автоопределение расширения
         if ($_POST['export_extension'] == 'auto') {
+
             $_POST['export_extension'] = PHPShopSecurity::getExt($csv_file);
+
+            if (!in_array($_POST['export_extension'], ['csv', 'xls', 'xlsx'])) {
+
+                $find_extension = file($csv_file);
+
+                if (strpos($find_extension['1'], 'yml_catalog') or strpos($find_extension['2'], 'yml_catalog'))
+                    $_POST['export_extension'] = 'yml';
+                else if (strpos($find_extension['1'], 'google') or strpos($find_extension['2'], 'channel'))
+                    $_POST['export_extension'] = 'rss';
+                else if (strpos($find_extension['1'], 'КоммерческаяИнформация') or strpos($find_extension['1'], PHPShopString::win_utf8('КоммерческаяИнформация')))
+                    $_POST['export_extension'] = 'cml';
+            }
         } elseif (empty($_POST['export_extension'])) {
             $_POST['export_extension'] = 'csv';
         }
+
+        // Автоопределение кодировки
+        if ($_POST['export_code'] == 'auto') {
+
+            if (in_array($_POST['export_extension'], ['csv', 'xls', 'xlsx'])) {
+
+                if (!$find_extension)
+                    $find_extension = file($csv_file);
+
+                if (stripos($find_extension['0'], 'Артикул') or stripos($find_extension['0'], 'Склад') or stripos($find_extension['0'], 'Цена 1') or stripos($find_extension['0'], 'Наименование'))
+                    $_POST['export_code'] = 'ansi';
+                elseif (stripos($find_extension['0'], PHPShopString::win_utf8('Артикул')) or stripos($find_extension['0'], PHPShopString::win_utf8('Склад')) or stripos($find_extension['0'], PHPShopString::win_utf8('Цена 1')) or stripos($find_extension['0'], PHPShopString::win_utf8('Наименование')))
+                    $_POST['export_code'] = 'utf';
+            }
+        }
+
+        if ($find_extension)
+            unset($find_extension);
 
         // YML
         if ($_POST['export_extension'] == 'yml') {
@@ -1226,13 +1278,26 @@ function actionSave() {
                 // Товары
                 if (empty($subpath[2])) {
 
-                    $yml_array[0] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
+                    $yml_array[0] = ["Артикул", "Наименование", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Путь каталога", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
 
+                    // Каталоги
+                    foreach ($xml->shop[0]->categories[0]->category as $item) {
+                        $category_array[(string) $item->attributes()->id] = [PHPShopString::utf8_win1251((string) $item[0]), (string) $item->attributes()->parentId];
+                    }
+
+                    // Товары
                     foreach ($xml->shop[0]->offers[0]->offer as $item) {
 
                         $warehouse = 0;
                         $parent2 = $parent = '';
 
+                        // Путь каталога
+                        $category_path = createCategoryPath($category_array, (string) $item->categoryId[0]);
+                        $category_path = substr($category_path, 1, strlen($category_path) - 1);
+                        $category_path_array = explode("/", $category_path);
+                        $category_path = implode("/", array_reverse($category_path_array));
+                        
+                        
                         // Склад
                         if (isset($item->count[0]))
                             $warehouse = (int) $item->count[0];
@@ -1246,9 +1311,9 @@ function actionSave() {
                             $warehouse = 1;
 
                         // Картинки
-                        if (is_array((array) $item->picture))
+                        if (is_array((array) $item->picture)) {
                             $images = implode(",", (array) $item->picture);
-                        else
+                        } else
                             $images = (string) $item->picture;
 
                         // Старая цена
@@ -1307,7 +1372,7 @@ function actionSave() {
                                 // Название
                                 $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251((string) $item->name[0]))));
 
-                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $sort, $barcode, 0, (string) $item->attributes()->id, '', $oldprice, $length, $width, $height];
+                                $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, 0, (string) $item->attributes()->id, '', $oldprice, $length, $width, $height];
                             } else {
 
                                 // Список подтипов
@@ -1327,9 +1392,9 @@ function actionSave() {
                         }
 
 
-                        $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
+                        $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
                     }
-
+                    
                     if (empty($GLOBALS['exchanges_cron']))
                         $csv_file = './csv/product.yml.csv';
                     else
@@ -1361,7 +1426,7 @@ function actionSave() {
             $xml = simplexml_load_string($feed);
 
             // Товары
-            $yml_array[] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "ISO"];
+            $yml_array[] = ["Артикул", "Наименование", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "ISO"];
 
             foreach ($xml->channel[0]->item as $item) {
 
@@ -1380,7 +1445,7 @@ function actionSave() {
                 // Цена
                 $price = explode(" ", (string) $item->price[0]);
 
-                $yml_array[] = [(string) $item->id[0], PHPShopString::utf8_win1251((string) $item->title[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, $price[0], $price[1], (int) $item->categoryId[0]];
+                $yml_array[] = [(string) $item->id[0], PHPShopString::utf8_win1251((string) $item->title[0]), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, $price[0], $price[1], (int) $item->categoryId[0]];
             }
 
 
@@ -1657,10 +1722,13 @@ function actionStart() {
         if ($subpath[2] == 'catalog')
             $memory[$_GET['path']]['export_action'] = 'insert';
 
-        if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
-            $export_code = 'utf';
-        else
-            $export_code = 'ansi';
+        /*
+          if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+          $export_code = 'utf';
+          else
+          $export_code = 'ansi'; */
+
+        $export_code = 'auto';
     }
 
     $PHPShopGUI->action_button['Импорт'] = array(
@@ -1786,6 +1854,7 @@ function actionStart() {
     $delim_imgvalue[] = array('#', '#', $export_imgvalue);
     $delim_imgvalue[] = array(__('Пробел'), ' ', $export_imgvalue);
 
+    $code_value[] = array('Автоматическая', 'auto', $export_code);
     $code_value[] = array('ANSI', 'ansi', $export_code);
     $code_value[] = array('UTF-8', 'utf', $export_code);
 

@@ -4986,3 +4986,7 @@ input:focus,button:focus,.form-control:focus,label.focus {
 #yandexid_button{
    padding: 0px 10px 10px 10px;
 }
+
+.filter-item-hide{
+    color: #ddd !important;
+}

@@ -97,10 +97,13 @@ switch ($_POST['role']) {
         $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_site_descrip_role');
         break;
     
+    default :
+        $system=PHPShopString::utf8_win1251($_POST['role']);
+    
 }
 
 $message = $_POST['text'];
-$result = $YandexGPT->text(PHPShopString::utf8_win1251(strip_tags($message)), $system, 0.3, (int) $_POST['length']);
+$result = $YandexGPT->text(PHPShopString::utf8_win1251(strip_tags($message)), $system, $PHPShopSystem->getSerilizeParam('ai.yandexgpt_temperature'), (int) $_POST['length']);
 
 if (empty($html)) {
     $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);

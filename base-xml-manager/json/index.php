@@ -12,18 +12,19 @@ PHPShopObj::loadClass("base");
 PHPShopObj::loadClass("orm");
 PHPShopObj::loadClass("basexml");
 PHPShopObj::loadClass("string");
+PHPShopObj::loadClass("system");
 
 // Подключаем БД
 $PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, true);
 
 class PHPShopJSON extends PHPShopBaseXml {
-    
+
     public $debug = false;
 
     function __construct() {
         global $PHPShopBase;
 
-        $this->true_method = array('select', 'update', 'delete', 'insert','mail');
+        $this->true_method = array('select', 'update', 'delete', 'insert', 'mail', 'get_order_num');
         $this->token = $_SERVER['HTTP_TOKEN'];
 
         if (empty($this->token))
@@ -63,11 +64,11 @@ class PHPShopJSON extends PHPShopBaseXml {
 
         if (is_array($this->sql)) {
             $this->xml['method'] = $this->sql['method'];
-            
-            if(is_array($this->sql['vars']))
-                foreach($this->sql['vars'] as $k=>$v)
+
+            if (is_array($this->sql['vars']))
+                foreach ($this->sql['vars'] as $k => $v)
                     $this->sql['vars'][$k] = PHPShopString::utf8_win1251($v);
-            
+
             $this->xml['vars'] = array($this->sql['vars']);
             $this->xml['from'] = $this->sql['from'];
 
@@ -100,7 +101,8 @@ class PHPShopJSON extends PHPShopBaseXml {
             'update' => 1,
             'insert' => 2,
             'delete' => 1,
-            'mail' => 1
+            'mail' => 1,
+            'get_order_num' => 1
         );
 
         $array = explode("-", $this->UserStatus['api']);
@@ -153,20 +155,31 @@ class PHPShopJSON extends PHPShopBaseXml {
             exit(json_encode(array('status' => 'error', 'error' => $text)));
         }
     }
-    
-    public function mail(){
 
-        PHPShopObj::loadClass(["system","mail"]);
-        
+    /**
+     * Номер заказа
+     */
+    public function get_order_num() {
+
+        $PHPShopOrm = new PHPShopOrm();
+        $res = $PHPShopOrm->query("select uid from " . $GLOBALS['SysValue']['base']['orders'] . " order by id desc LIMIT 0, 1");
+        $row = mysqli_fetch_array($res);
+        $last = $row['uid'];
+        $all_num = explode("-", $last);
+        $ferst_num = $all_num[0];
+        $order_num = $ferst_num + 1;
+
+        $ouid = $order_num . "-" . substr(abs(crc32(uniqid(session_id()))), 0, 2);
+        $this->data = ['uid' => $ouid];
+    }
+
+    /**
+     * Сообщение
+     */
+    public function mail() {
+        PHPShopObj::loadClass(['mail', 'system']);
         $GLOBALS['PHPShopSystem'] = new PHPShopSystem();
-        $mail = $this->xml['vars'][0]['mail'];
-        $title= $this->xml['vars'][0]['title'];
-        $content= $this->xml['vars'][0]['content'];
-        
-        if(new PHPShopMail($mail, $GLOBALS['PHPShopSystem']->getParam('adminmail2'), $title, $content)){
-           $this->data = $this->xml['vars'];
-        }else $this->error('Mail not sent');
-        
+        $this->data = new PHPShopMail($this->xml['vars']['mail'], $GLOBALS['PHPShopSystem']->getParam('adminmail2'), $this->xml['vars']['title'], $this->xml['vars']['content']);
     }
 
 }
@@ -174,9 +187,9 @@ class PHPShopJSON extends PHPShopBaseXml {
 /*
  * Смена кодировки на UTF-8 в массиве
  */
+
 function array2iconvUTF(&$value) {
     $value = iconv("CP1251", "UTF-8", $value);
 }
 
 new PHPShopJSON();
-?>

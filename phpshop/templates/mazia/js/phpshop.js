@@ -179,20 +179,52 @@ function filter_load(filter_str, obj) {
                 $('#price-filter-val-max').removeClass('has-error');
                 $('#price-filter-val-min').removeClass('has-error');
                 $("#pagination-block").html(data['pagination']);
+
+                // Ѕлокировкам пустых значений и пересчет количества фильтра
+                if (typeof FILTER_CACHE !== "undefined" && FILTER_CACHE) {
+                    $('#faset-filter-body [type="checkbox"]').each(function () {
+
+                        if (data['logic'] == 0) {
+                            $(this).attr('disabled', 'disabled');
+                            $(this).next('.filter-item').addClass('filter-item-hide');
+                        } else if (data['logic'] == 1 && $(this).attr('data-count') != 1) {
+                            $(this).attr('disabled', 'disabled');
+                            $(this).next('.filter-item').addClass('filter-item-hide');
+                        }
+
+                        if (FILTER_COUNT && data['logic'] == 0) {
+                            $('[data-num="' + $(this).attr('name') + '"]').text(0);
+                        }
+
+                        for (var key in data['filter']) {
+                            if ($(this).attr('name') == key) {
+
+                                $(this).removeAttr('disabled');
+                                $(this).next('.filter-item').removeClass('filter-item-hide');
+
+                                if (FILTER_COUNT && data['logic'] == 0) {
+                                    $('[data-num="' + $(this).attr('name') + '"]').text(data['filter'][key]);
+                                } else if (data['logic'] == 1 && $(this).attr('data-count') != 1) {
+                                    $('[data-num="' + $(this).attr('name') + '"]').text(data['filter'][key]);
+                                }
+                            }
+                        }
+                    });
+                }
             }
         },
         error: function (data) {
             $(obj).attr('checked', false);
-            //$(obj).attr('disabled', true);
 
-            if ($(obj).attr('name') == 'max')
+            if ($(obj).attr('name') == 'max') {
                 $('#price-filter-val-max').addClass('has-error');
-            if ($(obj).attr('name') == 'min')
+            }
+            if ($(obj).attr('name') == 'min') {
                 $('#price-filter-val-min').addClass('has-error');
+            }
 
             window.location.hash = window.location.hash.split($(obj).attr('data-url') + '&').join('');
         }
-
 
     });
 }
@@ -233,10 +265,12 @@ function faset_filter_click(obj) {
             window.location.hash += $(obj).attr('data-url') + '&';
 
         } else {
-            window.location.hash = window.location.hash.split($(obj).attr('data-url') + '&').join('');
-            if (window.location.hash == '')
-                $('html, body').animate({scrollTop: $("a[name=sort]").offset().top - 100}, 500);
-
+            hashes = window.location.hash.split($(obj).attr('data-url') + '&').join('');
+            if (hashes == '#') {
+                history.pushState('', document.title, window.location.pathname);
+            } else {
+                window.location.hash = hashes;
+            }
         }
 
         filter_load(window.location.hash.split(']').join('][]'), obj);
@@ -469,14 +503,22 @@ $().ready(function () {
             event.preventDefault();
             $("#faset-filter-body").html($("#sorttable table td").html());
             filter_load('');
-            $('html, body').animate({scrollTop: $("a[name=sort]").offset().top - 100}, 500);
-            window.location.hash = '';
+            history.pushState('', document.title, window.location.pathname);
             $.removeCookie('slider-range-min');
             $.removeCookie('slider-range-max');
             $(".pagination").show();
 
             // —брос текущей страницы
             count = current;
+
+            // —брос слайдера
+            var max = $("#slider-range").slider("option", "max");
+            var min = $("#slider-range").slider("option", "min");
+            $('#price-filter-body input[name=min]').val(max);
+            $('#price-filter-body input[name=max]').val(min);
+            $("#slider-range").slider({
+                values: [min, max]
+            });
         }
 
     });

@@ -319,7 +319,7 @@ function sorttemplatehook($value, $n, $title, $vendor) {
                 $disp .= '<div class="form-group d-flex align-items-center justify-content-between font-size-1 text-lh-lg text-body mb-1">
                 <div class="custom-control custom-checkbox">
     <input type="checkbox" class="custom-control-input" value="1" name="' . $n . '-' . $p[1] . '" ' . $checked . ' data-url="v[' . $n . ']=' . $p[1] . '"  data-name="' . $n . '-' . $p[1] . '" id="filter-' . $p[1] . '">
-    <label class="custom-control-label text-lh-lg" for="filter-' . $p[1] . '">' . $text . '</label>
+    <label class="custom-control-label text-lh-lg filter-item" for="filter-' . $p[1] . '">' . $text . '</label>
     </div>
     <small>' . $p[3] . '</small>
 </div>';
@@ -327,7 +327,7 @@ function sorttemplatehook($value, $n, $title, $vendor) {
                 $disp_limit .= '<div class="form-group d-flex align-items-center justify-content-between font-size-1 text-lh-lg text-body mb-1">
                 <div class="custom-control custom-checkbox">
     <input type="checkbox" class="custom-control-input" value="1" name="' . $n . '-' . $p[1] . '" ' . $checked . ' data-url="v[' . $n . ']=' . $p[1] . '"  data-name="' . $n . '-' . $p[1] . '" id="filter-' . $p[1] . '">
-    <label class="custom-control-label text-lh-lg" for="filter-' . $p[1] . '">' . $text . '</label>
+    <label class="custom-control-label text-lh-lg filter-item" for="filter-' . $p[1] . '">' . $text . '</label>
     </div>
     <small>' . $p[3] . '</small>
 </div>';

@@ -3,7 +3,7 @@
 /**
  * Îáğàáîò÷èê ïîèñêà òîâàğîâ
  * @author PHPShop Software 
- * @version 1.7
+ * @version 1.8
  * @package PHPShopShopCore
  */
 class PHPShopSearch extends PHPShopShopCore {
@@ -49,11 +49,12 @@ class PHPShopSearch extends PHPShopShopCore {
         $this->isYandexSpeller = (bool) $this->PHPShopSystem->getSerilizeParam('admoption.yandex_speller_enabled');
         $this->isYandexSearchCloud = (bool) $this->PHPShopSystem->getSerilizeParam('ai.yandexsearch_site_enabled');
         $this->isYandexSearchToken = (bool) $this->PHPShopSystem->getSerilizeParam('ai.yandexsearch_token');
-        
-        if(empty($this->isYandexSearchToken))
-            $this->isYandexSearchCloud=false;
-        else PHPShopObj::loadClass('yandexcloud');
-        
+
+        if (empty($this->isYandexSearchToken))
+            $this->isYandexSearchCloud = false;
+        else
+            PHPShopObj::loadClass('yandexcloud');
+
         $this->title = __('Ïîèñê') . " - " . $this->PHPShopSystem->getValue("name");
     }
 
@@ -204,7 +205,7 @@ class PHPShopSearch extends PHPShopShopCore {
             $PHPShopOrm->debug = $this->debug;
 
 
-            $data = $PHPShopOrm->select(array('link', 'name'), array('name' => " REGEXP '" . explode(" ", $_REQUEST['words'])[0] . "' or content REGEXP '" . explode(" ", $_REQUEST['words'])[0] . "'", "enabled" => "!='0'",'category'=>'!=2000'), array('order' => 'name'), array('limit' => 5));
+            $data = $PHPShopOrm->select(array('link', 'name'), array('name' => " REGEXP '" . explode(" ", $_REQUEST['words'])[0] . "' or content REGEXP '" . explode(" ", $_REQUEST['words'])[0] . "'", "enabled" => "!='0'", 'category' => '!=2000'), array('order' => 'name'), array('limit' => 5));
 
             return $data;
         }
@@ -252,7 +253,7 @@ class PHPShopSearch extends PHPShopShopCore {
             $_REQUEST['words'] = urldecode($_REQUEST['words']);
 
         // Ôèëüòğ ïîèñêà
-        $_REQUEST['words'] = PHPShopSecurity::true_search($_REQUEST['words'],true);
+        $_REQUEST['words'] = PHPShopSecurity::true_search($_REQUEST['words'], true);
 
         // Yandex Speller
         if ($this->isYandexSpeller)
@@ -300,8 +301,8 @@ class PHPShopSearch extends PHPShopShopCore {
             if (!empty($this->dataArray) or ! empty($grid_category) or ! empty($words_page)) {
 
                 // Ïàãèíàòîğ
-                if (!$this->get('hideSite'))
-                $this->setPaginator(count($this->dataArray), $order);
+                if (!$this->get('hideSite') and is_array($this->dataArray))
+                    $this->setPaginator(count($this->dataArray), $order);
 
                 // Äîáàâëÿåì â äèçàéí ÿ÷åéêè ñ òîâàğàìè
                 $grid = $this->product_grid($this->dataArray, $this->cell, $template, $this->line);

@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.1
+ * @version 3.2
  */
 class CommerceMLLoader {
 
@@ -195,7 +195,7 @@ class CommerceMLLoader {
                             foreach ($xml->Документ as $order) {
 
                                 $status_id = null;
-                                
+
                                 // Номер заказа
                                 $order_uid = preg_replace('/[^0-9\-]+/', '', (string) $order->Комментарий[0]);
 
@@ -212,14 +212,13 @@ class CommerceMLLoader {
                                         $status_id = (new PHPShopOrm($GLOBALS['SysValue']['base']['order_status']))->getOne(['*'], ['external_code' => '="' . PHPShopString::utf8_win1251($status->Значение) . '"']);
                                     }
                                 }
-                                
+
                                 if (!empty($status_id['id'])) {
                                     $order = $PHPShopOrm->getOne(array('*'), array('uid' => '="' . $order_uid . '"'));
                                     if (is_array($order)) {
                                         PHPShopObj::loadClass(["payment", "lang", "order", "file", "parser"]);
                                         $PHPShopLang = new PHPShopLang(array('locale' => $_SESSION['lang'], 'path' => 'shop'));
                                         (new PHPShopOrderFunction((int) $order['id']))->changeStatus((int) $status_id['id'], $order['statusi']);
-                                        //$PHPShopOrm->update(['statusi_new' => $status_id['id']], ['uid' => '="' . (string) $order->Номер[0] . '"']);
                                     }
                                 }
                             }
@@ -716,7 +715,7 @@ class CommerceMLLoader {
                     if (isset($item->Склад)) {
 
                         foreach ($item->Склад as $items) {
-                            $warehouses[(string) $items[ИдСклада]] = (int) $items[КоличествоНаСкладе];
+                            $warehouses[(string) $items['ИдСклада']] = (int) $items['КоличествоНаСкладе'];
                         }
 
                         if (is_array($warehouses)) {
@@ -817,10 +816,9 @@ class CommerceMLLoader {
                     }
 
                     // Артикул для подтипа
-                    if ($parent_enabled == 1) {
-
+                    if ($parent_enabled == 1)
                         $uid = (string) $item->Ид[0];
-                    } else
+                    else
                         $uid = null;
 
                     // Внешние коды цены
@@ -853,6 +851,13 @@ class CommerceMLLoader {
                         $price5 = (string) $item->Цены->Цена[4]->ЦенаЗаЕдиницу[0];
                     }
 
+                    // Форматирование цены 2.04
+                    $price1 = preg_replace('/\D+/', '', $price1);
+                    $price2 = preg_replace('/\D+/', '', $price2);
+                    $price3 = preg_replace('/\D+/', '', $price3);
+                    $price4 = preg_replace('/\D+/', '', $price4);
+                    $price5 = preg_replace('/\D+/', '', $price5);
+
                     $this->product_array[(string) $item->Ид[0]] = array($uid, (string) $item->Наименование[0], null, $image, null, $image_count, $warehouse, $price1, $price2, $price3, $price4, $price5, "", "", (string) $item->Цены->Цена[0]->Валюта[0], null, $parent_name, (string) $item->Ид[0], $parent_enabled);
                 }
 
@@ -871,7 +876,10 @@ class CommerceMLLoader {
                                 $parent = substr($prod['ids'], 0, strlen($prod['ids']) - 1);
                             }
 
-                            $this->product_array[$id] = array($id, null, null, null, null, null, $prod['warehouse'], $prod['price'], "", "", "", "", "", "", "", null, $parent, $id, 0);
+                            // Форматирование цены 2.04
+                            $prod['price'] = preg_replace('/\D+/', '', $prod['price']);
+
+                            $this->product_array[$id] = array(null, null, null, null, null, null, $prod['warehouse'], $prod['price'], "", "", "", "", "", "", "", null, $parent, $id, 0);
                         }
                     }
 
@@ -955,6 +963,7 @@ OUT: ' . $response . '
             }
         }
     }
+
 }
 
 $_classPath = "../phpshop/";

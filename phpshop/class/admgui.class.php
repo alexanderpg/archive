@@ -2029,6 +2029,7 @@ class PHPShopGUI {
                   <th>' . __('Версия') . '</th>
                   <th>' . __('Описание') . '</th>
                   <th>' . __('Доступность') . '</th>
+                  <th>' . __('Окончание работы') . '</th>
                </tr>';
 
 
@@ -2051,39 +2052,20 @@ class PHPShopGUI {
         else
             $tab_multibase = $this->__('Общая');
 
+        if (!empty($db['pay']))
+            $pay = PHPShopDate::get($_SESSION['support']);
+        else
+            $pay = __("без ограничений");
 
         $CODE .= '<tr>
                   <td>' . __($db['name']) . '</td>
                   <td>' . $version_info . '</td>
                   <td>' . __($db['description']) . $mes . '</td>
                   <td>' . $tab_multibase . '</td>
+                  <td>' . $pay . '</td>
                </tr>
                </table>';
 
-        if (!$pay)
-            return $CODE;
-
-        $CODE .= $this->setLine('<br>');
-
-        if ($PHPShopModules->checkKey($serial, $path)) {
-            $CODE .= $this->setField('Серийный номер', $this->setInputText('EEM-', 'serial_new', $serial, $size = 110, ' * Активация выполнена', false, 'serial_done'));
-            $this->TrialOff = false;
-            $PHPShopModules->setKeyBase($path);
-            return $CODE;
-        }
-
-        $status_serial_img = null;
-        $status_serial = null;
-
-        if (!empty($serial)) {
-            $status_serial = 'serial_fail';
-            $status_serial_img = $this->setImage('error.gif', 16, 16, $align = 'absmiddle', 0);
-        }
-
-        $CODE .= $this->setField('Серийный номер', $this->setInputText('EEM-', 'serial_new', $serial, 110, $status_serial_img . ' * Формат серийного  номера: 11111-22222-33333', false, $status_serial));
-
-        if (!$PHPShopModules->checkKey($serial, $path) and ! empty($db['base']))
-            $CODE .= $this->setButton("Купить лицензию " . $db['price'], '../../../admpanel/icon/key.png', 200, false, $float = "none", $onclick = "window.open('http://www.phpshop.ru/order/?bay_mod=" . $db['base'] . "')");
 
         return $CODE;
     }

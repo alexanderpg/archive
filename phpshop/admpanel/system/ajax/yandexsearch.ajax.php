@@ -4,7 +4,7 @@ $_classPath = "../../../";
 include($_classPath . "class/obj.class.php");
 PHPShopObj::loadClass(array("base", "system", "yandexcloud", "orm", "date", "security", "string", "parser", "lang", "admgui"));
 
-$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, false);
+$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini", true, true);
 $PHPShopBase->chekAdmin();
 
 $PHPShopSystem = new PHPShopSystem();

@@ -13,8 +13,6 @@ function actionStart() {
 
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
     $PHPShopOrm->debug = false;
-
-    $data = $PHPShopOrm->select(array('*'), array('export_ozon' => "='1'"), array('order' => 'export_ozon_task_status DESC'), array('limit' => 10000));
     $OzonSeller = new OzonSeller();
 
     // Категория Ozon
@@ -52,6 +50,7 @@ function actionStart() {
                     continue;
                 
                 $data[$products_list['product_id']] = $PHPShopProduct->getArray();
+                $data[$products_list['product_id']]['name'] = PHPShopString::win_utf8($PHPShopProduct->getName());
                 $data[$products_list['product_id']]['status'] = 'imported';
                 $data[$products_list['product_id']]['offer_id'] = $products_list['offer_id'];
                 $data[$products_list['product_id']]['primary_image'] = $PHPShopProduct->getImage();

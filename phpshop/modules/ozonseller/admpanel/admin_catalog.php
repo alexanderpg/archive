@@ -7,7 +7,7 @@ function ozonAddCaptions()
     $memory = $PHPShopInterface->getProductTableFields();
 
     if(isset($memory['catalog.option']['price_ozon'])) {
-        $PHPShopInterface->productTableCaption[] = ["Ozon", "15%", ['view' => (int) $memory['catalog.option']['price_ozon']]];
+        $PHPShopInterface->productTableCaption[] = ["Ozon", "10%", ['view' => (int) $memory['catalog.option']['price_ozon']]];
     }
 }
 

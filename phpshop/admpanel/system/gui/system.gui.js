@@ -2,6 +2,16 @@
 $().ready(function() {
 
     var theme_new = false;
+    
+    // Поиск избражений в Яндекс
+    $('.yandexcloudModal').on('click', function (event) {
+        event.preventDefault();
+        $('#adminModal .modal-title').html(locale.help+' AI');
+        $('#adminModal .glyphicon-fullscreen, #adminModal .glyphicon-eye-open').addClass('hidden');
+        $('#adminModal .product-modal-content').attr('height', $(window).height() - 120);
+        $('#adminModal .product-modal-content').attr('src', './system/ajax/yandexcloud.ajax.php');
+        $('#adminModal').modal('show');
+    });
    
     // Синхрнизация лицензии
     $("body").on('click', "#loadLic", function(event) {

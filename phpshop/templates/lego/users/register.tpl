@@ -1,5 +1,5 @@
 <style>.col-md-12 form[name="user_forma_register"] {margin:0 auto; float:none;}
-.col-md-12 .page-header {text-align:center;}
+    .col-md-12 .page-header {text-align:center;}
 </style>
 <div id="usersError" class="hide">@usersError@</div>
 
@@ -25,10 +25,10 @@
         <label>{Повторите пароль}</label>
         <input type="password" name="password_new2"  class="form-control" required="">
         <span class="glyphicon glyphicon-remove form-control-feedback hide" aria-hidden="true"></span
-<p class="small"><label><input type="checkbox" value="on" name="rule" class="req" checked="checked">  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
-</div>
+        <p class="small"><label><input type="checkbox" value="on" name="rule" class="req" checked="checked" required>  {Я согласен} <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a></label></p>
+    </div>
     <div>
-       @captcha@
+        @captcha@
     </div>
     <p><br></p>
     <p>

@@ -7,7 +7,7 @@ function megamarketAddCaptions()
     $memory = $PHPShopInterface->getProductTableFields();
 
     if(isset($memory['catalog.option']['price_megamarket'])) {
-        $PHPShopInterface->productTableCaption[] = ["Мегамаркет", "15%", ['view' => (int) $memory['catalog.option']['price_megamarket']]];
+        $PHPShopInterface->productTableCaption[] = ["Мега", "10%", ['view' => (int) $memory['catalog.option']['price_megamarket']]];
     }
 }
 

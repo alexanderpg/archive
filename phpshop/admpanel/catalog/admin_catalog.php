@@ -63,13 +63,13 @@ function actionStart() {
         'action' => 'copy-id-select',
         'class' => 'disabled'
     );
-    
+
     $PHPShopInterface->action_select['Отложить выбранные'] = array(
         'name' => 'Отложить выбранные',
         'action' => 'id-select',
         'class' => 'disabled'
     );
-    
+
     $PHPShopInterface->action_select['Убрать из отложенных выбранные'] = array(
         'name' => 'Убрать из отложенных выбранные',
         'action' => 'id-select-delete',
@@ -109,7 +109,23 @@ function actionStart() {
     if ($PHPShopSystem->getSerilizeParam('admoption.fast_view') == 1)
         $PHPShopInterface->action_button['Добавить товар']['action'] = 'addNew';
 
-    $PHPShopInterface->setActionPanel($TitlePage . $catname, array('Поиск', '|', 'Предпросмотр', 'Настройка', 'Редактировать каталог', 'Редактировать выбранные', 'CSV', '|', 'Скопировать ID выбранных', 'Отложить выбранные',  'Убрать из отложенных выбранные', '|', 'Удалить выбранные'), array('Добавить товар'));
+    // Убираем меню если много полей
+    $count_view = 0;
+
+    if (is_array($PHPShopInterface->getProductTableFields()['catalog.option']))
+        foreach ($PHPShopInterface->getProductTableFields()['catalog.option'] as $view)
+            if (!empty($view))
+                $count_view++;
+
+    if ($count_view > 8 and empty($_COOKIE['fullscreen']))
+        $function_del = $function_pre_del = null;
+    else {
+        $function_del = 'Удалить выбранные';
+        $function_pre_del ='|';
+    }
+
+
+    $PHPShopInterface->setActionPanel($TitlePage . $catname, array('Поиск', '|', 'Предпросмотр', 'Настройка', 'Редактировать каталог', 'Редактировать выбранные', 'CSV', '|', 'Скопировать ID выбранных', 'Отложить выбранные', 'Убрать из отложенных выбранные', $function_pre_del, $function_del), array('Добавить товар'));
 
     $PHPShopInterface->setCaption(
             ...getTableCaption()
@@ -157,12 +173,13 @@ function getTableCaption() {
 
     // Убираем меню если много полей
     $count_view = 0;
+
     if (is_array($memory['catalog.option']))
         foreach ($memory['catalog.option'] as $view)
             if (!empty($view))
                 $count_view++;
 
-    if ($count_view > 8)
+    if ($count_view > 8 and empty($_COOKIE['fullscreen']))
         unset($memory['catalog.option']['menu']);
 
     // Режим каталога

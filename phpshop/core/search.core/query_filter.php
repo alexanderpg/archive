@@ -35,7 +35,7 @@ function query_multibase($obj) {
 /**
  * Составление SQL запроса для поиска товара
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopCoreFunction
  * @param obj $obj объект класса
  * @return mixed
@@ -137,11 +137,11 @@ function query_filter($obj) {
         }
 
     // SQL для выборки по id товаров, найденных Яндекс.Поиском. Если нет переадресации поиска.
-    if ($obj->isYandexSearch && empty($prewords)) {
+    if ($obj->isYandexSearch and empty($prewords)) {
         $sql = getYandexSearchSql($obj, $words, $p, $multibase, $cat);
     }
 
-    if ($obj->isYandexSearchCloud && empty($prewords)) {
+    if ($obj->isYandexSearchCloud and empty($prewords) and empty($_REQUEST['ajax'])) {
         $sql = getYandexSearchCloudSql($words, $multibase);
     }
 

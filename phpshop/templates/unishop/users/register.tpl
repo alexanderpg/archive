@@ -35,19 +35,19 @@
                                 <input placeholder="{Повторите пароль}" type="password" name="password_new2"  class="form-control" required="">
                                 <span class="glyphicon glyphicon-remove form-control-feedback hide" aria-hidden="true"></span>
                             </div>
-                            
+
                         </div>
 
-                        
+
                         <div class="form-group">
                             <div class="">
-                               @captcha@
+                                @captcha@
                             </div>
                         </div>
-						<div class="form-group">
+                        <div class="form-group">
                             <div class="col-xs-12">
-                            <input type="checkbox" value="on" name="rule" class="req" checked="checked"> 
-                            {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
+                                <input type="checkbox" value="on" name="rule" class="req" checked="checked" required> 
+                                {Я согласен}  <a href="/page/soglasie_na_obrabotku_personalnyh_dannyh.html">{на обработку моих персональных данных}</a>
                             </div>
                         </div>
                         <div class="form-group">

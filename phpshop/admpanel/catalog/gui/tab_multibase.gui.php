@@ -28,7 +28,7 @@ function tab_multibase($val,$size,$multiple=true) {
                     if ($row['id'] == $v)
                         $sel = "selected";
                 }
-            $value[] = array($row['host'], $row['id'], $sel);
+            $value[] = array(PHPShopString::check_idna($row['host'],true), $row['id'], $sel);
         }
         return  $PHPShopGUI->setSelect($name, $value, $size, true, false, false, false, false,$multiple);
     }
