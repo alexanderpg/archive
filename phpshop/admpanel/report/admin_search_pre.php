@@ -16,7 +16,7 @@ while ($row = mysql_fetch_array($result))
 	$fl="<img src=\"img/icon-deactivate.gif\" width=\"16\" height=\"14\" border=\"0\">";}
 	@$display.="
 	<tr id=\"r".$id."\" class=row>
-    <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\">$fl</td>
+    <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" align=\"center\">$fl</td>
 	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\">
 	$name
 	</td>
@@ -33,9 +33,6 @@ while ($row = mysql_fetch_array($result))
 if($i>20)$razmer="height:600;";
 	$_Return="
 <div id=interfacesWin name=interfacesWin align=\"left\" style=\"width:100%;".@$razmer.";overflow:auto\"> 
-<LINK href=\"./css/contextmenu.css\" type=text/css rel=stylesheet>
-<img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('search_pre');\">
-
 <form name=\"form_flag\">
 <table width=\"100%\"  cellpadding=\"0\" cellspacing=\"0\" style=\"border: 1px;
 	border-style: inset;\">
@@ -43,9 +40,9 @@ if($i>20)$razmer="height:600;";
 	<td valign=\"top\">
 <table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" class=\"sortable\" id=\"sort\">
 <tr>
-    <td width=\"25\" id=pane align=center>&plusmn;</td>
-	<td width=\"54%\" id=pane align=center><span name=txtLang id=txtLang>Запрос</span></td>
-	<td width=\"55%\" id=pane align=center><span name=txtLang id=txtLang>ID товаров</span></td>
+    <td width=\"25\" id=pane align=center><img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('search_pre');\" align=left>&plusmn;</td>
+	<td width=\"40%\" id=pane align=center><span name=txtLang id=txtLang>Запрос</span></td>
+	<td width=\"50%\" id=pane align=center><span name=txtLang id=txtLang>ID товаров</span></td>
     <td width=\"25\" id=pane align=center style=\"padding:1px\"><input type=checkbox value=1 name=DoAll onclick=\"SelectAllBox(this,form_flag)\"></td>
 </tr>
 

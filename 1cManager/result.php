@@ -12,21 +12,23 @@ include("login.php");
 function GetSystems()// вывод настроек
 {
 global $SysValue;
-$sql="select option from ".$SysValue['base']['table_name3'];
+$sql="select admoption from ".$SysValue['base']['table_name3'];
 $result=mysql_query($sql);
-$option = mysql_fetch_array($result);
-return $option;
+$row = mysql_fetch_array($result);
+$option=unserialize($row['admoption']);
+return $option['sklad_status'];
 }
 
 
-$GetSystems=GetSystems();
-$option=unserialize($GetSystems['admoption']);
+$option=GetSystems();
+
 
 class ReadCsv1C{
    var $CsvContent;
    var $ReadCsvRow;
    var $TableName;
-   
+   var $Sklad_status;
+	
    function ReadCsvRow(){
    $this->ReadCsvRow = split("\n",$this->CsvContent);
    array_shift($this->ReadCsvRow);
@@ -143,7 +145,7 @@ if ($fp) {
   $fstat = fstat($fp);
   $CsvContent=fread($fp,$fstat['size']);
   fclose($fp);
-  $ReadCsv = new ReadCsv1C($CsvContent,$SysValue['base']['table_name2'],$option['sklad_status']);
+  $ReadCsv = new ReadCsv1C($CsvContent,$SysValue['base']['table_name2'],$option);
   @$F_done.=$val.";";
   
 

@@ -29,7 +29,7 @@ else
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_interface.js"></script>
 <script>
-DoResize(<? echo $GetSystems['width_icon']?>,630,630);
+DoResize(<? echo $GetSystems['width_icon']?>,630,580);
 </script>
 </head>
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0" onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)">
@@ -108,7 +108,7 @@ DoResize(<? echo $GetSystems['width_icon']?>,630,630);
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>П</u>ривязка к странице</span></LEGEND>
 <div style="padding:10">
 <input type="text" name="dir_new" value="<?=$dir?>" style="width:100%"><br>
-<span name=txtLang id=txtLang>* Пример: page/,news/. Можно указать несколько адресов через запятую.</span>
+<span name=txtLang id=txtLang>* Пример: page/,news/. Можно указать несколько адресов через запятую без пробелов.</span>
 </FIELDSET>
   </td>
 </tr>
@@ -153,6 +153,9 @@ echo '
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('baner')">Справка</BUTTON></BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 	<input type="hidden" name="id" value="<?=$id?>" >
 	<input type="submit" name="editID" value="OK" class=but>

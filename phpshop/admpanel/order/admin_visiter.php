@@ -157,7 +157,6 @@ $_Return=('
 </table>
 </form>
 </div>
-
  '.'
 <div class=cMenu id=cMenuNws> 
 	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
@@ -168,7 +167,6 @@ $_Return=('
 	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews45>Выгрузить в 1С:Предприятие</A></TD></TR>			
 	</TABLE>
 </div>
-
  ');
 return $_Return;
 }

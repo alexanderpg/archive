@@ -1,4 +1,6 @@
 <?
+//print_r($SysValue);
+$shopdir=$SysValue['other']['ShopDir'];
 $limit=4; //Максимум товаров для сравнения
 //////////////Вспомогательные функции
 function getfullname ($id=0) {
@@ -45,7 +47,7 @@ if(is_array($cats))
 foreach ($cats as $catid => $name) {
 	if ((count($goods[$catid])>1) && (count($goods[$catid])<=$limit)) {
 		if ($catid!=$COMCID) {
-		        $as='<img src="images/shop/icon-activate.gif" alt="Убрать товар из сравнения" width="19" height="15" border="0" hspace="0" align="absmiddle"><B style="color:green;">Сравнить в категории:</B> <A href="/compare/COMCID_'.$catid.'.html#list" style="font-weight:bold;" title="Сравнить в '.$name.'">';
+		        $as='<img src="images/shop/icon-activate.gif" alt="Убрать товар из сравнения" width="19" height="15" border="0" hspace="0" align="absmiddle"><B style="color:green;">Сравнить в категории:</B> <A href="'.$shopdir.'/compare/COMCID_'.$catid.'.html#list" style="font-weight:bold;" title="Сравнить в '.$name.'">';
 			$ae='</A>';
 		} else {
 		        $as='<B>СЕЙЧАС СРАВНИВАЕТСЯ: ';
@@ -68,7 +70,7 @@ foreach ($cats as $catid => $name) {
 		<TD id=allspec><FONT style="color:red;">недостаточно товаров, чтобы сравнить <B>(MIN=2)</B>. Добавьте еще товары из этой категории!</FONT></TD></TR>';
 	}
 	foreach ($goods[$catid] as $id => $val) {
-		$dis.='<TR><TD class=sort_table>'.$val['name'].' </TD><TD class=sort_table><A href="/compare/DID_'.$val['id'].'.html" title="Убрать товар из сравнения"><img src="images/shop/icon-deactivate.gif" alt="Убрать товар из сравнения" width="19" height="15" border="0" hspace="0" align="absmiddle">[Убрать товар из сравнения]</A></TD></TR>';
+		$dis.='<TR><TD class=sort_table>'.$val['name'].' </TD><TD class=sort_table><A href="'.$shopdir.'/compare/DID_'.$val['id'].'.html" title="Убрать товар из сравнения"><img src="images/shop/icon-deactivate.gif" alt="Убрать товар из сравнения" width="19" height="15" border="0" hspace="0" align="absmiddle">[Убрать товар из сравнения]</A></TD></TR>';
 	}
 }
 //////Конец Сборка таблицы выбора категорий
@@ -78,7 +80,7 @@ if (count($cats)>1) { //Если больше двух каталогов
 	$name='по ВСЕМ категориям';
 	if ((count($compare)>1) && (count($compare)<=$limit)) {
 		if ($COMCID!="ALL") {
-		        $as='<img src="images/shop/icon-activate.gif" alt="Убрать товар из сравнения" width="19" height="15" border="0" hspace="0" align="absmiddle"><B style="color:green;">Сравнить </B> <A href="/compare/COMCID_ALL.html#list" style="font-weight:bold;" title="Сравнить по ВСЕМ категориям">';
+		        $as='<img src="images/shop/icon-activate.gif" alt="Убрать товар из сравнения" width="19" height="15" border="0" hspace="0" align="absmiddle"><B style="color:green;">Сравнить </B> <A href="'.$shopdir.'/compare/COMCID_ALL.html#list" style="font-weight:bold;" title="Сравнить по ВСЕМ категориям">';
 			$ae='</A>';
 		} else {
 		        $as='СЕЙЧАС СРАВНИВАЕТСЯ:<B> ';
@@ -108,7 +110,7 @@ $disp='
 '.$dis.'
 </TABLE>
 <div style="padding-top: 10px;padding-bottom: 30px" align="center">
-<A href="/compare/DID_ALL.html" title="Удалить все товары из списка"><img src="images/shop/error.gif" alt="Удалить все товары из списка"  border="0" hspace="5" align="absmiddle" >[Удалить все товары из списка]</A></div>
+<A href="'.$shopdir.'/compare/DID_ALL.html" title="Удалить все товары из списка"><img src="images/shop/error.gif" alt="Удалить все товары из списка"  border="0" hspace="5" align="absmiddle" >[Удалить все товары из списка]</A></div>
 ';
 //Вывод управляющего интерфейса
 
@@ -121,7 +123,7 @@ if (!$COMCID) { //Если не указан каталог
 			break;	
 		}
 	} else {
-		$disp='<P>Сравнение выбранных вами товаров невозможно. Удалите или добавьте нужное количество товаров.</P>';
+		@$disp.='<P>Сравнение выбранных вами товаров невозможно. Удалите или добавьте нужное количество товаров.</P>';
 	}
 }
 //Выбор каталога для показа
@@ -131,10 +133,10 @@ if ($SysValue['nav']['nav']=="DID") {
 	$id=$SysValue['nav']['id'];
 	if ($id=="ALL") {
 		session_unregister('compare');
-		echo '<SCRIPT>window.location.replace(\'/compare/\');</SCRIPT>';
+		echo '<SCRIPT>window.location.replace(\''.$shopdir.'/compare/\');</SCRIPT>';
 	} else {
 		unset($compare[$id]);
-		echo '<SCRIPT>window.location.replace(\'/compare/\');</SCRIPT>';
+		echo '<SCRIPT>window.location.replace(\''.$shopdir.'/compare/\');</SCRIPT>';
 	}
 }
 //Конец Обработка Действия пользователей
@@ -224,7 +226,7 @@ $defvaluta=$row['dengi'];
 		$igood++;
 		$TDR[$igood][]='<A href="/shop/UID_'.$val['id'].'.html" title="'.$val['name'].'">'.$val['name'].'</A>';
 		//Выбираем товар из базы
-		$sql='select price,pic_small,vendor_array,content from '.$SysValue['base']['table_name2'].' where id='.$val['id'];
+		$sql='select price,pic_small,vendor_array,content,baseinputvaluta from '.$SysValue['base']['table_name2'].' where id='.$val['id'];
 		$result=mysql_query($sql);
 		@$row = mysql_fetch_array(@$result);
 		if (trim($row['pic_small'])) {$TDR[$igood][]='<IMG SRC="'.$row['pic_small'].'">';} else {$TDR[$igood][]='Изображение отсутствует';}

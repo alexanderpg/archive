@@ -12,7 +12,7 @@ while ($row = mysql_fetch_array($result))
 	$description=$row['description'];
 	@$display.="
 	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row onclick=\"miniWin('sort/adm_sortcategoryID.php?id=$id',500,500)\" title=\"".$description."\">
-	<td class=\"forma\">
+	<td class=\"forma\" style=\"padding-left: 10px\">
 	$name
 	</td>
     </tr>
@@ -89,7 +89,7 @@ if($i>25)$razmer="height:600;";
 	</td>
 	</tr>
 </table>
-<div align=\"right\" style=\"width:50%;padding:10\"><BUTTON style=\"width: 15em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('sort/adm_sort_new.php',500,300)\">
+<div align=\"right\" style=\"width:50%;padding:10\"><BUTTON style=\"width: 15em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('sort/adm_sort_new.php',500,350)\">
 <img src=\"icon/page_add.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\" hspace=\"5\">
 <span name=txtLang id=txtLang>Новая позиция</span>
 </BUTTON></div>

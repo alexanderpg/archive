@@ -141,8 +141,8 @@ $bases=substr($bases,0,strlen($bases)-2);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50">
 <tr>
-    <td style="padding:10">
-	<input type="button" value="Загрузить из файла" onclick="miniWin('adm_sql_file.php','500','430');window.close()" class=but style="width:150" name="btnLang">
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('sql')">Справка</BUTTON></BUTTON>
 	</td>
 	<td align="right" style="padding:10">
 <INPUT class=but onclick="SqlSend()" type=button value=OK> <INPUT class=but type=reset value=Сброс name="btnLang"> 

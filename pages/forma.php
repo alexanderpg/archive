@@ -8,7 +8,7 @@ $SysValue['other']['pageTitle']= "Форма связи";
 if(@$_POST['send'] == 1){
 
 
-  if($_POST['key'] == $_SESSION['text']){
+  if(!empty($_SESSION['text']) and $_POST['key'] == $_SESSION['text']){
 
 $codepage  = "windows-1251";     
 $header_mes  = "MIME-Version: 1.0\n";

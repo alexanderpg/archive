@@ -148,6 +148,7 @@ so.write("flashban");
 	
 	<div id="bg_catalog_1">Сейчас покупают</div>
 	@nowBuy@
+	@newtipMain@
 	
 	
 	@banersDisp@
@@ -201,7 +202,7 @@ so.write("flashban");
 
                
            @oprosDisp@
-		   @cloud@
+		   <p>@cloud@</p>
 		   <div align="center" id="calres" style="padding:10px">
 		   @calendar@ 
 		   </div>

@@ -687,6 +687,17 @@ var str = new String();
 str = "‘ильтры\\n\\n¬ фильтре таблиц указываютс€ специальные шаблоны по которым отбираютс€ таблицы. ¬ шаблонах можно использовать следующие специальные символы:символ Ч означает любое количество символов.\\n\\nсимвол * Ч означает любое количество символов \\nсимвол ? Ч означает один любой символ \\nсимвол ^ Ч означает исключение из списка таблицы или таблиц\\n\\nѕримеры: \\n\\nib_* - все таблицы начинающиес€ с 'ib_' (все таблицы форума invision board) \\nib_*, ^ib_sessions - все таблицы начинающиес€ с 'ib_', кроме 'ib_sessions' \\nib_s*s, ^ib_sessions - все таблицы начинающиес€ с 'ib_s' и заканчивающиес€ буквой 's', кроме 'ib_sessions' \\n^*s - все таблицы, кроме таблиц заканчивающихс€ буквой 's' \\n^ib_???? - все таблицы, кроме таблиц, которые начинаютс€ с 'ib_' и содержат 4 символа после знака подчеркивани€";
 confirm(str);
 }
+
+function helpWinParent(page){
+try{
+window.opener.top.document.getElementById('helppage').value=page;
+window.opener.top.initSlide(0);
+window.opener.top.loadhelp();
+}catch(e){ alert("ѕерейдите в раздел размещени€ формы и вызовите справку.")}
+try{
+window.opener.top.focus();
+}catch(e){}
+}
 </script>
 
 </HEAD>
@@ -717,7 +728,11 @@ confirm(str);
 {$content}
 <TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=2>
 <TR>
-<TD STYLE='color: #CECECE' ID=timer></TD>
+
+<td align="left">
+    <BUTTON class="help" onclick="helpWinParent('dumper')">—правка</BUTTON></BUTTON>
+	</td>
+	<TD STYLE='color: #CECECE' ID=timer width="1"></TD>
 <TD ALIGN=RIGHT>{$buttons}</TD>
 </TR>
 </TABLE></TD>
