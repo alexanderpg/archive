@@ -182,9 +182,6 @@ echo '
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-     <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('news')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
 	<input type="submit" name="editID" value="OK" class=but>
 	<input type="reset" name="btnLang" name="delID" value="Сбросить" class=but>
@@ -197,7 +194,7 @@ echo '
 if(isset($editID) and isset($zag_new))// Запись редактирования
 {
 if(CheckedRules($UserStatus["news"],2) == 1){
-$sql="INSERT INTO $table_name8 VALUES ('','$data_new','$zag_new','".addslashes($EditorContent)."','".addslashes($EditorContent2)."','".date("U")."')";
+$sql="INSERT INTO $table_name8 VALUES ('','$data_new','$zag_new','".addslashes($EditorContent)."','".addslashes($EditorContent2)."')";
 $result=mysql_query($sql)or @die("Невозможно изменить запись");
 echo"
 	  <script>

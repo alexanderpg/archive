@@ -24,7 +24,7 @@ while(@$row = mysql_fetch_array(@$result))
 	$user_id=$row['user_id'];
     $product_id=$row['product_id'];
 	$enabled=$row['enabled'];
-    $LoadItems['Product'][$product_id]=ReturnProductData($product_id,2);
+    $LoadItems['Product'][$product_id]=ReturnProductData($product_id);
 	
 	
 	if($enabled == 0)
@@ -59,7 +59,7 @@ while(@$row = mysql_fetch_array(@$result))
 }
 $disp='
 <DIV id=allspec><IMG height=16 alt="" hspace=5 src="images/shop/date.gif" width=16 align=absMiddle border=0><B>Текущие заявки</B> </DIV>
-<table  id=allspecwhite cellpadding=3>
+<table width="100%" id=allspecwhite cellpadding=3>
 <tr>
 	<td id=allspec>
 	<b>Наименование</b>
@@ -75,7 +75,7 @@ $disp='
 </table>
 
 <DIV id=allspec><IMG height=16 alt="" hspace=5 src="images/shop/date.gif" width=16 align=absMiddle border=0><B>Архив выполненых заявок</B> </DIV>
-<table  id=allspecwhite cellpadding=3>
+<table width="100%" id=allspecwhite cellpadding=3>
 <tr>
 	<td id=allspec>
 	<b>Наименование</b>
@@ -114,7 +114,7 @@ $row = mysql_fetch_array($result);
 	  $inn=$row['inn'];
 	  $tel=$row['tel'];
 	  $adres=$row['adres'];
-	  $LoadItems['Product'][$productId]=ReturnProductData($productId,2);
+	  $LoadItems['Product'][$productId]=ReturnProductData($productId);
 	  
 // Шлем мыло менеджеру
 if(@$_POST['notice']){
@@ -190,7 +190,7 @@ $disp='
 <img src="images/shop/icon_info.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Уведомить при появлении товара в продаже</b> 
 </div>
 <p>
-<table>
+<table width="100%">
 <tr>
    <td>
    <div align="center" style="padding:10px"><table>

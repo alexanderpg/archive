@@ -4,16 +4,10 @@ require("../connect.php");
 mysql_select_db("$dbase")or @die("Невозможно подсоединиться к базе");
 require("../enter_to_admin.php");
 
-$GetSystems=GetSystems();
-$option=unserialize($GetSystems['admoption']);
-
-
 class ReadCsv {
    var $CsvContent;
    var $ReadCsvRow;
    var $TableName;
-   var $Sklad_status;
-   
    
    function ReadCsvRow(){
    $this->ReadCsvRow = split("\n",$this->CsvContent);
@@ -36,10 +30,9 @@ class ReadCsv {
    }
    
    
-   function ReadCsv($CsvContent,$table_name2,$sklad_status){
+   function ReadCsv($CsvContent,$table_name2){
    $this->CsvContent = $CsvContent;
    $this->TableName = $table_name2;
-   $this->Sklad_status = $sklad_status;
    $this->ReadCsvRow();
    }
    
@@ -86,87 +79,28 @@ class ReadCsv {
    
    
    function UpdateBase($CsvToArray){
-
    
+     // Наличие товара
+   if($CsvToArray[10]>0) $enabled=1;
+     else $enabled=0;
    
-
-$Default=0; // Флаг, не трогаем наличие
-// Склад
-switch($this->Sklad_status){
-  
-       case(3):
-	   if($CsvToArray[10]<1) {
-	      $sklad=1;
-		  $enabled=1;
-		  }
-	     else {
-		 $sklad=0;
-		 $enabled=1;
-		 }
-	   break;
-	   
-	   case(2):
-	   if($CsvToArray[10]<1) {
-	     $enabled=0;
-		 $sklad=0;
-		 }
-	     else {
-		 $enabled=1;
-		 $sklad=0;
-		 }
-	   break;
-	   
-	   default: 
-	   $Default=1; // Флаг, не трогаем наличие
-	   break;
-  }
    
 $sql="UPDATE ".$this->TableName."
-SET";
-
-if(!empty($CsvToArray[2]))
-$sql.="name='".trim($CsvToArray[2])."',";
-
-if(!empty($CsvToArray[1]))
-$sql.="uid='".trim($CsvToArray[1])."',";
-
-if(!empty($CsvToArray[3]))
-$sql.="price='".trim($CsvToArray[3])."',";
-
-if(!empty($CsvToArray[10]) and $Default==0)
-$sql.="sklad='".$sklad."',";
-
-if(!empty($CsvToArray[4]))
-$sql.="price2='".trim($CsvToArray[4])."',";
-
-if(!empty($CsvToArray[5]))
-$sql.="price3='".trim($CsvToArray[5])."',";
-
-if(!empty($CsvToArray[6]))
-$sql.="price4='".trim($CsvToArray[6])."',";
-
-if(!empty($CsvToArray[7]))
-$sql.="price5='".trim($CsvToArray[7])."',";
-
-if(!empty($CsvToArray[8]))
-$sql.="newtip='".trim($CsvToArray[8])."',";
-
-if(!empty($CsvToArray[9]))
-$sql.="spec='".trim($CsvToArray[9])."',";
-
-if(!empty($CsvToArray[10]))
-$sql.="items='".trim($CsvToArray[10])."',";
-
-if(!empty($CsvToArray[11]))
-$sql.="weight='".trim($CsvToArray[11])."',";
-
-if(!empty($CsvToArray[12]))
-$sql.="num='".trim($CsvToArray[13])."',";
-
-if(!empty($CsvToArray[10]) and $Default==0)
-$sql.="enabled='".$enabled."'";
-
-$sql.="where id='".$CsvToArray[0]."'";
+SET
+name='".trim($CsvToArray[2])."',
+uid='".trim($CsvToArray[1])."',
+price='".$CsvToArray[3]."',
+price2='".$CsvToArray[4]."',
+price3='".$CsvToArray[5]."',
+price4='".$CsvToArray[6]."',
+price5='".$CsvToArray[7]."',
+newtip='".$CsvToArray[8]."',
+spec='".$CsvToArray[9]."',
+items='".$CsvToArray[10]."',
+weight='".$CsvToArray[11]."',
+num='".$CsvToArray[12]."',
+enabled='".$enabled."' 
+where id='".$CsvToArray[0]."'";
    $result=mysql_query($sql);
    }
 
@@ -239,7 +173,7 @@ if ($fp) {
   $CsvContent=fread($fp,$fstat['size']);
   fclose($fp);
 
-  $ReadCsv = new ReadCsv($CsvContent,$table_name2,$option['sklad_status']);
+  $ReadCsv = new ReadCsv($CsvContent,$table_name2);
   
 $interface.='
 <div id=interfacesWin name=interfacesWin align="left" style="width:100%;height:580;overflow:auto"> 
@@ -250,7 +184,7 @@ $interface.='
 <tr>
     <td id="pane" width="50">№</td>
 	<td id="pane">ID</td>
-	<td id="pane">Art#</td>
+	<td id="pane"><span name=txtLangs id=txtLangs>Арт.</span></td>
 	<td id="pane"><span name=txtLangs id=txtLangs>Наименование</span></td>
 	<td id="pane"><span name=txtLangs id=txtLangs>Цена 1</span></td>
 	<td id="pane"><span name=txtLangs id=txtLangs>Цена 2</span></td>
@@ -289,7 +223,7 @@ if ($fp) {
   $fstat = fstat($fp);
   $CsvContent=fread($fp,$fstat['size']);
   fclose($fp);
-$ReadCsv = new ReadCsv($CsvContent,$table_name2,$option['sklad_status']);
+$ReadCsv = new ReadCsv($CsvContent,$table_name2);
 $Done2 = $ReadCsv->DoUpdatebase2();
 
 @$interface.='
@@ -300,8 +234,9 @@ $Done2 = $ReadCsv->DoUpdatebase2();
 <div align="center"><h4><span name=txtLang2 id=txtLang2>Загрузка прайса выполнена</span>!</h4></div>
 <FIELDSET id=fldLayout style="width: 60em; height: 8em;">
 
-<FORM name=csv_upload action="" method=post encType=multipart/form-data>
+
 <table cellpadding="10" align="center">
+<FORM name=csv_upload action="" method=post encType=multipart/form-data>
 <tr>
 	<td>
 	<span name=txtLang2 id=txtLang2>Выберите файл с разширением</span> *.csv<br>

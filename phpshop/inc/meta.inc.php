@@ -10,44 +10,50 @@
 function ReturnCIDmeta2($n,$flag,$tip){
 global $LoadItems;
 
-$cat=$LoadItems['Catalog'][$n]['parent_to'];
-
-if($cat != 0){
 if($tip == 0) $Shablon=$LoadItems['System'][$flag.'_shablon'];
 elseif($tip == 1) $Shablon=ReturnData("","where id=".$n,$flag);
 elseif($tip == 2) $Shablon=ReturnData("","where id=".$n,$flag.'_shablon');
-}else {
-       if($tip == 0) $Shablon=$LoadItems['System'][$flag.'_shablon3'];
-       elseif($tip == 1) $Shablon=ReturnData("","where id=".$n,$flag);
-       elseif($tip == 2) $Shablon=ReturnData("","where id=".$n,$flag.'_shablon3');
-       }
 
 if($tip !=1){
-
-
-if($cat != 0){
+$cat=$LoadItems['Catalog'][$n]['parent_to'];
 $Catalog=$LoadItems['Catalog'][$cat]['name'];
 $Podcatalog=$LoadItems['Catalog'][$n]['name'];
 $Title=$LoadItems['System'][$flag];
 
-
 $Shablon=str_replace("@Catalog@", $Catalog, $Shablon);
 $Shablon=str_replace("@Podcatalog@", $Podcatalog, $Shablon);
 $Shablon=str_replace("@System@", $Title, $Shablon);
-}
- else {
-      $Catalog=$LoadItems['Catalog'][$n]['name'];
-      $Title=$LoadItems['System'][$flag];
-      $Shablon=str_replace("@Catalog@", $Catalog, $Shablon);
-      $Shablon=str_replace("@Podcatalog@", $Podcatalog, $Shablon);
-      $Shablon=str_replace("@System@", $Title, $Shablon);
- }
 
 if($flag == "keywords"){
 $Generator=GetProductContent("","where id=".$n,"content");
 $Shablon=str_replace("@Generator@", $Generator, $Shablon);}
 }
 
+return $Shablon;
+}
+
+
+// генерация тегов для каталога
+function ReturnCIDImeta($n,$flag,$tip){
+global $LoadItems;
+
+if($tip == 0) $Shablon=$LoadItems['System'][$flag.'_shablon3'];
+elseif($tip == 1) $Shablon=ReturnData("","where id=".$n,$flag);
+elseif($tip == 2) $Shablon=ReturnData("","where id=".$n,$flag.'_shablon');
+//exit($Shablon);
+
+
+if($tip !=1){
+$Catalog=$LoadItems['Catalog'][$n]['name'];
+$Title=$LoadItems['System'][$flag];
+
+$Shablon=str_replace("@Catalog@", $Catalog, $Shablon);
+$Shablon=str_replace("@System@", $Title, $Shablon);
+
+if($flag == "keywords"){
+$Generator=GetProductContent("","where id=".$n,"content");
+$Shablon=str_replace("@Generator@", $Generator, $Shablon);}
+}
 return $Shablon;
 }
 
@@ -113,6 +119,15 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
 	   $keywords=ReturnCIDmeta2($SysValue['nav']['id'],"keywords",$keywords_enabled);
 	   $metas=ReturnCIDmeta2($SysValue['nav']['id'],"descrip",$descrip_enabled);
 	  }
+	  /*
+	  if($SysValue['nav']['nav']=="CIDI"){
+$title_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['title_enabled'];
+$descrip_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['descrip_enabled'];
+$keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enabled'];
+	   $title=ReturnCIDImeta($SysValue['nav']['id'],"title",$title_enabled);
+	   $keywords=ReturnCIDImeta($SysValue['nav']['id'],"keywords",$keywords_enabled);
+	   $metas=ReturnCIDImeta($SysValue['nav']['id'],"descrip",$descrip_enabled);
+	  }*/
 	  if($SysValue['nav']['nav']=="UID") {
 	$title_enabled=$LoadItems['Product'][$SysValue['nav']['id']]['title_enabled'];
 	$descrip_enabled=$LoadItems['Product'][$SysValue['nav']['id']]['descrip_enabled'];
@@ -133,14 +148,6 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
 	 }
 	 break;
 	 
-	 
-	 case("gbook"):
-	 $title="Отзывы - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
-	 $metas="Отзывы ".$LoadItems['System']['descrip'];
-     $keywords=$LoadItems['System']['keywords'];
-	 break;
-	 
-	 
 	 case("news"):
 	 if($SysValue['nav']['nav']=="ID"){
 	 $nameSTR=Vivod_page_meta(8,"where id='".$SysValue['nav']['id']."'","zag","kratko");
@@ -149,34 +156,28 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
 	 $keywords=GetProductContent("8","where id='".$SysValue['nav']['id']."'","podrob");
 	 }
 	 else{
-     $title="Новости - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
-	 $metas="Новости - ".$LoadItems['System']['descrip']." ".$LoadItems['System']['name'];
-	 $keywords=" Новости ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
+	 $nameSTR=Vivod_page_meta(8,"where id='".$SysValue['nav']['id']."'","zag","kratko");
+     $title=$nameSTR[0]."Новости - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $metas=$nameSTR[0]."Новости - ".$LoadItems['System']['descrip']." ".$LoadItems['System']['name'];
+	 $keywords=$nameSTR[0]." Новости ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
      }
 	 break;
 
+	 case("gbook"):
+	 $nameSTR=Vivod_page_meta(7,"where otvet!='' order by id desc LIMIT 0, 5","tema","otsiv");
+	 $title=$nameSTR[0]." Вопросы и ответы - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $metas=$nameSTR[0]." Вопросы и ответы ".$LoadItems['System']['descrip'];
+     $keywords=$LoadItems['System']['keywords'];
+	 break;
 	 
 	 case("search"):
-	 $title="Поиск по сайту - ".$LoadItems['System']['name'];
+	 $title="Поиск по сайту - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
      $metas="Поиск по сайту - ".$LoadItems['System']['descrip'];
 	 $keywords="Поиск по сайту ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
      break;
 	 
-	 case("pricemail"):
-	 $title="Пожаловаться на цену - ".$LoadItems['System']['name'];
-     $metas="Пожаловаться на цену - ".$LoadItems['System']['descrip'];
-	 $keywords="Пожаловаться на цену ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
-     break;
-	 
-	 
-	  case("forma"):
-	 $title="Форма связи - ".$LoadItems['System']['name'];
-     $metas="Форма связи - ".$LoadItems['System']['descrip'];
-	 $keywords="Форма связи ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
-     break;
-	 
 	 case("price"):
-	 $title="Прайс-лист - ".$LoadItems['System']['name'];
+	 $title="Прайс-лист - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
      $metas="Прайс-лист - ".$LoadItems['System']['descrip'];
 	 $keywords=$LoadItems['System']['keywords'];
      break;
@@ -194,19 +195,19 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
      break;
 	 
 	 case("clients"):
-	 $title="On-line проверка состояния заказа - ".$LoadItems['System']['name'];
+	 $title="On-line проверка состояния заказа - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
 	 $metas="On-line проверка состояния заказа - ".$LoadItems['System']['descrip'];
 	 $keywords="On-line проверка состояния заказа, ".$LoadItems['System']['keywords'];
      break;
 	 
 	  case("users"):
-	 $title="Личный кабинет - ".$LoadItems['System']['name'];
+	 $title="Личный кабинет - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
 	 $metas="Личный кабинет - ".$LoadItems['System']['descrip'];
 	 $keywords="On-line проверка состояния заказа, ".$LoadItems['System']['keywords'];
      break;
 	 
 	 case("opros"):
-	 $title="Опросы - ".$LoadItems['System']['name'];
+	 $title="Опросы - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
 	 $metas="Опросы - ".$LoadItems['System']['descrip'];
 	 $keywords="Опросы, ".$LoadItems['System']['keywords'];
      break;

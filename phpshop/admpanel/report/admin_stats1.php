@@ -204,13 +204,11 @@ return'
 	<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>с даты</span></td>
-	<td></td>
 	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>по дату</span></td>
 	<td></td>
 </tr>
 <tr>
-	<td><input type="text" style="width:80" name="pole1" value="'.date("d-m-Y").'"></td>
-	<td>
+	<td><input type="text" style="width:80" name="pole1">
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="'.date("d-m-Y").'" name="pole2">
@@ -245,13 +243,11 @@ return'
 	<table>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>с даты</span></td>
-	<td></td>
 	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>по дату</span></td>
 	<td></td>
 </tr>
 <tr>
-	<td><input type="text" style="width:80" name="pole1" value="'.date("d-m-Y").'">
-	</td><td>
+	<td><input type="text" style="width:80" name="pole1">
 	<IMG onclick="popUpCalendar(this, calendar2.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="'.date("d-m-Y").'" name="pole2">
@@ -267,6 +263,8 @@ return'
 
 </table>
 </form>
+</FIELDSET>
+</div>
 ';
 
 }

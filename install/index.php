@@ -1,6 +1,22 @@
 <?
 error_reporting(0);
+
+// Парсируем установочный файл
 $SysValue=parse_ini_file("../phpshop/inc/config.ini",1);
+
+// Выбор файла
+function GetFile(){
+$dir="./";
+    if ($dh = opendir($dir)) {
+        while (($file = readdir($dh)) !== false) {
+		$fstat = explode(".",$file);
+		if($fstat[1] == "sql")
+		  return $file;
+        }
+        closedir($dh);
+    }
+return "base.sql";
+}
 
 // Глобалсы
 if(ini_get('register_globals') == 1) $register_globals="............<img src=\"rewritemodtest/icon-activate.gif\" border=0 align=absmiddle> <b class='ok'>Ok</b>";
@@ -61,101 +77,9 @@ if($GD['FreeType Linkage'] == "with freetype")
 
 <html>
 <head>
-    <title>Установка <?= $SysValue['license']['product_name']." (сборка ". $SysValue['upload']['version'].")"?></title>
-	<META http-equiv="Content-Type" content="text-html; charset=windows-1251">
+	<title><?= $SysValue['license']['product_name']?> - > Установка</title>
+<META http-equiv=Content-Type content="text-html; charset=windows-1251">
 <style>
-body, pre, html, td
-{
-   font-family: Tahoma;
-   height:100%;
-   margin:10px;
-   padding:0px;
-   font-size: 12px; 
-background-color: #FFFFFF;
-}
-
-a{
-color: #013784;
-}
-
-a:hover{
-text-decoration: none;
-}
-
-
-.title{
-background-image: url(rewritemodtest/logo.jpg);
-background-repeat: no-repeat;
-font-size: 12px;
-color: #FFFFFF;
-height: 60px;
-background-color: #2162A4;
-display: block;
-}
-
-.footer{
-background-image: url(rewritemodtest/logo.jpg);
-background-repeat: no-repeat;
-font-size: 12px;
-color: #FFFFFF;
-background-color: #2162A4;
-padding: 10px;
-}
-
-.menu{
-background-color: #F89A29;
-color: white;
-padding:3px;
-clear:both;
-}
-
-.menu a{
-color: white;
-}
-
-.title h1{
-font-size: 20px; 
-margin: 0px;
-}
-
-
-
-h2{
-background: #2162A4;
-color: ffffff; 
-font-weight: bold; 
-font-size: 120%; 
-padding: 3px 20px; 
-margin-bottom: 10px;
-border-bottom: 1px solid black; 
-letter-spacing: 2px;
-}
-
-.v{
-font-size: 30px; 
-font-weight: bold;
-}
-
-li{
-	text-decoration: none;
-	list-style: square;
-}
-pre p, p.pre{
-	background: #F5F5F5;
-	border-left-width: 1px;
-	border-left-color: #000000;
-	border-left-style: dashed;
-	padding: 10px;
-	font-size: 12px;
-}
-
-.info{
-	border-width: 1px;
-	background: #F5F5F5;
-	border-color: #660033;
-	border-style: dashed;
-	padding: 10px;
-}
 .ok{
 color: green;
 font-weight: bold;
@@ -164,6 +88,31 @@ font-weight: bold;
 color: red;
 font-weight: bold;
 }
+BODY, li, a {
+	FONT-SIZE: 12px;
+	COLOR: #000000;
+	FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif;
+}
+pre.{
+	COLOR: #000000;
+}
+td.{
+	COLOR: #000000;
+}
+a{
+	COLOR: #0066cc;
+}
+a:hover{
+	COLOR: CC6600;
+}
+textarea{
+	border-style: dashed;
+	border-color: Gray;
+	border-width: 1px;
+ }
+li.red{
+ color: red;
+}
 </style>
 <script>
 function miniWin(url,w,h)
@@ -171,35 +120,29 @@ function miniWin(url,w,h)
 window.open(url,"_blank","left=300,top=100,width="+w+",height="+h+",location=0,menubar=0,resizable=1,scrollbars=0,status=0,titlebar=0,toolbar=0");
 }
 </script>
+</head>
 <body>
-<div class="title">
-<div style="float:left;padding: 10px;padding-left: 15px" >
-PHPShop&copy; Software -  PHPShop&copy; Enterprise
-<h1>Установка PHPShop Software</h1>
-</div><div style="float:right;padding: 10px; padding-right: 15px" >версия&nbsp;&nbsp;&nbsp;<span class="v" >3.0</span></div>
-</div>
-
-<div align="right" class="menu">
-<a href="http://www.phpshop.ru/" target="_blank" title="Разработчик">Домой</a> | <a href="http://help.phpshop.ru/" target="_blank" title="Техническая поддержка">Техническая поддержка</a> | <a href="http://www.phpshop.ru/help/" target="_blank" title="Учебник">Учебные материалы</a> | <a href="#" onclick="window.print();return false;" title="Печать">Печать страницы</a>
-</div><div style="clear: both"></div>
-
-<table>
+<h1><?= $SysValue['license']['product_name']?></h1>
+<table width="100%">
 <tr>
-	<td><img src="rewritemodtest/box.gif" alt="PHPShop SoftWare Box" width="120" height="143" border="0" align="left" hspace="10"></td>
-	<td>
-	<p><strong>Установщик PHPShop SoftWare приветсвует Вас</strong>.<br>
-	На этой странице вы найдет всю необходимую информацию, которая поможет вам установить и настроить Интернет-магазин на своем сайте.</p> 
-	Ниже приведена инструкция для ручной установки PHPShop Software на виртуальный сервер <a href="http://www.phpshop.ru/help/Content/install/denwer_zend_optimizer.html" target="_blank">Denwer</a> или на хостинг провайдера.<br>
-Для <strong>упрощенной установки скрипта</strong>  следует воспользоваться готовой программой <a href="http://www.phpshop.ru/help/Content/install/phpshop_server.html" target="_blank">PHPShop Installer</a> из оболочки Windows (для начинающих пользователей).<br> 
-Для упрощенной установки скрипта на Unix-сервер через SSH следует воспользоваться <a href="http://www.phpshop.ru/help/Content/install/phpshop_unix.html">PHPShop Unix Installer</a> (для опытных пользователей).
+    <td width="150" bgcolor="D4E3F7" valign="top" style="padding:10">
+	<b style="color:#1054AF">Оглавление</b><br><br>
+<FONT face=wingdings>1</FONT> <a href="#id1">Требования</a><br>
+<FONT face=wingdings>1</FONT> <a href="#id2">Установка Denwer</a><br>
+<FONT face=wingdings>1</FONT> <a href="#id3">Установка</a><br>
+<FONT face=wingdings>1</FONT> <a href="#id4">Лицензия</a><br>
+<FONT face=wingdings>1</FONT> <a href="#error">Коды ошибок</a><br>
+<FONT face=wingdings>1</FONT> <a href="#id5">Шаблонизатор</a><br>
+<FONT face=wingdings>1</FONT> <a href="#id7">Переменные</a><br>
+<FONT face=wingdings>1</FONT> <a href="#id8">API</a><br>
+<FONT face=wingdings>1</FONT> <a href="#id9">Благодарности</a><br>
+
 	</td>
-</tr>
-</table>
-
-
-
-<h2>Системные требования</h2>
+	<td width="10"></td>
+	<td bgcolor="ffffff">
 <p>
+<a name="id1"></a>
+<h4>1. Тест системных требований</h4>
 <ol>
 <li> Apache => 1.3.*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?=$API?>
 <li> MySQL => 4.* <?=$mysql?>
@@ -210,201 +153,123 @@ PHPShop&copy; Software -  PHPShop&copy; Enterprise
 <li>GD Support для PHP <?=$gd_support?>
 <li>FreeType Support для PHP <?=$gd_freetype_support?>
 <li>FreeType Linkage для PHP <?=$gd_freetype_linkage?>
-<p>* => означет, что версия приложения больше или равно указанного параметра.<br>
+</p>
 Расшифровка: <img src="rewritemodtest/icon-activate.gif" border=0 align=absmiddle> <b class='ok'>Ok</b> - тест пройден, 
-<img src="rewritemodtest/errormessage.gif"  border=0 align=absmiddle> <b class='error'>Error</b> - тест не пройден (возможны проблемы при работе скрипта, обратитесь к документации сервера или свяжитесь с администратором сервера)
-
-<p><img src="rewritemodtest/php.png" border=0 align=absmiddle> <a href="rewritemodtest/rewritemodtest.php" target="_blank">Показать информацию о сервере</a><br>
-<img src="rewritemodtest/icon-activate.gif" border=0 align=absmiddle><a href="http://www.phpshop.ru/docs/hosting.html" target="_blank">Список протестированных хостингов </a></p>
-
-</p>
-</p>
+<img src="rewritemodtest/errormessage.gif"  border=0 align=absmiddle> <b class='error'>Error</b> - тест не пройден (возможны проблемы при работе скрипта, обратитесь к документации сервера или свяжитесь с администратором сервера)<br>
+<img src="rewritemodtest/php.png" border=0 align=absmiddle> <a href="rewritemodtest/rewritemodtest.php" target="_blank">Показать информацию о PHP</a>
 </ol>
 
-
-</p>
-
-<h2>Установка скрипта в ручном режиме</h2>
+<p>
+<a name="id2"></a>
+<h4>2. Установки на локальный сервер Denwer</h4> 
 <ol>
-<p>Если вы не хотите или по каким-то причинам не можете воспользоваться <strong>готовой программой для установки</strong> <a href="http://www.phpshop.ru/help/Content/install/phpshop_server.html" target="_blank">PHPShop Installer</a> на свой FTP - сервер  из оболочки Windows, то приведенная ниже информация поможет вам выполнить установку в ручном режиме (для опытных пользователей).</p>
-<li>Подключиться к своему серверу через FTP-клиент (CuteFTP, Total Commander и др.)
-<li>Загрузить распакованный архив в <strong>бинарном/двоичном режиме</strong> (задается в настройках FTP клиента)</a>
-<li>Создайте новую базу MySQL на своем сервере или узнайте пароли доступа к уже созданной базе у хост-провайдера.
+<li>Установить <a href="http://www.phpshop.ru/loads/ThLHDegJUj/Denwer.exe" target="_blank">
+Denwer 
+</a>- набор дистрибутивов, используемый Web-разработчиками (программистами и дизайнерами) для отладки сайтов на «домашней» (локальной) Windows-машине без необходимости выхода в Интернет.
+<li>Установить <a href="http://www.phpshop.ru/loads/ThLHDegJUj/ZendOptimizer-2.6.2-Windows-i386.exe" target="_blank">ZendOptimizer</a> в тот же каталог, где размещается Denwer (<a href="http://www.phpshop.ru/gbook/ID_70.html" target="_blank">возможные проблемы</a>)
+<li>Установить PHPShop в любую директорию на сервере, например в demo.ru. (в некоторых случая нужна дополнительная директория demo.ru/www/)
+<li>Запустить web-сервер, воспользовавшись ярлыком "Run Server" в меню "Программы" 
+</ol>
+</p>
+<p>
+<a name="id3"></a>
+<h4>3. Установка и обновление для всех серверов</h4>
+<ol>
+<li>Создайте новую базу MySQL на своем сервере.
 <li>
 
-Отредактируйте файл связи с базой MySQL "<strong>config.ini</strong>", лежащий в папке "ваш_сайт/phpshop/inc/config.ini". Изменить данные в кавычках " " на свои данные.
-
-<p class=pre>
-[connect]<br>
-host="localhost";             # имя хоста<br>
-user_db="user";         # имя пользователя<br>
-pass_db="mypas";            # пароль базы<br>
-dbase="mybase";           # имя базы</p>
-
+Отредактируйте файл связи с базой MySQL "config.ini", лежащий в папке "ваш_сайт/phpshop/inc/config.ini".
+<pre>
+[connect]
+host="localhost";             # имя вашего хоста
+user_db="Enterprise";         # имя вашего пользователя
+pass_db="dennion";            # пароль вашей базы
+dbase="Enterprise";           # имя вашей базы
+</pre>
 </li>
 <li>
-Воспользуйтесь встроенным PHP <a href="javascript:miniWin('install.php',600,570)">инсталлятором</a> (имя_сайта/install/install.php) для установки базы.<br>
-Внимание, инсталлятор запускать необходимо, в противном случае не будет создан образ БД. <br><br>
+<a name="id3_2"></a>
+Воспользуйтесь встроенным <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="javascript:miniWin('install.php',550,570)">инсталлятором</a> для установки базы или загрузите образ базы <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="<?=GetFile()?>"><?=GetFile()?></a> через интерфейс <b>phpMyAdmin</b> (ставится отдельно).<br><br>
 </li>
-<li>В целях безопасности удалите папку /install
-<li>Установите опцию CMOD 777 (UNIX сервера) для папок:
-<br><br>
-<ol>
-<li>license
-<li>UserFiles/Image
-<li>UserFiles/File
-<li>phpshop/admpanel/csv
-<li>files/price 
-<li>phpshop/admpanel/dumper/backup 
-<li>payment/paymentlog.log
-<li>backup/backups
-<li>backup/cache
-<li>backup/temp
-<li>backup/upd_log.txt
-<li>backup/upd_log_backup.txt
-</ol>
-<br><br>
-<li>Для входа в <b>административную панель</b> нажмите комбинацию клавиш Ctrl + F12 или по ссылке: имя_сайта/phpshop/admpanel/<br> 
-Пользователь и пароль задается при установке скрипта.<br>
-При установке пользователь и пароль задается в ручном режиме. По желанию, регистрационные данные отсылаются на e-mail. После смены пароля требуется перезапуск браузера.<br><br>
-
-<li>Реализована возможность <strong>размещение 2-х и более независимых интернет-магазинов</strong> в любых директориях домена. Данная особенность позволяет создавать многоязычные проекты и гиппермаркеты,&nbsp;используя одну <A href="../index.html">лицензию</A>.<BR><BR>Для задания папки размещения требуется выполнить всего несколько шагов:<BR><BR>
-
-<ol>
-<li>Копируем скрипт в любую директорию, например /market/<br>
-Внимание, использование зарегистрированных ссылок с именами shop, news, gbook, spec, users -  <strong>запрещено.</strong>
-<li>Библиотеку /market/phpshop/lib/ копируем в корень /phpshop/lib/
-<li>В файле конфигурации /market/phpshop/inc/config.ini указываем имя директории, куда установлен скрипт
-<p class=pre>[dir]
-dir="/market";
-</p>
-<li>В файле java/java2.js указываем имя директории, куда установлен скрипт
-<p class=pre>var ROOT_PATH="/market";</p>
-
-
-<li>Скрипт запуcкается и работает независимо от остальных&nbsp;из папки /market/<br><br>
-</ol>
-<li>Таким образом, можно установить неограниченное кол-во интернет-магазинов на одном домене. Лицензионное соглашение <a href="../index.html">накладывает ограничение</a> на количество установленных магазинов на единую лицензию для технической поддержки.<br><br>
-Поддерживается возможность установки нескольких магазинов в единую базу, для этого служит опция <strong>префикс</strong> в названиях таблиц:
-<p>
-<ul>
-<li>phpshop_&nbsp;&nbsp; - 1 магазин
-<li>phpshop2_ - 2
-<li>phpshop3_ - 3 и т.д.
-</ul></p>
-Тип префикса задается в файле config.ini 
-<p class=pre>[base]<br>
-table_name="<strong>phpshop_</strong>categories"; <br>
-table_name1="phpshop_orders";   <br>
-table_name2="phpshop_products";   <br>
-table_name3="phpshop_system";    <br>
-table_name5="phpshop_opros";        <br>
-table_name6="phpshop_opros_categories";<br>
-table_name7="phpshop_gbook";        <br>
-table_name8="phpshop_news";      <br>
-table_name9="phpshop_1c_docs";       <br>
-table_name10="phpshop_jurnal";     <br>
-table_name11="phpshop_page";       <br>
-table_name14="phpshop_menu";      <br>
-table_name15="phpshop_baners";     <br>
-table_name16="phpshop_cache";      <br>
-table_name17="phpshop_links";      <br>
-table_name18="phpshop_search_jurnal";<br>
-table_name19="phpshop_users";      <br>
-table_name20="phpshop_sort_categories";<br>
-table_name21="phpshop_sort";     <br>
-table_name22="phpshop_black_list";  <br>
-table_name23="phpshop_discount";    <br>
-table_name24="phpshop_valuta";      <br>
-table_name26="phpshop_search_base"; <br>
-table_name27="phpshop_shopusers";   <br>
-table_name28="phpshop_shopusers_status";<br>
-table_name29="phpshop_page_categories";<br>
-table_name30="phpshop_delivery";  <br>
-table_name31="phpshop_servers";   <br>
-table_name32="phpshop_order_status";   <br>
-table_name33="phpshop_payment";   <br>
-table_name34="phpshop_notice"; <br>
-table_name35="phpshop_foto";<br>
-table_name36="phpshop_comment";<br>
-table_name37="phpshop_messages";<br>
-table_name38="phpshop_rssgraber";<br>
-table_name39="phpshop_rssgraber_jurnal";<br>
-table_name50="phpshop_rating_categories";<br>
-table_name51="phpshop_rating_charact";<br>
-table_name52="phpshop_rating_votes";<br>
-</p>
-</ol>
-</p>
-
-<h2>Обновление</h2>
-<p>
-Обновление выполняется по инструкции:
+<li>Установите опцию CMOD 777 (UNIX сервера) для папок (существование папок определяется версией ПО):
 <br><br>
 <ol >
-<li>Создайте копию текущей базы данных через утилиту "Резервные копи базы": База -> Резервные копи базы (Backup)
-<li>Создаем папку /old/ загружаем туда все файлы из корневой директории www
-<li>Загружаем в очищенную директорию www новые файлы из архива новой версии в <strong>бинарном режиме</strong>
-<li>Из старого файла config.ini берем параметры подключения к базе данных (первые 5 строк) и вставляем в новый конфиг (/phpshop/inc/config.ini)
-<li>Запускаем <strong>апдейтер баз данных</strong> (ваш_сайт/install/update/install.php), выбираем текущую версию, если ее там нет, то обновлять базу не нужно. Стираем папку /install/
-<li>Из папки /old/ копируем папку /UserFiles и /license со старыми картинками и лицензией в обновленный скрипт в тоже место
-<li>По необходимости копируем старый шаблон /phpshop/templates/, но с учетом что в нем могли быть внесены изменения для новой версии (сравнить с оригиналом)
+<li class=red>UserFiles/Image
+<li class=red>files/price
+<li class=red>phpshop/admpanel/csv
+<li class=red>phpshop/admpanel/dumper/backup
+<li class=red>phpshop/admpanel/dumper/backup/dumper.cfg.php  (CMOD 766)
 </ol>
-</p>
-
-<h2>Перенос данных с сервера</h2>
-<p>
-Перенос возможен как с веб-сервера на веб-сервер, так и с локального сервера (<a href="http://www.phpshop.ru/help/Content/install/phpshop_server.html" target="_blank">PHPShop Software</a> или <a href="http://www.phpshop.ru/help/Content/install/denwer_zend_optimizer.html" target="_blank">Denwer</a>).<br>
-Перенос выполняется по инструкции:
 <br><br>
-<ol >
-<li>Создайте копию текущей базы данных на старом сервере через утилиту панели управления "Резервные копи базы": База -> Резервные копи базы (Backup)
-<li>Загружаем файлы переносимого скрипта из папки веб-файлов (www, htdocs, public_html) в одноименную папку на новом сервере в <strong>бинарном режиме</strong>.<br><br>
-Для мгновенного переноса файлов с сервера на сервер можно воспользоваться утилитой <a href="http://phpshop.ru/loads/ThLHDegJUj/putty.exe" target="_blank">PyTTY</a> и  протоколом SSH. <br>
-Комманды оболочки после подключения на старом сервере (www заменяется на имя своей папки хранения веб-файлов):
-<p class=pre>
-tar cvf file.tar www/<br>
-gzip file.tar<br>
-cp file.tar.gz www/
-</p>
-Комманды оболочки после подключения на новом сервере:
-<p class=pre>
-wget http://имя_домена/file.tar.gz<br>
-tar -zxf file.tar.gz<br>
-cp -rf file/ www/
-</p>
-
-<li>Восстанавливаем из архива скрипта папку install и копируем ее вместе с входящими в нее файлами на новый сервер.
-<li>Прописываем в файл конфигурации  /phpshop/inc/config.ini на новом сервере новые параметры доступа к базе данных MySQL.
-<p class=pre>
-[connect]<br>
-host="localhost";             # имя хоста<br>
-user_db="user";         # имя пользователя<br>
-pass_db="mypas";            # пароль базы<br>
-dbase="mybase";           # имя базы</p>
-<li>Запускаем инсталлятор http://имя_сайта/install/install.php. Производим установку баз с нуля, указываем пароли доступа к панели управления (временные, после завершения пароли будут идентичны старому серверу). Будет установлена тестовая база временно.
-<li>Удалаем папку /install
-<li>Авторизуемся в панели управления /phpshop/admpanel/, используя новые временные пароли доступа, введенные в предыдум шаге.
-<li>Восстанавливаем резервную копию базы через утилиту "Резервные копи базы": База -> Резервные копи базы (Backup). Перегружаем браузер.
-<li>Теперь для входа в панель управления следует вводить пароли со старого сервера.
+<li>Для входа в <a href="../phpshop/admpanel/">административную панель</a> нажмите F12.<br> 
+При установке пользователь и пароль по умолчанию <strong>root</strong>.<br>
+Внимание, настоятельно рекомендуется сменить начальный пароль.<br>
+После смены пароля требуется перезапуск браузера.
+<br><br>
+<?
+if(file_exists("./update/install.php")) echo ('
+<li>Обновление выполняется по инструкции файла <a href="Update.txt">Update.txt</a> или через встроенный <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="javascript:miniWin(\'update/install.php\',550,550)">инсталлятор обновлений</a>
+')?>
 </ol>
 </p>
+<p>
+<a name="id4"></a>
+<h4>4. Лицензия</h4>
+<ol>
+<li> <b>Лицензионное соглашение</b><br><br>
+<textarea style="width:100%;height:300">
+Настоящее лицензионное соглашение (далее, Соглашение) является договором между Вами и компанией «PHPShop» (далее, Автор). Соглашение относится ко всем коммерчески распространяемым версиям и модификациям программного продукта PHPShop. 
 
-<h2>Коды ошибок</h2>
+1. Программный продукт PHPShop (далее, Продукт) представляет собой код программы Интернет магазина, воспроизведенный в файлах или на бумаге, включая электронную или распечатанную документацию, а также текст данного Соглашения. 
+
+2. Покупка Продукта свидетельствует о том, что Вы ознакомились с содержанием Соглашения, принимаете его положения, и будете использовать Продукт на условиях данного Соглашения. 
+
+3. Соглашение вступает в законную силу непосредственно в момент покупки Продукта, т.е. получения Вами Продукта посредством электронных средств передачи данных либо на физических носителях, на усмотрение Автора. 
+
+4. Все авторские права на Продукт принадлежат Автору. Продукт в целом или по отдельности является объектом авторского права и подлежит защите согласно российскому и международному законодательству на основании свидетельства о государственной регистрации программы для ЭВМ "PHPShop" № 2006614274. Автор оставляет за собой право требовать размещения обратной ссылки(*) с указанием Авторского права на сайте, где используется Продукт. Использование Продукта с нарушением условий данного Соглашения, является нарушением законов об авторском праве, и будет преследоваться в соответствии с действующим законодательством. Отказ от размещения обратной ссылки с указанием Авторского права является нарушением Соглашения и ограничивает Продукт в предоставлении технической поддержки Автором. 
+
+5. Продукт поставляется на условиях "КАК ЕСТЬ" ("AS IS") без предоставления гарантий производительности, покупательной способности, сохранности данных, а также иных явно выраженных или предполагаемых гарантий. Автор не несет какой-либо ответственности за причинение или возможность причинения вреда Вам, Вашей информации или Вашему бизнесу вследствие использования или невозможности использования Продукта. 
+
+6. Данное Соглашение дает Вам право на использование неограниченного(**) количества копии Продукта на одном web-сервере в пределах 
+одного домена(***). Для каждой новой установки Продукта на другой адрес web-сервера должна быть приобретена отдельная Лицензия. Любое распространение Продукта без предварительного согласия Автора, включая некоммерческое, является нарушением данного Соглашения и влечет ответственность согласно действующему законодательству. Допускается возможность создания и использования Вами дополнительной копии Продукта исключительно в целях тестирования или внесения изменений в исходный код, при условии, что такая копия не будет доступна третьим лицам. 
+
+7. Вы вправе вносить любые изменения в исходный код Продукта по Вашему усмотрению. При этом последующее использование Продукта должно осуществляться в соответствии с данным Соглашением и при условии сохранения всех авторских прав. Автор не несет ответственности за работоспособность Продукта в случае внесения Вами каких бы то ни было изменений. 
+
+8. Автор не несет ответственность, связанную с привлечением Вас к административной или уголовной ответственности за использование Продукта в противозаконных целях (включая, но не ограничиваясь, продажей через Интернет магазин объектов, изъятых из оборота или добытых преступным путем, предназначенных для разжигания межрасовой или межнациональной вражды; и т.д.). 
+
+9. Прекращение действия данного Соглашения допускается в случае удаления Вами всех полученных файлов и документации, а так же их копий. Прекращение действия данного Соглашения не обязывает Автора возвратить средства, потраченные Вами на приобретение Продукта. 
+
+Пояснения:
+
+* Вид ссылки и размещение строго задается Автором, код ссылки не поддается изменению. В целях сохранения визуализации с персональным дизайном возможно изменение цвета ссылки (задается лицензией). Для официальных партнеров возможна выписка лицензии без копирайтов Автора. Ссылка в таком случае размещается в согласовании с Автором партнерами в удобном для них месте каждой страницы сайта. Лицензия без копирайтов автора обговаривается отдельно, стоимость такой лицензии назначается персонально.
+
+** Только версии Enterprise и Enterprise Pro поддерживают размещение в некорневые директории. Версии Start и Catalog, Catalog Pro поддерживают размещение только в корневой папке или поддомене. 
+
+*** Имеется в виду размещение в пределах одного домена seamply.ru. Лицензия допускает размещение вида seamply.ru/market1/, seamply.ru/market2/ и т.д.
+Размещение типа market1.seamply.ru и т.д. требует покупки отдельной Лицензии. Техническая поддержка распространяется только на одну копию Продукта, приоритетное размещение для технической поддержки в корневую директорию. Для каждого нового экземпляра магазина требуется покупка новой технической поддержки.
+
+
+</textarea><br><br>
+<li> Для <b>Установки лицензии</b> скопируйте файл с лицензией (имя_домена.lic) в папку /license. Скрипт сам найдет лицензию в этой папке. Для смены лицензии замените лицензионный файл в этой папке. В папке должна лежать только одна лицензия!<br><br>
+</ol>
+</p>
+<a name="error"></a>
+<p><h4>5. Коды ошибок</h4>
 <ol>
 <li><b>101 Ошибка подключения к базе</b><br><br>
 <ul>
 <li>Проверьте настройки подключения к базе данных: <b>host, user_db, pass_db, dbase</b>.
-<li>Откройте файл phpshop/inc/config.ini и отредактируйте вышеописанные переменные под вашу базу (заменить данные между кавычками).<br>
-<p class=pre>
-[connect]<br>
-host="localhost";             # имя хоста<br>
-user_db="user";         # имя пользователя<br>
-pass_db="mypas";            # пароль базы<br>
-dbase="mybase";           # имя базы</p>
+<li>Откройте файл phpshop/inc/config.ini и отредактируйте вышеописанные переменные под вашу базу.<br>
+<pre>
+[connect]
+host="localhost";             # имя хоста
+user_db="Enterprise";         # имя пользователя
+pass_db="dennion";            # пароль базы
+dbase="Enterprise";           # имя базы
+</pre>
 </ul>
 <li><b>102 Не установлены базы</b><br><br>
-<ul><li>Запустите <strong>инсталятор</strong> (имя_сайта/install/install.php) для установки БД.
+<ul><li>Запустите <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="javascript:miniWin('install.php',550,550)">инсталятор</a> для установки БД.
 </ul><br>
 <li><b>103 Ошибка расположения папки с файлами</b><br><br>
 <ul><li>Проверьте настройки в установочном файле <strong>dafault_page_dir</strong>.
@@ -413,20 +278,223 @@ dbase="mybase";           # имя базы</p>
 <ul>
 <li>Не включена опция Register Globals ON 
 <li>Проверьте существования папки с выбранным шаблоном: <strong>phpshop/templates/имя_шаблона</strong>.
-<li>Через <strong>панель администрирования</strong> (<b>"Настройка" => "Система"</b>) выберете существующий шаблон.
+<li>Через панель администрирования (<b>опция "Система"</b>) выберете существующий шаблон.
 <li>Имя шаблона должно совпадать с именем папки (см. выше)
 </ul><br>
 <li><b>105 Ошибка существования файла install.php</b><br><br>
 <ul>
-<li>В целях безопасности удалите папку <b>/install</b>
-<li>Для отключения этой проверки измените значение переменной  в установочном файле config.ini (не рекомендуется)
-<p class=pre>
-check_install="false";
-</p>
+<li>В целях безопасности удалите файл <b>install/install.php</b> и папку <strong>/install/update</strong>
+<li>Для отключения этой проверки измените значение переменной check_install="false"; в установочном файле config.ini (см. выше)
 </ul>
 </ol>
+<a name="id5"></a>
+<p><h4>6. Шаблонизатор</h4>
+Папка с шаблонами расположена по адресу: <strong>phpshop/templates/имя_шаблона/</strong><br>
+Имя текущего шаблона можно узнать по нажатию клавиши F9 клавиатуры или в разделе смены шаблонов административной части.
+<pre style="padding:10">
+index="main/index.tpl";                                    # Первая страница
+shop="main/shop.tpl";                                      # Список страница
+menu_search="main/menu_search.tpl";                        # Шаблон поиска
+main_product_forma="product/main_product_forma.tpl";       # Шаблон форма продукта
+product_page_list="product/product_page_list.tpl";         # Шаблон список продуктов 
+product_page_full="product/product_page_full.tpl";         # Шаблон список  подробно
+main_product_forma_full="product/main_product_forma_full.tpl"; # Шаблон форма продукта подробно
+search_page_list="serach/search_page_list.tpl";            # Шаблон список поиска продуктов
+news_page_list="news/news_page_list.tpl";                  # Шаблон список новостей
+news_page_full="news/news_page_full.tpl";                  # Шаблон список новотсей весь
+main_news_forma="news/main_news_forma.tpl";                # Шаблон новостей
+main_news_forma_full="news/main_news_forma_full.tpl";      # Шаблон новостей полный 
+gbook_page_list="gbook/gbook_page_list.tpl";               # Шаблон списка отзывов     
+main_gbook_forma="gbook/main_gbook_forma.tpl";             # Шаблон отзывов     
+left_menu="main/left_menu.tpl";                            # Шаблон левого меню    
+search_page_list="search/search_page_list.tpl";            # Шаблон список карты каталогов
+map_page_list="map/map_page_list.tpl";                     # Шаблон список карты сайта
+main_search_forma="search/main_search_forma.tpl";          # Шаблон поиска 
+main_search_forma_2="search/main_search_forma_2.tpl";          # Шаблон поиска 
+links_page_list="links/links_page_list.tpl";               # Шаблон список ссылок
+main_links_forma="links/main_links_forma.tpl";             # Шаблон формы ссылки
+product_page_full="product/product_page_full.tpl";         # Шаблон список  подробно
+main_spec_forma="product/main_spec_forma.tpl";             # Шаблон форма спецпредложения
+main_spec_forma_icon="product/main_spec_forma_icon.tpl";   # Шаблон форма спецпредложения
+main_odnotip_forma_icon="product/main_odnotip_forma_icon.tpl";  # Шаблон форма однотипы
+gbook_forma_otsiv="gbook/gbook_forma_otsiv.tpl";           # Шаблон форма заполнения отзыва
+page_page_list="page/page_page_list.tpl";                  # Шаблон список генератьра страниц
+main_order_forma="order/main_order_forma.tpl";           # Шаблон формы для оформления покупки
+main_order_list="order/main_order_list.tpl";            # Шаблон списка для оформления покупки
+main_price_forma="price/main_price_forma.tpl";            # Шаблон форма прайса
+price_page_list="price/price_page_list.tpl";                # Шаблон списка прайса  
+main_price_forma_tip="price/main_price_forma_tip.tpl";      # Шаблон форма прайса заглавие
+main_product_odnotip_list="product/main_product_odnotip_list.tpl"; # Шаблон для обнотипных 
+error_page_forma="error/error_page_forma.tpl";                        # Форма ошибки навигации
+order_forma_mesage="order/order_forma_mesage.tpl";         # Шаблон формы сообщения для заказа
+order_forma_mesage_main="order/order_forma_mesage_main.tpl"; # Шаблон формы сообщения для заказа
+news_forma_mesage="news/news_forma_mesage.tpl";       # Шаблон формы сообщения для новостей
+news_forma_mesage_main="news/news_forma_mesage_main.tpl"; # Шаблон формы сообщения для новостей
+news_main_mini="news/news_main_mini.tpl";             # Шаблон ооледние новости
+baner_list_forma="banner/baner_list_forma.tpl"               # Шаблон банерной сети
+catalog_forma="catalog/catalog_forma.tpl"               # Шаблон каталога
+podcatalog_forma="catalog/podcatalog_forma.tpl"               # Шаблон подкаталога
+</pre>
+<a name="id7"></a>
+<p><h4>7. Переменные шаблонизатора</h4>
+<ol>
+<li><b>Главная и остальные страницы (имя_шаблона/main)</b><br><br>
 
-<div class="footer">Copyright © PHPShop Software. Все права защищены © 2003-<? echo date("Y") ?>. СГРПЭ PHPShop №2006614274.
+<ul>
+<li>@pageTitl@ - титл страницы
+<li>@pageDesc@ - описание страницы
+<li>@pageKeyw@ - ключевые слова
+<li>@pageMeta@ - мета страницы
+<li>@pageReg@ - копирайт
+<li>@pageProduct@ - версия софта
+<li>@pageDomen@ - копирайт на домен
+<li>@pageCss@ - путь к стилям шаблона
+<li>@leftCatal@ - вывод меню левой навигации
+<li>@leftMenu@ - вывод блока левой информации
+<li>@mainContentTitle@ - заголовок текстовой области на главную страницу (пр-р: Добро пожаловать)
+<li>@mainContent@ - содержимое текстовой области на главной странице (данная страница должна иметь ссылку=<b>index</b>)
+<li>@DispShop@ - вывод соответсвующих страниц (контента новостей, страниц, отзывов.)
+<li>@miniNews@ - вывод последних новостей
+<li>@banersDisp@ - вывод банерной сети
+<li>@pageReg@ - копирайт
+<li>@timeAll@ - кол-во времени отклика базы
+</ul><br>
+<li><b>Страницы (имя_шаблона/page)</b><br><br>
+<ul>
+<li>@pageTitle@ - заглавие страницы
+<li>@pageContent@ - контент страницы
+</ul><br>
+<li><b>Каталог (имя_шаблона/catalog)</b><br><br>
+<ul>
+<li>@catalogName@ - заглавие каталога
+<li>@catalogPodcatalog@ - заглавие сраниц, ссылающяяся на этот каталог
+</ul><br>
+<li><b>Товары (имя_шаблона/product)</b><br><br>
+<ul>
+<li>@productSale@ - Язык: в корзину
+<li>@productInfo@ - Язык: подробно
+<li>@productName@ - наименование товара
+<li>@productArt@ - артикул товара
+<li>@productDes@ - описание товара
+<li>@productPrice@ - стоимость товара в валюте
+<li>@productPriceRub@ - стоимость товара в рублях
+<li>@priceNew@ - новая стоимость товара (старая перечеркивается)
+<li>@productId@ - идентификатор подкаталога товара
+<li>@productCat@ (@productCatnav@) - идентификатор каталога для товара
+<li>@productPageThis@ - текущяя страница
+<li>@productUid@ - идентификатор товара
+<li>@catalog@ - Язык: каталог
+<li>@vendorDisp@ - классификатор товара
+<li>@catalogCat@ - имя каталога
+<li>@catalogCategory@ - имя подкаталога
+<li>@producFound@ - Язык: найдено товаров
+<li>@productPodcat@ - идентификатор подкаталога
+<li>@productNum@ - кол-во товаров в подкаталоге
+<li>@productNumOnPage@ - Язык: товаров на странице
+<li>@productNumRow@ - заданное кол-во товаров на сранице
+<li>@productPage@ - Язык: на странице
+<li>@productPageNav@ - навигация (HTML)
+<li>@productPageDis@ - список выводимых товаров (HTML)
+<li>@productImg@ - парсированая картинка
+<li>@productOdnotipList@ - однотипные товары (HTML)
+<li>@productOdnotip@ - Язык: товары для совместной продажи
+</ul><br>
+<li><b>Банерная сеть(имя_шаблона/baner)</b><br><br>
+<ul>
+<li>@banerContent@ - контент банера
+</ul><br>
+<li><b>Отзывы (имя_шаблона/gbook)</b><br><br>
+<ul>
+<li>@producFound@ - Язык: найдено позиций
+<li>@productNum@ - кол-во позиций
+<li>@productNumOnPage@ - Язык: кол-во на странице
+<li>@productNumRow@ - кол-во на странице
+<li>@productPage@ - Язык: текущяя страница
+<li>@productPageThis@ - текущяя страница
+<li>@productPageNav@ - вывод навигации
+<li>@productPageDis@ - вывод контента
+<li>@gbookData@ - дата отзыва
+<li>@gbookMail@ - почта автора
+<li>@gbookTema@ - тема сообщения
+<li>@gbookOtsiv@ - отзыв
+<li>@gbookOtvet@ - ответ администрации
+</ul><br>
+<li><b>Партнеры (ссылки) (имя_шаблона/links)</b><br><br>
+<ul>
+<li>@producFound@ - Язык: найдено позиций
+<li>@productNum@ - кол-во позиций
+<li>@productNumOnPage@ - Язык: кол-во на странице
+<li>@productNumRow@ - кол-во на странице
+<li>@productPage@ - Язык: текущяя страница
+<li>@productPageThis@ - текущяя страница
+<li>@productPageNav@ - вывод навигации
+<li>@productPageDis@ - вывод контента
+<li>@linksImage - кнопка ссылки
+<li>@linksName@ - название ссылки
+<li>@linksOpis@ - контент ссылки
+</ul><br>
+<li><b>Новости (имя_шаблона/news)</b><br><br>
+<ul>
+<li>@producFound@ - Язык: найдено позиций
+<li>@productNum@ - кол-во позиций
+<li>@productNumOnPage@ - Язык: кол-во на странице
+<li>@productNumRow@ - кол-во на странице
+<li>@productPage@ - Язык: текущяя страница
+<li>@productPageThis@ - текущяя страница
+<li>@productPageNav@ - вывод навигации
+<li>@productPageDis@ - вывод контента
+<li>@newsData@ - дата публикации
+<li>@newsZag@ - заглавие новости
+<li>@newsKratko@ - краткий контент новости
+<li>@newsAll@ - ссылка на подробности
+<li>@newsPodrob@ - подробный контент новости
+<li>@mesageText@ - сообщение для подписки
+</ul><br>
+<li><b>Поиск (имя_шаблона/search)</b><br><br>
+<ul>
+<li>@productNum@ - найдено позиций
+<li>@productSite@ - название сайта
+<li>@productName@ - заглавие найденной страницы
+<li>@productDes@ - краткое описание страницы
+</ol>
+<a name="id8"></a>
+<p><h4>8. API подключение внешнего модуля</h4>
+Для автоматического включения внешнего модуля служит опция [autoload] установочного файла ( далее конфигуратора config.ini)<br><br>
+Пример подключения внешнего модуля обмена ссылками <b>Linkexchanger 0.7</b>:
+<ol>
+<li>Задаем имя и путь нового модуля:
+<pre>
+[autoload]
+linkexchanger="phpshop/modules/linkexchanger";
+</pre>
+
+<li>Создаем файл pages/имя_модуля.php. Имя файла должно точно совпадать с его будущей ссылкой (?nav=имя_модуля). Записываем код в наш файл:
+<pre>
+// Определяем переменые
+$SysValue['other']['DispShop']=Linkexchanger(); 
+// подключение вашей функции, которая находится по указанному адресу "phpshop/modules/linkexchanger"
+// все данные функции должны возвращяться методом <b>return $var</b>;
+// вывод функции перехватывает переменная $SysValue['other']['DispShop']
+// и выводит их в заданном месте по запросу @DispShop@
+
+// Подключаем шаблон 
+@ParseTemplate($SysValue['templates']['shop']);
+</pre>
+</ul>
+</ol></p>
+<a name="id9"></a>
+<p><h4>9. Благодарности</h4>
+<ol>
+<li><b>Дмитрию Котерову</b> за его проект <a href="http://www.denwer.ru">Denwer.ru</a>, и написанные им книги и статьи по PHP.<br>
+<li><b>МаЗаю</b> за помощь в разработке проекта.
+<li><b>Прохорову Игорю</b> за помощь в разработке проекта.
+<li><b>Бабаджанову Эрику</b> за помощь в разработке проекта.
+</ol></p>
+<div align="right">
+<a href="#id1">На верх</a>
 </div>
+</td>
+</tr>
+</table>
 </body>
 </html>

@@ -135,15 +135,13 @@ return @$dis;
   <FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Т</u>абличная запись для загрузки базы через Excel</span>:</LEGEND>
 <div style="padding:10">
-<textarea style="height:50px;width:440px"  id="upload_log" name="upload_log">');
+<textarea style="height:50px;width:440px"  id="encoded_text">');
 if(isset($start))
 echo base64_encode(serialize(@$vendor_new));
 echo('</textarea>
 <div align="right" style="padding:10px">
 <input type="submit" name="btnLang" value="Пересчитать" name=start>
-<!--[if IE]>
-<input type="button" value="Копировать" onclick="copyToClipboard()">
-<![endif]-->
+<input type="button" name="btnLang" value="Копировать" onclick="copyToClipboard()">
 <input type="button" name="btnLang" value="Отмена" onclick="window.close()">
 <input type="hidden" name="start" value="on">
 </div>

@@ -17,7 +17,6 @@
 <SCRIPT language="JavaScript" type="text/javascript" src="java/cartwindow.js"></SCRIPT>
 <SCRIPT language="JavaScript" type="text/javascript" src="java/tabpane.js"></SCRIPT>
 <SCRIPT language="JavaScript" type="text/javascript" src="phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
-<SCRIPT language="JavaScript" src="java/swfobject.js"></SCRIPT>
 
 <!--[if lt IE 7]>
 <![if gte IE 5.5]>
@@ -30,11 +29,11 @@
 <![endif]-->
 
 </HEAD>
-<BODY onload="pressbutt_load('@thisCat@','@pathTemplate@','false','false');LoadPath('@ShopDir@');">
+<BODY onload="pressbutt_load('@thisCat@','@pathTemplate@','false','false');NavActive('@NavActive@');LoadPath('@ShopDir@');">
 <table width="1004" cellpadding="0" cellspacing="0" align="center">
 <tr>
 	<td>
-<div id="cartwindow" style="position:absolute;left:0px;top:0px;bottom:0px;right:0px;visibility:hidden;"> 
+<span id="cartwindow"> 
 <table width="100%" height="100%">
 <tr>
     <td width="40" vAlign=center>
@@ -43,19 +42,7 @@
     <td><b>Внимание...</b><br>Товар добавлен к корзину</td>
 </tr>
 </table>
-</div> 
-
-
-<div id="comparewindow" style="position:absolute;left:0px;top:0px;bottom:0px;right:0px;visibility:hidden;"> 
-<table width="100%" height="100%">
-<tr>
-    <td width="40" vAlign=center>
-    <img src="images/shop/i_compare_med.gif" alt="" width="32" height="32" border="0" align="absmiddle">
-    </td>
-    <td><b>Внимание...</b><br>Товар добавлен в сравнение</td>
-</tr>
-</table>
-</div> 
+</span> 
 	<div class="header_bg_2_up">
 		<a href="/order/" title="Посмотреть корзину"><div class="header_bg_2_up_cart">	
 		   <div>товаров в корзине:  <span id="num" style="DISPLAY: inline; FONT-WEIGHT: bold">@num@</span> шт.</div>
@@ -70,9 +57,6 @@
 		<div >
 		    <div id="order" style="display:@orderEnabled@" class="header_bg_2_up_order">
 			<A href="/order/">Оформить заказ</A></div>
-		</div>
-		<div>
-		    <div id="compare" style="display:@compareEnabled@" class="header_bg_2_up_compare"><a href="/compare/" title="Сравнение товаров">Сравнение <span id="numcompare">@numcompare@</span> шт.</a></div>
 		</div>
 	</div>
 	<div class="header_bg_2_bg_shop">
@@ -139,26 +123,30 @@
 	             @leftCatal@
 			   </ul>
                   
+			</div>
 			
+			<div class="plashka">
+				<div class="plashka_zag">	Навигация
+				</div>
+			</div>
+			
+			<div style="margin-top:10px;padding-bottom:10px">
 			  
 			   <ul class="catalog">
-			
 			   <li class="catalog"><a href="/price/" title="Прайс-лист">Прайс-лист</a>
 			   <li class="catalog"><a href="/news/" title="Новости">Новости</a>
-			   <li class="catalog"><a href="/gbook/" title="Новости">Отзывы</a>
 	             @pageCatal@
 			   <li class="catalog"><a href="/links/" title="Полезные ссылки">Полезные ссылки</a>
 			   <li class="catalog"><a href="/map/" title="Карта сайта">Карта сайта</a>
-			   <li class="catalog"><a href="/forma/" title="Форма связи">Форма связи</a>
-			   
+			   <li class="catalog"><a href="/users/message.html" title="Форма связи">Форма связи</a>
 			   </ul>
                   
 			</div>
 			
 			@leftMenu@
-			@calendar@ 
+			
 			@oprosDisp@
-			@cloud@
+			
 			
 			
 		</div>
@@ -195,8 +183,6 @@
 	Copyright &copy; @pageReg@.<br>
 Все права защищены. Тел. @telNum@<br>
 <img src="images/feed.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <a href="/rss/" title="RSS">RSS</a> | 
-<img src="images/shop/pda.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <a href="/pda/" title="PDA" target="_blank">PDA</a> | 
-<img src="images/shop/sitemap.gif" alt="" width="16" height="16" border="0" align="absmiddle">
 <a href="/map/" title="Карта сайта">Карта сайта</a> 
 	</div>
 	</div>

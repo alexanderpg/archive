@@ -35,7 +35,7 @@ function Vivod_product_price($n)// вывод товаров дл€ прайса
 {
 global $SysValue,$LoadItems,$_SESSION;
 $n=TotalClean($n,1);
-$sql="select id,name,price,sklad,price2,price3,price4,price5,baseinputvaluta from ".$SysValue['base']['table_name2']." where (category='$n' or dop_cat LIKE '%#$n#%') and enabled='1' order by name";
+$sql="select id,name,price,price2,price3,price4,price5 from ".$SysValue['base']['table_name2']." where category='$n' and enabled='1' order by name";
 $result=mysql_query($sql);
 while($row = mysql_fetch_array($result))
 {
@@ -43,8 +43,6 @@ $id=$row['id'];
 $uid=$row['uid'];
 $name=$row['name'];
 $price=$row['price'];
-$sklad=$row['sklad'];
-$baseinputvaluta=$row['baseinputvaluta'];
 $price=($price+(($price*$LoadItems['System']['percent'])/100));
 
 
@@ -59,36 +57,18 @@ $price=($price+(($price*$LoadItems['System']['percent'])/100));
 	   }
 	}
 
-// ≈сли цены показывать только после аторизации
-$admoption=unserialize($LoadItems['System']['admoption']);
-if($admoption['user_price_activate']==1 and !$_SESSION['UsersId']){
-    $price="~";
-	$valuta="";
-}else{
-    $price=GetPriceValuta($price,"",$baseinputvaluta);
-	$valuta=GetValuta();
-     }
-	
 
 @$disp.="
 <tr bgcolor=\"#ffffff\">
 	<td>
-	<a href=\"/shop/UID_".$id.".html\" title=\"".$name."\">".$uid." ".$name."</a>
+	<a href=\"../shop/UID_".$id.".html\" title=\"".$name."\">".$name."</a>
 	</td>
 	<td width=\"150\" align=\"center\">
-	".$price." ".$valuta."
+	".GetPriceValuta($price)." ".GetValuta()."
 	</td>
-	<td>";
-	
-	if($sklad==0){// ≈сли товар на складе
-	  if($admoption['user_price_activate']==1 and !$_SESSION['UsersId'])
-	    @$disp.="";
-		else
-@$disp.="
-	<A href=\"javascript:AddToCart($id)\"><IMG  src=\"images/shop/basket_put.gif\" align=absMiddle border=0></A>";}
-@$disp.="
+	<td>
+	<A href=\"javascript:AddToCart($id)\"><IMG  src=\"images/shop/basket_put.gif\" align=absMiddle border=0></A>
 	</td>
-	
 </tr>";
 }
 @$SysValue['sql']['num']++;

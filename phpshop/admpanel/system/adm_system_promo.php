@@ -329,9 +329,6 @@ echo"
 <hr>
 <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"50\" >
 <tr>
-    <td align=\"left\" style=\"padding:10\">
-    <BUTTON class=\"help\" onclick=\"helpWinParent('promo')\">Справка</BUTTON>
-	</td>
 	<td align=\"right\" style=\"padding:10\">
 <input type=submit value=ОК class=but name=optionsSAVE>
 	<input type=submit name=btnLang value=Отмена class=but onClick=\"return onCancel();\">
