@@ -80,6 +80,7 @@ function tab_headers($row) {
 <input  type="button" value="'.__('Подкаталог').'" onclick="ShablonAdd(\'@Podcatalog@\',\'Shablon\')" class="buttonSh">
 <input  type="button" value="'.__('Товар').'" onclick="ShablonAdd(\'@Product@\',\'Shablon\')" class="buttonSh">
 <input  type="button" value="'.__('Цена').'" onclick="ShablonAdd(\'@Price@\',\'Shablon\')" class="buttonSh">
+<input  type="button" value="'.__('Артикул').'" onclick="ShablonAdd(\'@Art@\',\'Shablon\')" class="buttonSh">
 <input type="button"   value="'.__('Общий').'" onclick="ShablonAdd(\'@System@\',\'Shablon\')" class="buttonSh">
 <input type="button"  value="'.__('Сбросить').'" onclick="ShablonDell(\'Shablon\')" class="buttonSh">
    </div>
@@ -101,6 +102,7 @@ function tab_headers($row) {
 <input type="button"  value="'.__('Подкаталог').'" onclick="ShablonAdd(\'@Podcatalog@\',\'ShablonD\')" class="buttonSh">
 <input  type="button" value="'.__('Товар').'" onclick="ShablonAdd(\'@Product@\',\'ShablonD\')" class="buttonSh">
 <input  type="button" value="'.__('Цена').'" onclick="ShablonAdd(\'@Price@\',\'ShablonD\')" class="buttonSh">
+<input  type="button" value="'.__('Артикул').'" onclick="ShablonAdd(\'@Art@\',\'ShablonD\')" class="buttonSh">
 <input type="button"  value="'.__('Общий').'" onclick="ShablonAdd(\'@System@\',\'ShablonD\')" class="buttonSh">
 <input type="button"  value="'.__('Сбросить').'" onclick="ShablonDell(\'ShablonD\')" class="buttonSh">
  </div>
@@ -124,6 +126,7 @@ function tab_headers($row) {
 <input  type="button" value="'.__('Товар').'" onclick="ShablonAdd(\'@Product@\',\'ShablonK\')" class="buttonSh">
 <input  type="button" value="'.__('Цена').'" onclick="ShablonAdd(\'@Price@\',\'ShablonK\')" class="buttonSh">
 <input type="button"  value="'.__('Общий').'" onclick="ShablonAdd(\'@System@\',\'ShablonK\')" class="buttonSh">
+<input  type="button" value="'.__('Артикул').'" onclick="ShablonAdd(\'@Art@\',\'ShablonK\')" class="buttonSh">
 <input type="button"  value="'.__('Автопобор').'" onclick="ShablonAdd(\'@Generator@\',\'ShablonK\')" class="buttonSh">
 <input type="button"  value="'.__('Сбросить').'" onclick="ShablonDell(\'ShablonK\')" class="buttonSh">
 </div>

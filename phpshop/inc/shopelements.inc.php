@@ -969,7 +969,7 @@ class PHPShopProductIconElements extends PHPShopProductElements {
 /**
  * Элемент оформления вывода товаров
  * @author PHPShop Software
- * @version 1.5
+ * @version 1.6
  * @package PHPShopElements
  */
 class PHPShopProductIndexElements extends PHPShopProductElements {
@@ -1014,21 +1014,6 @@ class PHPShopProductIndexElements extends PHPShopProductElements {
         if ($name == __CLASS__) {
             self::__construct();
         }
-    }
-
-    /**
-     * Шаблон компактного вывода "Сейчас покупают"
-     * @param array $row массив данных
-     * @return string
-     */
-    function template_nowbuy($row) {
-
-        // Перехват модуля
-        $hook = $this->setHook(__CLASS__, __FUNCTION__, $row);
-        if ($hook)
-            return $hook;
-
-        return PHPShopText::li($row['name'], 'shop/UID_' . $row['id'] . '.html');
     }
 
     /**
@@ -1109,7 +1094,7 @@ class PHPShopProductIndexElements extends PHPShopProductElements {
                         if (is_array($dataArray)) {
 
                             // Товары таблицей
-                            if ($this->enabled == 2) {
+                            if ($this->enabled == 1) {
 
                                 // Количество ячеек для вывода товара
                                 if (empty($this->cell))
@@ -1122,16 +1107,7 @@ class PHPShopProductIndexElements extends PHPShopProductElements {
                                 // Собираем и возвращаем таблицу с товарами
                                 $disp = $this->compile();
                             }
-                            // Товары списком
-                            else {
-                                foreach ($dataArray as $row) {
-                                    $li .= $this->template_nowbuy($row);
-                                    $i++;
-                                }
-
-                                $disp = PHPShopText::ol($li);
-                            }
-
+                            
                             // Перехват модуля
                             $this->setHook(__CLASS__, __FUNCTION__, $dataArray, 'END');
 

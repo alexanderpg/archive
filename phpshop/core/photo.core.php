@@ -3,7 +3,7 @@
 /**
  * Обработчик фото галереи
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopCore
  */
 class PHPShopPhoto extends PHPShopCore {
@@ -93,7 +93,15 @@ class PHPShopPhoto extends PHPShopCore {
      * Вывод списка фото
      */
     function ListPhoto() {
-        $disp = null;
+        $disp = '
+                <link href="phpshop/lib/templates/photo/highslide/highslide.css" rel="stylesheet">
+                <script src="phpshop/lib/templates/photo/highslide/highslide-p.js"></script>
+                <script>
+                    hs.registerOverlay({html: \'<div class="closebutton" onclick="return hs.close(this)" title="Закрыть"></div>\', position: \'top right\', fade: 2});
+                    hs.graphicsDir = \'phpshop/lib/templates/photo/highslide/graphics/\';
+                    hs.wrapperClassName = \'borderless\';
+                </script>
+                ';
 
         // Перехват модуля
         $this->setHook(__CLASS__, __FUNCTION__, $this->dataArray, 'START');
@@ -122,6 +130,8 @@ class PHPShopPhoto extends PHPShopCore {
         elseif (!empty($this->LoadItems['CatalogPhoto'][$this->category]['content_enabled']))
             $content = $this->PHPShopPhotoCategory->getContent();
 
+        
+        
         $this->set('pageContent', $content . $disp);
         $this->set('pageTitle', $this->category_name);
 
@@ -180,7 +190,6 @@ class PHPShopPhoto extends PHPShopCore {
         // Подключаем шаблон
         $this->parseTemplate($this->getValue('templates.page_page_list'));
     }
-
 }
 
 ?>

@@ -43,6 +43,7 @@ function actionStart() {
                     $PHPShopGUI->setCheckbox('option[update_category]', 1, 'Родительская категория', $option['update_category']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[update_sort]', 1, 'Характериcтики и свойства', $option['update_sort']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[update_option]', 1, 'Подтипы', $option['update_option']) . '<br>' .
+                    $PHPShopGUI->setCheckbox('option[update_option_delim]', 1, 'Автоматическое определение вариантов подтипов', $option['update_option_delim']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[update_price]', 1, 'Цены', $option['update_price']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[update_item]', 1, 'Склад', $option['update_item']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[seo_update]', 1, 'SEO ссылка', $option['seo_update'])
@@ -61,6 +62,7 @@ if(empty($hideCatalog))
     $key_value[] = array(__('Артикул'), 'uid', $option['exchange_key']);
     $key_value[] = array(__('Внешний код'), 'external', $option['exchange_key']);
     $key_value[] = array(__('Код 1С'), 'code', $option['exchange_key']);
+    $key_value[] = array(__('Штрихкод'), 'barcode', $option['exchange_key']);
 
     // Авторизация
     $auth_value[] = array(__('Логин и пароль'), 0, $option['exchange_auth']);
@@ -85,6 +87,7 @@ if(empty($hideCatalog))
             $PHPShopGUI->setField("Цена 4",$PHPShopGUI->setInputText(false, 'option[exchange_price4]', $option['exchange_price4'], 300, false, false, false, 'Внешний код' )).
             $PHPShopGUI->setField("Цена 5",$PHPShopGUI->setInputText(false, 'option[exchange_price5]', $option['exchange_price5'], 300, false, false, false, 'Внешний код' )).
             $PHPShopGUI->setField("Блокировка характеристик", $PHPShopGUI->setTextarea('option[exchange_sort_ignore]', $option['exchange_sort_ignore'], false, false, false, __('Укажите характеристики через запятую'),__('Примечание'))).
+            $PHPShopGUI->setField("Блокировка обновления товаров", $PHPShopGUI->setTextarea('option[exchange_product_ignore]', $option['exchange_product_ignore'], false, false, false, __('Укажите внешний код товаров через запятую'),__('Внешний код'))).
             $PHPShopGUI->setField("Авторизация", $PHPShopGUI->setSelect('option[exchange_auth]', $auth_value, 300)) .
             $PHPShopGUI->setField($PHPShopGUI->setLink('../../1cManager/'.$option['exchange_auth_path'].'.php', 'Имя файла', '_blank', false, __('Открыть ссылку')), $PHPShopGUI->setInputText($protocol . $_SERVER['SERVER_NAME'] . '/1cManager/', 'option[exchange_auth_path]', $option['exchange_auth_path'], 400, '.php', false, false, 'secret_cml_path'))
             

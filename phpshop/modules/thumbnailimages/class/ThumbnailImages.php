@@ -45,6 +45,7 @@ class ThumbnailImages {
             $image = $row['name'];
             $parent = $row['parent'];
             $source = $this->getSourceImage($image);
+            $image_new=null;
 
             if (!empty($source)) {
                 $thumb = new PHPThumb($source);
@@ -175,6 +176,7 @@ class ThumbnailImages {
             $image = $row['name'];
             $parent = $row['parent'];
             $id = $row['id'];
+            $image_new=null;
             
             $source = $this->getSourceImage($image);
 

@@ -319,6 +319,7 @@ if (!empty($_COOKIE['fullscreen'])) {
                                     <li><a href="?path=system.dialog"><?php _e('Диалоги'); ?></a></li>
                                     <li><a href="?path=system.integration"><?php _e('Интеграция'); ?></a></li>
                                     <li><a href="?path=system.locale"><?php _e('Локализация'); ?></a></li>
+                                    <li><a href="?path=system.service"><?php _e('Обслуживание'); ?></a></li>
                                     <li class="divider"></li>
                                     <li><a href="?path=tpleditor"><span class="glyphicon glyphicon-picture"></span> <?php _e('Шаблоны дизайна'); ?></a></li>
                                 </ul>

@@ -10,6 +10,8 @@ function setModOptionGUI($name, $format, $value) {
                 break;
 
             case 'radio':
+                if(empty($value))
+                    $value=2;
                 $result = $PHPShopGUI->setRadio($name, 1, 'Да',$value).$PHPShopGUI->setRadio($name, 2, 'Нет',$value);
                 break;
 

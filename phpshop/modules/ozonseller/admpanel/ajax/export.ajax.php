@@ -55,7 +55,7 @@ if (is_array($data)) {
 
             // Товар выгрузился
             if (!empty($info['product_id'])) {
-                $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_task_id_new' => time(), 'export_ozon_id_new' => $info['product_id']], ['id' => '=' . (int) $data['id']]);
+                $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_id_new' => $info['product_id']], ['id' => '=' . (int) $data['id']]);
                 $OzonSeller->clean_log($data['id']);
                 $count++;
             }

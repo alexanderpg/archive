@@ -3,7 +3,7 @@
 /**
  * Ёлемент стандартных системных переменных
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopElements
  */
 class PHPShopCoreElement extends PHPShopElements {
@@ -13,6 +13,37 @@ class PHPShopCoreElement extends PHPShopElements {
      */
     function __construct() {
         parent::__construct();
+    }
+
+    /**
+     * –ежим обслуживани€
+     */
+    function service() {
+        if ($this->PHPShopSystem->ifSerilizeParam('admoption.service_enabled', 1)) {
+
+
+            $ip = explode(",", $this->PHPShopSystem->getSerilizeParam('admoption.service_ip'));
+            if (is_array($ip) and in_array(trim($_SERVER['REMOTE_ADDR']), $ip))
+                return;
+            else {
+                
+                $title = $this->PHPShopSystem->getSerilizeParam('admoption.service_title');
+                $message = $this->PHPShopSystem->getSerilizeParam('admoption.service_content');
+
+                if (empty($title))
+                    $title = '503 Service Temporarily Unavailable';
+                
+                if (empty($message))
+                    $message = 'Website is under construction';
+                
+
+                PHPShopParser::set('message', $message);
+                PHPShopParser::set('title', $title);
+                header('HTTP/1.1 503 Service Temporarily Unavailable');
+                header('Status: 503 Service Temporarily Unavailable');
+                exit(PHPShopParser::file($_SERVER['DOCUMENT_ROOT'] . '/phpshop/lib/templates/error/service.tpl', false, true, true));
+            }
+        }
     }
 
     /**
@@ -144,6 +175,12 @@ class PHPShopCoreElement extends PHPShopElements {
 
                     if (isset($admoption['fee']))
                         $this->PHPShopSystem->setParam('percent ', (int) $admoption['fee']);
+
+                    if (!empty($admoption['org_adres']))
+                        $this->PHPShopSystem->setSerilizeParam('bank.org_adres', $admoption['org_adres']);
+
+                    if (!empty($admoption['org_time']))
+                        $this->PHPShopSystem->setSerilizeParam('bank.org_time', $admoption['org_time']);
                 }
             }
         } else {
@@ -283,7 +320,7 @@ class PHPShopCoreElement extends PHPShopElements {
         }
 
         // яндекс ID
-        if ($this->PHPShopSystem->ifSerilizeParam('admoption.yandex_id_enabled') and $this->PHPShopSystem->getSerilizeParam('admoption.yandex_id_apikey') !="") {
+        if ($this->PHPShopSystem->ifSerilizeParam('admoption.yandex_id_enabled') and $this->PHPShopSystem->getSerilizeParam('admoption.yandex_id_apikey') != "") {
             $this->set('yandex_id_apikey', $this->PHPShopSystem->getSerilizeParam('admoption.yandex_id_apikey'));
             $this->set('yandex_redirect_uri', $_SERVER['SERVER_NAME'] . 'phpshop/ajax/yandexid.php');
 
@@ -1701,7 +1738,7 @@ class PHPShopBannerElement extends PHPShopElements {
 /**
  * Ёлемент фото галере€
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopElements
  */
 class PHPShopPhotoElement extends PHPShopElements {
@@ -1769,7 +1806,7 @@ class PHPShopPhotoElement extends PHPShopElements {
                 $this->set('photoInfo', $row['info']);
                 $this->set('photoImg', $row['name']);
 
-                $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_forma.tpl', true);
+                $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_preview.tpl', true);
             }
         return $dis;
     }
@@ -1957,6 +1994,10 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
+
+
+
 
 
 

@@ -3,7 +3,7 @@
 /**
  * Обработчик товаров новинок
  * @author PHPShop Software
- * @version 1.4
+ * @version 1.5
  * @package PHPShopShopCore
  */
 class PHPShopNewtip extends PHPShopShopCore {
@@ -99,7 +99,7 @@ class PHPShopNewtip extends PHPShopShopCore {
         }
 
         // Пагинатор
-        if (is_array($order))
+        if (is_array($this->dataArray))
             $this->setPaginator(count($this->dataArray));
 
         // Добавляем в дизайн ячейки с товарами

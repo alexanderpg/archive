@@ -94,6 +94,9 @@ function actionStart() {
             array("Телефон основной", "Телефон дополнительный"), array($PHPShopGUI->setInputText(null, "tel_new", $data['tel']),
         $PHPShopGUI->setInputText(null, "option[org_tel]", '')), array(array(2, 4), array(2, 4)));
     $Tab1 .= $PHPShopGUI->setField(
+            array("Режим работы", "Адрес"), array($PHPShopGUI->setInputText(null, "option[org_time]", $option['org_time']),
+        $PHPShopGUI->setInputText(null, "option[org_adres]", $option['org_adres'])), array(array(2, 4), array(2, 4)));
+    $Tab1 .= $PHPShopGUI->setField(
             array("Конфигурация", "E-mail оповещение"), array($PHPShopGUI->setSelect('shop_type_new', $shop_type_value,'100%',true),
         $PHPShopGUI->setInputText(null, "adminmail_new", $data['adminmail'])), array(array(2, 4), array(2, 4)));
     

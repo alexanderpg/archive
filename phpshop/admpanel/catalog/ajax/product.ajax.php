@@ -83,6 +83,16 @@ if (isset($_GET['cat']) or isset($_GET['sub'])) {
         $where['(category'] = "=" . intval($_GET['cat']) . ' OR category=1000002  OR dop_cat LIKE \'%#' . intval($_GET['cat']) . '#%\') ';
     }
 
+    // Отложенные
+    if ($_GET['cat'] == 1000005 and ! empty($_COOKIE['idselect'])) {
+        $idselect = json_decode($_COOKIE['idselect'], true);
+
+        if (is_array($idselect)) {
+            unset($where['(category']);
+            $where['id'] = sprintf(' IN (%s)', implode(',', $idselect));
+        }
+    }
+
     // Направление сортировки из настроек каталога
     $PHPShopCategory = new PHPShopCategory(intval($_GET['cat']));
     switch ($PHPShopCategory->getParam('order_to')) {
@@ -136,6 +146,11 @@ if (!empty($_GET['where']) and is_array($_GET['where'])) {
 
                 if (!empty($vendor))
                     $where[PHPShopSecurity::TotalClean($k)] = $vendor;
+            }
+
+            // Категория
+            else if ($k == "category") {
+                $where['(category'] = "=" . intval($v) . ' OR dop_cat LIKE \'%#' . intval($v) . '#%\') ';
             } else
                 $where[PHPShopSecurity::TotalClean($k)] = " " . $core . " '" . PHPShopSecurity::TotalClean($v) . "'";
         }
@@ -163,7 +178,7 @@ else
 
 // Таблица с данными
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-$PHPShopOrm->debug = false;
+//$PHPShopOrm->debug = true;
 
 if (empty($_GET['from']))
     $_GET['from'] = null;
@@ -171,11 +186,12 @@ if (empty($_GET['from']))
 // Быстрый поиск
 if ($_GET['from'] == 'header') {
     $where['parent_enabled'] = "='0'";
-    
+
     // Учет модуля ProductOption
-    if (!empty($GLOBALS['SysValue']['base']['productoption']['productoption_system'])) 
-       $where['parent_enabled'] .= " and (name " . $where['name'] . " or uid " . $where['name'] . " or id " . $where['name'] . " or option1 " . $where['name'] . " or option2 " . $where['name'] . " or option3 " . $where['name'] . " or option4 " . $where['name'] . " or option5 " . $where['name'] . ")";
-    else $where['parent_enabled'] .= " and (name " . $where['name'] . " or uid " . $where['name'] . " or id " . $where['name'] . ")";
+    if (!empty($GLOBALS['SysValue']['base']['productoption']['productoption_system']))
+        $where['parent_enabled'] .= " and (name " . $where['name'] . " or uid " . $where['name'] . " or id " . $where['name'] . " or option1 " . $where['name'] . " or option2 " . $where['name'] . " or option3 " . $where['name'] . " or option4 " . $where['name'] . " or option5 " . $where['name'] . ")";
+    else
+        $where['parent_enabled'] .= " and (name " . $where['name'] . " or uid " . $where['name'] . " or id " . $where['name'] . ")";
 
     unset($where['name']);
 } elseif ($_GET['from'] != 'search') {
@@ -244,21 +260,20 @@ if ($count_view > 8)
     unset($memory['catalog.option']['menu']);
 
 // Режим каталога
-if($PHPShopSystem->getParam("shop_type") == 1){
-    $memory['catalog.option']['price']=0;
-    $memory['catalog.option']['price2']=0;
-    $memory['catalog.option']['price3']=0;
-    $memory['catalog.option']['price4']=0;
-    $memory['catalog.option']['price5']=0;
-    $memory['catalog.option']['price_n']=0;
-    $memory['catalog.option']['price_purch']=0;
-    $memory['catalog.option']['item']=0;
+if ($PHPShopSystem->getParam("shop_type") == 1) {
+    $memory['catalog.option']['price'] = 0;
+    $memory['catalog.option']['price2'] = 0;
+    $memory['catalog.option']['price3'] = 0;
+    $memory['catalog.option']['price4'] = 0;
+    $memory['catalog.option']['price5'] = 0;
+    $memory['catalog.option']['price_n'] = 0;
+    $memory['catalog.option']['price_purch'] = 0;
+    $memory['catalog.option']['item'] = 0;
 }
 
 $PHPShopOrm->mysql_error = false;
 $sklad_enabled = $PHPShopSystem->getSerilizeParam('admoption.sklad_enabled');
 //$PHPShopOrm->debug=true;
-
 
 $data = $PHPShopOrm->select(array('*'), $where, $order, $limit);
 if (is_array($data))
@@ -474,6 +489,8 @@ if (isset($_GET['cat'])) {
         $catname = __('Загруженные CSV');
     elseif ($_GET['cat'] == 1000004)
         $catname = __('Удаленные товары');
+    elseif ($_GET['cat'] == 1000005)
+        $catname = __('Отложенные товары');
     else
         $catname = $PHPShopCategory->getName();
 }

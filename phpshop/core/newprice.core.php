@@ -3,7 +3,7 @@
 /**
  * Обработчик распродаж
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopShopCore
  */
 class PHPShopNewprice extends PHPShopShopCore {
@@ -79,9 +79,8 @@ class PHPShopNewprice extends PHPShopShopCore {
             $this->PHPShopOrm->clean();
         }
 
-
         // Пагинатор
-        if (is_array($order))
+        if (is_array($this->dataArray))
             $this->setPaginator(count($this->dataArray));
 
         // Добавляем в дизайн ячейки с товарами

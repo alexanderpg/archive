@@ -53,7 +53,7 @@ function index_seourl_hook($obj, $row, $rout) {
         }
     }
 
-    if ($rout == 'END' and $row['category'] != 1000)
+    if ($rout == 'END' and $row['category'] != 1000 and !empty($row['category']))
         navigation_seourl($obj, $row['name'],['url'=>'/page/','name'=>__('Блог')]);
 }
 

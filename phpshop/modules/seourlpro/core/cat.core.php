@@ -29,7 +29,7 @@ class PHPShopSeoProCore extends PHPShopShop {
             parent::setError404();
     }
 
-    function query_filter($where = false) {
+    function query_filter($where = false,$v = false) {
 
         // Перехват модуля
         $hook = $this->setHook(get_parent_class(), __FUNCTION__);

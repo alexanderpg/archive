@@ -16,7 +16,7 @@
 
 
 
-    <div class="">@pageContent@</div>
+    <div class="row">@pageContent@</div>
 </div>
 
 

@@ -2,7 +2,7 @@
 
 /**
  * Библиотека работы с CommerceML
- * @version 1.5
+ * @version 1.6
  * @package PHPShopClass
  * https://v8.1c.ru/tekhnologii/obmen-dannymi-i-integratsiya/standarty-i-formaty/protokol-obmena-s-saytom/
  * https://dev.1c-bitrix.ru/api_help/sale/xml/contragents.php
@@ -214,10 +214,13 @@ class PHPShopCommerceML {
                     $sum = $PHPShopOrder->returnSumma($order['Cart']['sum'], $order['Person']['discount']);
 
                     $PHPShopDelivery = new PHPShopDelivery($order['Person']['dostavka_metod']);
+                    $delivery = str_replace(['&', '<', '>'], '', $PHPShopDelivery->getCity());
+                    if(empty($delivery))
+                        $delivery='Доставка';
 
                     $item = '<Товар>
 		                   <Ид>ORDER_DELIVERY</Ид>
-		                   <Наименование>' . str_replace(['&', '<', '>'], '', $PHPShopDelivery->getCity()) . '</Наименование>
+		                   <Наименование>' . $delivery . '</Наименование>
 				   <ЦенаЗаЕдиницу>' . $order['Cart']['dostavka'] . '</ЦенаЗаЕдиницу>
 				   <Количество>1</Количество>
 				   <Сумма>' . $order['Cart']['dostavka'] . '</Сумма>
@@ -306,7 +309,7 @@ class PHPShopCommerceML {
                 <Ид>' . $row['id'] . '</Ид>
 		<Номер>' . $row['uid'] . '</Номер>
 		<Дата>' . PHPShopDate::get($row['datas'], false, true) . '</Дата>
-                <Комментарий>' . str_replace(['&', '<', '>'], '', $status['maneger']) . '[Номер документа на сайте: ' . $row['uid'] . ']</Комментарий>
+                <Комментарий>' . html_entity_decode($status['maneger']) . '[Номер документа на сайте: ' . $row['uid'] . ']</Комментарий>
 		<ХозОперация>Заказ товара</ХозОперация>
 		<Роль>Продавец</Роль>
 		<Валюта>' . $PHPShopSystem->getDefaultValutaIso() . '</Валюта>
@@ -314,28 +317,28 @@ class PHPShopCommerceML {
                 <Контрагенты>
 		   <Контрагент>
                      <Ид>' . $row['user'] . '</Ид>
-		      <Наименование>' . $row['fio'] . '</Наименование>
-		      <ПолноеНаименование>' . $row['org_name'] . '</ПолноеНаименование>
+		      <Наименование>' . html_entity_decode($row['fio']) . '</Наименование>
+		      <ПолноеНаименование>' . html_entity_decode($row['org_name']) . '</ПолноеНаименование>
 		      <ИНН>' . $row['org_inn'] . '</ИНН>
 		      <КПП>' . $row['org_kpp'] . '</КПП>
 		      <Роль>Покупатель</Роль>
                       <АдресРегистрации>
-                        <Представление>' . $adr_info. '</Представление>
+                        <Представление>' . html_entity_decode($adr_info). '</Представление>
                         <АдресноеПоле>
                           <Тип>Город</Тип>
-                          <Значение>' . $row['city'] . '</Значение>
+                          <Значение>' . html_entity_decode($row['city']) . '</Значение>
                         </АдресноеПоле>
                         <АдресноеПоле>
                           <Тип>Улица</Тип>
-                          <Значение>' . $row['street'] . '</Значение>
+                          <Значение>' . html_entity_decode($row['street']) . '</Значение>
                         </АдресноеПоле>
                         <АдресноеПоле>
                           <Тип>Дом</Тип>
-                          <Значение>' . $row['house'] . '</Значение>
+                          <Значение>' . html_entity_decode($row['house']) . '</Значение>
                         </АдресноеПоле>
                         <АдресноеПоле>
                           <Тип>Квартира</Тип>
-                          <Значение>' . $row['flat'] . '</Значение>
+                          <Значение>' . html_entity_decode($row['flat']) . '</Значение>
                         </АдресноеПоле>
                       </АдресРегистрации>
                         <Контакты>
@@ -360,7 +363,7 @@ class PHPShopCommerceML {
                   </ЗначениеРеквизита>
                   <ЗначениеРеквизита>
 		      <Наименование>Адрес доставки</Наименование>
-		      <Значение>' . $adr_info . '</Значение>
+		      <Значение>' . html_entity_decode($adr_info) . '</Значение>
 		  </ЗначениеРеквизита>
         </ЗначенияРеквизитов>
 	</Документ>';

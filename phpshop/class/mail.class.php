@@ -26,7 +26,7 @@ class PHPShopMail {
      * Конструктор
      * @param string $to куда
      * @param string $from от кого
-     * @param string $zag заголовок письма
+     * @param string $subject заголовок письма
      * @param string $content содержание письма
      * @param boolean $type тип письма, текст или html, true ='text/html', false = text/plain
      * @param boolean $noSend true - не отсылать письмо при создании экземпляра класса. 

@@ -3,7 +3,7 @@
 /**
  * Обработчик спецпредложений товаров
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopShopCore
  */
 class PHPShopSpec extends PHPShopShopCore {
@@ -71,9 +71,8 @@ class PHPShopSpec extends PHPShopShopCore {
             $this->PHPShopOrm->clean();
         }
 
-
         // Пагинатор
-        if (is_array($order))
+        if (is_array($this->dataArray))
             $this->setPaginator(count($this->dataArray));
 
         // Добавляем в дизайн ячейки с товарами

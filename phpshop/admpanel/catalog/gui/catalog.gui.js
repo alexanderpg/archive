@@ -13,7 +13,7 @@ $().ready(function () {
 
     // Создать из списка Modal
     $("button[name=addNewModal]").on('click', function () {
- 
+
         var href = '?path=product&return=catalog&action=new&frame=true&admin=true';
         if (cat > 0)
             href += '&cat=' + cat;
@@ -27,7 +27,7 @@ $().ready(function () {
     // Создать из модальной карточки карточки
     $("button[name=actionInsert]").on('click', function (event) {
         event.preventDefault();
-  
+
         $(window).unbind("beforeunload");
 
         var data = [];
@@ -114,10 +114,10 @@ $().ready(function () {
 
     // Модальное окно закрытие
     $('#adminModal').on('hidden.bs.modal', function (event) {
-        
+
         var cat = $.cookie('cat');
         $('.product-modal-content').attr('src', null);
-        $.cookie('cat',cat);
+        $.cookie('cat', cat);
 
         if (adminModal.is_change) {
             var cat = adminModal.window.$('[name=category_new]').selectpicker('val');
@@ -404,7 +404,7 @@ $().ready(function () {
 
             var $tmp = $("<textarea>");
             $("body").append($tmp);
-            $tmp.val(data.substring(0,data.length - 1)).select();
+            $tmp.val(data.substring(0, data.length - 1)).select();
             document.execCommand("copy");
             $tmp.remove();
 
@@ -413,6 +413,95 @@ $().ready(function () {
                 message: locale.copy
             });
 
+
+        } else
+            alert(locale.select_no);
+    });
+
+    // Удалить отложенные
+    $(".select-action .id-select-delete").on('click', function (event) {
+        event.preventDefault();
+
+        if ($('#data input[name="items"]:checkbox:checked').length) {
+
+            if ($.cookie('idselect') !== undefined) {
+                var data = $.cookie('idselect');
+                var idselect = eval(data);
+            } else
+                var idselect = [];
+
+            var cur = 0;
+            var count=0;
+
+            $('#data input[name="items"]:checkbox:checked').each(function () {
+                if (this.value != 'all') {
+
+                    cur = $.inArray($(this).attr('data-id'), idselect);
+
+                    if (cur > 0){
+                        idselect.splice(cur, 1);
+                        count++;
+                    }
+                }
+
+            });
+
+            $.MessageBox({
+                buttonDone: "OK",
+                buttonFail: locale.cancel,
+                message: locale.confirm_wishlist_delete
+            }).done(function () {
+
+                showAlertMessage(locale.wishlist_delete_done+' '+count);
+
+                $.cookie('idselect', JSON.stringify(idselect), {
+                    path: '/',
+                    expires: 365
+                });
+            })
+
+        } else
+            alert(locale.select_no);
+    });
+
+    // Отложить выбранные
+    $(".select-action .id-select").on('click', function (event) {
+        event.preventDefault();
+
+        if ($('#data input[name="items"]:checkbox:checked').length) {
+
+            if ($.cookie('idselect') !== undefined) {
+                var data = $.cookie('idselect');
+                var idselect = eval(data);
+            } else
+                var idselect = [];
+
+            var count=0;
+            $('#data input[name="items"]:checkbox:checked').each(function () {
+                if (this.value != 'all') {
+
+                    if ($.inArray($(this).attr('data-id'), idselect) < 0){
+                        idselect.push($(this).attr('data-id'));
+                    }
+                    
+                    count++;
+                }
+
+            });
+
+            $.MessageBox({
+                buttonDone: "OK",
+                buttonFail: locale.cancel,
+                message: locale.confirm_wishlist
+            }).done(function () {
+                
+                showAlertMessage(locale.wishlist_done+' '+count);
+
+                $.cookie('idselect', JSON.stringify(idselect), {
+                    path: '/',
+                    expires: 365
+                });
+            })
 
         } else
             alert(locale.select_no);
@@ -678,16 +767,16 @@ $().ready(function () {
                 async: false,
                 success: function (json) {
                     if (json['success'] == 1) {
-                        showAlertMessage(locale.done+'. '+locale.products_completed + ' ' + json['count']);
+                        showAlertMessage(locale.done + '. ' + locale.products_completed + ' ' + json['count']);
                     } else
                         showAlertMessage(locale.save_false, true);
                 }
             });
         });
     });
-    
+
     $('.fix-category').on('click', function () {
-        
+
         $.MessageBox({
             buttonDone: "OK",
             buttonFail: locale.cancel,

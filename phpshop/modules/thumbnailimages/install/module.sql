@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_thumbnailimages_system` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_thumbnailimages_system` VALUES (1, 1000, 0, 'thumb', '1','1','0','0','1.2');
+INSERT INTO `phpshop_modules_thumbnailimages_system` VALUES (1, 1000, 0, 'thumb', '1','1','0','0','1.3');

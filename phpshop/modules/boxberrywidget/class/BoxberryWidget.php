@@ -51,7 +51,7 @@ class BoxberryWidget {
         $data = json_decode(curl_exec($ch),1);
         if($data['err']) {
             $this->log(
-                array('error' => PHPShopString::utf8_win1251($data['err']), 'parameters' => $this->parameters),
+                array('error' => $data['err'], 'parameters' => $this->parameters),
                 $orderId,
                 'Ошибка передачи заказа',
                 'Передача заказа службе доставки Boxberry',

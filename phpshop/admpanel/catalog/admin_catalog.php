@@ -63,6 +63,18 @@ function actionStart() {
         'action' => 'copy-id-select',
         'class' => 'disabled'
     );
+    
+    $PHPShopInterface->action_select['Отложить выбранные'] = array(
+        'name' => 'Отложить выбранные',
+        'action' => 'id-select',
+        'class' => 'disabled'
+    );
+    
+    $PHPShopInterface->action_select['Убрать из отложенных выбранные'] = array(
+        'name' => 'Убрать из отложенных выбранные',
+        'action' => 'id-select-delete',
+        'class' => 'disabled'
+    );
 
     $PHPShopInterface->action_select['Настройка'] = array(
         'name' => 'Настройка полей',
@@ -97,7 +109,7 @@ function actionStart() {
     if ($PHPShopSystem->getSerilizeParam('admoption.fast_view') == 1)
         $PHPShopInterface->action_button['Добавить товар']['action'] = 'addNew';
 
-    $PHPShopInterface->setActionPanel($TitlePage . $catname, array('Поиск', '|', 'Предпросмотр', 'Настройка', 'Редактировать каталог', 'Редактировать выбранные', 'Скопировать ID выбранных', 'CSV', '|', 'Удалить выбранные'), array('Добавить товар'));
+    $PHPShopInterface->setActionPanel($TitlePage . $catname, array('Поиск', '|', 'Предпросмотр', 'Настройка', 'Редактировать каталог', 'Редактировать выбранные', 'CSV', '|', 'Скопировать ID выбранных', 'Отложить выбранные',  'Убрать из отложенных выбранные', '|', 'Удалить выбранные'), array('Добавить товар'));
 
     $PHPShopInterface->setCaption(
             ...getTableCaption()

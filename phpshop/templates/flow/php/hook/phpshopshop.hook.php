@@ -456,6 +456,6 @@ $addHandler = array
     'CID_Product' => 'template_CID_Product',
     'parent' => 'template_parent',
     'UID' => 'template_UID',
-    'image_gallery' => 'template_image_gallery'
+    'image_gallery' => 'template_image_gallery',
 );
 ?>

@@ -570,6 +570,10 @@
             <name>catalogName</name>
             <description>Наименование подкаталога</description>
         </var>
+        <var>
+            <name>catalogIcon</name>
+            <description>Иконка подкаталога</description>
+        </var>
     </template>
     <template>
         <name>Форма каталога 1</name>
@@ -590,6 +594,10 @@
         <var>
             <name>catalogName</name>
             <description>Наименование каталога</description>
+        </var>
+        <var>
+            <name>catalogIcon</name>
+            <description>Иконка каталога</description>
         </var>
     </template>
 
@@ -613,6 +621,10 @@
             <name>catalogName</name>
             <description>Наименование каталога</description>
         </var>
+        <var>
+            <name>catalogIcon</name>
+            <description>Иконка каталога</description>
+        </var>
     </template>
 
     <template>
@@ -630,6 +642,10 @@
         <var>
             <name>catalogName</name>
             <description>Наименование каталога</description>
+        </var>
+        <var>
+            <name>catalogIcon</name>
+            <description>Иконка каталога</description>
         </var>
     </template>
 

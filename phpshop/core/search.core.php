@@ -246,7 +246,7 @@ class PHPShopSearch extends PHPShopShopCore {
             $_REQUEST['words'] = urldecode($_REQUEST['words']);
 
         // Фильтр поиска
-        $_REQUEST['words'] = PHPShopSecurity::true_search($_REQUEST['words']);
+        $_REQUEST['words'] = PHPShopSecurity::true_search($_REQUEST['words'],true);
 
         // Yandex Speller
         if ($this->isYandexSpeller)

@@ -66,7 +66,6 @@ function query_filter($obj) {
     else
         $cat = null;
 
-    $words = trim(PHPShopSecurity::true_search($_REQUEST['words']));
     $num_row = $obj->num_row;
     $num_ot = $q = 0;
 
@@ -84,7 +83,7 @@ function query_filter($obj) {
         }
 
     // Чистка запроса Secure Fix
-    $words = PHPShopSecurity::true_search(PHPShopSecurity::TotalClean($words, 2));
+    $words = PHPShopSecurity::true_search(PHPShopSecurity::TotalClean($_REQUEST['words'], 2),true);
 
     // Разделяем слова
     $_WORDS = explode(" ", $words);

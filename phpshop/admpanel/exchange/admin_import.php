@@ -727,16 +727,20 @@ function csv_update($data) {
                         case(3):
                             if ($row['items'] < 1) {
                                 $row['sklad'] = 1;
+                                $row['p_enabled'] = 0;
                             } else {
                                 $row['sklad'] = 0;
+                                $row['p_enabled'] = 1;
                             }
                             break;
 
                         case(2):
                             if ($row['items'] < 1) {
                                 $row['enabled'] = 0;
+                                $row['p_enabled'] = 0;
                             } else {
                                 $row['enabled'] = 1;
+                                $row['p_enabled'] = 1;
                             }
                             break;
 
@@ -845,16 +849,20 @@ function csv_update($data) {
                         case(3):
                             if ($row['items'] < 1) {
                                 $row['sklad'] = 1;
+                                $row['p_enabled'] = 0;
                             } else {
                                 $row['sklad'] = 0;
+                                $row['p_enabled'] = 1;
                             }
                             break;
 
                         case(2):
                             if ($row['items'] < 1) {
                                 $row['enabled'] = 0;
+                                $row['p_enabled'] = 0;
                             } else {
                                 $row['enabled'] = 1;
+                                $row['p_enabled'] = 1;
                             }
                             break;
 
@@ -1360,7 +1368,7 @@ function actionStart() {
         }
     }
 
-    if (!empty($_POST['lfile'])) {
+    if (!empty($_POST['export_action'])) {
         $memory[$_GET['path']]['export_sortdelim'] = @$_POST['export_sortdelim'];
         $memory[$_GET['path']]['export_sortsdelim'] = @$_POST['export_sortsdelim'];
         $memory[$_GET['path']]['export_imgdelim'] = @$_POST['export_imgdelim'];

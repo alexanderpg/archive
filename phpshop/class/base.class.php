@@ -55,8 +55,6 @@ class PHPShopBase {
      */
     function __construct($iniPath, $connectdb = true, $error = true) {
         
-        $error = false;
-
         // Отладка ядра
         $this->setPHPCoreReporting($error);
 

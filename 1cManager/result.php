@@ -4,7 +4,7 @@
  * Автономная синхронизация номенклатуры из 1С и CML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 4.1
+ * @version 4.3
  */
 // Авторизация
 include_once("login.php");
@@ -676,7 +676,6 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                 else {
                     if (PHPShopProductFunction::true_parent($CsvToArray[0])) {
                         $sql .= "parent_enabled='1', ";
-                        
                     } else {
                         $sql .= "parent_enabled='0', ";
                     }
@@ -684,13 +683,11 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                     if (strstr($CsvToArray[16], "@")) {
                         $parent_array = explode("@", $CsvToArray[16]);
                         $sql .= "parent='" . $parent_array[0] . "', parent2='" . $parent_array[1] . "',";
-                    } 
-                    elseif (strstr($CsvToArray[16], ",") and PHPShopProductFunction::true_parent($CsvToArray[0])) {
+                    } elseif ($this->ObjSystem->getSerilizeParam("1c_option.update_option_delim") == 1 and strstr($CsvToArray[16], ",") and PHPShopProductFunction::true_parent($CsvToArray[0])) {
                         $parent_array = explode(",", $CsvToArray[16]);
                         $sql .= "parent='" . trim($parent_array[0]) . "', parent2='" . trim($parent_array[1]) . "',";
-                    } 
-                    else
-                        $sql .= "parent='" . $CsvToArray[16] . "', ";
+                    } else
+                        $sql .= "parent='" . $CsvToArray[16] . "', parent2='', ";
                 }
             }
 
@@ -791,7 +788,15 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                     $sql = "UPDATE " . $this->TableName . " SET ";
                     $sql .= "vendor='" . $vendor . "', ";
                     $sql .= "vendor_array='" . $resSerialized . "' ";
-                    $sql .= " where uid='" . $CsvToArray[0] . "'";
+
+                    // CML
+                    if (!empty($_GET['cml'])) {
+                        $sql .= " where external_code='" . $CsvToArray[17] . "'";
+                    }
+                    // 1C
+                    else {
+                        $sql .= " where uid='" . $CsvToArray[0] . "'";
+                    }
 
                     // Отладка
                     if (isset($_REQUEST['debug'])) {
@@ -934,13 +939,11 @@ class ReadCsv1C extends PHPShopReadCsvNative {
                 if (strstr($CsvToArray[16], "@")) {
                     $parent_array = explode("@", $CsvToArray[16]);
                     $sql .= "parent='" . $parent_array[0] . "', parent2='" . $parent_array[1] . "',";
-                } 
-                elseif (strstr($CsvToArray[16], ",") and PHPShopProductFunction::true_parent($CsvToArray[0])) {
+                } elseif ($this->ObjSystem->getSerilizeParam("1c_option.update_option_delim") == 1and strstr($CsvToArray[16], ",") and PHPShopProductFunction::true_parent($CsvToArray[0])) {
                     $parent_array = explode(",", $CsvToArray[16]);
                     $sql .= "parent='" . trim($parent_array[0]) . "', parent2='" . trim($parent_array[1]) . "',";
-                } 
-                elseif ($CsvToArray[16] != "1")
-                    $sql .= "parent='" . $CsvToArray[16] . "', ";
+                } elseif ($CsvToArray[16] != "1")
+                    $sql .= "parent='" . $CsvToArray[16] . "', parent2='', ";
             }
 
 

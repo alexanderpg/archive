@@ -5,7 +5,6 @@ Disallow: /newtip/
 Disallow: /spec/
 Disallow: /price/
 Disallow: /search/
-Disallow: /opros/
 Disallow: /install/
 Disallow: /compare/
 Disallow: /done/
@@ -27,7 +26,6 @@ Disallow: /newtip/
 Disallow: /spec/
 Disallow: /price/
 Disallow: /search/
-Disallow: /opros/
 Disallow: /install/
 Disallow: /compare/
 Disallow: /done/
@@ -39,7 +37,7 @@ Disallow: /forma/
 Disallow: /users/
 Disallow: /selection/
 Disallow: /rss/
-Disallow: /*.html?*$
+Disallow: *?
 
 User-agent: *
 Disallow: /newprice/
@@ -47,7 +45,6 @@ Disallow: /newtip/
 Disallow: /spec/
 Disallow: /price/
 Disallow: /search/
-Disallow: /opros/
 Disallow: /install/
 Disallow: /compare/
 Disallow: /done/

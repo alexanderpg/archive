@@ -84,7 +84,8 @@ function OzonsellerUpdate($post) {
 
                     // Товар выгрузился
                     if (!empty($info['product_id'])) {
-                        $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_task_id_new' => time(), 'export_ozon_id_new' => $info['product_id']], ['id' => '=' . (int) $data['id']]);
+                        $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_id_new' => $info['product_id']], ['id' => '=' . (int) $data['id']]);
+                        $_POST['export_ozon_id_new'] = $info['product_id'];
                         $OzonSeller->clean_log($data['id']);
                     }
                     // Ошибка
@@ -142,7 +143,7 @@ function OzonsellerUpdate($post) {
 
                 // Ошибка обновления, не найден OZON ID, сбрасываем статусы
                 if (empty($product_id)) {
-                    $PHPShopOrm->update(['export_ozon_task_status_new' => '', 'export_ozon_task_id_new' => ''], ['id' => '=' . $_POST['rowID']]);
+                    //$PHPShopOrm->update(['export_ozon_task_status_new' => '', 'export_ozon_task_id_new' => ''], ['id' => '=' . $_POST['rowID']]);
                 }
             }
         }

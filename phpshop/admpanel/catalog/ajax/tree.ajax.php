@@ -143,6 +143,11 @@ if (!empty($addNodes)) {
                 'text' => PHPShopString::win_utf8(__('Удаленные')),
                 'icon' => 'glyphicon glyphicon-trash',
                 'tags' => '1000004'
+            ),
+            1000005 => array(
+                'text' => PHPShopString::win_utf8(__('Отложенные')),
+                'icon' => 'glyphicon glyphicon-copy',
+                'tags' => '1000005'
             )
         )
     );

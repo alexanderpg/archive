@@ -143,7 +143,19 @@ class PHPShopOrderDelivery {
                     $class .= ' req';
                     $required = 'required';
                 }
-                $disp .= '<p><input type="text" class="' . $class . '" value="" name="' . $key . '_new" ' .  $required . ' placeholder="' . $enabled[$key]['name'] . '"></p>';
+                
+                $val=null;
+                
+                // Телефон
+                if($key == 'tel' and !empty($_SESSION['UsersTel']))
+                    $val = $_SESSION['UsersTel'];
+                
+                // ФИО
+                if($key == 'fio' and !empty($_SESSION['UsersName']))
+                    $val = $_SESSION['UsersName'];
+                
+                
+                $disp .= '<p><input type="text" class="' . $class . '" value="'.$val.'" name="' . $key . '_new" ' .  $required . ' placeholder="' . $enabled[$key]['name'] . '"></p>';
             }
         }
 

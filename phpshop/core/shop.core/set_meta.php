@@ -141,6 +141,13 @@ function product_meta($array, $flag) {
             $Price = $PHPShopProduct->getPrice();
             $Shablon = str_replace("@Price@", $Price, $Shablon);
         }
+        
+        // Артикул
+        if (strstr($Shablon, '@Art@')) {
+            $PHPShopProduct = new PHPShopProduct($row['id']);
+            $Art = $PHPShopProduct->getParam('uid');
+            $Shablon = str_replace("@Art@", $Art, $Shablon);
+        }
 
         $Shablon = str_replace("@Catalog@", $Catalog, $Shablon);
         $Shablon = str_replace("@Podcatalog@", $Podcatalog, $Shablon);

@@ -342,32 +342,32 @@ TRUNCATE ' . $GLOBALS['SysValue']['base']['citylist_city'] . ';', '');
             $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile());
 
     // Конструктор
-    $query_table_value[] = [__('Не выбрано'), '', $_POST['query_table']];
-    $query_table_value[] = [__('Товары'), $GLOBALS['SysValue']['base']['products'], $_POST['query_table']];
-    $query_table_value[] = [__('Каталоги'), $GLOBALS['SysValue']['base']['categories'], $_POST['query_table']];
-    $query_table_value[] = [__('Пользователи'), $GLOBALS['SysValue']['base']['shopusers'], $_POST['query_table']];
-    $query_table_value[] = [__('Заказы'), $GLOBALS['SysValue']['base']['orders'], $_POST['query_table']];
+    $query_table_value[] = ['Не выбрано', '', $_POST['query_table']];
+    $query_table_value[] = ['Товары', $GLOBALS['SysValue']['base']['products'], $_POST['query_table']];
+    $query_table_value[] = ['Каталоги', $GLOBALS['SysValue']['base']['categories'], $_POST['query_table']];
+    $query_table_value[] = ['Пользователи', $GLOBALS['SysValue']['base']['shopusers'], $_POST['query_table']];
+    $query_table_value[] = ['Заказы', $GLOBALS['SysValue']['base']['orders'], $_POST['query_table']];
 
-    $query_action_value[] = [__('Не выбрано'), '',$_POST['query_action']];
-    $query_action_value[] = [__('Изменить'), 'update', $_POST['query_action']];
-    $query_action_value[] = [__('Удалить'), 'delete', $_POST['query_action']];
-    $query_action_value[] = [__('Выбрать'), 'select', $_POST['query_action']];
+    $query_action_value[] = ['Не выбрано', '',$_POST['query_action']];
+    $query_action_value[] = ['Изменить', 'update', $_POST['query_action']];
+    $query_action_value[] = ['Удалить', 'delete', $_POST['query_action']];
+    $query_action_value[] = ['Выбрать', 'select', $_POST['query_action']];
 
-    $query_var_value[] = [__('Не выбрано'), '', ''];
+    $query_var_value[] = ['Не выбрано', '', ''];
     foreach ($key_name as $k => $v)
-        $query_var_value[] = [__($v), $k, $_POST['query_var']];
+        $query_var_value[] = [$v, $k, $_POST['query_var']];
 
-    $query_condition_value[] = [__('Не выбрано'), '', $_POST['query_condition']];
-    $query_condition_value[] = [__('Равно'), '=', $_POST['query_condition']];
-    $query_condition_value[] = [__('Не равно'), '!=', $_POST['query_condition']];
-    $query_condition_value[] = [__('Больше'), '>', $_POST['query_condition']];
-    $query_condition_value[] = [__('Меньше'), '<', $_POST['query_condition']];
+    $query_condition_value[] = ['Не выбрано', '', $_POST['query_condition']];
+    $query_condition_value[] = ['Равно', '=', $_POST['query_condition']];
+    $query_condition_value[] = ['Не равно', '!=', $_POST['query_condition']];
+    $query_condition_value[] = ['Больше', '>', $_POST['query_condition']];
+    $query_condition_value[] = ['Меньше', '<', $_POST['query_condition']];
 
-    $query_val_value[] = [__('Не выбрано'), '', $_POST['query_val']];
+    $query_val_value[] = ['Не выбрано', '', $_POST['query_val']];
     $query_val_value[] = ['0', "'0'", $_POST['query_val']];
     $query_val_value[] = ['1', "'1'", $_POST['query_val']];
-    $query_val_value[] = [__('Пусто'), "''", $_POST['query_val']];
-    $query_val_value[] = [__('Ввести'), "prompt", $_POST['query_val']];
+    $query_val_value[] = ['Пусто', "''", $_POST['query_val']];
+    $query_val_value[] = ['Ввести', "prompt", $_POST['query_val']];
 
     $Tab2 = $PHPShopGUI->setField('Тип данных', $PHPShopGUI->setSelect('query_table', $query_table_value, 200, true, false, false, false, 1, false, false, 'selectpicker'). $PHPShopGUI->setButton('Сгенерировать','play','query_generation'));
     $Tab2 .= $PHPShopGUI->setField('Действие', $PHPShopGUI->setSelect('query_action', $query_action_value, 200, true, false, false, false, 1, false, false, 'selectpicker'));

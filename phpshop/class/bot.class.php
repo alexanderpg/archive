@@ -3,7 +3,7 @@
 /**
  * Библиотека Dialog Bot
  * @author PHPShop Software
- * @version 1.5
+ * @version 1.6
  * @package PHPShopClass
  */
 class PHPShopBot {
@@ -641,8 +641,38 @@ class PHPShopTelegramBot extends PHPShopBot {
             return true;
     }
 
+    public function downloadFile($url, $path) {
+
+        $newfname = $path;
+        $url = iconv("windows-1251", "utf-8//IGNORE", $url);
+
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ),
+        );
+
+        $file = @fopen($url, 'rb', false, stream_context_create($arrContextOptions));
+        if ($file) {
+            $newf = fopen($newfname, 'wb');
+            if ($newf) {
+                while (!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                }
+            }
+        }
+        if ($file) {
+            fclose($file);
+        }
+        if ($newf) {
+            fclose($newf);
+            return true;
+        }
+    }
+
     public function add_news($message) {
-        
+
         $this->token = $this->news_token;
 
         if (empty($message['caption']))
@@ -655,19 +685,23 @@ class PHPShopTelegramBot extends PHPShopBot {
 
 
         // Заголовок
-        $title = explode(PHP_EOL,  $message['caption'])[0];
-        
+        $title = explode(PHP_EOL, $message['caption'])[0];
+
         $insert['zag_new'] = $title;
 
         // Картинка
         if (is_array($message['photo'])) {
 
-            $small = $message['photo'][1]['file_id'];
             $big = $message['photo'][count($message['photo']) - 1]['file_id'];
 
-            $image = $this->file($big);
-            $insert['podrob_new'] = '<div><img src="' . $image . '" referrerpolicy="no-referrer" alt="" class="img-responsive img-fluid"></div>';
-            $insert['icon_new'] = $this->file($small);
+            $file = $this->file($big);
+            $image = '/UserFiles/Image/' . pathinfo($file)['basename'];
+
+            // Загрузка картинки
+            if ($this->downloadFile($file, $_SERVER['DOCUMENT_ROOT'] . $image)) {
+                $insert['podrob_new'] = '<div><img src="' . $image . '" referrerpolicy="no-referrer" alt="" class="img-responsive img-fluid"></div>';
+                $insert['icon_new'] = $image;
+            }
         }
 
         // Видео
@@ -676,9 +710,23 @@ class PHPShopTelegramBot extends PHPShopBot {
             $thumb = $message['video']['thumb']['file_id'];
             $video = $message['video']['file_id'];
 
-            $mp4 = $this->file($video);
-            $insert['podrob_new'] = '<div><video src="' . $mp4 . '" controls="controls"></video></div>';
-            $insert['icon_new'] = $this->file($thumb);
+            $video = $this->file($video);
+            $mp4 = '/UserFiles/Image/' . pathinfo($video)['basename'];
+
+            // Загрузка файла видео
+            if ($this->downloadFile($video, $_SERVER['DOCUMENT_ROOT'] . $mp4)) {
+                $insert['podrob_new'] = '<div><video src="' . $mp4 . '" controls="controls"></video></div>';
+                
+            }
+            
+            $thumb = $this->file($thumb);
+            $image = '/UserFiles/Image/' . pathinfo($thumb)['basename'];
+            
+            // Загрузка картинки
+            if ($this->downloadFile($thumb, $_SERVER['DOCUMENT_ROOT'] . $image)) {
+                $insert['icon_new'] = $image;
+            }
+            
         }
 
         if (!empty($this->news_delim))

@@ -254,7 +254,7 @@
 
                                     <!-- Menu -->
                                     @php
-                                    if(empty(PHPShopParser::get('hideSite')))
+                                    if(empty(PHPShopParser::get('hideSite')) and !empty(PHPShopParser::get('topMenu')))
                                     echo '<li class="hs-has-sub-menu navbar-nav-item">
                                         <a id="blogMegaMenu" class="hs-mega-menu-invoker nav-link nav-link-toggle " href="javascript:;" aria-haspopup="true" aria-expanded="false" aria-labelledby="blogSubMenu">{Навигация}</a>
 

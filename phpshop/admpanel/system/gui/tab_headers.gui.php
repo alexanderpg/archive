@@ -75,6 +75,7 @@ function tab_headers($data, $option) {
 <input type="button" value="'.__('Подкаталог').'" data-seo="@Podcatalog@" data-target="title_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Товар').'" data-seo="@Product@" data-target="title_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Цена').'" data-seo="@Price@" data-target="title_shablon2_new" class="seo-button btn btn-default btn-sm">
+<input type="button" value="'.__('Артикул').'" data-seo="@Art@" data-target="title_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Общий').'" data-seo="@System@" data-target="title_shablon2_new" class="seo-button btn btn-default btn-sm">
 </div>
 ');
@@ -86,6 +87,7 @@ function tab_headers($data, $option) {
 <input type="button" value="'.__('Подкаталог').'" data-seo="@Podcatalog@" data-target="descrip_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Товар').'" data-seo="@Product@" data-target="descrip_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Цена').'" data-seo="@Price@" data-target="descrip_shablon2_new" class="seo-button btn btn-default btn-sm">
+<input type="button" value="'.__('Артикул').'" data-seo="@Art@" data-target="descrip_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Общий').'" data-seo="@System@" data-target="descrip_shablon2_new" class="seo-button btn btn-default btn-sm">
  </div>');
 
@@ -96,6 +98,7 @@ function tab_headers($data, $option) {
 <input type="button" value="'.__('Подкаталог').'" data-seo="@Podcatalog@" data-target="keywords_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Товар').'" data-seo="@Product@" data-target="keywords_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Цена').'" data-seo="@Price@" data-target="keywords_shablon2_new" class="seo-button btn btn-default btn-sm">
+<input type="button" value="'.__('Артикул').'" data-seo="@Art@" data-target="keywords_shablon2_new" class="seo-button btn btn-default btn-sm">
 <input type="button" value="'.__('Общий').'" data-seo="@System@" data-target="keywords_shablon2_new" class="seo-button btn btn-default btn-sm">
 </div>');
     }

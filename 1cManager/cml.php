@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 2.8
+ * @version 2.9
  */
 class CommerceMLLoader {
 
@@ -37,6 +37,7 @@ class CommerceMLLoader {
         $this->exchange_price5 = $PHPShopSystem->getSerilizeParam("1c_option.exchange_price5");
         $this->exchange_sort_ignore = $PHPShopSystem->getSerilizeParam("1c_option.exchange_sort_ignore");
         $this->exchange_clean = $PHPShopSystem->getSerilizeParam("1c_option.exchange_clean");
+        $this->exchange_product_ignore = $PHPShopSystem->getSerilizeParam("1c_option.exchange_product_ignore");
 
         // Параметры ресайзинга
         $this->img_tw = $PHPShopSystem->getSerilizeParam('admoption.img_tw');
@@ -215,13 +216,13 @@ class CommerceMLLoader {
                     $complete_file = fopen($upload_path . 'completed.lock', 'w');
                     fputs($complete_file, time());
                     fclose($complete_file);
-                    
+
                     // Выключить товары, отсутствующие в файле импорта
-                    if($this->exchange_clean == 1){
-                         $time = time() - $this->cleanup_time; // -1 час
-                        (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->update(['enabled_new'=>0],['datas'=>'<'.$time]);
+                    if ($this->exchange_clean == 1) {
+                        $time = time() - $this->cleanup_time; // -1 час
+                        (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->update(['enabled_new' => 0], ['datas' => '<' . $time]);
                     }
-                    
+
                     $response = "success";
                     break;
 
@@ -357,6 +358,15 @@ class CommerceMLLoader {
                 mkdir($this->result_path . $date, 0777, true);
             }
 
+            // Блокировка характеристик
+            if (!empty($this->exchange_sort_ignore)) {
+                if (strstr($this->exchange_sort_ignore, ','))
+                    $sort_ignore = explode(',', $this->exchange_sort_ignore);
+                else
+                    $sort_ignore[] = $this->exchange_sort_ignore;
+            } else
+                $sort_ignore = [];
+
             $properties = null;
             $this->product_array = [];
             $this->product_array[] = array("Артикул", "Наименование", "Краткое описание", "Имя картинки", "Подробное описание", "Кол-во картинок", "Остаток", "Цена1", "Цена2", "Цена3", "Цена4", "Цена5", "Вес", "Ед.измерения", "ISO", "Category ID", "Parent", "Внешний код", "Характеристика", "Значение");
@@ -380,7 +390,8 @@ class CommerceMLLoader {
                     if (isset($item->ВариантыЗначений)) {
                         foreach ($item->ВариантыЗначений->Справочник as $directory) {
 
-                            $directory_array[(string) $directory->ИдЗначения[0]] = (string) $directory->Значение[0];
+                            if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
+                                $directory_array[(string) $directory->ИдЗначения[0]] = (string) $directory->Значение[0];
                         }
                     }
                     // Справочник 2.04
@@ -388,11 +399,13 @@ class CommerceMLLoader {
 
                         foreach ($item->ТипыЗначений[0]->ТипЗначений[0]->ВариантыЗначений[0]->ВариантЗначения as $directory) {
 
-                            $directory_array[(string) $directory->Ид[0]] = (string) $directory->Значение[0];
+                            if (!in_array(PHPShopString::utf8_win1251((string) $directory->Значени[0]), $sort_ignore))
+                                $directory_array[(string) $directory->Ид[0]] = (string) $directory->Значение[0];
                         }
                     }
 
-                    $properties_array[(string) $item->Ид[0]] = (string) $item->Наименование[0];
+                    if (!in_array(PHPShopString::utf8_win1251((string) $item->Наименование[0]), $sort_ignore))
+                        $properties_array[(string) $item->Ид[0]] = (string) $item->Наименование[0];
                 }
 
                 // Загрузка дополнительных полей справочника из МойСклад
@@ -424,12 +437,6 @@ class CommerceMLLoader {
 
                 // Товары
                 foreach ($xml->Каталог->Товары[0] as $item) {
-                    // Тест
-                    /*
-                      if ($item->Ид[0] == '1'){
-                      $item->Артикул[0] = 'test3434343';
-                      $sort_array['1']= $sort_array['1#62'];
-                      } */
 
                     // Краткое описание и габариты
                     if (isset($item->ЗначенияРеквизитов[0])) {
@@ -468,14 +475,6 @@ class CommerceMLLoader {
                     } else
                         $content = $description;
 
-                    // Блокировка характеристик
-                    if (!empty($this->exchange_sort_ignore)) {
-                        if (strstr($this->exchange_sort_ignore, ','))
-                            $sort_ignore = explode(',', $this->exchange_sort_ignore);
-                        else
-                            $sort_ignore[] = $this->exchange_sort_ignore;
-                    }
-
                     // Свойства
                     $properties = [];
                     if (isset($item->ЗначенияСвойств[0])) {
@@ -487,13 +486,9 @@ class CommerceMLLoader {
                             else if (isset($directory_array[(string) $req->ИдЗначения[0]]))
                                 $req->Значение[0] = $directory_array[(string) $req->ИдЗначения[0]];
 
-                            if (!in_array(PHPShopString::utf8_win1251((string) $req->Значение[0]), $sort_ignore))
-                                $properties[] = [$properties_array[(string) $req->Ид[0]], (string) $req->Значение[0]];
+                            $properties[] = [$properties_array[(string) $req->Ид[0]], (string) $req->Значение[0]];
                         }
                     }
-
-                    // Подтипы
-                    $parent = null;
 
                     // Категория
                     if (isset($item->Группы))
@@ -501,10 +496,10 @@ class CommerceMLLoader {
                     else
                         $category = 0;
 
+
                     // Картинка
                     $image_count = 0;
                     $image = null;
-
 
                     if (isset($item->Картинка) and ! empty($this->exchange_image)) {
 
@@ -551,19 +546,45 @@ class CommerceMLLoader {
                     }
                     else if ($this->exchange_key == 'external')
                         $uid = (string) $item->Ид[0];
+                    else if ($this->exchange_key == 'barcode')
+                        $uid = (string) $item->Штрихкод[0];
                     else
                         $uid = (string) $item->Артикул[0];
 
-                    // Подтипы
-                    /*
-                      $parent_list = $parent_array[(string) $item->Ид[0]];
-                      if (!empty($parent_list['ids'])) {
-                      $parent = substr($parent_list['ids'], 0, strlen($parent_list['ids']) - 1);
-                      $price = $parent_list['price'];
-                      $warehouse = $parent_list['warehouse'];
-                      } */
+                    // Подтипы 2.07
+                    if (strstr((string) $item->Ид[0], '#')) {
 
-                    $this->product_array[(string) $item->Ид[0]] = array($uid, (string) $item->Наименование[0], $description, $image, $content, $image_count, "", "", "", "", "", "", $weight, "", "", $category, "", (string) $item->Ид[0], 0);
+                        // Ид подтипа
+                        $p = explode("#", (string) $item->Ид[0]);
+                        (string) $item->Ид[0] = $p[1];
+
+                        // Список подтипов у главного товара
+                        $parent_array[$p[0]]['ids'] .= $p[1] . ',';
+
+                        // Имя главного товара
+                        if (empty($parent_array[$p[0]]['name'])) {
+
+                            $name = preg_replace_callback('/\([^)]+\)/', function($match) {
+                                return str_replace($match[0], '', $match[0]);
+                            }, (string) $item->Наименование[0]);
+
+                            $parent_array[$p[0]]['name'] = $name;
+                            $parent_array[$p[0]]['category'] = $category;
+                            $parent_array[$p[0]]['uid'] = $uid;
+                            $parent_array[$p[0]]['properties'] = $properties;
+                            $parent_array[$p[0]]['image'] = $image;
+                        }
+
+                        $parent_enabled = 1;
+
+                        // Артикул для подтипа
+                        $uid = (string) $item->Ид[0];
+                        
+                    } else {
+                        $parent_enabled = 0;
+                    }
+
+                    $this->product_array[(string) $item->Ид[0]] = array($uid, (string) $item->Наименование[0], $description, $image, $content, $image_count, "", "", "", "", "", "", $weight, "", "", $category, "", (string) $item->Ид[0], $parent_enabled);
 
                     // Свойства
                     if (is_array($properties))
@@ -577,6 +598,29 @@ class CommerceMLLoader {
                 // Запись в файл
                 if (count($this->product_array) > 1) {
 
+                    // Подтипы 2.07, добавляем главные товары для подтипов
+                    $parent = null;
+                    if (is_array($parent_array)) {
+
+                        $parent = null;
+                        foreach ($parent_array as $id => $prod) {
+
+                            // Подтипы
+                            if (!empty($prod['ids'])) {
+                                $parent = substr($prod['ids'], 0, strlen($prod['ids']) - 1);
+                            }
+
+                            $this->product_array[$id] = array($prod['uid'], $prod['name'], null, $prod['image'], null, null, 0, 0, "", "", "", "", "", "", "", $prod['category'], $parent, $id, 0);
+
+                            // Свойства
+                            if (is_array($prod['properties']))
+                                foreach ($prod['properties'] as $val)
+                                    if (is_array($val))
+                                        foreach ($val as $value)
+                                            $this->product_array[$id][] = $value;
+                        }
+                    }
+
                     array_walk_recursive($this->product_array, 'self::array2iconv');
 
                     $this->writeCsv('sklad/' . $date . '/upload_0.csv', $this->product_array, true);
@@ -589,11 +633,23 @@ class CommerceMLLoader {
             // offers.xml
             else if (isset($xml->ПакетПредложений->Предложения) or $_GET['filename'] = 'offers.xml') {
 
+                // Блокировка обновления товаров
+                if (!empty($this->exchange_product_ignore)) {
+                    if (strstr($this->exchange_product_ignore, ','))
+                        $product_ignore = explode(',', $this->exchange_product_ignore);
+                    else
+                        $product_ignore[] = $this->exchange_product_ignore;
+                } else
+                    $product_ignore = [];
+
+
                 foreach ($xml->ПакетПредложений->Предложения->Предложение as $item) {
 
-                    // Тест
-                    //if ($item->Ид[0] == '1#62')
-                    //$item->Артикул[0] = 'test3434343';
+                    // Блокировка товаров
+                    if (in_array(PHPShopString::utf8_win1251((string) $item->Ид[0]), $product_ignore)) {
+                        continue;
+                    }
+
                     // Дополнительные склады 10/A#20/B
                     if (isset($item->Склад)) {
 
@@ -623,12 +679,13 @@ class CommerceMLLoader {
                         $p = explode("#", (string) $item->Ид[0]);
                         (string) $item->Ид[0] = $p[1];
 
-                        // Список подтипов у главного товара
-                        if (!empty((string) $item->Артикул[0]))
-                            $parent_array[$p[0]]['ids'] .= (string) $item->Артикул[0] . ',';
-                        else
-                            $parent_array[$p[0]]['ids'] .= $p[1] . ',';
+                        // Блокировка подтипов
+                        if (in_array(PHPShopString::utf8_win1251((string) $item->Ид[0]), $product_ignore)) {
+                            continue;
+                        }
 
+                        // Список подтипов у главного товара
+                        $parent_array[$p[0]]['ids'] .= $p[1] . ',';
 
                         // Цена и склад главного товара
                         if (empty($parent_array[$p[0]]['price'])) {
@@ -638,15 +695,6 @@ class CommerceMLLoader {
                             $parent_array[$p[0]]['price'] = (string) $item->Цены->Цена[0]->ЦенаЗаЕдиницу[0];
                             $parent_array[$p[0]]['warehouse'] = $warehouse;
                         }
-
-                        // Блокировка характеристик
-                        if (!empty($this->exchange_sort_ignore)) {
-                            if (strstr($this->exchange_sort_ignore, ','))
-                                $sort_ignore = explode(',', $this->exchange_sort_ignore);
-                            else
-                                $sort_ignore[] = $this->exchange_sort_ignore;
-                        }
-
 
                         // Имя подтипа
                         $Наименование = $parent_name = null;
@@ -706,23 +754,11 @@ class CommerceMLLoader {
                         $parent_name = null;
                     }
 
-                    // Характеристики
-                    /*
-                      if (isset($item->ХарактеристикиТовара)) {
-
-                      foreach ($item->ХарактеристикиТовара->ХарактеристикаТовара as $sorts) {
-                      $sort_array[(string) $item->Ид[0]][] = (string) $sorts->Наименование;
-                      $sort_array[(string) $item->Ид[0]][] = (string) $sorts->Значение;
-                      }
-                      } */
-
                     // Артикул для подтипа
                     if ($parent_enabled == 1) {
 
-                        if (!empty((string) $item->Артикул[0]))
-                            $uid = (string) $item->Артикул[0];
-                        else
-                            $uid = (string) $item->Ид[0];
+                        $uid = (string) $item->Ид[0];
+                        
                     } else
                         $uid = null;
 
@@ -783,18 +819,6 @@ class CommerceMLLoader {
 
                     // Выполнение
                     $this->load($date, false);
-
-                    // Характеристики
-                    /*
-                      if (is_array($sort_array)) {
-
-                      $_GET['mode'] = 'file';
-                      $this->exchange($_GET['type'], $_GET['mode']);
-
-                      $_GET['mode'] = 'import';
-                      $_GET['filename'] = 'import.xml';
-                      $this->exchange($_GET['type'], $_GET['mode']);
-                      } */
                 }
             }
         } else {
@@ -868,7 +892,6 @@ OUT: ' . $response . '
             }
         }
     }
-
 }
 
 $_classPath = "../phpshop/";

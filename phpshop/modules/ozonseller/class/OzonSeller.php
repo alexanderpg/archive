@@ -5,7 +5,7 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с Ozon Seller API
  * @author PHPShop Software
- * @version 2.2
+ * @version 2.3
  * @package PHPShopModules
  * @todo https://docs.ozon.ru/api/seller/#tag/Environment
  */
@@ -84,8 +84,8 @@ class OzonSeller {
     public function addProduct($id) {
         global $PHPShopSystem;
 
-        $product_info = $this->getProductAttribures($id,'offer_id')['result'][0];
-        
+        $product_info = $this->getProductAttribures($id, 'offer_id')['result'][0];
+
         $insert['name_new'] = PHPShopString::utf8_win1251($product_info['name']);
         $insert['uid_new'] = PHPShopString::utf8_win1251($product_info['offer_id']);
         $insert['export_ozon_id_new'] = $product_info['id'];
@@ -105,7 +105,7 @@ class OzonSeller {
         $product_price = $this->getProductPrices($product_info['id'])['result']['items'][0]['price'];
         $insert['price_new'] = $product_price['price'];
         $insert['price_n_new'] = $product_price['old_price'];
-        
+
         $insert['baseinputvaluta_new'] = $PHPShopSystem->getDefaultOrderValutaId();
         $insert['weight_new'] = $product_info['weight'];
         $insert['height_new'] = $product_info['height'];
@@ -142,9 +142,9 @@ class OzonSeller {
 
         if (is_array($mediaFiles)) {
             foreach ($mediaFiles as $k => $image) {
-                
+
                 $img = $image['file_name'];
-                
+
                 if (!empty($img) and ! stristr($img, '.mp4')) {
 
                     $path_parts = pathinfo($img);
@@ -285,8 +285,15 @@ class OzonSeller {
                 if (empty($product['export_ozon_id'])) {
                     $info = $this->sendProductsInfo($product)['result']['items'][0];
                 } else {
-                    $info['offer_id'] = $product['uid'];
+
                     $info['product_id'] = $product['export_ozon_id'];
+
+                    // Ключ обновления артикул
+                    if ($this->type == 2) {
+                        $info['offer_id'] = PHPShopString::win_utf8($product['uid']);
+                    } else {
+                        $info['offer_id'] = $product['id'];
+                    }
                 }
 
                 // price columns
@@ -354,7 +361,7 @@ class OzonSeller {
 
                 if (empty($product['enabled']) or $product['items'] < 0)
                     $product['items'] = 0;
-                
+
                 $params['stocks'][] = [
                     'offer_id' => $info['offer_id'],
                     'product_id' => $info['product_id'],
@@ -490,7 +497,7 @@ class OzonSeller {
     /**
      * Атрибуты товара из Ozon
      */
-    public function getProductAttribures($product_id,$flag='product_id') {
+    public function getProductAttribures($product_id, $flag = 'product_id') {
 
         $params = [
             'filter' => [

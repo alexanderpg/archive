@@ -111,7 +111,7 @@ function actionStart() {
     // Редактор 1
     $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor = new Editor('content_new');
-    $oFCKeditor->Height = '400';
+    $oFCKeditor->Height = '700';
     $oFCKeditor->Value = $data['content'];
 
     $SelectValue[] = array('Вывод в каталоге', 1, $data['enabled']);
@@ -161,7 +161,7 @@ function actionStart() {
 
         // Анонс
         $oFCKeditor2 = new Editor('preview_new');
-        $oFCKeditor2->Height = '400';
+        $oFCKeditor2->Height = '340';
         $oFCKeditor2->Value = $data['preview'];
     }
 
@@ -177,7 +177,7 @@ function actionStart() {
     if (!empty($data['category']) and $data['category'] != 2000 and $data['category'] != 1000) {
         $Tab_content = $PHPShopGUI->setCollapse("Анонс", $oFCKeditor2->AddGUI());
         $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI());
-        $PHPShopGUI->setTab(array("Основное", $Tab_content . $Tab_info . $Tab_seo . $Tab_description . $Tab_dop . $Tab_sec, true, false, true));
+        $PHPShopGUI->setTab(array("Основное", $Tab_description . $Tab_info . $Tab_seo . $Tab_content . $Tab_dop . $Tab_sec, true, false, true));
     } else {
 
         $Tab_description .= $PHPShopGUI->setCollapse("Содержание", $oFCKeditor->AddGUI());

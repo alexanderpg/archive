@@ -157,6 +157,7 @@ class PHPShopReturncall extends PHPShopCore {
         $insert['message_new'] = PHPShopSecurity::TotalClean($_POST['returncall_mod_message'], 2);
         $insert['ip_new'] = $_SERVER['REMOTE_ADDR'];
         $insert['status_new'] = 0;
+        $insert['mail_new'] = PHPShopSecurity::TotalClean($_POST['returncall_mod_mail'], 2);
 
         // Запись в базу
         $this->PHPShopOrm->insert($insert);
@@ -173,6 +174,7 @@ class PHPShopReturncall extends PHPShopCore {
 </p>
 {Имя}:                " . $insert['name_new'] . "<br>
 {Телефон}:            " . $insert['tel_new'] . "<br>
+E-mail:            " . $insert['mail_new'] . "<br>
 {Время звонка}:       " . $insert['time_start_new'] . "<br>
 {Сообщение}:          " . $insert['message_new'] . "<br>
 {Дата}:               " . PHPShopDate::dataV($insert['date_new']) . "<br>

@@ -1,7 +1,8 @@
 ## PHPShop Core ##
 
-# Кодировка windows 1251
+# Кодировка
 AddDefaultCharset windows-1251
+#AddDefaultCharset utf-8
 
 # Скачивание CSV браузерами
 AddType text/csv csv
@@ -30,6 +31,7 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} (((.*)\.html$)|((.*)/)|((.*)/filters/(.*)))$
+RewriteCond %{REQUEST_URI} !((.*)\.html(.*)\.html)$
 RewriteCond %{REQUEST_URI} !(((.*)\.(.*)/)|((.*)/filters/(.*).html)|(/(id|map|search|compare|order|done|users|gbook|page|price|news|spec|newtip)/(.*)/filters/(.*)))$
 RewriteRule ^(.*)$ index.php
 

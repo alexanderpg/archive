@@ -21,18 +21,14 @@ function actionStart() {
 
     $value[] = array('Поддержка', 1, 1);
     $value[] = array('Ошибка в скрипте', 2);
-    $value[] = array('Настройка 1С', 3);
+    $value[] = array('Настройка 1С и МойСклад', 3);
     $value[] = array('Программирование PHPShop', 5);
     $value[] = array('Общие вопросы', 6);
-    $value[] = array('PriceLoader', 7);
     $value[] = array('Платное добавление функционала', 8);
-    $value[] = array('Ошибки 1С', 9);
-    $value[] = array('Утилиты EasyControl', 11);
-    $value[] = array('Доработка 1С интеграции с сайтом', 12);
     $value[] = array('Обновление системы', 15);
     $value[] = array('Лицензия не проходит проверку', 18);
     $value[] = array('Платные услуги и консультации', 19);
-    $value[] = array('Верстка макета дизайна', 20);
+    $value[] = array('Изменение дизайна', 20);
 
     $Tab1 .= $PHPShopGUI->setField("E-mail", $PHPShopGUI->setInput('email.required.6', "email", $PHPShopSystem->getEmail(), null, 400));
     $Tab1 .= $PHPShopGUI->setField("Имя", $PHPShopGUI->setInput('text.required.4', "name", null, null, 400));
@@ -73,6 +69,9 @@ function actionInsert() {
 
 <a href="http://' . $_SERVER['SERVER_NAME'] . $_POST['attachment'] . '" target="_blank"><span class="glyphicon glyphicon-paperclip"></span> ' . $pathinfo['basename'] . '</a>';
     }
+    
+    $_POST['subject']= str_replace('"','',$_POST['subject']);
+    $_POST['name']= str_replace('"','',$_POST['name']);
 
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

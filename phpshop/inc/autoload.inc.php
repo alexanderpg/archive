@@ -12,6 +12,7 @@ if (strstr($_SERVER['REQUEST_URI'], 'index.php')) {
 
 // Шаблон дизайна по умолчанию
 $PHPShopCoreElement = new PHPShopCoreElement();
+$PHPShopCoreElement->init('service');
 $PHPShopCoreElement->init('skin', false);
 $PHPShopCoreElement->init('checkskin');
 $PHPShopCoreElement->init('setdefault');
