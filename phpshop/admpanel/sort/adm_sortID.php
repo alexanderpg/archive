@@ -16,8 +16,10 @@ require("../language/".$Lang."/language.php");
 	<title>Редактирование Характеристики</title>
 <META http-equiv=Content-Type content="text/html; charset=<?=$SysValue['Lang']['System']['charset']?>">
 <LINK href="../css/texts.css" type=text/css rel=stylesheet>
+<LINK href="../css/tab.winclassic.css" type=text/css rel=stylesheet>
 <SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
+<script type="text/javascript" src="../java/tabpane.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_interface.js"></script>
 <script>
@@ -53,12 +55,38 @@ while (@$row = mysql_fetch_array($result))
 	$name=$row['name'];
 	$num=$row['num'];
 	@$disp.='
-	<tr onclick="miniWin(\'adm_valueID.php?id='.$id.'\',500,370)"  onmouseover="show_on(\'r'.$id.'\')" id="r'.$id.'" onmouseout="show_out(\'r'.$id.'\')" class=row>
+	<tr onclick="miniWin(\'adm_valueID.php?id='.$id.'\',500,400)"  onmouseover="show_on(\'r'.$id.'\')" id="r'.$id.'" onmouseout="show_out(\'r'.$id.'\')" class=row>
 	<td class="forma">'.$name.'</td>
 	<td class="forma">'.$num.'</td>
 </tr>
 	';
 }
+return @$disp;
+}
+
+
+function dispPage($array){ // вывод статей по теме
+global $SysValue;
+$array=explode(",",$array);
+$sql="select * from ".$SysValue['base']['table_name11']." where enabled='1' order by num";
+$result=mysql_query($sql);
+while($row = mysql_fetch_array($result))
+    {
+    $link=$row['link'];
+    $name=substr($row['name'],0,100);
+	$sel="";
+	if(is_array($array))
+	foreach($array as $v){
+	if ($link == $v) $sel="selected";
+	}
+    @$dis.="<option value=".$link." ".$sel." >".$name."</option>\n";
+	}
+@$disp="
+<select name=page_new>
+<option value=''>Нет описания</option>\n
+$dis
+</select>
+";
 return @$disp;
 }
 
@@ -70,6 +98,7 @@ return @$disp;
 	  $name=$row['name'];
 	  $num=$row['num'];
 	  $description=$row['description'];
+	  $page=$row['page'];
 	  if($row['flag'] == 1) $flag="checked";
 	  if($row['filtr'] == 1) $filtr="checked";
 	  if($row['goodoption'] == 1) {$goodoption="checked";}else{$goodoption="";}
@@ -87,7 +116,25 @@ return @$disp;
 	</td>
 </tr>
 </table>
-<br>
+<!-- begin tab pane -->
+<div class="tab-pane" id="article-tab" style="margin-top:5px;height:300px">
+
+<script type="text/javascript">
+tabPane = new WebFXTabPane( document.getElementById( "article-tab" ), true );
+</script>
+
+
+
+<!-- begin intro page -->
+<div class="tab-page" id="intro-page" style="height:400px">
+<h2 class="tab"><span name=txtLang id=txtLang>Основное</span></h2>
+
+<script type="text/javascript">
+tabPane.addTabPage( document.getElementById( "intro-page" ) );
+</script>
+
+
+
 <table cellpadding="5" cellspacing="0" border="0" align="center" width="100%">
 <tr>
 	<td colspan="2">
@@ -95,16 +142,6 @@ return @$disp;
 <LEGEND><span name=txtLang id=txtLang><u>Н</u>аименование</span> </LEGEND>
 <div style="padding:10">
 <input type="text" name="name_new" class="full" value="<?=$name?>">
-</div>
-</FIELDSET>
-	</td>
-</tr>
-<tr>
-	<td colspan="2">
-	<FIELDSET>
-<LEGEND><span name=txtLang id=txtLang><u>О</u>писание</span></LEGEND>
-<div style="padding:10">
-<textarea class=full name=description_new style="height:40px"><?=$description?></textarea>
 </div>
 </FIELDSET>
 	</td>
@@ -150,7 +187,7 @@ return @$disp;
 </tr>
 </table>
 <div align="right" style="padding:10">
-<BUTTON style="width: 15em; height: 2.2em; margin-left:5"  onclick="miniWin('adm_value_new.php?categoryID=<?=$id?>',500,370);return false;">
+<BUTTON style="width: 15em; height: 2.2em; margin-left:5"  onclick="miniWin('adm_value_new.php?categoryID=<?=$id?>',500,400);return false;">
 <img src="../icon/page_add.gif" width="16" height="16" border="0" align="absmiddle" hspace="5">
 <span name=txtLang id=txtLang>Новая позиция</span>
 </BUTTON>
@@ -158,9 +195,46 @@ return @$disp;
 	</td>
 </tr>
 </table>
+</div>
+<div class="tab-page" id="content-page" style="height:400px">
+<h2 class="tab"><span name=txtLang id=txtLang>Описание</span></h2>
+
+<script type="text/javascript">
+tabPane.addTabPage( document.getElementById( "content-page" ) );
+</script>
+
+
+
+<table cellpadding="5" cellspacing="0" border="0" align="center" width="100%">
+<tr>
+	<td>
+	<FIELDSET>
+<LEGEND><span name=txtLang id=txtLang><u>П</u>одсказка</span></LEGEND>
+<div style="padding:10">
+<textarea class=full name=description_new style="height:40px"><?=$description?></textarea>
+</div>
+</FIELDSET>
+	</td>
+</tr>
+<tr>
+	<td>
+	<FIELDSET>
+<LEGEND><span name=txtLang id=txtLang><u>С</u>ылка на описание</span></LEGEND>
+<div style="padding:10">
+<? echo dispPage($page) ?>
+<p>* Используется при выводе имени характеристики в подробном описании товара в виде ссылки на указанную страницу (описание характеристики "мощность" становится доступной в подробной форме товара в таблице вывода характеристик).</p>
+</div>
+</FIELDSET>
+	</td>
+</tr>
+</table>
+</div>
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('sortID')">Справка</BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 <input type="hidden" name="id" value="<?=$id?>" >
 	<input type="submit" name="editID" value="OK" class=but>
@@ -184,7 +258,8 @@ num='$num_new',
 filtr='$filtr_new',
 goodoption='$goodoption_new',
 optionname='$optionname_new',
-description='$description_new' 
+description='$description_new',
+page='$page_new' 
 where id='$id'";
 $result=mysql_query($sql)or @die("".mysql_error()."");
 echo"

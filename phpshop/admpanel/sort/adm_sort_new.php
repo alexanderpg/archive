@@ -9,6 +9,31 @@ $GetSystems=GetSystems();
 $option=unserialize($GetSystems['admoption']);
 $Lang=$option['lang'];
 require("../language/".$Lang."/language.php");
+
+function dispPage($array){ // вывод статей по теме
+global $SysValue;
+$array=explode(",",$array);
+$sql="select * from ".$SysValue['base']['table_name11']." where enabled='1' order by num";
+$result=mysql_query($sql);
+while($row = mysql_fetch_array($result))
+    {
+    $link=$row['link'];
+    $name=substr($row['name'],0,100);
+	$sel="";
+	if(is_array($array))
+	foreach($array as $v){
+	if ($link == $v) $sel="selected";
+	}
+    @$dis.="<option value=".$link." ".$sel." >".$name."</option>\n";
+	}
+@$disp="
+<select name=page_new>
+<option value=''>Нет описания</option>\n
+$dis
+</select>
+";
+return @$disp;
+}
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -17,12 +42,14 @@ require("../language/".$Lang."/language.php");
 	<title>Создание Набора Характеристик</title>
 <META http-equiv=Content-Type content="text/html; charset=<?=$SysValue['Lang']['System']['charset']?>">
 <LINK href="../css/texts.css" type=text/css rel=stylesheet>
+<LINK href="../css/tab.winclassic.css" type=text/css rel=stylesheet>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
 <SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
+<script type="text/javascript" src="../java/tabpane.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_interface.js"></script>
 <script>
-DoResize(<? echo $GetSystems['width_icon']?>,500,400);
+DoResize(<? echo $GetSystems['width_icon']?>,500,450);
 </script>
 </head>
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0" onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)">
@@ -54,7 +81,22 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 	</td>
 </tr>
 </table>
-<br>
+<!-- begin tab pane -->
+<div class="tab-pane" id="article-tab" style="margin-top:5px;height:300px">
+
+<script type="text/javascript">
+tabPane = new WebFXTabPane( document.getElementById( "article-tab" ), true );
+</script>
+
+
+
+<!-- begin intro page -->
+<div class="tab-page" id="intro-page" style="height:250px">
+<h2 class="tab"><span name=txtLang id=txtLang>Основное</span></h2>
+
+<script type="text/javascript">
+tabPane.addTabPage( document.getElementById( "intro-page" ) );
+</script>
 <table class=mainpage4 cellpadding="5" cellspacing="0" border="0" align="center" width="100%">
 <tr>
 	<td colspan="2">
@@ -62,16 +104,6 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 <LEGEND><span name=txtLang id=txtLang><u>Н</u>аименование</span> </LEGEND>
 <div style="padding:10">
 <input type="text" name="name_new" class="full">
-</div>
-</FIELDSET>
-	</td>
-</tr>
-<tr>
-	<td colspan="2">
-	<FIELDSET>
-<LEGEND><span name=txtLang id=txtLang><u>О</u>писание</span></LEGEND>
-<div style="padding:10">
-<textarea class=full name=description_new style="height:40px"><?=$description?></textarea>
 </div>
 </FIELDSET>
 	</td>
@@ -99,9 +131,44 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 	</td>
 </tr>
 </table>
+</div>
+<div class="tab-page" id="content-page" style="height:250px">
+<h2 class="tab"><span name=txtLang id=txtLang>Описание</span></h2>
+
+<script type="text/javascript">
+tabPane.addTabPage( document.getElementById( "content-page" ) );
+</script>
+
+<table cellpadding="5" cellspacing="0" border="0" align="center" width="100%">
+<tr>
+	<td>
+	<FIELDSET>
+<LEGEND><span name=txtLang id=txtLang><u>П</u>одсказка</span></LEGEND>
+<div style="padding:10">
+<textarea class=full name=description_new style="height:40px"><?=$description?></textarea>
+</div>
+</FIELDSET>
+	</td>
+</tr>
+<tr>
+	<td>
+	<FIELDSET>
+<LEGEND><span name=txtLang id=txtLang><u>С</u>ылка на описание</span></LEGEND>
+<div style="padding:10">
+<? echo dispPage($page) ?>
+<p>* Используется при выводе имени характеристики в подробном описании товара в виде ссылки на указанную страницу (описание характеристики "мощность" становится доступной в подробной форме товара в таблице вывода характеристик).</p>
+</div>
+</FIELDSET>
+	</td>
+</tr>
+</table>
+</div>
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+   <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('sortID')">Справка</BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 	<input type="submit" name="editID" value="OK" class=but>
 	<input type="reset" name="btnLang" class=but value="Сбросить">
@@ -114,8 +181,7 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 if(isset($editID) and !empty($name_new))// Запись редактирования
 {
 if(CheckedRules($UserStatus["cat_prod"],2) == 1){
-$sql="INSERT INTO ".$SysValue['base']['table_name20']." VALUES ('','$name_new','$flag_new','$num_new','-1','$filtr_new','$description_new','$goodoption_new','$optionname_new')";
-//goodoption='$goodoption_new',
+$sql="INSERT INTO ".$SysValue['base']['table_name20']." VALUES ('','$name_new','$flag_new','$num_new','-1','$filtr_new','$description_new','$goodoption_new','$optionname_new','$page_new')";
 $result=mysql_query($sql)or @die("".mysql_error()."");
 echo"
 	 <script>

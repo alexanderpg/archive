@@ -171,3 +171,6 @@ CREATE TABLE `phpshop_messages` (
 
 ALTER TABLE `phpshop_page` ADD `secure_groups` varchar(255) NOT NULL default '';
 ALTER TABLE `phpshop_comment` ADD `enabled` enum('0','1') NOT NULL default '0';
+
+ALTER TABLE `phpshop_sort_categories` ADD `page` varchar(255) NOT NULL default '';
+ALTER TABLE `phpshop_sort` ADD `page` varchar(255) NOT NULL default '';

@@ -34,7 +34,7 @@ else
 <script type="text/javascript" language="JavaScript" src="../language/<? 
 echo $Lang;?>/language_windows.js"></script>
 <script> 
-DoResize(<? echo $GetSystems['width_icon']?>,680,630);
+DoResize(<? echo $GetSystems['width_icon']?>,700,630);
 </script>
 </head>
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0" onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)">
@@ -238,8 +238,45 @@ return @$dis;
 }
 
 
-
 function dispValue($n,$vendor_array){ // вывод характеристик
+global $SysValue;
+$sql="select * from ".$SysValue['base']['table_name21']." where category='$n' order by num";
+$result=mysql_query($sql);
+while($row = mysql_fetch_array($result))
+    {
+    $id=$row['id'];
+    $name=substr($row['name'],0,35);
+	$sel="";
+	if(is_array($vendor_array))
+	foreach($vendor_array as $k=>$v){
+	       if(is_array($v)){
+		     foreach($v as $o=>$p){
+			        if ($id == $p) $sel="selected";
+			 }
+		   }
+		   
+	if ($id == $v) $sel="selected";
+	}
+    @$dis.="<option value=".$id." ".$sel." >".$name."</option>\n";
+	}
+@$disp='
+<TABLE>
+<TR><TD>
+<select name=vendor_new['.$n.'][] id="list'.$n.'" size=1 style="width: 300; height: 50" multiple>
+<option>Нет данных</option>
+'.$dis.'
+</select>
+</TD><TD style="vertical-align:top;">
+Добавить и активировать новое значение характеристики:<BR>
+<INPUT TYPE="TEXT" id="addval'.$n.'" VALUE="">&nbsp; <BUTTON style="height:20px;width:40px; font-size:12px;" onClick="enterchar('.$n.')">ОК</BUTTON><B id="sta'.$n.'"></B>
+</TD></TR>
+</TABLE>
+';
+return @$disp;
+}
+
+
+function dispValueOLD($n,$vendor_array){ // вывод характеристик
 global $SysValue;
 $sql="select * from ".$SysValue['base']['table_name21']." where category='$n' order by num";
 $result=mysql_query($sql);
@@ -344,7 +381,7 @@ while($row = mysql_fetch_array($result))
     $id=$row['id'];
 	$num=$row['num'];
     @$dis.="
-	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row onclick=\"miniWin('adm_galeryID.php?n=$id',650,500)\">
+	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row onclick=\"miniWinFull('adm_galeryID.php?n=$id',650,500)\">
 	<td align=center>$i</td>
 	   <td>$name</td>
 	</tr>
@@ -1183,6 +1220,9 @@ tabPane.addTabPage( document.getElementById( "har2" ) );
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent(\'productID\')">Справка</BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 <input type=submit name=productSAVE value="ОК" style="width: 7em; height: 2.2em; ">
 <input type="button" name="btnLang" class=but value="Удалить" onClick="PromptThis();">

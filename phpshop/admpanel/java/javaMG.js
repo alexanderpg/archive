@@ -4,6 +4,228 @@
 //***************************************************//
 
 
+// Управление панелью
+function ClosePanelProductDisp(){
+var obj=document.getElementById('prevpanel_act');
+var clientW=document.body.clientWidth;
+var mem=document.getElementById('prevpanel_mem').value;
+if(!obj.checked){
+document.getElementById('prevpanel').innerHTML = "";
+
+ // Новое окно
+ if(window.opener)
+ document.getElementById("interfacesWin1").height=(clientW-470);
+   else document.getElementById("interfacesWin1").height=(clientW-540);
+}else{
+      // Новое окно
+      if(window.opener)
+      document.getElementById("interfacesWin1").height=(clientW-600);
+	      else document.getElementById("interfacesWin1").height=(clientW-680);
+	  
+	  var req = new Subsys_JsHttpRequest_Js();
+		req.onreadystatechange = function() {
+			if (req.readyState == 4) {
+				if (req.responseJS) {
+					document.getElementById('prevpanel').innerHTML = req.responseJS.interfaces;
+                    document.getElementById('prevpanel_mem').value = mem;
+				}
+			}
+		}
+		req.caching = false;
+		// Подготваливаем объект.
+		req.open('POST', './product/action.php?do=prev', true);
+		req.send( {  xid: mem } );
+	  
+	  
+	  }
+}
+
+
+// Описание товара в списке
+function DoUpdateProductDisp(xid) {
+var obj=window.top.document.getElementById('prevpanel_act');
+var clientW=window.top.document.body.clientWidth;
+if(obj.checked){
+
+// Новое окно
+if(window.top.opener) window.top.document.getElementById("interfacesWin1").height=(clientW-600);
+  else window.top.document.getElementById("interfacesWin1").height=(clientW-680);
+
+var req = new Subsys_JsHttpRequest_Js();
+		req.onreadystatechange = function() {
+			if (req.readyState == 4) {
+				if (req.responseJS) {
+					window.top.document.getElementById('prevpanel').innerHTML = req.responseJS.interfaces;
+                    window.top.document.getElementById('prevpanel_mem').value = xid;
+				}
+			}
+		}
+		req.caching = false;
+		// Подготваливаем объект.
+		req.open('POST', '../product/action.php?do=prev', true);
+		req.send( {  xid: xid } );
+} else {
+       //window.top.document.getElementById('prevpanel').innerHTML = "";
+	   var req = new Subsys_JsHttpRequest_Js();
+		req.onreadystatechange = function() {
+			if (req.readyState == 4) {
+				if (req.responseJS) {
+					window.top.document.getElementById('prevpanel').innerHTML = req.responseJS.interfaces;
+                    window.top.document.getElementById('prevpanel_mem').value = xid;
+				}
+			}
+		}
+		req.caching = false;
+		// Подготваливаем объект.
+		req.open('POST', '../product/action.php?do=info', true);
+		req.send( {  xid: xid } );
+	   }
+}
+
+
+
+// Панель справки в подчиненном окне
+function helpWinParent(page){
+try{
+window.opener.top.document.getElementById('helppage').value=page;
+window.opener.top.initSlide(0);
+window.opener.top.loadhelp();
+}catch(e){ alert("Справка отключена. Опция включается в настройках системы - режимы - интерактивная справка")}
+try{
+window.opener.top.focus();
+}catch(e){}
+}
+
+
+// Панель справки
+function initAnime() {
+	anime={wCurr:0,wTarg:0,wStep:0,wDelta:0,wTravel:0,vel:1,pathLen:1,interval:null};
+}
+
+function loadhelp() {
+	anime.wCurr=document.getElementById("helpdiv").offsetWidth;
+	if (anime.wCurr==15) {  //Если состояние свернутое, значит надо загружать данные и 
+	
+		preloader(1);		
+		var q=document.getElementById('helppage').value;
+		var text='';
+		var req = new Subsys_JsHttpRequest_Js();
+		req.onreadystatechange = function() {
+			if (req.readyState == 4) {
+				if (req.responseJS) {
+					// Записываем в <div> результат работы. 
+					var data=(req.responseJS.text||'');
+					document.getElementById('helpcontent').innerHTML = ""+data+"";
+					preloader(0);		
+				}
+			}
+		}
+		req.caching = false;
+		// Подготваливаем объект.
+		req.open('POST', 'gethelp.php', true);
+		req.send({ q: q, text: text });
+
+	}
+}
+
+function initSlide(killer) {
+	initAnime();
+	anime.wCurr=document.getElementById("helpdiv").offsetWidth;
+	if ((anime.wCurr==15)&&(killer==0)) {  //Если состояние свернутое, значит надо загружать данные и 
+		anime.wTarg=255;
+//		document.getElementById("slidebutt").src="icon/helpout.gif";
+	} else {
+		anime.wTarg=15;
+//		document.getElementById("slidebutt").src="icon/helpin.gif";
+	}
+	anime.pathLen=anime.wTarg-anime.wCurr;
+	anime.wDelta=Math.abs(anime.pathLen);
+	anime.vel=10;
+	anime.wStep=(anime.pathLen/Math.abs(anime.pathLen))*anime.vel;
+	anime.interval=setInterval("doSlide()",10);
+}
+
+function doSlide() {
+	if((anime.wTravel+Math.abs(anime.wStep))<=anime.wDelta) {
+		var w=anime.wCurr+anime.wStep;
+		document.getElementById("helpdiv").style.width=w+"px";
+		anime.wTravel+=Math.abs(anime.wStep);
+		anime.wCurr=w;
+	} else {
+		document.getElementById("helpdiv").style.width=anime.wTarg+"px";
+		clearInterval(anime.interval);
+	}
+}
+
+function centerOnElement(baseElemID, posElemID) {
+    baseElem = document.getElementById(baseElemID);
+    posElem = document.getElementById(posElemID);
+    var offsetTrail = baseElem;
+    var offsetTop = 0;
+    while (offsetTrail) {
+        offsetTop += offsetTrail.offsetTop;
+        offsetTrail = offsetTrail.offsetParent;
+    }
+    if (navigator.userAgent.indexOf("Mac") != -1 &&  typeof(document.body.leftMargin) != "undefined") {
+        offsetTop += document.body.topMargin;
+    }
+    posElem.style.top = offsetTop + parseInt(baseElem.offsetHeight/2)-parseInt(posElem.offsetHeight/2)+"px";
+}
+
+
+function addOption (oListbox, text, value, isDefaultSelected, isSelected)
+{
+  var oOption = document.createElement("option");
+  oOption.appendChild(document.createTextNode(text));
+  oOption.setAttribute("value", value);
+
+  if (isDefaultSelected) oOption.defaultSelected = true;
+  else if (isSelected) oOption.selected = true;
+
+  oListbox.appendChild(oOption);
+}
+
+function enterchar(num){
+	var sellist=document.getElementById("list"+num);
+	var aoptions=sellist.options;
+	var addit=document.getElementById("addval"+num).value;
+	selopts=new Array;
+	var masi=0;
+
+	for(i=0;i<aoptions.length;i++){
+		var cse=aoptions[i].selected;
+		if (cse==true) {
+			selopts[masi]=aoptions[i].value; 
+			masi++; 
+		}
+	}
+
+	if (addit.length>0) { //Если значение введено, значит работаем
+		var req = new Subsys_JsHttpRequest_Js();
+		req.onreadystatechange = function() {
+			if (req.readyState == 4) {
+				if (req.responseJS) {
+					optsres=req.responseJS.interfaces;
+					sellist.options.length = 0;
+					addOption(sellist, "Нет данных", "", false,false);
+					for (i=0;i<optsres.length;i++) {
+						addOption(sellist,optsres[i]['name'] , optsres[i]['id'], false,optsres[i]['selected']);
+					}
+				}
+			}
+		}
+		req.caching = false;
+		// Подготваливаем объект.
+		req.open('POST', 'action_char.php', true);
+		req.send( {  num: num, selopts:selopts, addit:addit } );
+
+	} else {//Нечего вводить!
+		alert("Введите значение!");	 	
+	}
+
+}
+
+
 function GenPassword(a){
 document.getElementById("pas1").value=a;
 document.getElementById("pas2").value=a;
@@ -69,7 +291,8 @@ if(document.getElementById("interfacesWin") || document.getElementById("interfac
 
 
 // Если заказы
-if(page=="orders") clientW=clientW-20;
+if(page=="orders") clientW=clientW-200;
+
 
 // Если новое окно
 if(window.opener){
@@ -85,7 +308,7 @@ document.getElementById("interfacesWin").style.height=(clientW-425);
       if(document.getElementById("interfacesWin"))
       document.getElementById("interfacesWin").style.height=(clientW-500);
         else { 
-        document.getElementById("interfacesWin1").height=(clientW-535);
+        document.getElementById("interfacesWin1").height=(clientW-540);
 	    document.getElementById("interfacesWin2").height=(clientW-555);
              }
       }
@@ -207,6 +430,26 @@ cartwindow.style.pixelTop=Height-comboheight;
 cartwindow.style.visibility="visible";
 }
 
+function initializelicense(){
+combowidth=licensewindow.offsetWidth;
+comboheight=licensewindow.offsetHeight;
+Width = getClientWidth();
+Height = getClientHeight();
+if(document.all){
+licensewindow.style.pixelLeft=Width-combowidth-730;
+licensewindow.style.pixelTop=Height-comboheight;
+
+               if(navigator.appName == "Microsoft Internet Explorer"){
+               licensewindow.filters.revealTrans.Apply();
+               licensewindow.filters.revealTrans.Play();
+			   }
+}else{
+     licensewindow.style.left=(Width-combowidth-730) + "px";
+	 licensewindow.style.top=(Height-comboheight) + "px";
+     }
+licensewindow.style.visibility="visible";
+}
+
 function initializecomment(){
 combowidth=commentwindow.offsetWidth;
 comboheight=commentwindow.offsetHeight;
@@ -253,6 +496,10 @@ cartwindow.style.visibility="hidden";
 //DoMessageComment();
 }
 
+function initializelicense_off(){
+licensewindow.style.visibility="hidden";
+}
+
 function initializecomment_off(){
 commentwindow.style.visibility="hidden";
 //DoMessageMessage();
@@ -270,6 +517,11 @@ cartwindow.style.pixelTop=document.body.scrollTop+document.body.clientHeight-com
 function startmessage(){
 setTimeout("initialize()",1000);
 setTimeout("initialize_off()",4000);
+}
+
+function startmessagelicense(){
+setTimeout("initializelicense()",5000);
+//setTimeout("initializelicense_off()",5000);
 }
 
 function startmessagecomment(){
@@ -381,6 +633,8 @@ DoMessageComment();
 DoMessageMessage();
 }
 
+
+
 // Всплывыающее окно нового отзыва
 function DoMessageComment() {
 name="start";
@@ -481,6 +735,7 @@ if(page == "predload"){
   if(d.getElementById('tip_13').checked == true) tip[13] = 1;
   if(d.getElementById('tip_14').checked == true) tip[14] = 1;
   if(d.getElementById('tip_15').checked == true) tip[15] = 1;
+  tip[16] = d.getElementById('tip_16').value;
  }
  
 if(page == "load"){
@@ -499,6 +754,7 @@ tip[12] = d.getElementById('tip_12').value;
 tip[13] = d.getElementById('tip_13').value;
 tip[14] = d.getElementById('tip_14').value;
 tip[15] = d.getElementById('tip_15').value;
+tip[16] = d.getElementById('tip_16').value;
 }
 preloader(1);
     var req = new JsHttpRequest();
@@ -570,6 +826,11 @@ preloadertop(1)
 
 // Интерфейс
 function DoReload(page,var1,var2,var3,var4) {
+if (null!=document.getElementById('helppage')) {
+	document.getElementById('helppage').value = page;
+	initSlide(1);
+}
+
 preloader(1);
 	domenu=0; //ДОПИСКА ДЛЯ РАБОТЫ Кон.М.!!
 		var req = new Subsys_JsHttpRequest_Js();

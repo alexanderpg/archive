@@ -238,13 +238,16 @@ if ($baseinputvaluta) { //Если прислали баз. валюту
 		$row2 = mysql_fetch_array($result2);
 		$vkurs=$row2['kurs'];
 		$price=$price/$vkurs; //Приводим цену в базовую валюту
-		$formatPrice = unserialize($SYSTEM['admoption']);
-		$format=$formatPrice['price_znak'];
-		$price=round($price,$format);
+		
 	}
 } //Если прислали баз. валюту
 //получаем исходную цену
 
+    
+	$price=($price+(($price*$SYSTEM['percent'])/100));
+	$formatPrice = unserialize($SYSTEM['admoption']);
+    $format=$formatPrice['price_znak'];
+	$price=round($price,$format);
 
 	$array=array(
 	"id"=>"$id",

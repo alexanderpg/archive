@@ -304,6 +304,7 @@ $OrdersReturn=OrdersReturn($id);
 $XML='<?xml version="1.0" encoding="windows-1251"?>
 <orderdb>';
 
+if(is_array($GetOrderStatusArray))
 foreach ($GetOrderStatusArray as $status)
  @$XMLS.='
   <status>
