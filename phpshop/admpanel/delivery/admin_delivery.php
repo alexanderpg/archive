@@ -1,84 +1,56 @@
 <?
-
 function Delivery()// Вывод доставки
 {
 global $SysValue;
+$sql="select * from ".$SysValue['base']['table_name30']." order by city";
+$result=mysql_query($sql);
 
-$_Return='
-<!--Управляющий интерфейс-->
-	 <form method="post" name="search">
-	 <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
+while ($row = mysql_fetch_array($result))
+    {
+	$id=$row['id'];
+	$city=$row['city'];
+	$price=$row['price'];
+	$enabled=$row['enabled'];
+	if($row['price_null_enabled'] == 1) $price_null=$row['price_null']." ".GetIsoValutaOrder();
+	  else $price_null="";
+	if(($enabled)=="1"){$checked="<img src=img/icon-activate.gif  >";}else{$checked="<img src=img/icon-deactivate.gif>";};
+	@$display.="
+	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row onclick=\"miniWin('delivery/adm_deliveryID.php?id=$id',400,270,event)\">
+<td align=\"center\">$checked</td>
+<td class=forma>
+	$city 
+	</td>
+	<td class=forma>
+	$price ".GetIsoValutaOrder()."
+	</td>
+	<td class=forma>$price_null</td>
+    </tr>
+	";
+	@$i++;
+	}
+if($i>30)$razmer="height:600;";
+	return "
+<div id=interfacesWin name=interfacesWin align=\"left\" style=\"width:100%;".@$razmer.";overflow:auto\"> 
+<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border: 1px;
+	border-style: inset;\">
 <tr>
-<td>
-
-<table cellpadding="0" cellspacing="0">
+	<td valign=\"top\">
+<table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" class=\"sortable\" id=\"sort\">
 <tr>
-   <td width="5"></td>
-    <td id="but23"  class="butoff"><img name="imgLang" src="icon/blank.gif" alt="" width="1" height="1" border="0"><img name="imgLang" src="icon/page_new.gif" alt="Новая доставка" width="16" height="16" border="0" onmouseover="ButOn(23)" onmouseout="ButOff(23)" onclick="NewDelivery()">
-    </td>
-    <td width="3"></td>
-	<td id="but1"  class="butoff"><img name="imgLang" src="icon/folder_add.gif" alt="Новый каталог" width="16" height="16" border="0" onmouseover="ButOn(1)" onmouseout="ButOff(1)" onclick="NewDeliveryCatalog()"></td>
-<td width="5"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-   <td width="5"></td>
-	<td id="but37" class="butoff"><img name="imgLang" src="icon/folder_edit.gif" alt="Редактировать каталог" width="16" height="16" border="0" onmouseover="ButOn(37)" onmouseout="ButOff(37)" onclick="EditCatalogDelivery()"></td>
-   <td width="5"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-   <td width="10"></td>
-   <td>
-<!--   
-   <select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.frame2.document.form_flag,1000)">
-			<option SELECTED id=txtLang value=0>С отмеченными</option>
-			<option value="30" id=txtLang>Включить вывод</option>
-			<option value="31" id=txtLang>Отключить вывод</option>
-			<option value="39" id=txtLang>Удалить из базы</option>
-   </select>
--->
-   </td>
+    <td width=\"100\" id=pane align=>+/-</td>
+	<td width=\"60%\" id=pane align=><span name=txtLang id=txtLang>Город</span></td>
+	<td width=\"20%\" id=pane align=><span name=txtLang id=txtLang>Стоимость</span></td>
+	<td width=\"20%\" id=pane align=><span name=txtLang id=txtLang>Бесплатно свыше</span></td>
 </tr>
+	".$display."
+    </table>
 </table>
-</form>
-</td>
-</td>
-</tr>
-</table>
-'."
-<!--основное окно-->
-<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">
-<tr>
-	<td id=pane align=center><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Каталоги</span></td>
-<td rowspan=2 valign=\"top\">
-<!--вывод основной части-->
-<iframe id=interfacesWin1 src=\"delivery/admin_delivery_content.php\" width=\"100%\" height=\"580\" name=\"frame2\" frameborder=\"0\" scrolling=\"Auto\" ></iframe>
-<!--вывод основной части-->
-</td>
-</tr>
-<tr valign=\"top\">
-	<td width=\"300px\">
-<!--вывод каталога-->
-<iframe id=interfacesWin2 src=\"delivery/tree.php\" width=\"300px\" height=\"520\" scrolling=\"Auto\" name=\"frame1\"></iframe>
-<!--вывод каталога-->
-<!--табличка с управлением каталогом-->
-<div align=\"center\" style=\"padding:5\">
-<table cellpadding=\"0\" cellspacing=\"0\">
-  <tr>
-  <td id=\"but50\"  class=\"butoff\"><img  name=imgLang src=\"icon/chart_organisation_add.gif\" alt=\"Открыть все\" width=\"16\" height=\"16\" border=\"0\"  onclick=\"window.frame1.d4.openAll()\">
-    </td>
-   	<td width=\"10\"></td>
-	<td width=\"1\" bgcolor=\"#ffffff\"></td>
-	<td width=\"1\" bgcolor=\"#808080\"></td>
-   <td width=\"5\"></td>
-	<td id=\"but51\"  class=\"butoff\"><img name=imgLang src=\"icon/chart_organisation_delete.gif\" alt=\"Закрыть все\" width=\"16\" height=\"16\" border=\"0\" onclick=\"window.frame1.d4.closeAll()\"></td>
-  </tr>
-</table>
+<div align=\"right\" style=\"padding:10\"><BUTTON style=\"width: 15em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('delivery/adm_delivery_new.php',400,270)\">
+<img src=\"icon/page_add.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\" hspace=\"5\">
+<span name=txtLang id=txtLang>Новая позиция</span>
+</BUTTON></div>
 </div>
-<!--табличка с управлением каталогом-->
-   </td>
-</tr>
-</table>
-";
-return $_Return;
+
+	";
 }
 ?>

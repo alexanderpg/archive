@@ -17,7 +17,6 @@
 			<br>
 <div class="pod_cart" align="center">
 @ComStart@
-@optionsDisp@
  <table width="90%" align="center">
 <tr>
 	<td><strong>@productSklad@</strong></td>
@@ -37,10 +36,6 @@
 	@ComEndCart@
 	<!-- Блок корзина -->
 	
-	</td>
-	<td>
-	<img src="images/shop/application_view_tile.gif" alt="Сравнить" border="0" align="absmiddle">
-	<A href="javascript:AddToCompare(@productUid@)" class=b  title="Сравнить @productName@">Сравнить</A>
 	</td>
 	 <td>
 	 <!-- Блок пожаловаться -->
@@ -70,14 +65,7 @@ tp1 = new WebFXTabPane( document.getElementById( "tabPane1" ) );
 		@productDes@
 		
 	</div>
-   <div class="tab-page" id="tabPage6">
-		<h2 class="tab">Файлы</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage6" ) );</script>
-		
-		@productFiles@
-		
-	</div>
+
 	<div class="tab-page" id="tabPage2">
 		<h2 class="tab">Характеристики</h2>
 		
@@ -86,16 +74,8 @@ tp1 = new WebFXTabPane( document.getElementById( "tabPane1" ) );
 		@vendorDisp@
 		
 	</div>
-	<div class="tab-page" id="tabPage5">
-		<h2 class="tab">Рейтинг</h2>
-		
-		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage5" ) );</script>
-		
-		@ratingfull@
-		
-	</div>
 	<div class="tab-page" id="tabPage3">
-		<h2 class="tab">Отзывы</h2>
+		<h2 class="tab">Отзывы о товаре</h2>
 		
 		<script type="text/javascript">tp1.addTabPage( document.getElementById( "tabPage3" ) );</script>
 		

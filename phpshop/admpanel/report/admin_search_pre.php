@@ -15,12 +15,12 @@ while ($row = mysql_fetch_array($result))
 	}else{
 	$fl="<img src=\"img/icon-deactivate.gif\" width=\"16\" height=\"14\" border=\"0\">";}
 	@$display.="
-	<tr id=\"r".$id."\" class=row>
-    <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" align=\"center\" onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\">$fl</td>
-	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\">
+	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row>
+    <td class=forma>$fl</td>
+	<td onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\" class=forma>
 	$name
 	</td>
-	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\">
+	<td onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\" class=forma>
 	$uid
 	</td>
 	<td class=forma>
@@ -40,9 +40,9 @@ if($i>20)$razmer="height:600;";
 	<td valign=\"top\">
 <table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" class=\"sortable\" id=\"sort\">
 <tr>
-    <td width=\"25\" id=pane align=center><img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('search_pre');\" align=left>&plusmn;</td>
-	<td width=\"40%\" id=pane align=center><span name=txtLang id=txtLang>Запрос</span></td>
-	<td width=\"50%\" id=pane align=center><span name=txtLang id=txtLang>ID товаров</span></td>
+    <td width=\"25\" id=pane align=center>&plusmn;</td>
+	<td width=\"54%\" id=pane align=center><span name=txtLang id=txtLang>Запрос</span></td>
+	<td width=\"55%\" id=pane align=center><span name=txtLang id=txtLang>ID товаров</span></td>
     <td width=\"25\" id=pane align=center style=\"padding:1px\"><input type=checkbox value=1 name=DoAll onclick=\"SelectAllBox(this,form_flag)\"></td>
 </tr>
 
@@ -54,15 +54,7 @@ if($i>20)$razmer="height:600;";
     </table>
 	</form>
 </div>
-	".'
-	<div class=cMenu id=cMenuNws> 
-	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
-	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews17>Удалить из базы</A></TD></TR>
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews18>Заблокировать</A></TD></TR>	
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews19>Задействовать</A></TD></TR>		
-	</TABLE>
-</div>';
+	";
 return $_Return;
 }
 ?>

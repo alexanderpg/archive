@@ -107,7 +107,7 @@ return @$disp;
 <tr>
 	<td colspan="2">
 	<FIELDSET>
-<LEGEND><span name=txtLang id=txtLang><u>О</u>писание</span></LEGEND>
+<LEGEND><span name=txtLang id=txtLang><u>О</u>пиписание</span></LEGEND>
 <div style="padding:10">
 <textarea class=full name=description_new style="height:40px"><?=$description?></textarea>
 </div>
@@ -140,9 +140,6 @@ return @$disp;
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('sort_groupID')">Справка</BUTTON>
-	</td>
 	<td align="right" style="padding:10">
 	<input type="hidden" name="category_arr" value="<?=$category_arr?>" >
     <input type="hidden" name="id" value="<?=$id?>" >

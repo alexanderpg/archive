@@ -4,127 +4,10 @@ require("../connect.php");
 mysql_select_db("$dbase")or @die("Невозможно подсоединиться к базе");
 require("../enter_to_admin.php");
 
-$GetSystems=GetSystems();
-$option=unserialize($GetSystems['admoption']);
-
-	function updateCatalog($parent_id,$charID) { //Функция привязывает текущую характеристику к каталогу
-		global $SysValue; //Глобальные переменные 
-		$sql2_3='select sort from '.$SysValue['base']['table_name'].' WHERE id="'.$parent_id.'"'; //Получаем названия хар-к
-		$result2_3=mysql_query($sql2_3);
-		$num2_3=mysql_num_rows(@$result2_3);
-		if (!$num2_3) return false; //Если категория отсутствует, сделать возврат
-		$row2_3 = mysql_fetch_array($result2_3);
-		$sorts=unserialize($row2_3['sort']);
-		$sel="";//Обнуляем привязчик
-		if(is_array($sorts)) {foreach($sorts as $k=>$v){if ($charID == $v) $sel="selected";}} //Проверяем не привязан ли к каталогу такой ID
-		if ($sel!="selected") {
-			$sorts[]=trim($charID);
-			$ss=addslashes(serialize($sorts));
-			$sql2_4='UPDATE '.$SysValue['base']['table_name'].' SET sort="'.$ss.'" WHERE id="'.$parent_id.'"'; //обновляем кат-г
-			$result2_4=mysql_query($sql2_4);
-		} //Если не привязан, привязываем
-		return true;
-	} //Конец Функция привязывает текущую характеристику к каталогу
-
-		function charsGenerator($parent_id,$CsvToArray,$addcats) {//Функция генерирует новые характеристики, значения характеристик, создает группы характеристик, и связывает из с каталогами. Отдает полученный массив характеристик для товара
-
-
-			global $_SESSION,$_REQUEST,$SysValue,$testValue; //Глобальные переменные 	
-		
-		
-		$addcats=split("#",$addcats); //Готовим массив дополнительных каталогов
-		if (is_array($addcats)) {
-			foreach ($addcats as $id=>$addcat) {
-				$addcat=trim($addcat);
-				if ($addcat=="") unset($addcats[$id]); 
-			}
-		}
-		
-		for ($i=16;$i<count($CsvToArray); $i=$i+2) { //Начинаем обрабатывать все ячейки после дополнительного каталога
-			$charName=trim($CsvToArray[$i]);
-			$charValues=trim($CsvToArray[$i+1]); //Получаем значения
-			$charValues=split("&&",$charValues); //Разбиваем && список в массив
-			//получаем идентификатор характеристики
-			$sql2='select id,name from '.$SysValue['base']['table_name20'].' WHERE name like "'.$charName.'"'; //Получаем названия хар-к
-			$result2=mysql_query($sql2);
-			$row2 = mysql_fetch_array($result2);
-			$charID=$row2['id'];
-	
-			//ПРОПУЩЕН БАГ! если в результате какой-либо махинации не была создана группа характеристики или разрушена привязка к этой группе, она не будет создана. Хотя хар-ки будут работать
-			if ((strlen($charName)) && ($parent_id!="1000002")) { //Если имя характеристики имеет длинну И категория НЕ равна временной
-				//Исправляем БАГ! проверяем до создания характеристик и присвоения, что юзер пришлет хотя бы одно не пустое значение
-				$go=false;
-				foreach ($charValues as $charValue) { //Работаем с каждым значением
-					$charValue=trim($charValue);
-					if (strlen($charValue)) { //Если полученное значение имеет длину
-						$go=true;
-					}
-				}
-				unset($charValue); //Удаляем переменную.
-				if ($go) {//Если есть хотя бы одно не пустое значение
-					if (!$charID) { //Если характеристика не найдена, надо создать группу и характеристику
-						//Создаем группу
-						$sql2_1='INSERT INTO '.$SysValue['base']['table_name20'].' (name,category) VALUES("Группа '.$charName.'","0")'; //Создаем группу
-						$result2_1=mysql_query($sql2_1);
-						$group_id=mysql_insert_id(); //Получаем последний добавленный id - id группы
-						//Создаем характеристику, привязанную к группе 
-						$sql2_2='INSERT INTO '.$SysValue['base']['table_name20'].' (name,category) VALUES("'.$charName.'","'.$group_id.'")'; //Создаем ХАР.
-						$result2_2=mysql_query($sql2_2);
-						$charID=mysql_insert_id(); //Получаем последний добавленный id - id созданной характеристики
-						if (!(updateCatalog($parent_id,$charID))) { //Если при попытке привязки к основному каталогу тот не был найден, прекратить присвоение характеристик и удалить созданные
-							$sql2_3='DELETE FROM '.$SysValue['base']['table_name20'].' WHERE id='.$group_id;
-							$result2_3=mysql_query($sql2_3);
-							$sql2_4='DELETE FROM '.$SysValue['base']['table_name20'].' WHERE id='.$charID;
-							$result2_4=mysql_query($sql2_4);
-							$charID=false;
-						}
-						
-					} else {//Если характеристика найдена, просто пробуем привязать ее к  каталогу товаров
-						if (!(updateCatalog($parent_id,$charID))) {$charID=false;}//Если при попытке привязке к каталогу тот не был найден, прекратить присвоение характеристик
-					}//Конец если  характеристика найдена
-				}//Конец Если есть хотя бы одно не пустое значение
-			} else { //Если нет, то прекратить присвоение
-					$charID=false;			
-			}//Конец Если НЕ (имя характеристики имеет длинну И категория НЕ равна временной)
-			
-			if ($charID) { //Если удалось получить  id характеристики (или создать) - работаем дальше над значениями
-				if (count($addcats)>0) { //Если прислали дополнительные категории (и не обнулили их при анализе чекбоксов)
-					foreach ($addcats as $addcat) {updateCatalog($addcat,$charID);}//Привязываем полученную характеристику к  каждой дополнительной категории товаров					
-				}
-
-				foreach ($charValues as $charValue) { //Работаем с каждым значением
-					$charValue=trim($charValue);
-					if (strlen($charValue)) { //Если полученное значение имеет длину
-						$sql3='select id,name from '.$SysValue['base']['table_name21'].' WHERE (name like "'.$charValue.'") AND (category="'.$charID.'")'; //Получаем названия хар-к
-	//					$sql3='select id,name from '.$SysValue['base']['table_name21'].' WHERE (name like "'.$charValue.'")'; //Получаем названия хар-к
-	
-						$result3=mysql_query($sql3);
-						$row3 = mysql_fetch_array($result3);
-						$id=$row3['id'];
-						if (!$id) { //Если НЕ удалось получить id искомого значения, значит надо добавить новое
-							$sql4='INSERT INTO '.$SysValue['base']['table_name21'].' (name,category) VALUES("'.$charValue.'","'.$charID.'")'; //Получаем назв. хар-к
-							$result4=mysql_query($sql4);
-							$id=mysql_insert_id(); //Получаем последний добавленный id и он будет id привязанный к товару
-						}//КОНЕЦ Если НЕ удалось получить id искомого значения, значит надо добавить новое
-						//$testValue2.='('.$id.')';	//DEBUG!!
-						//Формируем массив из id
-						if ($id) {$resCharsArray[$charID][]=$id;}
-						//$ress=print_r($resCharsArray,1); //DEBUG!!
-						//$testValue2.='('.$ress.')';	//DEBUG!!
-					}//КОНЕЦ Если полученное значение имеет длину
-				} //Конец перебора Значений характеристик
-			} //Конец если удалось получить id характеристики
-		} //Конец обработки всех ячеек после старых характеристик
-		//*/
-		return $resCharsArray;
-	}//Конец Функция генерирует новые характеристики...
-
 class ReadCsv1C{
    var $CsvContent;
    var $ReadCsvRow;
    var $TableName;
-   var $Sklad_status;
-   var $ImagePath="/UserFiles/Image/";
 
    
    function ReadCsvRow(){
@@ -155,10 +38,9 @@ class ReadCsv1C{
    }
    
    
-   function ReadCsv1C($CsvContent,$table_name2,$sklad_status){
+   function ReadCsv1C($CsvContent,$table_name2){
    $this->CsvContent = $CsvContent;
    $this->TableName = $table_name2;
-   $this->Sklad_status = $sklad_status;
    $this->ReadCsvRow();
    }
    
@@ -192,17 +74,24 @@ class ReadCsv1C{
    return @$num;
    }
    
-   function ImagePlus($img){// Путь к картинке
-   $dis=$this->ImagePath.$img;
-   return $dis;
+   function ImagePlus($img,$content,$name){// Описание+ картинка
+   $dis="<img src=\"/UserFiles/Image/".str_replace(0, "", $img)."\" border=0>";
+   return $dis."<br>".$content;
    }
    
-
-   
    function UpdateBase($CsvToArray){
-   global $_SESSION,$_REQUEST,$testValue;
-
+   global $_SESSION,$_REQUEST;
    $CheckBase=$this->CheckBase($CsvToArray[0]);
+   
+   // Наличие товара
+   if($CsvToArray[6]>0) $enabled=1;
+     else $enabled=0;
+   
+   
+   
+   // Характеристики
+   $vendor_new=unserialize(base64_decode($CsvToArray[15]));
+   $vendor_array=base64_decode($CsvToArray[15]);
    
    
 if(!empty($CheckBase) and $CsvToArray[0]!=""){// Обновляем  
@@ -222,106 +111,49 @@ if($_REQUEST['tip'][14] == 1){
 }
 // описание краткое
 if($_REQUEST['tip'][2] == 1) $sql.="description='".str_replace("|",";",$CsvToArray[2])."', ";
-if($_REQUEST['tip'][3] == 1) $sql.="pic_small='".$this->ImagePlus($CsvToArray[3])."', ";// маленькая картинка
+if($_REQUEST['tip'][3] == 1) $sql.="pic_small='".$CsvToArray[3]."', ";// маленькая картинка
 // подробное описание
 if($_REQUEST['tip'][4] == 1) $sql.="content='".str_replace("|",";",$CsvToArray[4])."', ";
-if($_REQUEST['tip'][5] == 1) $sql.="pic_big='".$this->ImagePlus($CsvToArray[5])."', ";// большая картинка
+if($_REQUEST['tip'][5] == 1) $sql.="pic_big='".$CsvToArray[5]."', ";// большая картинка
 if($_REQUEST['tip'][6] == 1) $sql.="price='".$CsvToArray[7]."', ";// цена 1
-if($_REQUEST['tip'][17] == 1) {
-	$sql.="dop_cat='".$CsvToArray[15]."', ";//  дополнительные каталоги
-	$addcats=$CsvToArray[15];
-} else {
-	$addcats=false;
-}
-// Склад
-if($_REQUEST['tip'][11] == 1){
-  switch($this->Sklad_status){
-  
-       case(3):
-	   if($CsvToArray[6]<1) $sql.="sklad='1', ";
-	     else $sql.="sklad='0', ";
-	   break;
-	   
-	   case(2):
-	   if($CsvToArray[6]<1) $sql.="enabled='0', ";
-	     else $sql.="enabled='1', ";
-	   break;
-	   
-	   default: $sql.="";
-  
-  }
-}
-
 if($_REQUEST['tip'][13] == 1) $sql.="uid='".trim($CsvToArray[13])."', ";// артикул
+if($_REQUEST['tip'][11] == 1) $sql.="enabled='".$enabled."', ";// enabled
 if($_REQUEST['tip'][7] == 1) $sql.="price2='".$CsvToArray[8]."', ";// цена 2
 if($_REQUEST['tip'][8] == 1) $sql.="price3='".$CsvToArray[9]."', ";// цена 3
 if($_REQUEST['tip'][9] == 1) $sql.="price4='".$CsvToArray[10]."', ";// цена 4
 if($_REQUEST['tip'][10] == 1) $sql.="price5='".$CsvToArray[11]."', ";// цена 5
 if($_REQUEST['tip'][11] == 1) $sql.="items='".$CsvToArray[6]."', ";// склад
-if($_REQUEST['tip'][12] == 1) $sql.="weight='".$CsvToArray[12]."', ";// вес
+if($_REQUEST['tip'][12] == 1) $sql.="weight='".$CsvToArray[12]."', ";// склад
+
+if($_REQUEST['tip'][15] != 1){// 15 характеристика
+
+   // Характеристики
+$vendor_new=unserialize(base64_decode($CsvToArray[15]));
+$vendor_array=base64_decode($CsvToArray[15]);
+if(is_array($vendor_new))
+foreach($vendor_new as $k=>$v){
+       if(is_array($v)){
+	     foreach($v as $o=>$p)
+	     @$vendor.="i".$k."-".$p."i";
+	     }
+		 else @$vendor.="i".$k."-".$v."i";
+      }
+$sql.="vendor='".$vendor."', ";
+$sql.="vendor_array='".$vendor_array."', ";
+} 
 
 $sql.=" datas ='".date("U")."' ";
 
 $sql.=" where id='".$CsvToArray[0]."'";
-$result=mysql_query($sql); //Обработка товара!!
-
-
-// $testValue2='start';
-if($_REQUEST['tip'][15] == 1){// 16 характеристики 2.0
-	$resCharsArray=''; //Опустошаем массив
-	$resCharsArray=charsGenerator($parent_id,$CsvToArray,$addcats); //Вызываем генератор характеристик
-	//Обрабатываем получившийся массив
-	$resSerialized=serialize($resCharsArray);
-	$vendor='';
-	if(is_array($resCharsArray)) {
-		foreach($resCharsArray as $k=>$v){
-			if(is_array($v)){
-				foreach($v as $o=>$p) {@$vendor.="i".$k."-".$p."i";}
-			} else {
-				@$vendor.="i".$k."-".$v."i";
-			}
-		}
-	}
-	$sql="UPDATE ".$this->TableName." SET ";
-	$sql.="vendor='".$vendor."', ";
-	$sql.="vendor_array='".$resSerialized."' ";
-	$sql.=" where id='".$CsvToArray[0]."'";
-//	$testValue2.=$sql.'<HR>'; //DEBUG!!!
-	$result=mysql_query($sql); //Обработка товара!!
-
-}//Конец если Характеристики 2.0
-	//$testValue2.='end'; //DEBUG!!!
-
+$result=mysql_query($sql);
  
+
 }else{// Создаем новый товар
 
 // Категория
    if(!empty($CsvToArray[14])) $parent_id = $CsvToArray[14];
     else $parent_id = "1000002";
 
-	
-// Склад
-if($_REQUEST['tip'][11] == 1){
-  switch($this->Sklad_status){
-  
-       case(3):
-	   if($CsvToArray[6]<1) $sklad=1;
-	     else $sklad=0;
-	   break;
-	   
-	   case(2):
-	   if($CsvToArray[6]<1) $enabled=0;
-	     else $enabled=1;
-	   break;
-	   
-	   default: 
-	   $sklad=0;
-	   $enabled=1;
-	   break;
-  
-  }
-}
-	
 // Отсеиваем поля
 if($_REQUEST['tip'][2] != 1) $CsvToArray[2]="";// описание краткое
 if($_REQUEST['tip'][3] != 1) $CsvToArray[3]="";// маленькая картинка
@@ -335,43 +167,31 @@ if($_REQUEST['tip'][10] != 1) $CsvToArray[11]="";// цена 5
 if($_REQUEST['tip'][11] != 1) $CsvToArray[6]="";// склад
 if($_REQUEST['tip'][12] != 1) $CsvToArray[12]="";// вес
 if($_REQUEST['tip'][13] != 1) $CsvToArray[13]="";// 13 артикул
-//if($_REQUEST['tip'][17] != 1) $CsvToArray[15]="";// дополнительные каталоги
-if($_REQUEST['tip'][17] == 1) {
-	$addcats=$CsvToArray[15];
-} else {
-	$addcats="";
-	$CsvToArray[15]="";// дополнительные каталоги
-}
 if($_REQUEST['tip'][14] != 1){ // 14 категория
 
    // Категория
    if(!empty($CsvToArray[14])) $parent_id = $CsvToArray[14];
     else $parent_id = "1000002";
 }
+if($_REQUEST['tip'][15] != 1){// 15 характеристика
 
-if($_REQUEST['tip'][15] == 1){// 16 характеристики 2.0
-	$resCharsArray=''; //Опустошаем массив
-	$resCharsArray=charsGenerator($parent_id,$CsvToArray,$addcats); //Вызываем генератор характеристик
-	//Обрабатываем получившийся массив
-	$resSerialized=serialize($resCharsArray);
-	$vendor='';
-	if(is_array($resCharsArray)) {
-		foreach($resCharsArray as $k=>$v){
-			if(is_array($v)){
-				foreach($v as $o=>$p) {@$vendor.="i".$k."-".$p."i";}
-			} else {
-				@$vendor.="i".$k."-".$v."i";
-			}
-		}
-	}
-	$vendor_array=serialize($resCharsArray);
-}//Конец если Характеристики 2.0
+   // Характеристики
+$vendor_new=unserialize(base64_decode($CsvToArray[15]));
+$vendor_array=base64_decode($CsvToArray[15]);
+if(is_array($vendor_new))
+foreach($vendor_new as $k=>$v){
+       if(is_array($v)){
+	     foreach($v as $o=>$p)
+	     @$vendor.="i".$k."-".$p."i";
+	     }
+		 else @$vendor.="i".$k."-".$v."i";
+      }
+} 
+
+
 
 $sql="INSERT INTO ".$this->TableName."
-VALUES ('','".$parent_id."','".trim($CsvToArray[1])."','".$CsvToArray[2]."','".$CsvToArray[4]."','".$CsvToArray[7]."','','','".$this->Zero($CsvToArray[9])."','".$enabled."','".$CsvToArray[13]."','','','".$vendor."','".$vendor_array."','1','','','','','".date("U")."','','".$_SESSION['idPHPSHOP']."','','','','','','','','".$this->ImagePlus($CsvToArray[3])."','".$this->ImagePlus($CsvToArray[5])."','','0','','".$CsvToArray[6]."','".$CsvToArray[12]."','".$CsvToArray[8]."','".$CsvToArray[9]."','".$CsvToArray[10]."','".$CsvToArray[11]."','','".$_REQUEST['tip'][16]."', '','".$CsvToArray[15]."')";
-
-	//$testValue2.=$sql.'<HR>'; //DEBUG!!!
-	//if (strlen($testValue)==0) {$testValue=$testValue2;}//DEBUG!!!
+VALUES ('','".$parent_id."','".trim($CsvToArray[1])."','".$CsvToArray[2]."','".$CsvToArray[4]."','".$CsvToArray[7]."','','','".$this->Zero($CsvToArray[9])."','".$enabled."','".$CsvToArray[13]."','','','".$vendor."','".$vendor_array."','1','','','','','".date("U")."','','".$_SESSION['idPHPSHOP']."','','','','','','','','".$CsvToArray[3]."','".$CsvToArray[5]."','','0','','".$CsvToArray[6]."','".$CsvToArray[12]."','".$CsvToArray[8]."','".$CsvToArray[9]."','".$CsvToArray[10]."','".$CsvToArray[11]."')";
 $result=mysql_query($sql);
  }
    }
@@ -396,7 +216,7 @@ static $n;
 	$n++;
 	return $disp;
    }
-} //Класс
+}
 
 function Ors($n){
    if($n==0) return "<font color=FF0000>нет</font>";
@@ -438,7 +258,7 @@ if ($fp) {
   $fstat = fstat($fp);
   $CsvContent=fread($fp,$fstat['size']);
   fclose($fp);
-  $ReadCsv = new ReadCsv1C($CsvContent,$table_name2,$option['sklad_status']);
+  $ReadCsv = new ReadCsv1C($CsvContent,$table_name2);
   $interface.='
 <div id=interfacesWin name=interfacesWin align="left" style="width:100%;height:580;overflow:auto"> 
 <TABLE style="border: 1px;border-style: inset;" cellSpacing=0 cellPadding=0 width="100%"><TBODY>
@@ -447,15 +267,15 @@ if ($fp) {
 <table width="100%" cellpadding="0" cellspacing="1" class="sortable" id="sort" bgcolor="#808080">
 <tr>
     <td id="pane" width="50">№</td>
-	<td id="pane"><span name=txtLangs id=txtLangs>ID товара</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Название товара</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Цена 1</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Цена 2</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Цена 3</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Цена 4</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Цена 5</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Склад</span></td>
-	<td id="pane"><span name=txtLangs id=txtLangs>Вес</span></td>
+	<td id="pane">ID товара</td>
+	<td id="pane">Название товара</td>
+	<td id="pane">Цена 1</td>
+	<td id="pane">Цена 2</td>
+	<td id="pane">Цена 3</td>
+	<td id="pane">Цена 4</td>
+	<td id="pane">Цена 5</td>
+	<td id="pane">Склад</td>
+	<td id="pane">Вес</td>
 </tr>
 '.$ReadCsv->DoUpdatebase1().'
 </table>
@@ -464,11 +284,11 @@ if ($fp) {
 <div align="center" style="padding-top:20">
 <button style="WIDTH: 17em; HEIGHT: 2.3em" onclick="DoReload(\'csv_base\')">
 <img src="img/icon-setup2.gif" alt="" width="16" height="16" border="0" align="absmiddle" hspace="5">
-<span name=txtLangs id=txtLangs>Выбрать другой файл</span></button>
+Выбрать другой файл</button>
 &nbsp;&nbsp;
 <button style="WIDTH: 17em; HEIGHT: 2.3em" onclick="DoLoadBase(null,\'load\',\''.$_FILES['file']['name'].'\')">
 <img src="img/icon-setup.gif" alt="" width="16" height="16" border="0" align="absmiddle" hspace="5">
-<span name=txtLangs id=txtLangs>Принять изменения</span></button>
+Принять изменения</button>
 <input type="hidden" id="tip_1" value="'.$_REQUEST['tip'][1].'">
 <input type="hidden" id="tip_2" value="'.$_REQUEST['tip'][2].'">
 <input type="hidden" id="tip_3" value="'.$_REQUEST['tip'][3].'">
@@ -484,8 +304,6 @@ if ($fp) {
 <input type="hidden" id="tip_13" value="'.$_REQUEST['tip'][13].'">
 <input type="hidden" id="tip_14" value="'.$_REQUEST['tip'][14].'">
 <input type="hidden" id="tip_15" value="'.$_REQUEST['tip'][15].'">
-<input type="hidden" id="tip_16" value="'.$_REQUEST['tip'][16].'">
-<input type="hidden" id="tip_17" value="'.$_REQUEST['tip'][17].'">
 </form></div>
     ';
   }
@@ -495,7 +313,7 @@ if ($fp) {
   $fstat = fstat($fp);
   $CsvContent=fread($fp,$fstat['size']);
   fclose($fp);
-$ReadCsv = new ReadCsv1C($CsvContent,$table_name2,$option['sklad_status']);
+$ReadCsv = new ReadCsv1C($CsvContent,$table_name2);
 $Done2 = $ReadCsv->DoUpdatebase2();
 $interface.='
 
@@ -503,14 +321,32 @@ $interface.='
 <TR>
 
 <TD vAlign=top style="padding-top:25">
-<div align="center"><h4><span name=txtLang2 id=txtLang2>Загрузка товарной базы выполнена!</span></h4></div>
+<div align="center"><h4>Загрузка товарной базы выполнена!</h4></div>
 <FIELDSET id=fldLayout style="width: 60em; height: 8em;">
+
+
+<table cellpadding="10" align="center">
+<FORM name=csv_upload action="" method=post encType=multipart/form-data>
+<tr>
+	<td>
+	Выберите файл с разширением *.csv<br>
+	<INPUT type=file size=80 name=csv_file>
+	</td>
+	
+	<td align="right">
+	<INPUT class=but onclick="DoLoadBase1C(this.form.csv_file,\'predload\',null)" type=button value=OK><br>
+<INPUT class=but type=reset value=Сброс> 
+<input type="hidden" name="load" value="ok">
+	</td>
+</tr>
+</table>
+<p><br></p>
 <table style="border: 1px;border-style: inset;" cellpadding="10" width="100%">
 <tr>
-	<td width="50%" ><h4><span name=txtLang2 id=txtLang2>Ход операции</span></h4>
+	<td width="50%" ><h4><span name=txtLang id=txtLang>Ход операции</span></h4>
 <ol>
-	<li><span name=txtLang2 id=txtLang2><strong>Шаг 1</strong> - перейти в раздел <a href="javascript:DoReload(\'cat_prod\')"><img src="img/i_eraser[1].gif" alt="" width="16" height="16" border="0" hspace="3" align="absmiddle">"Каталог</a> - Выгруженные товары - Excel  База"</span>
-    <li><span name=txtLang2 id=txtLang2><strong>Шаг 2</strong> - выделите флажком товары и выберите папку для переноса опцией "С отмеченными - Перенести в каталог". Если требуется,  составьте соответствующие каталоги.</span></span>
+	<li><span name=txtLang id=txtLang><strong>Шаг 5</strong> - перейти в раздел <a href="javascript:DoReload(\'cat_prod\')"><img src="img/i_eraser[1].gif" alt="" width="16" height="16" border="0" hspace="3" align="absmiddle">"Каталог</a> - Выгруженные товары - Excel  База"</span>
+    <li><span name=txtLang id=txtLang><strong>Шаг 6</strong> - выделите флажком товары и выберите папку для переноса опцией "С отмеченными - Перенести в каталог". Если требуется,  составьте соответствующие каталоги.</span>
 </ol></td>
 </tr>
 </table>
@@ -539,7 +375,7 @@ $interface.='
 </table>
 	  
 	  ';
-//$interface.='test value:<BR>'.$testValue; //DEBUG
+
 $_RESULT = array(
   "name"   => @$_FILES['file']['name'],
   "content"=> @$interface,

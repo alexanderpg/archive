@@ -24,16 +24,9 @@ $info=$row['info'];
 <META http-equiv=Content-Type content="text/html; charset=windows-1251">
 <meta http-equiv="MSThemeCompatible" content="Yes">
 <LINK href="../css/texts.css" type=text/css rel=stylesheet>
-<SCRIPT language="JavaScript" src="../../lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 <script language="JavaScript" src="../java/javaMG.js" type="text/javascript"></script>
 <script>
-
-// Стандартную форму обновляем
-function UpdateMainForma(img,img_s){
-window.opener.document.getElementById('pic_small').value=img_s;
-window.opener.document.getElementById('pic_big').value=img;
-self.close();
-}
 
 
 // Удаление из галереи
@@ -126,9 +119,6 @@ echo '
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-    <td align="left" style="padding-left: 10px">
-	<input type=button class=but value="Основной вид" style="width: 130px"  onClick=" UpdateMainForma(\''.$name.'\',\''.$s_name.'\');">
-	</td>
 	<td align="right" style="padding:10">
 <input type=button value="ОК" class=but onClick="UpdateNum('.$id.');">
 <input type="button" class=but value="Удалить" onClick="PromptThisDelete('.$id.',\''.$name.'\');return false;">

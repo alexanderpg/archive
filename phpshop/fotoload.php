@@ -71,16 +71,16 @@ if($fR == $num){
 <tr>
   <td align="center">
   '.($f).'<br>
-  <a href="javascript:fotoload('.$n.','.$fL.');"><img src="'.$FotoArray[$fL]["name_s"].'" alt="'.$FotoArray[$fL]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)"><br>
+  <a href="javascript:fotoload('.$n.','.$fL.');"><img src="'.$FotoArray[$fL]["name_s"].'" alt="'.$FotoArray[$fL]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" height="110"><br>
 &laquo; Назад</a>
   </td>
   <td align="center">
   '.($f+1).'<br>
-    <a href="javascript:fotoload('.$n.','.$f.');"><img src="'.$FotoArray[$f]["name_s"].'" alt="'.$FotoArray[$f]["info"].'" border="1" class="imgOn"></a><br>&nbsp;
+    <a href="javascript:fotoload('.$n.','.$f.');"><img src="'.$FotoArray[$f]["name_s"].'" alt="'.$FotoArray[$f]["info"].'" border="1" class="imgOn" height="110"></a><br>&nbsp;
   </td>
   <td align="center">'.@$fRComSatrt.'
   '.($f+2).'<br>
-    <a href="javascript:fotoload('.$n.','.$fR.');"><img src="'.$FotoArray[$fR]["name_s"].'" alt="'.$FotoArray[$fR]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)"><br>
+    <a href="javascript:fotoload('.$n.','.$fR.');"><img src="'.$FotoArray[$fR]["name_s"].'" alt="'.$FotoArray[$fR]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" height="110"><br>
 Вперед &raquo;</a>'.$fRComEnd.'
   </td>
 </tr>

@@ -119,7 +119,7 @@ else{
   <td>
   <input type="checkbox" id="numBox" name="numBox" onchange="blocPrice()">
   &nbsp;&nbsp;&nbsp;
-  <BUTTON name="btnLang" onclick="miniWin('../window/adm_calc.php',230,200);return false;"   class="option" style="width:100px">
+  <BUTTON onclick="miniWin('../window/adm_calc.php',230,200);return false;"   class="option" style="width:100px">
 	Калькулятор
 	</BUTTON>
   </td>

@@ -28,8 +28,7 @@ else
 <SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 <script language="JavaScript" src="../java/javaMG.js" type="text/javascript"></script>
 <script type="text/javascript" src="../java/tabpane.js"></script>
-<script type="text/javascript" language="JavaScript" src="../language/<?
-echo $Lang;?>/language_windows.js"></script>
+<script type="text/javascript" language="JavaScript" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script> 
 DoResize(<? echo $GetSystems['width_icon']?>,650,630);
 </script>
@@ -158,7 +157,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 	<FIELDSET>
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>аталог</span>:</LEGEND>
 	<div style="padding:10">
-	<input type=text id="myName"  style="width: 500" value="">
+	<input type=text id="myName"  style="width: 550" value="">
 	<input type="hidden" value="'.$parent_to.'" name="parent_to_new" id="myCat">
 <BUTTON style="width: 3em; height: 2.2em; margin-left:5"  onclick="miniWinFull(\'adm_cat.php?category='.$parent_to.'\',300,400);return false;"><img src="../img/icon-move-banner.gif"  width="16" height="16" border="0"></BUTTON>
 	</FIELDSET>
@@ -183,8 +182,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 	<div style="padding:12">
 		<input type="radio" name="num_row_new" value="1" >1&nbsp;&nbsp;&nbsp;
 		<input type="radio" name="num_row_new" value="2" checked>2&nbsp;&nbsp;&nbsp;
-		<input type="radio" name="num_row_new" value="3" >3&nbsp;&nbsp;&nbsp;
-		<input type="radio" name="num_row_new" value="4" >4&nbsp;&nbsp;&nbsp;
+		<!-- <input type="radio" name="num_row_new" value="3" >3&nbsp;&nbsp;&nbsp; -->
 </FIELDSET>
 	</td>
 	<td width="10"></td>
@@ -203,12 +201,12 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 	  <select name="order_by_new">
 			<option value="1" '.$o1.'>по имени</option>
 			<option value="2" '.$o2.'>по цене</option>
-			<option value="3" '.$o3.' selected>по популярности</option>
+			<option value="3" '.$o3.'>по популярности</option>
      </select>
 	 &nbsp;
 	  <select name="order_to_new">
 			<option value="1" '.$ot1.'>возрастанию</option>
-			<option value="2" '.$ot2.' selected>убыванию</option>
+			<option value="2" '.$ot2.'>убыванию</option>
      </select>
 		
 </FIELDSET>
@@ -298,7 +296,7 @@ tabPane.addTabPage( document.getElementById( "Rambler" ) );
 	<div style="padding:12">
 	<table width="80%" cellpadding="0" cellspacing="0">
 <tr>
-	<td><input type="radio" name="yml_new" value="1" '.$sel.' checked><span name=txtLang id=txtLang>Да</span>&nbsp;&nbsp;&nbsp;
+	<td><input type="radio" name="yml_new" value="1" '.$sel.'><span name=txtLang id=txtLang>Да</span>&nbsp;&nbsp;&nbsp;
 		<input type="radio" name="yml_new" value="0" '.$sel2.'><font color="#FF0000"><span name=txtLang id=txtLang> Нет</span> </font></td>
 	<td align="right"> 
 	<button style="width: 12em; height: 2.2em; margin-left:5"  onclick="window.open(\'/yml/yandex.php\')">
@@ -443,113 +441,16 @@ tabPane.addTabPage( document.getElementById( "skin" ) );
 	  <div align="center" style="padding:10px">'.GetSkinsIcon($GetSystems['skin']).'</div>
 	  </FIELDSET>
 	  <br>
-	  <input type="checkbox" value="1" name="skin_enabled_new">  <span name=txtLang id=txtLang>Использовать дизайн</span>
+	  <input type="checkbox" value="1" name="skin_enabled_new"> Использовать дизайн
 	  </td>
 	</tr>
 
 </table>
+
 </div>
-');
-
-if(CheckedRules($UserStatus["cat_prod"],5) == 1){ //Если есть права на редактирование доступа к папке
-echo '
-<div class="tab-page" id="security" style="height:450px">
-<h2 class="tab"><span name=txtLang id=txtLang>Безопасность</span></h2>
-
-<script type="text/javascript">
-tabPane.addTabPage( document.getElementById( "security" ) );
-</script>
-';
-?>
-
-<table width="100%">
-<tr>
-<td width="100%">
-
-<SCRIPT>
-function enable_div2() {
-if (document.getElementById('allusers').checked) {
-	document.getElementById('regsel').disabled=true;
-} else {
-	document.getElementById('regsel').disabled=false;
-}
-}
-
-</SCRIPT>
-	<FIELDSET id=fldLayout >
-<div style="padding:10">
-<span name=txtLang id=txtLang>Каталог могут редактировать:</span><BR>
-<?
-$sql='select * from '.$SysValue['base']['table_name19'].' WHERE enabled="1"';
-$result=mysql_query($sql);
-$num = mysql_num_rows($result);
-if ($num) { ?>
-
-<DIV id="allreg">
-&nbsp;&nbsp;&nbsp;
-<input type="HIDDEN" name="9999" value="0">
-<?
-if (strlen($secure_groups)) {$che='';} else {$che='checked';}
-
-?>
-<input type="checkbox" onClick="enable_div2()" id="allusers" name="seq[9999]" <?=$che?> value="1">
-<span name=txtLang id=txtLang>Все, у кого есть права на ред. каталогов (снимите отметку, чтобы выбрать определенных пользователей)</span><BR>
-
-<DIV <?if (!(strlen($secure_groups))) echo "disabled";?> id="regsel" style="overflow-y:auto; height:280px;">
-
-<?
-	while ($row = mysql_fetch_array($result)) {
-		if (strlen($secure_groups)) {
-			$string='i'.$row['id'].'-1i';
-			if (strpos($secure_groups,$string) !==false) {$che='checked';} else {$che='';}
-		} else {$che='';}
-
-		if ($row['id']==$_SESSION['idPHPSHOP']) {
-			$che='checked';
-			$amddis='disabled';
-			$admval='1';
-			$admname='<B>Это вы!</B> ';
-		} else {
-			$amddis='';
-			$admval='0';
-			$admname='';
-		}
-
-
-
-		echo '&nbsp;&nbsp;&nbsp;
-			<input type="HIDDEN" name="seq['.$row['id'].']" value="'.$admval.'">
-			<input type="checkbox" name="seq['.$row['id'].']" '.$che.' '.$amddis.' value="1">'.$admname.$row['name'].' (login:'.$row['login'].',e-mail:'.$row['mail'].')<BR>';
-	}
-?>
-</DIV>
-</DIV>
-<?
-} //Конец если есть статусы
-?>
-</div>
-</FIELDSET>
-
-
-</td>
-</tr>
-</table>
-</div>
-
-<?
-echo '
-</div>
-
-';
-} //Если есть права на редактирование доступа к папке
-
-echo ('
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent(\'catalogID\')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
 <input type="submit"  name="productSAVE" value="OK" class=but>
 <input type="reset" class=but name="btnLang" value="Сбросить">
@@ -564,22 +465,8 @@ echo ('
 if((isset($productSAVE)) and $name_new!="")// запись в базу
 {
 if(CheckedRules($UserStatus["cat_prod"],2) == 1){
-
-$sq_new='';
-if(CheckedRules($UserStatus["cat_prod"],5) == 1){
-	if(is_array($seq))
-	foreach ($seq as $crid =>$value) {
-		$sq_new.='i'.$crid.'-'.$value.'i';
-		@$counter++;
-		if ($value) {$selected++;}
-		if (isset($seq['9999'])) {$sq_new=''; break;}
-	}
-	if ((!$selected) || ($counter==$selected)) {$sq_new='';}
-} //Проверка прав
-
-
 $sql="INSERT INTO $table_name
-VALUES ('','".CleanStr(trim($name_new))."','$num_new','$parent_to_new','$yml_new','$num_row_new','$num_cow_new','".serialize($sort_new)."','$EditorContent',0,'$name_rambler_new','','$title_new','$title_enabled_new','$title_shablon_new','$descrip_new','$descrip_enabled_new','$descrip_shablon_new','$keywords_new','$keywords_enabled_new','$keywords_shablon_new','$skin_new','$skin_enabled_new','$order_by_new','$order_to_new','$sq_new')";
+VALUES ('','".trim($name_new)."','$num_new','$parent_to_new','$yml_new','$num_row_new','$num_cow_new','".serialize($sort_new)."','$EditorContent',0,'$name_rambler_new','','$title_new','$title_enabled_new','$title_shablon_new','$descrip_new','$descrip_enabled_new','$descrip_shablon_new','$keywords_new','$keywords_enabled_new','$keywords_shablon_new','$skin_new','$skin_enabled_new','$order_by_new','$order_to_new')";
 $result=mysql_query($sql);
 if($reload=="true")
 echo"

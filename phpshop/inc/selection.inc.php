@@ -6,68 +6,7 @@
 +-------------------------------------+
 */
 
-// Вывод описания сортировки
-function DispSortDescription($v){
-global $SysValue,$LoadItems;
-
-
-if(is_array($v))
- foreach($v as $key=>$value) 
-  $name=$LoadItems['Sort'][$value]['page'];
-
-
-$sql="select content from ".$SysValue['base']['table_name11']." where link='$name' and enabled='1' ";
-$result=mysql_query($sql);
-@$row=mysql_fetch_array($result);
-@$SysValue['sql']['num']++;
-$content=stripslashes($row['content']);
-return $content;
-}
-
-
-// Вывод каталогов
-function DispSelectionCat(){
-global $SysValue,$LoadItems;
-@$v=$SysValue['nav']['query']['v'];
-
-
-// Сортировка по характеристикам
-if(is_array($v)){
-foreach($v as $key=>$value){
- if($value>0){ $hash=$key."-".$value;
-@$sort.=" and vendor REGEXP 'i".$hash."i' ";
- $v_str="v[".$key."]=".$value;
-}}
-}
-
-$sql="select DISTINCT(category) from ".$SysValue['base']['table_name2']." where  enabled='1' $sort";
-$result=mysql_query($sql);
-
-
-while(@$row = mysql_fetch_array(@$result))
-    {
-	$category=$row['category'];
-    $parent = $LoadItems['Catalog'][$category]['parent_to'];
-	$catArray[$parent][]=$category;
-	}
-	
-	foreach($catArray as $key=>$val){
-	$dis="";
-	      foreach($val as $value)
-	$dis.="<li><a href=\"/shop/CID_$value.html?$v_str\" title=\"".$LoadItems['Catalog'][$value]['name']."\">".$LoadItems['Catalog'][$value]['name']."</a>  ";
-    @$disp.="<h2>".$LoadItems['Catalog'][$key]['name']."</h2>$dis";
-    }
-	
-	
-$SysValue['other']['DispCatNav'] = $disp;
-$SysValue['other']['sortDes']= DispSortDescription($v);
-@$disp=ParseTemplateReturn("selection/page_selection_list.tpl");
-return $disp;
-}
-
-
-// Навигация 
-function DispSelectionNav($v)
+function DispSelectionNav($v)// Навигация 
 {
 global $SysValue,$LoadItems,$_POST;
 $v=$SysValue['nav']['query']['v'];
@@ -168,9 +107,11 @@ foreach($v as $key=>$value){
   $q++;
   $num_ot=$num_ot+$num_row;
   }
+//echo "<pre>";
+//print_r($SysValue['nav']['query']['v']);
+//echo($sql);
 return $sql;
 }
-
 
 function DispSelection()// выбор товаров из данного подкатолога
 {
@@ -188,6 +129,7 @@ $sql=PageSelectionDisp();
 $result=mysql_query($sql);
 
 
+
 $i=0;
 $SysValue['my']['setka_num']=$LoadItems['System']['num_vitrina'];
 if($SysValue['my']['setka_num'] == 2) $j=0;
@@ -195,7 +137,7 @@ if($SysValue['my']['setka_num'] == 3) $j=1;
 
 while(@$row = mysql_fetch_array(@$result))
     {
-    $id=$row['id'];
+   $id=$row['id'];
 	$uid=$row['uid'];
 	$name=$row['name'];
 	$category=$row['category'];
@@ -212,7 +154,6 @@ while(@$row = mysql_fetch_array(@$result))
 	$pic_small=$row['pic_small'];
 	$pic_big=$row['pic_big'];
 	$description=$row['description'];
-	$baseinputvaluta=$row['baseinputvaluta'];
 	
 	// Если есть новая цена
 	if($priceNew>0){
@@ -251,11 +192,11 @@ $SysValue['other']['productValutaName']= GetValuta();
 if($priceSklad==0){// Если товар на складе
 // Если нет новой цены
 if(empty($priceNew)){
-$SysValue['other']['productPrice']=GetPriceValuta($price,"",$baseinputvaluta);
+$SysValue['other']['productPrice']=GetPriceValuta($price);
 $SysValue['other']['productPriceRub']= "";
 }else{// Если есть новая цена
-$SysValue['other']['productPrice']=GetPriceValuta($price,"",$baseinputvaluta);
-$SysValue['other']['productPriceRub']= "<strike>".GetPriceValuta($priceNew,"",$baseinputvaluta)." ".GetValuta()."</strike>";
+$SysValue['other']['productPrice']=GetPriceValuta($price);
+$SysValue['other']['productPriceRub']= "<strike>".GetPriceValuta($priceNew)." ".GetValuta()."</strike>";
 }}else{ // Товар по заказ
 $SysValue['other']['productPrice']=$SysValue['lang']['sklad_no'];
 $SysValue['other']['productPriceRub']=$SysValue['lang']['sklad_mesage'];
@@ -336,7 +277,7 @@ $j=1;
 
 // Подключаем шаблон
 if(empty($dis)) @$SysValue['other']['productPageDis']= "<h4>Ничего не найдено...</h4>";
-@$disp=ParseTemplateReturn("selection/page_selection_list.tpl");
+@$disp=ParseTemplateReturn("product/product_page_selection_list.tpl");
 
 return @$disp;
 }
