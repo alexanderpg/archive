@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Библиотека YML для Google Merchant
+ * Библиотека RSS для Google Merchant
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopClass
  */
 class PHPShopRssGoogle {
@@ -209,10 +209,10 @@ class PHPShopRssGoogle {
                 $oldprice = $promotions['price_n'];
             }
 
-            if ($row['p_enabled'] == 1)
-                $p_enabled = "in stock";
+            if ($row['sklad'] == 0)
+                $enabled = "in stock";
             else
-                $p_enabled = "out of stock";
+                $enabled = "out of stock";
 
             if (empty($row['description']))
                 $row['description'] = $row['content'];
@@ -251,7 +251,7 @@ class PHPShopRssGoogle {
                 "price5" => round($row['price5'], (int) $this->format),
                 "oldprice" => $oldprice,
                 "weight" => $row['weight'],
-                "p_enabled" => $p_enabled,
+                "enabled" => $enabled,
                 "yml_bid_array" => unserialize($row['yml_bid_array']),
                 "uid" => $uid,
                 "description" => $description,
@@ -348,7 +348,7 @@ class PHPShopRssGoogle {
       <description>' . $this->cleanStr($val['description']) . '</description>
       <g:image_link>' . $this->ssl . $_SERVER['SERVER_NAME'] . $val['picture'] . '</g:image_link> 
       <g:price>' . $val['price'] . ' ' . $this->defvalutaiso . '</g:price> 
-      <g:availability>' . $val['p_enabled'] . '</g:availability>
+      <g:availability>' . $val['enabled'] . '</g:availability>
       <g:id>' . $val['id'] . '</g:id>
       </item>';
 

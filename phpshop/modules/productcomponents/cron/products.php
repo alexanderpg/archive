@@ -54,6 +54,10 @@ if (is_array($productcomponents)) {
         if (is_array($ids)) {
 
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
+
+            if (is_array($row))
+                unset($row);
+
             foreach ($ids as $id) {
                 $row[] = $PHPShopOrm->getOne(['*'], ['id=' => (int) $id]);
             }

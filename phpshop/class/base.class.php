@@ -3,7 +3,7 @@
 /**
  * Библиотека подключения к БД
  * @author PHPShop Software
- * @version 2.1
+ * @version 2.2
  * @package PHPShopClass
  * @param string $iniPath путь до конфигурационного файла config.ini
  * @param bool $connectdb подключение к MySQL
@@ -54,9 +54,9 @@ class PHPShopBase {
      * @param bool $error блокировка ошибок PHP
      */
     function __construct($iniPath, $connectdb = true, $error = true) {
-        
-        //$error = false;
 
+        //$error = false;
+        
         // Отладка ядра
         $this->setPHPCoreReporting($error);
 
@@ -91,11 +91,10 @@ class PHPShopBase {
     function selectBase() {
 
         if (!empty($_GET['base'])) {
-            if (is_array($this->SysValue['connect_' . $_GET['base']])){
+            if (is_array($this->SysValue['connect_' . $_GET['base']])) {
                 $_SESSION['base'] = $_GET['base'];
                 unset($_SESSION['cart']);
-            }
-            elseif ($_GET['base'] == 'default')
+            } elseif ($_GET['base'] == 'default')
                 unset($_SESSION['base']);
         }
 
@@ -198,14 +197,24 @@ class PHPShopBase {
         if (empty($port))
             $port = 3306;
 
-        $link_db = mysqli_connect($this->getParam("connect.host"), $this->getParam("connect.user_db"), $this->getParam("connect.pass_db"), null, $port) or $this->mysql_error = mysqli_connect_error();
-        mysqli_select_db($link_db, $this->getParam("connect.dbase")) or $this->mysql_error .= mysqli_error($link_db);
+        try {
+            $link_db = mysqli_connect($this->getParam("connect.host"), $this->getParam("connect.user_db"), $this->getParam("connect.pass_db"), null, $port);
 
-        if ($this->codBase != "utf-8")
-            mysqli_query($link_db, "SET NAMES '" . $this->codBase . "'");
+            try {
+                mysqli_select_db($link_db, $this->getParam("connect.dbase")) or $this->mysql_error .= mysqli_error($link_db);
+                
+                if ($this->codBase != "utf-8")
+                    mysqli_query($link_db, "SET NAMES '" . $this->codBase . "'");
 
-        mysqli_query($link_db, "SET SESSION sql_mode=''");
-        mysqli_report(MYSQLI_REPORT_OFF);
+                mysqli_query($link_db, "SET SESSION sql_mode=''");
+                mysqli_report(MYSQLI_REPORT_OFF);
+                
+            } catch (Exception $ex) {
+                 $this->mysql_error .= mysqli_error($link_db);
+            }
+        } catch (Exception $e) {
+            $this->mysql_error = mysqli_connect_error();
+        }
 
         if ($connectdb and ! empty($this->mysql_error))
             $this->errorConnect(101, "Нет соединения с базой", $this->mysql_error);

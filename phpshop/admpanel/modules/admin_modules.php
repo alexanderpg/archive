@@ -104,7 +104,11 @@ function actionStart() {
     if (empty($_GET['install'])) {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['modules']);
         $data = $PHPShopOrm->select(array('*'), false, false, array('limit' => intval($_SESSION['mod_limit'])));
-        $num = count($data);
+
+        if (is_array($data))
+            $num = count($data);
+        else
+            $num = 0;
     }
 
     $path = "../modules/";

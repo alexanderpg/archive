@@ -226,7 +226,7 @@ function actionStart() {
         $import_link = $PHPShopGUI->setLink('./admin.php?path=catalog&cat=0&import=' . $data['import_id'], 'Изменено');
         $import_help = __('Показать все товары этого импорта');
     } else {
-        $import_link = 'Изменено';
+        $import_link = __('Изменено');
         $import_help = null;
     }
 

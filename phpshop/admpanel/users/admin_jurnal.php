@@ -26,7 +26,7 @@ function actionStart() {
     $PHPShopInterface->action_title['add-blacklist'] = 'Заблокировать IP';
     $PHPShopInterface->action_title['whois'] = 'Кто это?';
 
-    $PHPShopInterface->addJSFiles('./js/bootstrap-datetimepicker.min.js', './js/bootstrap-datetimepicker.ru.js', './users/gui/users.gui.js');
+    $PHPShopInterface->addJSFiles('./js/bootstrap-datetimepicker.min.js','./users/gui/users.gui.js');
     $PHPShopInterface->addCSSFiles('./css/bootstrap-datetimepicker.min.css');
 
     // Поиск

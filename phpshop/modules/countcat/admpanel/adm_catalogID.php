@@ -5,8 +5,8 @@ function addCount($data) {
     global $PHPShopGUI;
 
     // Добавляем значения в функцию actionStart
-    $Tab3=$PHPShopGUI->setField('Количество товаров в каталоге',$PHPShopGUI->setInputText(false, 'count_new', $data['count'],50));
-    $PHPShopGUI->addTab(array("Count",$Tab3,450));
+    $Tab3=$PHPShopGUI->setField('Товаров в каталоге',$PHPShopGUI->setInputText(false, 'count_new', $data['count'],50));
+    $PHPShopGUI->addTab(array("Количество",$Tab3,450));
 }
 
 function setCount(){

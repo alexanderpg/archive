@@ -1,11 +1,14 @@
 <?php
 
+include_once dirname(__FILE__) . '/../class/YandexMarket.php';
+
 PHPShopObj::loadClass("delivery");
 PHPShopObj::loadClass("array");
 PHPShopObj::loadClass("category");
 
 // SQL
 $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.yandexcart.yandexcart_system"));
+$YandexMarket = new YandexMarket();
 
 // Обновление цен
 function actionUpdatePrice() {
@@ -18,7 +21,7 @@ function actionUpdatePrice() {
         $protocol = 'https://';
     }
 
-    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/yandexcart/cron/products.php?s=" . $cron_secure ;
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/yandexcart/cron/products.php?s=" . $cron_secure;
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $true_path);
@@ -74,8 +77,90 @@ function treegenerator($array, $i, $curent, $dop_cat_array) {
     return array('select' => $tree_select);
 }
 
+function setChildrenCategory($tree_array, $parent_to) {
+    global $PHPShopModules;
+
+    $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.yandexcart.yandexcart_categories"));
+
+    if (is_array($tree_array)) {
+        foreach ($tree_array as $category) {
+
+            // Категория
+            if (!empty($category['id'])) {
+                $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['name']), 'id_new' => $category['id'], 'parent_to_new' => $parent_to]);
+
+                if (is_array($category['children'])) {
+                    foreach ($category['children'] as $children) {
+
+                        if (!empty($children['name']))
+                            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['name']), 'id_new' => $children['id'], 'parent_to_new' => $category['id']]);
+
+                        if (is_array($children['children']))
+                            setChildrenCategory($children['children'], $children['id']);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Подбор категорий
+ */
+function actionCategorySearch() {
+
+    $PHPShopOrmCat = new PHPShopOrm('phpshop_modules_yandexcart_categories');
+    $data = $PHPShopOrmCat->getList(['*'], ['name' => " LIKE '%" . $_POST['words'] . "%'", 'parent_to' => '!=0']);
+    if (is_array($data)) {
+        foreach ($data as $row) {
+
+            $parent = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $row['parent_to']])['name'];
+
+            $child = $PHPShopOrmCat->getOne(['name'], ['parent_to' => '=' . $row['id']])['name'];
+            if ($child)
+                continue;
+
+            $result .= '<a href=\'#\' class=\'select-search-yandexcart\'  data-id=\'' . $row['id'] . '\'  data-name=\'' . $parent . ' - ' . $row['name'] . '\'    >' . $parent . ' &rarr; ' . $row['name'] . '</a><br>';
+        }
+        if (!empty($result))
+            $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+
+        exit($result);
+    } else
+        exit();
+}
+
+// Синхронизация категорий
+function actionUpdateCategory() {
+    global $PHPShopModules, $YandexMarket;
+
+    $getTree = $YandexMarket->getTree();
+    $tree_array = $getTree['result'];
+
+    $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.yandexcart.yandexcart_categories"));
+    $PHPShopOrm->debug = false;
+
+    // Очистка
+    $PHPShopOrm->query('TRUNCATE TABLE `' . $PHPShopModules->getParam("base.yandexcart.yandexcart_categories") . '`');
+
+    if (is_array($tree_array['children'])) {
+        foreach ($tree_array['children'] as $category) {
+            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['name']), 'id_new' => $category['id'], 'parent_to_new' => 0]);
+
+            if (is_array($category['children'])) {
+                foreach ($category['children'] as $children) {
+
+                    $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['name']), 'id_new' => $children['id'], 'parent_to_new' => $category['id']]);
+                    if (is_array($children['children']))
+                        setChildrenCategory($children['children'], $children['id']);
+                }
+            }
+        }
+    }
+}
+
 function actionStart() {
-    global $PHPShopGUI, $PHPShopOrm, $TitlePage, $select_name, $PHPShopSystem;
+    global $PHPShopGUI, $PHPShopOrm, $TitlePage, $select_name, $PHPShopSystem, $PHPShopModules;
 
     $PHPShopGUI->field_col = 5;
     PHPShopObj::loadClass("order");
@@ -87,7 +172,7 @@ function actionStart() {
 
 
     $PHPShopGUI->addJSFiles('../modules/yandexcart/admpanel/gui/yandexcart.gui.js');
-    
+
     if (!empty($data['auth_token_2'])) {
         $PHPShopGUI->action_button['Выгрузить товары'] = [
             'name' => __('Выгрузить товары'),
@@ -95,21 +180,20 @@ function actionStart() {
             'type' => 'button',
             'icon' => 'glyphicon glyphicon-open'
         ];
-        
-        switch($data['export']){
-            case 0: 
+
+        switch ($data['export']) {
+            case 0:
                 $export_name = __('Выгрузить цены и склад');
                 break;
-            case 1: 
+            case 1:
                 $export_name = __('Выгрузить цены');
                 break;
-            case 2: 
+            case 2:
                 $export_name = __('Выгрузить склад');
                 break;
-            
         }
-        
-        
+
+
         $PHPShopGUI->action_button['Выгрузить цены'] = [
             'name' => $export_name,
             'class' => 'btn btn-default btn-sm navbar-btn ',
@@ -117,8 +201,8 @@ function actionStart() {
             'action' => 'exportID',
             'icon' => 'glyphicon glyphicon-export'
         ];
-        
-        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить цены','Сохранить и закрыть']);
+
+        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить цены', 'Сохранить и закрыть']);
     }
 
     isset($options['statuses']) && is_array($options['statuses']) ? $statuses = $options['statuses'] : $statuses = [];
@@ -215,6 +299,12 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Обновление данных', $PHPShopGUI->setSelect('export_new', $export_value, '100%', true));
     $Tab1 .= $PHPShopGUI->setField('Доставка для заказов с Маркета', $PHPShopGUI->setSelect('delivery_id_new', $delivery_value, 300, null));
     $Tab1 .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
+
+    $PHPShopOrmCat = new PHPShopOrm($PHPShopModules->getParam("base.yandexcart.yandexcart_categories"));
+    $category = $PHPShopOrmCat->select(['COUNT(`id`) as num']);
+
+    $Tab1 .= $PHPShopGUI->setField('База категорий', $PHPShopGUI->setText(($category['num']) . ' ' . __('записей в локальной базе'), null, false, false) . '<br>' . $PHPShopGUI->setCheckbox('load', 1, 'Обновить базу категорий', 0));
+
     $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в маркете', $data['link']));
     $Tab1 .= $PHPShopGUI->setField('Создавать товар', $PHPShopGUI->setCheckbox('create_products_new', 1, 'Создавать автоматически товар из заказа', $data['create_products']));
 
@@ -310,7 +400,7 @@ function actionStart() {
             $PHPShopGUI->setField('Наценка', $PHPShopGUI->setInputText(null, 'options[price_fee_3]', $options['price_fee_3'], 100, '%')) .
             $PHPShopGUI->setField(null, $PHPShopGUI->setInputText(null, 'options[price_markup_3]', $options['price_markup_3'], 100, $PHPShopSystem->getDefaultValutaCode()));
 
-    $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1).
+    $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1) .
             $PHPShopGUI->setCollapse('Кампания &#8470;1', $shopOption1 . $priceOption1) .
             $PHPShopGUI->setCollapse('Кампания &#8470;2', $shopOption2 . $priceOption2) .
             $PHPShopGUI->setCollapse('Кампания &#8470;3', $shopOption3 . $priceOption3);
@@ -419,9 +509,7 @@ function actionStart() {
             ), null);
 
     // Статус заказа
-    $Tab1 .= $PHPShopGUI->setCollapse('Статусы заказа для DBS/FBS', 
-            
-           $PHPShopGUI->setField('Заказ подтвержден, его можно обрабатывать (обязательный)', $PHPShopGUI->setSelect('statuses[processing_started]', $status_started_value), 1, 'PROCESSING'
+    $Tab1 .= $PHPShopGUI->setCollapse('Статусы заказа для DBS/FBS', $PHPShopGUI->setField('Заказ подтвержден, его можно обрабатывать (обязательный)', $PHPShopGUI->setSelect('statuses[processing_started]', $status_started_value), 1, 'PROCESSING'
             ) .
             $PHPShopGUI->setField('Статус доставлен', $PHPShopGUI->setSelect('statuses[delivered]', $status_delivered_value), 1, 'DELIVERED'
             ) .
@@ -431,7 +519,6 @@ function actionStart() {
             ) .
             $PHPShopGUI->setField('Заказ оформлен, но еще не оплачен', $PHPShopGUI->setSelect('statuses[unpaid]', $status_unpaid_value), 1, 'UNPAID'
             ) .
-            
             $PHPShopGUI->setField('Служба доставки не смогла доставить заказ', $PHPShopGUI->setSelect('statuses[cancelled_delivery_service_undelivered]', $status_delivery_service_undelivered_value), 1, 'CANCELLED DELIVERY_SERVICE_UNDELIVERED'
             ) .
             $PHPShopGUI->setField('Магазин не обработал заказ в течение семи дней', $PHPShopGUI->setSelect('statuses[cancelled_processing_expired]', $status_processing_expired_value), 1, 'CANCELLED PROCESSING_EXPIRED'
@@ -468,7 +555,7 @@ function actionStart() {
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
-            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit").
+            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);
@@ -479,8 +566,13 @@ function actionStart() {
 function actionUpdate() {
     global $PHPShopOrm, $PHPShopModules;
 
+
+    // Синхронизация категорий
+    if (!empty($_POST['load']))
+        actionUpdateCategory();
+
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new', 'log_new','create_products_new');
+    $PHPShopOrm->updateZeroVars('link_new', 'log_new', 'create_products_new');
 
     // Настройки витрины
     $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);

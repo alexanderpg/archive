@@ -1,5 +1,5 @@
 $().ready(function () {
-    
+
     // datetimepicker
     if ($(".date").length) {
         $.fn.datetimepicker.dates['ru'] = locale;
@@ -34,9 +34,65 @@ $().ready(function () {
             $('[name="categories[]"]').selectpicker('deselectAll');
     });
 
-/*
-    var block = $('#collapseExample2').html();
-    $('[name="vendor_name_new"]').closest('.tab-pane').append(block);
-    $('#collapseExample2').closest('.collapse-block').next('hr').remove();
-    $('#collapseExample2').closest('.collapse-block').remove();*/
+
+    // Поиск категории
+    $(".search_yandexcartcategory").on('input', function () {
+
+        var words = $(this).val();
+        var s = $(this);
+        var set = s.attr('data-set');
+        if (words.length > 2) {
+            $.ajax({
+                type: "POST",
+                url: "?path=modules&id=yandexcart",
+                data: {
+                    words: escape(words),
+                    set: set,
+                    ajax: 1,
+                    selectID: 1,
+                    'actionList[selectID]': 'actionCategorySearch'
+                },
+                success: function (data)
+
+                {
+                    // Результат поиска
+                    if (data != '') {
+                        s.attr('data-content', data);
+                        s.popover('show');
+
+                    } else {
+                        s.popover('hide');
+
+                    }
+                }
+            });
+
+        } else {
+            s.attr('data-content', '');
+            s.popover('hide');
+        }
+    });
+
+    // Закрыть поиск категории
+    $('body').on('click', '.close', function (event) {
+        event.preventDefault();
+        $('[data-toggle="popover"]').popover('hide');
+    });
+
+    // Выбор в поиске категорию
+    $('body').on('click', '.select-search-yandexcart', function (event) {
+        event.preventDefault();
+
+        $('[name="category_yandexcart"]').val($(this).attr('data-name'));
+        $('[name="category_yandexcart_new"]').val($(this).attr('data-id'));
+        $('[data-toggle="popover"]').popover('hide');
+    });
+
+    $('[data-toggle="popover"]').popover({
+        "html": true,
+        "placement": "bottom",
+        "template": '<div class="popover" role="tooltip" style="max-width:600px"><div class="arrow"></div><div class="popover-content"></div></div>'
+
+    });
+
 });

@@ -1,19 +1,4 @@
 ALTER TABLE `phpshop_modules_avito_system` ADD `image_url` varchar(255) default '';
-ALTER TABLE `phpshop_categories` ADD `condition_cat_avito` varchar(64) DEFAULT 'Новое';
-ALTER TABLE `phpshop_categories` ADD `export_cat_avito` enum('0','1') DEFAULT '0';
-ALTER TABLE `phpshop_products` ADD `building_avito` text;
-UPDATE `phpshop_modules_avito_types` SET `name` = 'Аудио- и видеотехника' WHERE `id` = 203;
-
-INSERT INTO `phpshop_modules_avito_subtypes` (`id`, `name`, `type_id`) VALUES
-(13, 'Аксессуары для автоакустики', 203),
-(14, 'Магнитолы', 203),
-(15, 'Автоакустика', 203),
-(16, 'Видеорегистраторы', 203),
-(17, 'Усилители', 203),
-(18, 'Переходные рамки', 203),
-(19, 'Короба и подиумы', 203),
-(20, 'Другое', 203);
-
 ALTER TABLE `phpshop_modules_avito_system` ADD `latitude` varchar(255) default '';
 ALTER TABLE `phpshop_modules_avito_system` ADD `longitude` varchar(255) default '';
 
@@ -48,3 +33,16 @@ ALTER TABLE `phpshop_products` ADD `price_avito` float DEFAULT '0';
 
 /* 2.5 */
 ALTER TABLE `phpshop_modules_avito_system` ADD `map_url` varchar(255) DEFAULT '';
+
+/* 2.6 */
+ALTER TABLE `phpshop_categories` ADD `category_avitoapi` varchar(255) NOT NULL;
+
+CREATE TABLE IF NOT EXISTS `phpshop_modules_avitoapi_categories` (
+`id` varchar(255) NOT NULL,
+`name` varchar(255) NOT NULL,
+`parent_to` varchar(255) NOT NULL,
+`slug` varchar(255) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
+
+ALTER TABLE `phpshop_sort_categories` ADD `attribute_avitoapi` varchar(255) NOT NULL;

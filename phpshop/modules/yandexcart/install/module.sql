@@ -60,7 +60,7 @@ CREATE TABLE `phpshop_modules_yandexcart_system` (
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 
-INSERT INTO `phpshop_modules_yandexcart_system` VALUES(1, '', '', '', '', '', '', '0', '', 0, '', '4.0', '', '0', '1', '0', '0', '0', '', '', '', '', 0, 0, 0, '', NULL, '0');
+INSERT INTO `phpshop_modules_yandexcart_system` VALUES(1, '', '', '', '', '', '', '0', '', 0, '', '4.1', '', '0', '1', '0', '0', '0', '', '', '', '', 0, 0, 0, '', NULL, '0');
 
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexcart_log` (
@@ -91,3 +91,12 @@ ALTER TABLE `phpshop_delivery` ADD `yandex_delivery_points_3` text;
 ALTER TABLE `phpshop_delivery` ADD `yandex_region_id_3` int(11) DEFAULT '0';
 
 ALTER TABLE `phpshop_orders` ADD INDEX(`yandex_order_id`); 
+
+ALTER TABLE `phpshop_categories` ADD `category_yandexcart` int(11) DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexcart_categories` (
+`id` int(11) NOT NULL,
+`name` varchar(255) NOT NULL,
+`parent_to` int(11) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;

@@ -22,7 +22,7 @@ class PHPShopFormgeneratorElement {
             $error = $data['error_message'];
 
         if (is_array($data)) {
-            $forma_content = '<p>' . $error . '</p><h2>' . $data['name'] . '</h2><form method="post" enctype="multipart/form-data" name="formgenerator" id="formgenerator" action="/formgenerator/' . $path . '/">
+            $forma_content = '<p>' . $error . '</p><h3 class="formgenerator-title">' . $data['name'] . '</h3><form method="post" enctype="multipart/form-data" name="formgenerator" id="formgenerator" action="/formgenerator/' . $path . '/">
             ' . Parser($this->fixtags($data['content']));
 
             // Защитная каптча

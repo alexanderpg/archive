@@ -21,7 +21,7 @@ class BaseAvitoXml {
     private $categoriesForPath = [];
     private $path = [];
 
-    public function __construct($xmlPriceId) {
+    public function __construct() {
 
         $this->xmlPriceId = $xmlPriceId;
         $this->PHPShopSystem = new PHPShopSystem();
@@ -71,16 +71,12 @@ class BaseAvitoXml {
 
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
 
-        if (count(array_keys($this->categories)) === 0) {
-            return [];
-        }
 
         $where = array(
             'enabled' => '="1"',
             'parent_enabled' => '="0"',
             'export_avito' => '="1"',
             'items' => ' > 0',
-            'category' => ' IN (' . implode(',', array_keys($this->categories)) . ')'
         );
 
         if ($getAll) {
@@ -192,12 +188,6 @@ class BaseAvitoXml {
         $defvaluta = $this->PHPShopSystem->getValue('dengi');
         $percent = $this->PHPShopSystem->getValue('percent');
         $format = $this->PHPShopSystem->getSerilizeParam('admoption.price_znak');
-
-        // Промоакции
-        $promotions = $PHPShopPromotions->getPrice($price);
-        if (is_array($promotions)) {
-            $price = $promotions['price'];
-        }
 
         //Если валюта отличается от базовой
         if ($baseinputvaluta !== $defvaluta) {

@@ -631,6 +631,16 @@ class YandexMarket {
 
         return $url;
     }
+    
+    /**
+     * Получение категорий
+     */
+    public function getTree() {
+        
+        $tree = $this->post('categories/tree',['language'=>'RU']);
+        return $tree;
+    }
+    
 
     public function getRegionById($id) {
         $region = $this->get('regions/' . $id . '.json');

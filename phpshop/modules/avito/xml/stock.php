@@ -15,7 +15,6 @@ PHPShopObj::loadClass("string");
 PHPShopObj::loadClass("security");
 PHPShopObj::loadClass("modules");
 PHPShopObj::loadClass("file");
-PHPShopObj::loadClass("promotions");
 PHPShopObj::loadClass("parser");
 PHPShopObj::loadClass("lang");
 PHPShopObj::loadClass("date");
@@ -36,6 +35,6 @@ $PHPShopModules = new PHPShopModules($_classPath . "modules/");
 
 header("HTTP/1.1 200");
 header("Content-Type: application/xml; charset=utf-8");
-$AvitoAll = new AvitoStock([1, 2, 3]);
+$AvitoAll = new AvitoStock();
 $AvitoAll->compile();
 ?>

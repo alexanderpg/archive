@@ -49,8 +49,6 @@ function setProducts_yandexcart_hook($obj, $data) {
                 $add .= '<param name="Цвет">' . $data['val']['color'] . '</param>';
         }
         
-        
-
         // Oldprice
         if (!empty($data['val']['oldprice']))
             $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . (int) $obj->YandexMarket->getPrice($data['val'], $_GET['campaign']) . '</price><oldprice>' . (int) $obj->YandexMarket->getOldPrice($data['val'], $_GET['campaign']). '</oldprice>', $data['xml']);
@@ -124,6 +122,10 @@ function setProducts_yandexcart_hook($obj, $data) {
         // step-quantity
         if (!empty($data['val']['yandex_step_quantity']))
             $add .= '<step-quantity>' . $data['val']['yandex_step_quantity'] . '</step-quantity>';
+        
+        // Категория в маркете
+        if (!empty($data['val']['market_category_id']))
+            $add .= '<market_category_id>' . $data['val']['market_category_id'] . '</market_category_id>';
 
         // Склад
         $items = (int) $obj->YandexMarket->getWarehouse($data['val'], $_GET['campaign']);

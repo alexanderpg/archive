@@ -23,7 +23,7 @@ function actionUpdatePrice() {
         $protocol = 'https://';
     }
 
-    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/ozonseller/cron/products.php?s=" . $cron_secure ;
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/ozonseller/cron/products.php?s=" . $cron_secure;
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $true_path);
@@ -88,7 +88,7 @@ function actionUpdate() {
         actionUpdateCategory();
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new','log_new');
+    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new', 'log_new');
 
     // Склады
     if (is_array($_POST['warehouse'])) {
@@ -192,9 +192,9 @@ function actionUpdateCategory() {
             if (is_array($category['children'])) {
                 foreach ($category['children'] as $children) {
 
-                        $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['category_name']), 'id_new' => $children['description_category_id'], 'parent_to_new' => $category['description_category_id']]);
-                        if (is_array($children['children']))
-                            setChildrenCategory($children['children'], $children['description_category_id']);
+                    $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['category_name']), 'id_new' => $children['description_category_id'], 'parent_to_new' => $category['description_category_id']]);
+                    if (is_array($children['children']))
+                        setChildrenCategory($children['children'], $children['description_category_id']);
                 }
             }
         }
@@ -217,21 +217,20 @@ function actionStart() {
             'type' => 'button',
             'icon' => 'glyphicon glyphicon-open'
         ];
-        
-        switch($data['export']){
-            case 0: 
+
+        switch ($data['export']) {
+            case 0:
                 $export_name = __('Выгрузить цены и склад');
                 break;
-            case 1: 
+            case 1:
                 $export_name = __('Выгрузить цены');
                 break;
-            case 2: 
+            case 2:
                 $export_name = __('Выгрузить склад');
                 break;
-            
         }
-        
-        
+
+
         $PHPShopGUI->action_button['Выгрузить цены'] = [
             'name' => $export_name,
             'class' => 'btn btn-default btn-sm navbar-btn ',
@@ -239,8 +238,8 @@ function actionStart() {
             'action' => 'exportID',
             'icon' => 'glyphicon glyphicon-export'
         ];
-        
-        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить товары', 'Выгрузить цены','Сохранить и закрыть']);
+
+        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить товары', 'Выгрузить цены', 'Сохранить и закрыть']);
     }
 
     // Статус
@@ -295,20 +294,20 @@ function actionStart() {
 
     $PHPShopOrmCat = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_categories"));
     $category = $PHPShopOrmCat->select(['COUNT(`id`) as num']);
-    
+
     $PHPShopOrmType = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_type"));
     $type = $PHPShopOrmType->select(['COUNT(`id`) as num']);
 
-    $Tab1 .= $PHPShopGUI->setField('База категорий и типов', $PHPShopGUI->setText(($category['num']+$type['num']) . ' ' . __('записей в локальной базе'), null, false, false) . '<br>' . $PHPShopGUI->setCheckbox('load', 1, 'Обновить базу категорий и типов товаров', 0));
+    $Tab1 .= $PHPShopGUI->setField('База категорий и типов', $PHPShopGUI->setText(($category['num'] + $type['num']) . ' ' . __('записей в локальной базе'), null, false, false) . '<br>' . $PHPShopGUI->setCheckbox('load', 1, 'Обновить базу категорий и типов товаров', 0));
 
     $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в OZON', $data['link']));
     $Tab1 .= $PHPShopGUI->setField('Создавать товар', $PHPShopGUI->setCheckbox('create_products_new', 1, 'Создавать автоматически товар из заказа', $data['create_products']));
     $Tab1 .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
-    
-    $export_value[]=['Цены и склад', 0, $data['export']];
-    $export_value[]=['Цены', 1, $data['export']];
-    $export_value[]=['Склад', 2, $data['export']];
-    $Tab1 .= $PHPShopGUI->setField('Обновление данных', $PHPShopGUI->setSelect('export_new', $export_value, '100%',true));
+
+    $export_value[] = ['Цены и склад', 0, $data['export']];
+    $export_value[] = ['Цены', 1, $data['export']];
+    $export_value[] = ['Склад', 2, $data['export']];
+    $Tab1 .= $PHPShopGUI->setField('Обновление данных', $PHPShopGUI->setSelect('export_new', $export_value, '100%', true));
 
     if ($data['fee_type'] == 1) {
         $status_pre = '-';
@@ -410,7 +409,7 @@ function actionStart() {
             $PHPShopGUI->setInput("hidden", "locale_ozon_export", __('Экспорт товаров в OZON')) .
             $PHPShopGUI->setInput("hidden", "locale_ozon_export_done", __('Экспорт в OZON выполнен, выгружено % товаров')) .
             $PHPShopGUI->setInput("hidden", "stop", 0) .
-            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit").
+            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);
@@ -434,9 +433,11 @@ function actionCategorySearch() {
             if ($child)
                 continue;
 
-            $result .= '<a href=\'#\' class=\'select-search-ozon\'  data-id=\'' . $row['id'] . '\'  data-name=\'' . $parent.' - '.$row['name'] . '\'    >' . $parent . ' &rarr; ' . $row['name'] . '</a><br>';
+            $result .= '<a href=\'#\' class=\'select-search-ozon\'  data-id=\'' . $row['id'] . '\'  data-name=\'' . $parent . ' - ' . $row['name'] . '\'    >' . $parent . ' &rarr; ' . $row['name'] . '</a><br>';
         }
-        $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+        
+        if (!empty($result))
+            $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 
         exit($result);
     } else

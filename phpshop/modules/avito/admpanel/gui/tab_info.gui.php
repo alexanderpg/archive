@@ -4,55 +4,38 @@ function tab_info($data) {
     global $PHPShopGUI, $Avito;
 
     $Info = '<p>
-      <h4>Выгрузка товаров в Авито через YML-файл:</h4>
-        <ol>
-            <li>
-                Все категории: <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/all.php</code>   
-            </li>     
-            <li>
-                Бытовая электроника: <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/appliances.php</code>   
-            </li> 
-            <li>
-                Для дома и дачи: <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/home.php</code>   
-            </li> 
-            <li>
-                Запчасти и аксессуары: <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/spare.php</code>   
-            </li> 
-        </ol>
-
-    <h4>Настройка модуля</h4>
+    <h4>Настройка Avito</h4>
     <ol>
-        <li>Зарегистрироваться в <a href="https://www.avito.ru/business" target="_blank">Avito</a>.</li>
+        <li>Зарегистрироваться в <a href="https://www.avito.ru/business" target="_blank">Avito</a>, выбрать тариф с "Расширенной" или "Максимальной" подпиской. </li>
         <li>В личном кабинете Avito открыть <a href="https://www.avito.ru/professionals/api" target="_blank">Настройки - API ключи</a>, создать новый API ключ. Необходимо скопировать значение ключа в поле <kbd>Client Secret</kbd> и  значение Client Id в поле <kbd>Client ID</kbd> в настройках модуля.
         </li>
-        <li>Поле пароль <b>защищает</b> от несанкционированной кражи контента. При использовании пароля ссылка на файл XML примет вид <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . '/phpshop/modules/avito/xml/all.php?pas=' . $data['password'] . '</code>.</li>
+        <li>В личном кабинете Avito открыть <a href="https://www.avito.ru/autoload" target="_blank">Работа с объявлениями - Автозагрузка</a>, добавить адрес XML-файла с товарами: <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/products.php</code>   
+        </li>  
+        <li>В личном кабинете Avito открыть <a href="https://www.avito.ru/stocksync" target="_blank">Работа с объявлениями - Управление остатками</a>, добавить адрес XML-файла с остатками: <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/stock.php</code
+        </li>  
+    </ol>
+    
+<h4>Настройка модуля</h4>
+    <ol>
+        <li>Поле пароль <b>защищает</b> от несанкционированной кражи контента. При использовании пароля ссылка на XML-файл примет вид <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . '/phpshop/modules/avito/xml/products.php?pas=' . $data['password'] . '</code>.</li>
         <li>Для отображения в подробной карточке товара ссылки на товар в Avito используется переменная <code>@avito_link@</code></li>
     </ol>
 
-       <h4>Обновление цен и остатков</h4>
-        <ol>
-        <li>Обновление остатков в Авито без использования API через YML-файл: <code>' . $Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/stock.php</code></li>
-        <li>Для автоматической выгрузки цен и остатков товаров в Авито по расписанию через API следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">Задачи</a> с адресом запускаемого файла <code>phpshop/modules/avito/cron/products.php</code>. Остатки и цены выгружаются так же при редактировании карточки товара в магазине.</li>
-        <li>Для обновления цен и остатков по API должно быть заполнено у товара поле <kbd>Авито ID</kbd>.</li>
-        </ol>
-
-
-      <h4>Настройка категории</h4>
-        <ol>
-        <li>В категории открыть вкладку <kbd>Авито</kbd> настроить параметры вывода категории в Авито.</li>
-        <li>"Категория товара" - выбрать, какой категории в Авито соответствует категория в интернет-магазине.</li>
-        <li>Настроить опцию "Тип товара".</li>
-        </ol>
-      <h4>Настройка товара</h4>
-        <ol>
-        <li>В карточке редактирования товара в закладке <kbd>Авито</kbd> настроить дополнительные параметры вывода для Авито.</li>
-        <li>Включить опцию "Включить экспорт в Авито".</li>
-        <li>Заполнить поле "Название товара", если не заполнено - будет использоваться название товара.</li>
-        <li>Настроить опцию "Состояние товара".</li>
-        <li>Настроить опцию "Вариант платного размещения".</li>
-        <li>Настроить опцию "Платная услуга".</li>
-        </ol>
-        
+<h4>Выгрузка товаров в Avito</h4>
+   Avito принимает данные по товарам с четко указанными данными по категориям и характеристикам из базы Avito.
+   <ol>
+    <li>В карточке редактирования категории в магазине сопоставить выбранную свою категорию с категорией Avito в закладке <kbd>Avito</kbd>, поле <kbd>Размещение в Avito</kbd>. Если выбор категорий пустой, то требуется загрузить базу категорий из настроек модуля. Сохранить выбор и перегрузить страницу, после чего появится блок "Сопоставление характеристик с Avito".</li>
+    <li>Сопоставить или создать необходимые характеристики с указанными значениями. Проверить все доступные значения выбранной характеристики можно по ссылке "Доступные значения" под описанием характеристики Avito.</li>
+    <li>В карточке редактирования товара в магазине через закладку "Модули - Avito" включить опцию <kbd>Включить экспорт в Avito</kbd>.</li>
+    <li>В карточке редактирования товара в магазине через закладку "Характеристики" выбрать значения для обязательных характеристик, если есть обязательные характеристики для выбранного каталога Avito.</li>
+  </ol>
+  
+  <h4>Обновление цен и остатков товаров в Avito по API</h4>
+   Avito обновляет сама автоматически цены и остатки через XML-файлы раз в час. Для обновления данных по своему расписанию следует настроить обновление данных по API. Остатки и цены выгружаются по API так же при редактировании карточки товара.
+   <ol>
+  <li>Для автоматической выгрузки цен (при наличии <kbd>AvitoID</kbd>) и остатков товаров в Avito по расписанию следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">Задачи</a> с адресом запускаемого файла <code>phpshop/modules/avito/cron/products.php</code>.</li>
+    <li>Для автоматической синхронизации <kbd>AvitoID</kbd> для обновления цен у товаров по API следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">Задачи</a> с адресом запускаемого файла <code>phpshop/modules/avito/cron/sync.php</code>.</li>
+  </ol>
 
    <h4>Загрузка заказов с Авито</h4>
    <ol>
@@ -71,7 +54,7 @@ function tab_info($data) {
 
         </p>';
 
-    return $PHPShopGUI->setInfo($Info, 280, '98%');
+    return $PHPShopGUI->setInfo($Info, 280, '100%');
 }
 
 ?>

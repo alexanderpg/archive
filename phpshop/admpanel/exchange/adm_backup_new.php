@@ -34,10 +34,14 @@ function actionStart() {
         else
             $baseArray[$val] = $val;
     }
+    
 
     $table=null;
-    foreach ($baseArray as $val) {
+    if(is_array($baseArray)){
+        ksort($baseArray);
+        foreach ($baseArray as $val) {
         $table.='<option value="' . $val . '" selected class="">' . $val . '</option>';
+    }
     }
 
     // Содержание закладки 1

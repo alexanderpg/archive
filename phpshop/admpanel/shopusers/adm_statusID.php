@@ -24,6 +24,7 @@ function actionStart() {
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $PHPShopGUI->setField("Название", $PHPShopGUI->setInput('text.required', "name_new", $data['name'])) .
             $PHPShopGUI->setField("Скидка", $PHPShopGUI->setInputText('%', "discount_new", $data['discount'], 100)) .
+            $PHPShopGUI->setField("Минимальная сумма заказа", $PHPShopGUI->setInputText(false, 'cart_min_new', $data['cart_min'], 100)) .
             $PHPShopGUI->setField("Колонка цен", $PHPShopGUI->setSelect('price_new', $PHPShopGUI->setSelectValue($data['price'], 5), 100)) .
             $PHPShopGUI->setField("Статус", $PHPShopGUI->setRadio("enabled_new", 1, "Вкл.", $data['enabled']) . $PHPShopGUI->setRadio("enabled_new", 0, "Выкл.", $data['enabled'])) .
         $PHPShopGUI->setField("Склад", $PHPShopGUI->setRadio("warehouse_new", 1, "Вкл.", $data['warehouse']) . $PHPShopGUI->setRadio("warehouse_new", 0, "Выкл.", $data['warehouse'])), 'in', false);

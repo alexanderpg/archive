@@ -1,12 +1,12 @@
 <?php
 
-PHPShopObj::loadClass(['order','bonus']);
+PHPShopObj::loadClass(['order', 'bonus']);
 $PHPShopOrder = new PHPShopOrderFunction();
 
 /**
  * Обработчик оформления заказа
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopCore
  */
 class PHPShopOrder extends PHPShopCore {
@@ -46,10 +46,10 @@ class PHPShopOrder extends PHPShopCore {
         // Перехват модуля
         if ($this->setHook(__CLASS__, __FUNCTION__, false, 'START'))
             return true;
-        
+
         // Тип работы
-        if($this->PHPShopSystem->getParam("shop_type") > 0)
-             return $this->setError404();
+        if ($this->PHPShopSystem->getParam("shop_type") > 0)
+            return $this->setError404();
 
         // Импорт данных
         $this->import();
@@ -156,7 +156,7 @@ class PHPShopOrder extends PHPShopCore {
         $bonus = (float) $PHPShopBonus->getUserBonus($sum_discount_on);
         $this->set('bonus', $bonus);
         $this->set('max_order_bonus', $PHPShopBonus->max_order_bonus);
-        
+
         // Итого с учетом бонусов
         $sum_discount_on -= $bonus;
 
@@ -254,20 +254,20 @@ document.getElementById('order').style.display = 'none';
 
         $PHPShopPayment = new PHPShopPaymentArray($where);
         $Payment = $PHPShopPayment->getArray();
-        
+
         if (is_array($Payment))
             foreach ($Payment as $val) {
-            
+
                 // Блокировка по сумме
-                if((!empty($val['sum_max']) and $this->PHPShopCart->getSum(false) > $val['sum_max']) or (!empty($val['sum_min']) and $this->PHPShopCart->getSum(false) < $val['sum_min'])){
-                  continue;
+                if ((!empty($val['sum_max']) and $this->PHPShopCart->getSum(false) > $val['sum_max']) or ( !empty($val['sum_min']) and $this->PHPShopCart->getSum(false) < $val['sum_min'])) {
+                    continue;
                 }
 
                 // Блокировка по скидке
-                if((!empty($val['discount_max']) and $this->get('discount') > $val['discount_max']) or (!empty($val['discount_min']) and $this->get('discount') < $val['discount_min'])){
-                  continue;
+                if ((!empty($val['discount_max']) and $this->get('discount') > $val['discount_max']) or ( !empty($val['discount_min']) and $this->get('discount') < $val['discount_min'])) {
+                    continue;
                 }
-                  
+
                 if (!empty($val['enabled']) OR $val['path'] == 'modules') {
                     $this->value[$val['id']] = array($val['name'], $val['id'], false);
                     $this->set('paymentIcon', '');
@@ -311,6 +311,7 @@ document.getElementById('order').style.display = 'none';
      * Форма заказа
      */
     function order() {
+
         // Шаблон формы заказа личных данных
         $this->template_order_forma = $this->getValue('templates.main_order_forma');
 
@@ -329,8 +330,15 @@ document.getElementById('order').style.display = 'none';
         $this->set('orderNum', $this->order_num);
         $this->set('orderDate', date("d-m-y"));
 
+        // Минимальный заказ статуса
+        if (!empty($_SESSION['UsersStatus']))
+            $cart_min = (new PHPShopUserStatus($_SESSION['UsersStatus']))->getParam('cart_min');
+
+        // Минимальный заказ без статуса
+        if (empty($cart_min))
+            $cart_min = $this->PHPShopSystem->getSerilizeParam('admoption.cart_minimum');
+
         // Форма личной информации по заказу
-        $cart_min = $this->PHPShopSystem->getSerilizeParam('admoption.cart_minimum');
         if ($cart_min <= $this->PHPShopCart->getSum(false)) {
 
             // Доставка
@@ -404,7 +412,7 @@ document.getElementById('order').style.display = 'none';
         $last = $row['uid'];
         $all_num = explode("-", $last);
         $ferst_num = $all_num[0];
-        $order_num = (int)$ferst_num + 1;
+        $order_num = (int) $ferst_num + 1;
 
         if (empty($_SESSION['order_prefix']))
             $_SESSION['order_prefix'] = substr(rand(1000, 99999), 0, $this->format);

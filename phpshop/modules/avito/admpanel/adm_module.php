@@ -1,5 +1,7 @@
 <?php
 
+include_once dirname(__DIR__) . '/class/Avito.php';
+
 PHPShopObj::loadClass("delivery");
 PHPShopObj::loadClass("array");
 PHPShopObj::loadClass("order");
@@ -7,6 +9,7 @@ PHPShopObj::loadClass("order");
 
 // SQL
 $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.avito.avito_system"));
+$Avito = new Avito();
 
 // Обновление версии модуля
 function actionBaseUpdate() {
@@ -41,12 +44,9 @@ function actionUpdatePrice() {
 }
 
 function actionStart() {
-    global $PHPShopGUI, $PHPShopOrm, $Avito, $TitlePage, $select_name;
+    global $PHPShopGUI, $PHPShopOrm, $PHPShopModules, $Avito, $TitlePage, $select_name;
 
     $PHPShopGUI->field_col = 4;
-
-    include_once dirname(__DIR__) . '/class/Avito.php';
-    $Avito = new Avito();
 
     $data = $PHPShopOrm->select();
     if ($data['token'] !== '' and $data['client_id'] !== '') {
@@ -76,9 +76,9 @@ function actionStart() {
         $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить цены', 'Сохранить и закрыть']);
     }
 
-    $Tab1 .= $PHPShopGUI->setField('Пароль защиты YML файла', $PHPShopGUI->setInputText('', 'password_new', $data['password']));
+    $Tab1 .= $PHPShopGUI->setField($PHPShopGUI->setLink($Avito->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/modules/avito/xml/products.php', 'Пароль защиты XML'), $PHPShopGUI->setInputText('', 'password_new', $data['password']));
     $Tab1 .= $PHPShopGUI->setField('Сервер изображений', $PHPShopGUI->setInputText('https://', 'image_url_new', $data['image_url']));
-    $Tab1 .= $PHPShopGUI->setField('Карта проезда', $PHPShopGUI->setTextarea('map_url_new', $data['map_url']),1,'URL изображний через запятую');
+    $Tab1 .= $PHPShopGUI->setField('Карта проезда', $PHPShopGUI->setTextarea('map_url_new', $data['map_url']), 1, 'URL изображний через запятую');
 
     $Tab1 .= $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setRadio("type_new", 1, "ID товара", $data['type']) . $PHPShopGUI->setRadio("type_new", 2, "Артикул товара", $data['type']));
     $Tab1 .= $PHPShopGUI->setField('ФИО менеджера', $PHPShopGUI->setInputText(false, 'manager_new', $data['manager']));
@@ -86,22 +86,7 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Адрес', $PHPShopGUI->setInputText(false, 'address_new', $data['address']));
     $Tab1 .= $PHPShopGUI->setField('Широта местоположения', $PHPShopGUI->setInputText(false, 'latitude_new', $data['latitude']));
     $Tab1 .= $PHPShopGUI->setField('Долгота местоположения', $PHPShopGUI->setInputText(false, 'longitude_new', $data['longitude']));
-    $Tab1 .= $PHPShopGUI->setField('Шаблон генерации описания', '<div id="avitotitleShablon">
-<textarea class="form-control avito-shablon" name="preview_description_template_new" rows="3" style="max-width: 600px;height: 70px;">' . $data['preview_description_template'] . '</textarea>
-    <div class="btn-group" role="group" aria-label="...">
-    <input  type="button" value="' . __('Описание') . '" onclick="AvitoShablonAdd(\'@Content@\')" class="btn btn-default btn-sm">
-    <input  type="button" value="' . __('Краткое описание') . '" onclick="AvitoShablonAdd(\'@Description@\')" class="btn btn-default btn-sm">
-    <input  type="button" value="' . __('Характеристики') . '" onclick="AvitoShablonAdd(\'@Attributes@\')" class="btn btn-default btn-sm">
-<input  type="button" value="' . __('Каталог') . '" onclick="AvitoShablonAdd(\'@Catalog@\')" class="btn btn-default btn-sm">
-<input  type="button" value="' . __('Подкаталог') . '" onclick="AvitoShablonAdd(\'@Subcatalog@\')" class="btn btn-default btn-sm">
-<input  type="button" value="' . __('Товар') . '" onclick="AvitoShablonAdd(\'@Product@\',)" class="btn btn-default btn-sm">
-<input  type="button" value="' . __('Артикул') . '" onclick="AvitoShablonAdd(\'@Article@\',)" class="btn btn-default btn-sm">
-    </div>
-</div>
-<script>function AvitoShablonAdd(variable) {
-    var shablon = $(".avito-shablon").val() + " " + variable;
-    $(".avito-shablon").val(shablon);
-}</script>');
+    $Tab1 .= $PHPShopGUI->setField('Удаление слов из описания', $PHPShopGUI->setTextarea('preview_description_template_new', $data['preview_description_template']), 1, 'Слова для удаления через запятую');
 
     $export_value[] = ['Цены и склад', 0, $data['export']];
     $export_value[] = ['Цены', 1, $data['export']];
@@ -127,6 +112,13 @@ function actionStart() {
 
     $Tab_api .= $PHPShopGUI->setField('Обновление данных', $PHPShopGUI->setSelect('export_new', $export_value, '100%', true));
     $Tab_api .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
+
+    $PHPShopOrmCat = new PHPShopOrm($PHPShopModules->getParam("base.avito.avitoapi_categories"));
+    $category = $PHPShopOrmCat->select(['COUNT(`id`) as num']);
+
+    $Tab_api .= $PHPShopGUI->setField('База категорий', $PHPShopGUI->setText(($category['num']) . ' ' . __('записей в локальной базе'), null, false, false) . '<br>' . $PHPShopGUI->setCheckbox('load', 1, 'Обновить базу категорий', 0));
+
+
     $Tab_api .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в Avito', $data['link']));
     $Tab_api .= $PHPShopGUI->setField('Создавать товар', $PHPShopGUI->setCheckbox('create_products_new', 1, 'Создавать автоматически товар из заказа', $data['create_products']));
 
@@ -181,15 +173,99 @@ function actionStart() {
     return true;
 }
 
+// Синхронизация категорий
+function actionUpdateCategory() {
+    global $PHPShopModules, $Avito;
+
+    $getTree = $Avito->getTree();
+    $tree_array = $getTree['categories'];
+
+    $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.avito.avitoapi_categories"));
+    $PHPShopOrm->debug = false;
+
+    if (is_array($tree_array)) {
+
+        // Очистка
+        $PHPShopOrm->query('TRUNCATE TABLE `' . $PHPShopModules->getParam("base.avito.avitoapi_categories") . '`');
+
+        foreach ($tree_array as $category) {
+            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['name']), 'id_new' => $category['slug'], 'parent_to_new' => 0]);
+
+            if (is_array($category['nested'])) {
+                foreach ($category['nested'] as $children) {
+
+                    $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['name']), 'id_new' => $children['slug'], 'parent_to_new' => $category['slug']]);
+                    if (is_array($children['nested']))
+                        setChildrenCategory($children['nested'], $children['slug']);
+                }
+            }
+        }
+    }
+}
+
+function setChildrenCategory($tree_array, $parent_to) {
+    global $PHPShopModules;
+
+    $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.avito.avitoapi_categories"));
+
+    if (is_array($tree_array)) {
+        foreach ($tree_array as $category) {
+
+            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['name']), 'id_new' => $category['slug'], 'parent_to_new' => $parent_to]);
+
+            if (is_array($category['nested'])) {
+                foreach ($category['nested'] as $children) {
+
+                    if (!empty($children['name']))
+                        $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['name']), 'id_new' => $children['slug'], 'parent_to_new' => $category['slug']]);
+
+                    if (is_array($children['nested']))
+                        setChildrenCategory($children['nested'], $children['slug']);
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Подбор категорий
+ */
+function actionCategorySearch() {
+    global $PHPShopModules;
+    $PHPShopOrmCat = new PHPShopOrm($PHPShopModules->getParam("base.avito.avitoapi_categories"));
+    $data = $PHPShopOrmCat->getList(['*'], ['name' => " LIKE '%" . $_POST['words'] . "%'", 'parent_to' => '!="0"']);
+    if (is_array($data)) {
+        foreach ($data as $row) {
+
+            $parent = $PHPShopOrmCat->getOne(['name'], ['id' => '="' . $row['parent_to'] . '"'])['name'];
+
+            $child = $PHPShopOrmCat->getOne(['name'], ['parent_to' => '="' . $row['id'] . '"'])['name'];
+            if ($child)
+                continue;
+
+            $result .= '<a href=\'#\' class=\'select-search-avito\'  data-id=\'' . $row['id'] . '\'  data-name=\'' . $parent . ' - ' . $row['name'] . '\'    >' . $parent . ' &rarr; ' . $row['name'] . '</a><br>';
+        }
+        if (!empty($result))
+            $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+
+        exit($result);
+    } else
+        exit();
+}
+
 // Функция обновления
 function actionUpdate() {
     global $PHPShopModules, $PHPShopOrm;
+
+    // Синхронизация категорий
+    if (!empty($_POST['load']))
+        actionUpdateCategory();
 
     // Настройки витрины
     $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('use_params_new', 'create_products_new', 'log_new', 'create_products_new', 'link_new', 'transition_new');
+    $PHPShopOrm->updateZeroVars('use_params_new', 'create_products_new', 'log_new', 'create_products_new', 'link_new', 'transition_new', 'log_new');
 
     $PHPShopOrm->debug = false;
     $_POST['region_data_new'] = 1;

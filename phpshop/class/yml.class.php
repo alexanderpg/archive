@@ -3,7 +3,7 @@
 /**
  * Библиотека YML
  * @author PHPShop Software
- * @version 1.9
+ * @version 2.0
  * @package PHPShopClass
  */
 class PHPShopYml {
@@ -191,7 +191,7 @@ class PHPShopYml {
      */
     public function getImages($id, $pic_main) {
         $xml = null;
-        
+
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
         $data = $PHPShopOrm->select(['*'], ['parent' => '=' . (int) $id, 'name' => '!="' . $pic_main . '"'], ['order' => 'num'], ['limit' => 15]);
 
@@ -226,12 +226,13 @@ class PHPShopYml {
 
         if (is_array($images))
             foreach ($images as $image) {
-            
+
                 // Видео
-                if(in_array(pathinfo($image, PATHINFO_EXTENSION), ['mp4', 'mov']))
-                  $xml .= '<video>' . $image . '</video>';
+                if (in_array(pathinfo($image, PATHINFO_EXTENSION), ['mp4', 'mov']))
+                    $xml .= '<video>' . $image . '</video>';
                 // Изображение
-                else $xml .= '<picture>' . $image . '</picture>';
+                else
+                    $xml .= '<picture>' . $image . '</picture>';
             }
 
         return $xml;
@@ -242,7 +243,7 @@ class PHPShopYml {
      * @return array массив каталогов
      */
     function category() {
-        $Catalog = array();
+        $Catalog = [];
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
 
         // Не выводить скрытые каталоги
@@ -255,16 +256,18 @@ class PHPShopYml {
         elseif (defined("HostMain"))
             $where['skin_enabled'] .= ' and (servers ="" or servers REGEXP "i1000i")';
 
-        $data = $PHPShopOrm->select(array('id,name,parent_to'), $where, false, array('limit' => 10000));
+        $data = $PHPShopOrm->select(array('*'), $where, false, array('limit' => 10000));
         if (is_array($data))
             foreach ($data as $row) {
                 if ($row['id'] != $row['parent_to']) {
                     $Catalog[$row['id']]['id'] = $row['id'];
                     $Catalog[$row['id']]['name'] = $row['name'];
                     $Catalog[$row['id']]['parent_to'] = $row['parent_to'];
+                    $Catalog[$row['id']]['market_category_id'] = $row['category_yandexcart'];
                 }
             }
 
+        $this->Catalog = $Catalog;
         return $Catalog;
     }
 
@@ -404,7 +407,6 @@ class PHPShopYml {
                     "length" => $row['length'],
                     "width" => $row['width'],
                     "height" => $row['height'],
-                    "yml_bid_array" => unserialize($row['yml_bid_array']),
                     "uid" => $uid,
                     "vkurs" => $vkurs,
                     "description" => $description,
@@ -445,11 +447,16 @@ class PHPShopYml {
                     "price_yandex" => round($row['price_yandex'], (int) $this->format),
                     "price_yandex_2" => round($row['price_yandex_2'], (int) $this->format),
                     "price_yandex_3" => round($row['price_yandex_3'], (int) $this->format),
-                    "baseinputvaluta"=>$row['baseinputvaluta'],
+                    "baseinputvaluta" => $row['baseinputvaluta'],
                     "items1" => $row['items1'],
                     "items2" => $row['items2'],
                     "items3" => $row['items3'],
                 );
+
+                // Категория Яндекс
+                $market_category_id = $this->Catalog[$category]['market_category_id'];
+                if (!empty($market_category_id))
+                    $array['market_category_id'] = $market_category_id;
 
                 // Параметр сортировки
                 if (!empty($this->vendor))
@@ -544,7 +551,6 @@ class PHPShopYml {
             "length" => $row['length'],
             "width" => $row['width'],
             "height" => $row['height'],
-            "yml_bid_array" => $parent_array['yml_bid_array'],
             "uid" => $uid,
             "description" => $parent_array['description'],
             "raw_description" => $parent_array['raw_description'],
@@ -578,7 +584,7 @@ class PHPShopYml {
             "price_yandex" => round($row['price_yandex'], (int) $this->format),
             "price_yandex_2" => round($row['price_yandex_2'], (int) $this->format),
             "price_yandex_3" => round($row['price_yandex_3'], (int) $this->format),
-            "baseinputvaluta"=>$row['baseinputvaluta'],
+            "baseinputvaluta" => $row['baseinputvaluta'],
             "items1" => $row['items1'],
             "items2" => $row['items2'],
             "items3" => $row['items3'],
@@ -680,11 +686,6 @@ function setProducts() {
     $csv_export_count = 0;
 
     // Учет модуля SEOURL
-    if (!empty($GLOBALS['SysValue']['base']['seourl']['seourl_system'])) {
-        $seourl_enabled = true;
-    }
-
-    // Учет модуля SEOURLPRO
     if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
         $seourlpro_enabled = true;
     }
@@ -743,7 +744,7 @@ function setProducts() {
             continue;
 
         // Изображение
-        $picture = $this->getImages($val['id'],$val['picture']);
+        $picture = $this->getImages($val['id'], $val['picture']);
 
         if (isset($_GET['getall'])) {
             $val['description'] = $val['content'];
@@ -760,13 +761,14 @@ function setProducts() {
         if (isset($_GET['retailcrm'])) {
             $retailQuantity = sprintf(' quantity="%s"', $val['items']);
         }
-        
-        if($val['items'] == 0 or $val['sklad'] == 1)
+
+        if ($val['sklad'] == 1)
             $available = 'false';
-        else $available = 'true';
+        else
+            $available = 'true';
 
         $xml = '
-<offer id="' . $val['id'] . '" available="'.$available.'" ' . $group_id . $type . $retailQuantity . '>
+<offer id="' . $val['id'] . '" available="' . $available . '" ' . $group_id . $type . $retailQuantity . '>
  <url>' . $this->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . $url . '.html' . $group_postfix . '</url>
       <price>' . $val['price'] . '</price>';
 

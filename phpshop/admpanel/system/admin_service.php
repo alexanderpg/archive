@@ -32,16 +32,14 @@ function actionStart() {
 
 
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Защита', $PHPShopGUI->setField('Заблокированные IP адреса', $PHPShopGUI->setTextarea('option[block_ip]', $option['block_ip'], false, $width = false, 100), 1, 'Укажите IP адреса через запятую') .
-            $PHPShopGUI->setField("Режим блокировки ботов", 
-                    $PHPShopGUI->setRadio("option[block_bot]", 0, "Не используется", $option['block_bot']).'<br>'.
-                    $PHPShopGUI->setRadio("option[block_bot]", 2, "Разрешать и добавлять новых ботов в журнал", $option['block_bot']).'<br>'.
-                    $PHPShopGUI->setRadio("option[block_bot]", 1, "Блокировать всех новых ботов", $option['block_bot']) 
-                    ).
-            $PHPShopGUI->setField('Список поисковых ботов', $PHPShopGUI->loadLib('tab_bot', $data, 'system/'), 1, 'Боты добавляются автоматически по анализу трафика') 
-            
+            $PHPShopGUI->setField("Режим блокировки ботов", $PHPShopGUI->setRadio("option[block_bot]", 0, "Не используется", $option['block_bot']) . '<br>' .
+                    $PHPShopGUI->setRadio("option[block_bot]", 2, "Разрешать и добавлять новых ботов в журнал", $option['block_bot']) . '<br>' .
+                    $PHPShopGUI->setRadio("option[block_bot]", 1, "Блокировать всех новых ботов", $option['block_bot'])
+            ) .
+            $PHPShopGUI->setField('Список поисковых ботов', $PHPShopGUI->loadLib('tab_bot', $data, 'system/'), 1, 'Боты добавляются автоматически по анализу трафика')
     );
-    
-     if (!class_exists('Memcached')) {
+
+    if (!class_exists('Memcached')) {
         $disabled_memcached = 'disabled="disabled"';
     }
 
@@ -130,7 +128,7 @@ function actionUpdate() {
     $option = unserialize($data['admoption']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.service_enabled','option.min', 'option.cache_debug', 'option.cache_compres');
+    $PHPShopOrm->updateZeroVars('option.service_enabled', 'option.min', 'option.cache_debug', 'option.cache_compres');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)
@@ -148,6 +146,21 @@ function actionUpdate() {
 
     $action = $PHPShopOrm->update($_POST, array('id' => '=' . $_POST['rowID']));
 
+    // Чистка html кэша
+    if (!empty($_POST['cache_clean']) and $_POST['option']['cache'] > 0) {
+        PHPShopObj::loadClass('cache');
+        $PHPShopCache = new PHPShopCache(false);
+        $PHPShopCache->flush();
+    }
+
+    // Чистка css js кэша
+    if (!empty($_POST['cache_clean']) and $_POST['option']['min'] > 0) {
+        PHPShopObj::loadClass('cache');
+
+        $PHPShopFileCache = new PHPShopFileCache(false);
+        $PHPShopFileCache->dir = "/UserFiles/Cache/static/";
+        $PHPShopFileCache->flush();
+    }
 
     return array("success" => $action);
 }

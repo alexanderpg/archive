@@ -27,6 +27,9 @@ function tab_bot() {
 
     return '<table class="table table-hover">' . $PHPShopInterface->_CODE . '</table><a class="btn btn-default btn-sm pull-right" href="?path=system.bot">'.__('Показать все записи').'</a>';
     }
+    else  return '<a class="btn btn-default btn-sm" href="?path=system.bot">'.__('Показать все записи').'</a>';
+    
+    
 }
 
 ?>

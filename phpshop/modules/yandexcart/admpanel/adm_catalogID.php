@@ -1,39 +1,36 @@
 <?php
 
-function addYandexcartCPA($data) {
+function addYandexcart($data) {
     global $PHPShopGUI;
 
-    // Только для конечных каталогов
-    if (!is_array($GLOBALS['tree_array'][$data['id']]) and isset($data['icon'])) {
+    // Проверка на каталог страниц
+    if (isset($data['skin_enabled'])) {
 
-        // Добавляем значения в функцию actionStart
-        if (empty($data['prod_seo_name'])) {
-            PHPShopObj::loadClass("string");
-            $data['prod_seo_name'] = PHPShopString::toLatin($data['name']);
-            $data['prod_seo_name'] = str_replace("_", "-", $data['prod_seo_name']);
-        }
-        $Tab3 = $PHPShopGUI->setField("Ставка (Fee)", $PHPShopGUI->setInputText(null, 'fee_new', null, 100), 1, '1% комиссии соответствует значению 100');
+        // Проверка на подкаталоги
+        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
+        $data_categories = $PHPShopOrm->getOne(['id'], ['parent_to' => '=' . (int) $data['id']]);
+        if (is_array($data_categories))
+            return false;
 
+       $PHPShopGUI->addJSFiles('../modules/yandexcart/admpanel/gui/yandexcart.gui.js');
+       $category_yandexcart_parent = (new PHPShopOrm('phpshop_modules_yandexcart_categories'))->getOne(['name','parent_to','id'],['id'=>'='.$data['category_yandexcart']]);
+        
+        if(!empty($category_yandexcart_parent['name']))
+        $value = $category_yandexcart_parent['name'];
+        
+        $tree_select = '
+        <input data-set="3" name="category_yandexcart" class="search_yandexcartcategory form-control input-sm" type="search" data-trigger="manual" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true"  data-content="" placeholder="' . __('Найти...') . '" value="' . $value . '"><input name="category_yandexcart_new" type="hidden" value="' . $data['category_yandexcart'] . '">';
 
-        $Tab3.=$PHPShopGUI->setField(__('CPA модель'), 
-                $PHPShopGUI->setRadio('cpa_new', 1, __('Включить'), 0) . 
-                $PHPShopGUI->setRadio('cpa_new', 2, __('Выключить'), 0, false, 'text-warning').
-                $PHPShopGUI->setRadio('cpa_new', 0, __('Не изменять'), 0, false, 'text-muted') );
+        // Размещение
+        $Tab1 = $PHPShopGUI->setCollapse('Размещение в Яндекс.Маркет', $tree_select);
 
-        $PHPShopGUI->addTab(array("Яндекс", $Tab3, true));
+        $PHPShopGUI->addTabSeparate(array("Яндекс.Маркет", $Tab1, true));
     }
 }
 
-function updateYandexcartCPA() {
-    $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-    $PHPShopOrm->debug = false;
-    if(!empty($_POST['cpa_new']))
-    $action = $PHPShopOrm->update(array('cpa_new' => $_POST['cpa_new'], 'fee_new' => $_POST['fee_new']), array('category' => '=' . intval($_POST['rowID'])));
-}
 
 $addHandler = array(
-    'actionStart' => 'addYandexcartCPA',
+    'actionStart' => 'addYandexcart',
     'actionDelete' => false,
-    'actionUpdate' => 'updateYandexcartCPA'
+    'actionUpdate' => false
 );
-?>

@@ -486,23 +486,6 @@ function actionUpdate() {
 
     $action = $PHPShopOrm->update($_POST, array('id' => '=' . $_POST['rowID']));
 
-    // Чистка html кэша
-    if (!empty($_POST['cache_clean']) and $_POST['option']['cache'] > 0) {
-        PHPShopObj::loadClass('cache');
-        $PHPShopCache = new PHPShopCache(false);
-        $PHPShopCache->flush();
-    }
-
-    // Чистка css js кэша
-    if (!empty($_POST['cache_clean']) and $_POST['option']['min'] > 0) {
-        PHPShopObj::loadClass('cache');
-
-        $PHPShopFileCache = new PHPShopFileCache(false);
-        $PHPShopFileCache->dir = "/UserFiles/Cache/static/";
-        $PHPShopFileCache->flush();
-    }
-
-
     return array("success" => $action);
 }
 

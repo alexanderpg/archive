@@ -951,3 +951,6 @@ CREATE TABLE IF NOT EXISTS `phpshop_cache` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
+
+/*660*/
+ALTER TABLE `phpshop_shopusers_status` ADD `cart_min` INT(11) NOT NULL DEFAULT '0';

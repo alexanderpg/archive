@@ -3,7 +3,7 @@
 /**
  * Генерация ссылки на оплату
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopCore
  */
 class PHPShopPay extends PHPShopCore {
@@ -13,6 +13,7 @@ class PHPShopPay extends PHPShopCore {
      */
     function __construct() {
         $this->empty_index_action = true;
+        $GLOBALS['SysValue']['other']['isPage'] = true;
         parent::__construct();
     }
 

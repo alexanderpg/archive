@@ -20,7 +20,7 @@ function actionUpdatePrice() {
         $protocol = 'https://';
     }
 
-    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/wbseller/cron/products.php?s=" . $cron_secure ;
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/wbseller/cron/products.php?s=" . $cron_secure;
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $true_path);
@@ -46,7 +46,7 @@ function actionUpdate() {
     global $PHPShopModules, $PHPShopOrm;
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new', 'log_new','discount_new');
+    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new', 'log_new', 'discount_new');
 
     $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.wbseller.wbseller_system"));
     $PHPShopOrm->debug = false;
@@ -58,13 +58,13 @@ function actionUpdate() {
 }
 
 function actionStart() {
-    global $PHPShopGUI, $PHPShopOrm, $WbSeller,$TitlePage, $select_name;
+    global $PHPShopGUI, $PHPShopOrm, $WbSeller, $TitlePage, $select_name;
 
     $PHPShopGUI->field_col = 4;
 
     // Выборка
     $data = $PHPShopOrm->select();
-    
+
     if ($data['token'] !== '') {
         $PHPShopGUI->action_button['Выгрузить цены'] = [
             'name' => __('Выгрузить цены'),
@@ -144,7 +144,7 @@ function actionStart() {
     $Tab3 = $PHPShopGUI->setCollapse('Цены', $PHPShopGUI->setField('Колонка цен WB', $PHPShopGUI->setSelect('price_new', $PHPShopGUI->setSelectValue($data['price'], 5), 100)) .
             $PHPShopGUI->setField('Наценка', $PHPShopGUI->setInputText($status_pre, 'fee_new', $data['fee'], 100, '%')) .
             $PHPShopGUI->setField('Действие', $PHPShopGUI->setRadio("fee_type_new", 1, "Понижение", $data['fee_type']) . $PHPShopGUI->setRadio("fee_type_new", 2, "Повышение", $data['fee_type'])) .
-            $PHPShopGUI->setField("Склад WB", $PHPShopGUI->setSelect('warehouse_id_new', $warehouse_value, '100%')).
+            $PHPShopGUI->setField("Склад WB", $PHPShopGUI->setSelect('warehouse_id_new', $warehouse_value, '100%')) .
             $PHPShopGUI->setField('Скидки WB', $PHPShopGUI->setCheckbox('discount_new', 1, 'Снятие всех скидок в WB', $data['discount']))
     );
 
@@ -159,7 +159,7 @@ function actionStart() {
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
-            $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit").
+            $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit") .
             $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);
@@ -179,7 +179,9 @@ function actionCategorySearch() {
 
             $result .= '<a href=\'#\' class=\'select-search-wb\'  data-id=\'' . (int) $row['subjectID'] . '\' data-name=\'' . PHPShopString::utf8_win1251($row['subjectName']) . '\'>' . PHPShopString::utf8_win1251($row['parentName']) . ' &rarr; ' . PHPShopString::utf8_win1251($row['subjectName']) . '</a><br>';
         }
-        $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+
+        if (!empty($result))
+            $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 
         exit($result);
     } else

@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с RSS каналами
  * @author PHPShop Software
- * @version 2.0
+ * @version 2.1
  * @package PHPShopClass
  */
 class PHPShopRssParser {
@@ -206,10 +206,10 @@ class fase4_rdf {
     var $_use_cached_file = false;
     var $_cache_type = "";
     var $_remote_file = "";
-    var $_cache_dir = "UserFiles/Files/";  // String
+    var $_cache_dir = "UserFiles/Cache/rss/";  // String
     var $_cache_dir_ok = false;
     var $_type = ""; // string (rss or rdf)
-    var $_display_opt = array();  // Array
+    var $_display_opt = array();
     var $_table_width = 400;
     var $_use_dynamic_display = false;
     var $_item_count = 0;
@@ -221,9 +221,9 @@ class fase4_rdf {
     var $_citem = array();
     var $_cdepth = array();
     var $_ctags = array("x");
-    var $_item = array();   // Array
-    var $_depth = array();  // Array
-    var $_tags = array("x");  // Array
+    var $_item = array(); 
+    var $_depth = array(); 
+    var $_tags = array("x");
     var $gc_probability = 1;
     var $_output = "";
 
