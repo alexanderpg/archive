@@ -247,7 +247,7 @@
 
                                     </li>
                                     <!-- End Brand -->
-                                    
+
                                     <!-- Catalog  Menu-->
                                     @topcatMenu@
                                     <!-- End Catalog  Menu-->
@@ -600,6 +600,11 @@
                                "groupName": "idForm"
                                }'>{Войти по }Email</a>
                             <a class="btn btn-block btn-soft-primary mb-2 @sms_login_enabled@" href="/users/sms.html">{Войти по номеру телефона}</a>
+
+                            <!-- Yandex ID -->
+                            @yandexid@
+                            <!-- End Yandex ID -->
+
                         </div>
                         <!-- End Sign in -->
 

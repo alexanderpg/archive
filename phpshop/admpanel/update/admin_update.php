@@ -11,10 +11,10 @@ define("UPDATE_PATH", "http://www.phpshop.ru/update/update5.php?from=" . $Licens
 
 // Функция обновления
 function actionUpdate() {
-    global $PHPShopUpdate, $update_result, $TitlePage;
+    global $PHPShopUpdate, $update_result, $TitlePage, $PHPShopGUI;
 
-    $TitlePage.=' - ' . __('Установка обновления');
-    
+    $TitlePage .= ' - ' . __('Установка обновления');
+
     // Проверка обновлений
     $PHPShopUpdate->checkUpdate();
 
@@ -31,26 +31,41 @@ function actionUpdate() {
         $PHPShopUpdate->backupFiles();
 
         // Распаковка архива
-        if ($PHPShopUpdate->installFiles() and !$PHPShopUpdate->base_update_enabled) {
-            $TitlePage.=' - ' . __('Выполнено');
+        if ($PHPShopUpdate->installFiles() and ! $PHPShopUpdate->base_update_enabled) {
+            $TitlePage .= ' - ' . __('Выполнено');
         }
 
         // Обновление config.ini
         $PHPShopUpdate->installConfig();
-        
+
         // Очистка временных файлов /temp/
         $PHPShopUpdate->cleanTemp();
 
         // Обновление БД ядра
         $PHPShopUpdate->installBD();
-        
+
         // Обновление БД модулей
         $PHPShopUpdate->updateModules();
     }
-
-
+    
+    // Проверка обновлений
+    if (xml2array(UPDATE_PATH, "update", true)) {
+        $PHPShopGUI->action_button['Обновление'] = array(
+            'name' => 'Проверить новые обновления',
+            'class' => 'btn btn-primary btn-sm navbar-btn btn-action-panel',
+            'action' => 'update',
+            'type' => 'button',
+            'locale' => true,
+            'icon' => 'glyphicon glyphicon-cloud-download'
+        );
+    } 
+    else {
+        
+     unset($_SESSION['update_check']);
+     
+    }
+    
     $update_result = true;
-    unset($_SESSION['update_check']);
 }
 
 // Стартовый вид
@@ -59,10 +74,10 @@ function actionStart() {
 
     // Проверка обновлений
     $PHPShopUpdate->checkUpdate();
-    $version=null;
+    $version = null;
 
     foreach (str_split($PHPShopUpdate->version) as $w)
-        $version.=$w . '.';
+        $version .= $w . '.';
     $version = substr($version, 0, strlen($version) - 1);
 
     if ($PHPShopUpdate->update_status == 'active' and empty($update_result)) {
@@ -71,15 +86,15 @@ function actionStart() {
             $result_content = '<ul class="list-group">';
 
             foreach ($PHPShopUpdate->content as $text)
-                $result_content.='<li class="list-group-item">' . __($text,true) . '</li>';
+                $result_content .= '<li class="list-group-item">' . __($text, true) . '</li>';
 
-            $result_content.='</ul>';
+            $result_content .= '</ul>';
 
             $PHPShopGUI->action_button['Обновление'] = array(
                 'name' => 'Установить обновление',
                 'class' => $PHPShopUpdate->btn_class,
                 'type' => 'button',
-                'locale'=>true,
+                'locale' => true,
                 'icon' => 'glyphicon glyphicon-cloud-download'
             );
         }
@@ -95,19 +110,19 @@ function actionStart() {
             $result_content = '<ul class="list-group">';
 
             foreach ($PHPShopUpdate->content as $text)
-                $result_content.='<li class="list-group-item">' . __($text,true) . '</li>';
+                $result_content .= '<li class="list-group-item">' . __($text, true) . '</li>';
 
-            $result_content.='</ul>';
+            $result_content .= '</ul>';
         }
 
-        $result_message = $PHPShopGUI->setPanel($PHPShopGUI->i('cloud-download') . __('Для установки обновления').' PHPShop ' . $version . ' '.__('необходимо продлить техническую поддержку'), $result_content, 'panel-danger', false);
+        $result_message = $PHPShopGUI->setPanel($PHPShopGUI->i('cloud-download') . __('Для установки обновления') . ' PHPShop ' . $version . ' ' . __('необходимо продлить техническую поддержку'), $result_content, 'panel-danger', false);
 
         $PHPShopGUI->action_button['Обновление'] = array(
             'name' => 'Купить обновление',
             'class' => 'btn btn-primary btn-sm navbar-btn btn-action-panel-blank',
             'action' => 'https://www.phpshop.ru/order/?from=' . $_SERVER['SERVER_NAME'],
             'type' => 'button',
-            'locale'=>true,
+            'locale' => true,
             'icon' => 'glyphicon glyphicon-ruble'
         );
     }
@@ -117,12 +132,12 @@ function actionStart() {
         'class' => 'btn btn-default btn-sm navbar-btn btn-action-panel-blank',
         'action' => 'https://www.phpshop.ru/docs/update.html?from=' . $_SERVER['SERVER_NAME'],
         'type' => 'button',
-        'locale'=>true,
+        'locale' => true,
         'icon' => 'glyphicon glyphicon-gift'
     );
 
     // Прогресс бар
-    $result_message.=$PHPShopGUI->setProgress(__('Создание резервной копии файлов...'), 'hide');
+    $result_message .= $PHPShopGUI->setProgress(__('Создание резервной копии файлов...'), 'hide');
 
 
     // Размер названия поля
@@ -130,7 +145,7 @@ function actionStart() {
     $PHPShopGUI->addJSFiles('./update/gui/update.gui.js');
 
     $PHPShopGUI->_CODE = $result_message;
-    $PHPShopGUI->_CODE.=$PHPShopUpdate->getLog();
+    $PHPShopGUI->_CODE .= $PHPShopUpdate->getLog();
 
     $PHPShopGUI->setActionPanel($TitlePage, false, array('Журнал', 'Обновление'));
 

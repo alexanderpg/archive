@@ -149,7 +149,7 @@ class PHPShopShop extends PHPShopShopCore {
             if (is_array($files)) {
                 $this->set('productFiles', '');
                 foreach ($files as $cfile) {
-                    $this->set('productFiles', '<p><span class="glyphicon glyphicon-paperclip fas fa-paperclip"></span> ', true);
+                    $this->set('productFiles', '<p><span class="glyphicon glyphicon-paperclip fa fa-paperclip"></span> ', true);
                     $this->set('productFiles', PHPShopText::a($cfile['path'], urldecode($cfile['name']), urldecode($cfile['name']), false, false, '_blank'), true);
                     $this->set('productFiles', '</p>', true);
                 }
@@ -501,7 +501,7 @@ class PHPShopShop extends PHPShopShopCore {
             $PHPShopOrm = new PHPShopOrm();
             $PHPShopOrm->mysql_error = false;
             $PHPShopOrm->debug = $this->debug;
-            $result = $PHPShopOrm->query("select * from " . $this->objBase . " where " . $odnotipList . " " . $chek_items . " and  enabled='1' and parent_enabled='0' and sklad!='1' order BY FIELD (id, " . $row['odnotip'] . ")");
+            $result = $PHPShopOrm->query("select * from " . $this->objBase . " where " . $odnotipList . " " . $chek_items . " and  enabled='1' and parent_enabled='0' order BY FIELD (id, " . $row['odnotip'] . ")");
 
             if ($result)
                 while ($row = mysqli_fetch_assoc($result))
@@ -571,9 +571,9 @@ class PHPShopShop extends PHPShopShopCore {
 
         // Подтипы из 1С
         if ($this->PHPShopSystem->ifSerilizeParam('1c_option.update_option'))
-            $Product = $this->select(array('*'), array('uid' => ' IN ("' . @implode('","', $parent) . '")', 'enabled' => "='1'", 'sklad' => "!='1'"), array('order' => 'num,length(parent),parent'), array('limit' => 100), __FUNCTION__, false, false);
+            $Product = $this->select(array('*'), array('uid' => ' IN ("' . @implode('","', $parent) . '")', 'enabled' => "='1'", 'sklad' => "!='1'"), array('order' => 'num,length(parent),parent'), array('limit' => 300), __FUNCTION__, false, false);
         else
-            $Product = $this->select(array('*'), array('id' => ' IN ("' . @implode('","', $parent) . '")', 'enabled' => "='1'", 'sklad' => "!='1'"), array('order' => 'num,length(parent),parent'), array('limit' => 100), __FUNCTION__, false, false);
+            $Product = $this->select(array('*'), array('id' => ' IN ("' . @implode('","', $parent) . '")', 'enabled' => "='1'", 'sklad' => "!='1'"), array('order' => 'num,length(parent),parent'), array('limit' => 300), __FUNCTION__, false, false);
 
         // Цена главного товара
         if (is_array($Product) and ! empty($row['price']) and empty($row['priceSklad']) and ( !empty($row['items']) or ( empty($row['items']) and $sklad_status == 1))) {

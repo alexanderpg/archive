@@ -4982,3 +4982,7 @@ input:focus,button:focus,.form-control:focus,label.focus {
 .submenu a{
     text-transform: uppercase !important;
 }
+
+#yandexid_button{
+   padding: 0px 10px 10px 10px;
+}

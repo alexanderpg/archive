@@ -293,13 +293,13 @@
 
                                     </li>
                                     <!-- End Brand -->
-                                    
+
                                     <!-- Catalog  Menu-->
                                     @topcatMenu@
                                     <!-- End Catalog  Menu-->
 
                                     <!-- Menu -->
-                                     @php
+                                    @php
                                     if(empty(PHPShopParser::get('hideSite'))){
                                     $GLOBALS['search_placeholder']='Артикул или наименование';
                                     echo '<li class="hs-has-sub-menu navbar-nav-item">
@@ -662,6 +662,10 @@
                                "groupName": "idForm"
                                }'>{Войти по }Email</a>
                             <a class="btn btn-block btn-soft-primary mb-2 @sms_login_enabled@" href="/users/sms.html">{Войти по номеру телефона}</a>
+
+                            <!-- Yandex ID -->
+                            @yandexid@
+                            <!-- End Yandex ID -->
                         </div>
                         <!-- End Sign in -->
 

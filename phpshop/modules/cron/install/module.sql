@@ -35,4 +35,4 @@ CREATE TABLE `phpshop_modules_cron_system` (
 
 
 
-INSERT INTO `phpshop_modules_cron_system` VALUES (1,'1.9');
+INSERT INTO `phpshop_modules_cron_system` VALUES (1,'2.0');

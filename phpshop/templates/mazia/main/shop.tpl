@@ -366,6 +366,11 @@
                             <button type="submit" class="generic-btn black-hover-btn text-uppercase mb-20">{Войти}</button>
                             <a href="/users/register.html" class="generic-btn black-hover-btn text-uppercase mb-20">{Зарегистрироваться}</a>
                         </div>
+
+                        <!-- Yandex ID -->
+                        @yandexid@
+                        <!-- End Yandex ID -->
+
                     </form>
                 </div>
             </div>

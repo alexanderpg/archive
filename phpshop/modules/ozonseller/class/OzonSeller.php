@@ -305,7 +305,7 @@ class OzonSeller {
                         $oldprice = $oldprice - ($oldprice * $this->fee / 100);
                     } else {
                         $price = $price + ($price * $this->fee / 100);
-                        $oldprice = $oldprice - ($oldprice * $this->fee / 100);
+                        $oldprice = $oldprice + ($oldprice * $this->fee / 100);
                     }
                 }
 

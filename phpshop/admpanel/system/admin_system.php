@@ -222,9 +222,6 @@ function actionStart() {
     $num_vitrina_value[] = array(5, 5, $data['num_vitrina']);
     $num_vitrina_value[] = array(6, 6, $data['num_vitrina']);
 
-    $nowbuy_enabled_value[] = array('Выключить', 0, $option['nowbuy_enabled']);
-    $nowbuy_enabled_value[] = array('Включить', 2, $option['nowbuy_enabled']);
-
     $sklad_status_value[] = array('Не используется', 1, $option['sklad_status']);
     $sklad_status_value[] = array('Товар убирается с продаж', 2, $option['sklad_status']);
     $sklad_status_value[] = array('Товар ставится под заказ', 3, $option['sklad_status']);
@@ -280,7 +277,7 @@ function actionStart() {
             $PHPShopGUI->setField("Товарная сетка в каталоге", $PHPShopGUI->setSelect('num_row_adm_new', $num_row_adm_value, 50) . '&nbsp;' . $PHPShopGUI->setCheckbox('num_row_set', 1, 'Применить сейчас ко всем каталогам', 0), 1, 'Товаров в длину 
 	  для каталогов по умолчанию. Сетки 5 и 6 поддерживаются не всеми шаблонами') .
             $PHPShopGUI->setField("Вывод новинок", $PHPShopGUI->setSelect('option[new_enabled]', $new_enabled_value, null, true)) .
-            $PHPShopGUI->setField("Сейчас покупают", $PHPShopGUI->setSelect('option[nowbuy_enabled]', $nowbuy_enabled_value, null, true),1,false,$hideCatalog) .
+            $PHPShopGUI->setField("Сейчас покупают", $PHPShopGUI->setCheckbox('option[nowbuy_enabled]',1,null,$option['nowbuy_enabled']),1,false,$hideCatalog) .
             $PHPShopGUI->setField("Цифровые товары", $PHPShopGUI->setCheckbox('option[digital_product_enabled]', 1, 'Продажа цифровых товаров', $option['digital_product_enabled']), 1, 'Прикрепленные к товару файлы доступны после оплаты заказа в личном кабинете',$hideCatalog) .
             $PHPShopGUI->setField("Вывод товаров в каталоге", $PHPShopGUI->setCheckbox('option[catlist_enabled]', 1, 'Выводить товары в корневом каталоге', $option['catlist_enabled']), 1) .
             $PHPShopGUI->setField("Уровень вложенности вывода товаров", $PHPShopGUI->setInputText(false, 'option[catlist_depth]', $option['catlist_depth'], 50), 1) .
@@ -450,7 +447,7 @@ function actionUpdate() {
     unset($option['support_notice']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.user_calendar', 'option.cloud_enabled', 'option.digital_product_enabled', 'option.parent_price_enabled', 'option.user_skin', 'option.user_mail_activate', 'option.user_mail_activate_pre', 'option.user_price_activate', 'option.mail_smtp_enabled', 'option.mail_smtp_debug', 'option.multi_currency_search', 'option.mail_smtp_auth', 'option.sklad_enabled', 'option.rule_enabled', 'option.catlist_enabled', 'option.filter_cache_enabled', 'option.filter_products_count', 'option.chat_enabled', 'option.new_enabled', 'option.sklad_sum_enabled', 'option.user_servers_control', 'option.user_phone_mask_enabled', 'option.user_items_activate', 'option.ajax_scroll', 'option.ajax_scroll_paginator', 'option.fast_view', 'option.auto_discount_disabled', 'option.chat_support', 'option.user_captcha_enabled', 'option.user_cookie_enabled','option.user_cookie_mobile_enabled','option.odnotip','option.sklad_sort_enabled');
+    $PHPShopOrm->updateZeroVars('option.user_calendar', 'option.cloud_enabled', 'option.digital_product_enabled', 'option.parent_price_enabled', 'option.user_skin', 'option.user_mail_activate', 'option.user_mail_activate_pre', 'option.user_price_activate', 'option.mail_smtp_enabled', 'option.mail_smtp_debug', 'option.multi_currency_search', 'option.mail_smtp_auth', 'option.sklad_enabled', 'option.rule_enabled', 'option.catlist_enabled', 'option.filter_cache_enabled', 'option.filter_products_count', 'option.chat_enabled', 'option.new_enabled', 'option.sklad_sum_enabled', 'option.user_servers_control', 'option.user_phone_mask_enabled', 'option.user_items_activate', 'option.ajax_scroll', 'option.ajax_scroll_paginator', 'option.fast_view', 'option.auto_discount_disabled', 'option.chat_support', 'option.user_captcha_enabled', 'option.user_cookie_enabled','option.user_cookie_mobile_enabled','option.odnotip','option.sklad_sort_enabled','option.nowbuy_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

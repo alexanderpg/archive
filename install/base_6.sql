@@ -377,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules` (
   `path` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) DEFAULT '',
   `date` int(11) DEFAULT '0',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(255) DEFAULT '',
   PRIMARY KEY (`path`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
@@ -612,6 +612,10 @@ CREATE TABLE IF NOT EXISTS `phpshop_payment_systems` (
   `servers` varchar(64) DEFAULT '',
   `company` int(11) DEFAULT '0',
   `status` INT(11) DEFAULT '0',
+  `sum_max` float DEFAULT '0',
+  `sum_min` float DEFAULT '0',
+  `discount_max` float DEFAULT '0',
+  `discount_min` float DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 

@@ -247,9 +247,20 @@ document.getElementById('order').style.display = 'none';
 
         $PHPShopPayment = new PHPShopPaymentArray($where);
         $Payment = $PHPShopPayment->getArray();
-
+        
         if (is_array($Payment))
             foreach ($Payment as $val) {
+            
+                // Блокировка по сумме
+                if((!empty($val['sum_max']) and $this->PHPShopCart->getSum(false) > $val['sum_max']) or (!empty($val['sum_min']) and $this->PHPShopCart->getSum(false) < $val['sum_min'])){
+                  continue;
+                }
+
+                // Блокировка по скидке
+                if((!empty($val['discount_max']) and $this->get('discount') > $val['discount_max']) or (!empty($val['discount_min']) and $this->get('discount') < $val['discount_min'])){
+                  continue;
+                }
+                  
                 if (!empty($val['enabled']) OR $val['path'] == 'modules') {
                     $this->value[$val['id']] = array($val['name'], $val['id'], false);
                     $this->set('paymentIcon', '');
@@ -271,6 +282,7 @@ document.getElementById('order').style.display = 'none';
                     $showYurDataForPaymentClass .= " showYurDataForPaymentClass" . $val['id'];
                 }
             }
+
         // Перехват модуля
         $hook = $this->setHook(__CLASS__, __FUNCTION__, $this->value);
         if ($hook)
@@ -284,7 +296,7 @@ document.getElementById('order').style.display = 'none';
                 $this->set('showYurDataForPayment', ParseTemplateReturn('phpshop/lib/templates/order/nt/showYurDataForPayment.tpl', true));
             }
         }
-        // $this->set('orderOplata', PHPShopText::select('order_metod', $this->value, 250, "", false, ""));
+        $this->set('orderOplata', PHPShopText::select('order_metod', $this->value, 250, "", false, ""));
         $this->set('orderOplata', $disp);
     }
 

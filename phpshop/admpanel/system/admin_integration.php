@@ -44,6 +44,12 @@ function actionStart() {
                 $PHPShopGUI->setField('»дентификатор поиска', $PHPShopGUI->setInputText(false, 'option[yandex_search_id]', $option['yandex_search_id'], 300)) .
                 $PHPShopGUI->setField("¬ключить яндекс.ѕоиск", $PHPShopGUI->setCheckbox('option[yandex_search_enabled]', 1, '»спользовать яндекс.ѕоиск на сайте, вместо стандартного поиска', $option['yandex_search_enabled'])), 'in', true
         );
+    
+    // яндекс ID
+    if (empty($hideSite))
+        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('яндекс ID', $PHPShopGUI->setField('ClientID', $PHPShopGUI->setInputText(false, 'option[yandex_id_apikey]', $option['yandex_id_apikey'], 300) . $PHPShopGUI->setHelp('ѕерсональные ключи дл€ домена выдаютс€ через <a href="https://oauth.yandex.ru/client/new/id/" target="_blank"> абинет разработчика</a>')) .
+                $PHPShopGUI->setField("¬ключить яндекс ID", $PHPShopGUI->setCheckbox('option[yandex_id_enabled]', 1, '»спользовать OAuth авторизацию с помощью яндекс ID на сайте', $option['yandex_id_enabled'])), 'in', true
+        );
 
 
     // Google Analitiks
@@ -125,7 +131,7 @@ function actionUpdate() {
     $option = unserialize($data['admoption']);
 
     //  орректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled');
+    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

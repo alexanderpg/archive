@@ -39,19 +39,19 @@
         <link href="//fonts.googleapis.com/css?family=Roboto+Condensed&display=swap&subset=cyrillic" rel="stylesheet">
         <link href="@pathTemplate@css/swiper.min.css" rel="stylesheet">
         <link href="@pageCss@" rel="stylesheet">
-      
+
 
         <!-- Theme -->
         <link id="bootstrap_theme" data-name="@php echo $_SESSION['skin']; php@" href="@pathTemplateMin@css/@diggi_theme@.css" rel="stylesheet">
 
-            <!-- Стикер-полоска -->
-            <div class="@php __hide('sticker_top'); php@">
-                <div class="top-banner @php __hide('sticker_close','cookie'); php@">
-                    <div class="sticker-text">@sticker_top@</div>
-                    <span class="close sticker-close">x</span>
-                </div>
+        <!-- Стикер-полоска -->
+        <div class="@php __hide('sticker_top'); php@">
+            <div class="top-banner @php __hide('sticker_close','cookie'); php@">
+                <div class="sticker-text">@sticker_top@</div>
+                <span class="close sticker-close">x</span>
             </div>
-            <!-- /Стикер-полоска -->
+        </div>
+        <!-- /Стикер-полоска -->
 
         <!-- Header Section Starts -->
         <header id="header-area" class="header-wrap inner">
@@ -205,7 +205,7 @@
                     @productDay@
                 </div>
                 <div class="col-md-9">
-                    
+
                     <!-- Slider Section Starts -->
                     <!-- Nested Container Starts -->
                     <!-- Carousel Starts -->
@@ -219,7 +219,7 @@
                         <h1>@mainContentTitle@</h1>
                     </div>
                     <div >@mainContent@</div>
-                    
+
                     <!-- Featured Products Starts -->
                     <section class="products-list @php __hide('specMainIcon'); php@ @hideSite@">
                         <div class="swiper-slider-wrapper">
@@ -251,7 +251,7 @@
                     <!-- Banners Starts -->
                     <div class="top-col-banners">@banersDispHorizontal@</div>
                     <!-- Banners Ends -->
-                    
+
                     <!-- Latest Products Starts -->
                     <section class="products-list @php __hide('specMain'); php@ @hideSite@">
                         <div class="swiper-slider-wrapper">
@@ -316,7 +316,7 @@
 
 
         @editor@
-        
+
         <!-- toTop -->
         <div class="visible-lg visible-md">
             <a href="#" id="toTop"><span id="toTopHover"></span>{Наверх}</a>
@@ -374,17 +374,17 @@
                                 @workingTime@
                             </span>
                         </h4>
-                       
-                                            <!-- Социальные сети -->
-                    <ul class="social-menu list-inline">
-                        <li class="list-inline-item @php __hide('vk'); php@"><a class="social-button header-top-link" title="ВКонтакте" href="@vk@" target="_blank"><em class="fa fa-vk" aria-hidden="true">.</em></a></li>
-                        <li class="list-inline-item @php __hide('telegram'); php@"><a class="social-button header-top-link" title="Telegram" href="@telegram@" target="_blank"> <em class="fa fa-telegram" aria-hidden="true">.</em></a></li>
-                        <li class="list-inline-item @php __hide('odnoklassniki'); php@"><a class="social-button header-top-link" title="Одноклассники" href="@odnoklassniki@" target="_blank"> <em class="fa fa-odnoklassniki" aria-hidden="true">.</em></a></li>
-                        <li class="list-inline-item @php __hide('youtube'); php@"><a class="social-button header-top-link" title="Youtube" href="@youtube@" target="_blank"><em class="fa fa-youtube" aria-hidden="true">.</em></a></li>
-                        <li class="list-inline-item  @php __hide('whatsapp'); php@"><a class="social-button header-top-link" title="WhatsApp" href="@whatsapp@" target="_blank"><em class="fa fa-whatsapp" aria-hidden="true">.</em></a></li>
-                    </ul>
-                    <!-- / Социальные сети -->
-                        
+
+                        <!-- Социальные сети -->
+                        <ul class="social-menu list-inline">
+                            <li class="list-inline-item @php __hide('vk'); php@"><a class="social-button header-top-link" title="ВКонтакте" href="@vk@" target="_blank"><em class="fa fa-vk" aria-hidden="true">.</em></a></li>
+                            <li class="list-inline-item @php __hide('telegram'); php@"><a class="social-button header-top-link" title="Telegram" href="@telegram@" target="_blank"> <em class="fa fa-telegram" aria-hidden="true">.</em></a></li>
+                            <li class="list-inline-item @php __hide('odnoklassniki'); php@"><a class="social-button header-top-link" title="Одноклассники" href="@odnoklassniki@" target="_blank"> <em class="fa fa-odnoklassniki" aria-hidden="true">.</em></a></li>
+                            <li class="list-inline-item @php __hide('youtube'); php@"><a class="social-button header-top-link" title="Youtube" href="@youtube@" target="_blank"><em class="fa fa-youtube" aria-hidden="true">.</em></a></li>
+                            <li class="list-inline-item  @php __hide('whatsapp'); php@"><a class="social-button header-top-link" title="WhatsApp" href="@whatsapp@" target="_blank"><em class="fa fa-whatsapp" aria-hidden="true">.</em></a></li>
+                        </ul>
+                        <!-- / Социальные сети -->
+
                     </div>
                     <!-- Contact Us Ends -->
                 </div>
@@ -472,6 +472,10 @@
                             <button type="submit" class="btn btn-main">{Войти}</button>
                             <a href="/users/register.html" >{Зарегистрироваться}</a>
                         </div>
+
+                        <!-- Yandex ID -->
+                        @yandexid@
+                        <!-- End Yandex ID -->
                     </form>
                 </div>
             </div>

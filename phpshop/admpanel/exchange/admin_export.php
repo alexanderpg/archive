@@ -273,6 +273,11 @@ function serializeSelect($str, $cat) {
 function actionSave() {
     global $key_name, $subpath, $PHPShopOrderStatusArray, $PHPShopUserStatusArray, $PHPShopGUI, $csv_title, $_classPath, $csv_export_count;
 
+    // Экспорт только выбранных
+    $select_action_path = $subpath[2];
+    if (empty($select_action_path))
+        $select_action_path = 'product';
+
     // Выбрать настройку
     if ($_POST['exchanges'] != 'new') {
         $PHPShopOrmExchanges = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges']);
@@ -287,6 +292,8 @@ function actionSave() {
             unset($_POST);
             $_POST = unserialize($data_exchanges['option']);
             unset($_POST['exchanges_new']);
+
+            $_SESSION['select'][$select_action_path] = $_POST['export_select'][$select_action_path];
         }
     }
 
@@ -338,16 +345,14 @@ function actionSave() {
         $pattern_cols = prepareCols($pattern_cols);
     }
 
-    // Экспорт только выбранных
-    $select_action_path = $subpath[2];
-    if (empty($select_action_path))
-        $select_action_path = 'product';
-
     if (!empty($_SESSION['select']) and is_array($_SESSION['select'][$select_action_path])) {
         $val = array_values($_SESSION['select'][$select_action_path]);
+        $_POST['export_select'][$select_action_path] = $_SESSION['select'][$select_action_path];
         $where = array('id' => ' IN (' . implode(',', $val) . ')');
     } else
         $where = null;
+
+
 
     // Память выбранных полей
     if (is_array($_POST['pattern_cols'])) {
@@ -377,15 +382,22 @@ function actionSave() {
             setcookie("check_memory", json_encode($memory), time() + 3600000, $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/admpanel/');
     }
 
+    // SSL
+    if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS']))
+        $ssl = 'https://';
+    else
+        $ssl = 'http://';
+
     // XML выгрузка всех полей
-    if ($_POST['export_format'] == 'xml')
+    if ($_POST['export_format'] == 'cml')
         $pattern_cols = array('*');
 
 
-    $data = $PHPShopOrm->select($pattern_cols, $where, array('order' => 'id desc'), array('limit' => $_POST['export_limit']));
+    if ($_POST['export_format'] != 'yml')
+        $data = $PHPShopOrm->select($pattern_cols, $where, array('order' => 'id desc'), array('limit' => $_POST['export_limit']));
 
-    // XML
-    if ($_POST['export_format'] == 'xml') {
+    // CML
+    if ($_POST['export_format'] == 'cml') {
 
         PHPShopObj::loadClass('cml');
         $PHPShopCommerceML = new PHPShopCommerceML();
@@ -399,6 +411,37 @@ function actionSave() {
         elseif (empty($subpath[2])) {
             $csv = $PHPShopCommerceML->getProducts($data);
         }
+
+        $ext_file = 'xml';
+    }
+    // YML
+    else if ($_POST['export_format'] == 'yml') {
+        PHPShopObj::loadClass("valuta");
+        PHPShopObj::loadClass("promotions");
+        PHPShopObj::loadClass('yml');
+
+        $_GET['allimage'] = true;
+
+        if ($_POST['export_code'] == 'utf')
+            $_GET['utf'] = true;
+
+        $PHPShopYml = new PHPShopYml();
+        $PHPShopYml->where = $val;
+
+        $csv = $PHPShopYml->compile();
+
+        $ext_file = 'xml';
+    }
+    // RSS
+    else if ($_POST['export_format'] == 'rss') {
+        PHPShopObj::loadClass("valuta");
+        PHPShopObj::loadClass("promotions");
+        PHPShopObj::loadClass('rssgoogle');
+        
+        $PHPShopRssGoogle = new PHPShopRssGoogle();
+        $PHPShopRssGoogle->where = $val;
+
+        $csv = $PHPShopRssGoogle->compile();
 
         $ext_file = 'xml';
     }
@@ -430,7 +473,7 @@ function actionSave() {
 
                     // Полный путь к изображениям
                     elseif ($cols_name == 'pic_small' and isset($_POST['export_imgpath']) and ! empty($row['pic_small'])) {
-                        $csv_line .= '"http://' . $_SERVER['SERVER_NAME'] . $row['pic_small'] . '"' . $delim;
+                        $csv_line .= '"' . $ssl . $_SERVER['SERVER_NAME'] . $row['pic_small'] . '"' . $delim;
                     } elseif ($cols_name == 'pic_big') {
 
                         $img_line = '"';
@@ -448,7 +491,7 @@ function actionSave() {
 
                                 // Полный путь к изображениями
                                 if (isset($_POST['export_imgpath']) and ! empty($row_img['name']))
-                                    $img_line .= 'http://' . $_SERVER['SERVER_NAME'] . $row_img['name'] . $delim_img;
+                                    $img_line .= $ssl . $_SERVER['SERVER_NAME'] . $row_img['name'] . $delim_img;
                                 else
                                     $img_line .= $row_img['name'] . $delim_img;
                             }
@@ -459,7 +502,7 @@ function actionSave() {
                         else {
                             // Полный путь к изображениями
                             if (isset($_POST['export_imgpath']) and ! empty($row['pic_big']))
-                                $img_line .= 'http://' . $_SERVER['SERVER_NAME'] . $row['pic_big'];
+                                $img_line .= $ssl . $_SERVER['SERVER_NAME'] . $row['pic_big'];
                             else
                                 $img_line .= $row['pic_big'];
                         }
@@ -489,7 +532,7 @@ function actionSave() {
                                 $file_line .= $file['path'] . ',';
                             }
                             $file_line = substr($file_line, 0, strlen($file_line) - 1);
-                            $csv_line .=$file_line. '"' . $delim;
+                            $csv_line .= $file_line . '"' . $delim;
                         }
                     }
 
@@ -509,11 +552,11 @@ function actionSave() {
                         if (isset($row['prod_seo_name'])) {
 
                             if (empty($row['prod_seo_name']))
-                                $csv_line .= 'http://' . $_SERVER['SERVER_NAME'] . '/id/' . str_replace("_", "-", PHPShopString::toLatin($row['name'])) . '-' . $row['id'] . '.html' . $delim;
+                                $csv_line .= $ssl . $_SERVER['SERVER_NAME'] . '/id/' . str_replace("_", "-", PHPShopString::toLatin($row['name'])) . '-' . $row['id'] . '.html' . $delim;
                             else
-                                $csv_line .= 'http://' . $_SERVER['SERVER_NAME'] . '/id/' . $row['prod_seo_name'] . '-' . $row['id'] . '.html' . $delim;
+                                $csv_line .= $ssl . $_SERVER['SERVER_NAME'] . '/id/' . $row['prod_seo_name'] . '-' . $row['id'] . '.html' . $delim;
                         } else
-                            $csv_line .= 'http://' . $_SERVER['SERVER_NAME'] . '/shop/UID_' . $row['id'] . '.html' . $delim;
+                            $csv_line .= $ssl . $_SERVER['SERVER_NAME'] . '/shop/UID_' . $row['id'] . '.html' . $delim;
                     }
                     // Путь каталога
                     elseif (!empty($path) and $cols_name == 'path') {
@@ -613,7 +656,12 @@ function actionSave() {
 
 // Стартовый вид
 function actionStart() {
-    global $PHPShopGUI, $PHPShopModules, $TitlePage, $PHPShopOrm, $key_name, $subpath, $key_base, $key_stop,$hideCatalog;
+    global $PHPShopGUI, $PHPShopModules, $TitlePage, $PHPShopOrm, $key_name, $subpath, $key_base, $key_stop, $hideCatalog;
+
+    // Выбранные данные
+    $select_action_path = $subpath[2];
+    if (empty($select_action_path))
+        $select_action_path = 'product';
 
     // Выбрать настройку
     if (!empty($_GET['exchanges'])) {
@@ -636,14 +684,21 @@ function actionStart() {
             $memory[$_GET['path']]['export_delim'] = @$_POST['export_delim'];
             $memory[$_GET['path']]['export_imgproc'] = @$_POST['export_imgproc'];
             $memory[$_GET['path']]['export_code'] = @$_POST['export_code'];
+            $memory[$_GET['path']]['export_limit'] = @$_POST['export_limit'];
+            $memory[$_GET['path']]['export_format'] = @$_POST['export_format'];
 
             $export_sortdelim = @$memory[$_GET['path']]['export_sortdelim'];
             $export_sortsdelim = @$memory[$_GET['path']]['export_sortsdelim'];
             $export_imgvalue = @$memory[$_GET['path']]['export_imgdelim'];
             $export_code = $memory[$_GET['path']]['export_code'];
-            $export_format = @$_POST['export_format'];
-            $export_limit = @$_POST['export_limit'];
+            $export_format = $memory[$_GET['path']]['export_format'];
+            $export_limit = $memory[$_GET['path']]['export_limit'];
+
+            $_SESSION['select'][$select_action_path] = $_POST['export_select'][$select_action_path];
         }
+    } else {
+
+        $export_limit = '0,10000';
     }
 
     $PHPShopGUI->action_button['Экспорт'] = array(
@@ -690,7 +745,7 @@ function actionStart() {
         $select_action = ' ' . __('товаров');
         $TitlePage .= $select_action;
         $select_path = 'catalog';
-        $PHPShopGUI->_CODE = '<p></p><p class="text-muted">' . __('Ниже приведен список полей, которые могут быть экспортированы. Выделенные поля являются обязательными для последующей загрузки файла, остальные поля можно добавить или убрать из блока доступных полей по желанию.</p><p><kbd>Id</kbd> или <kbd>Артикул</kbd>') . '</p>';
+        $PHPShopGUI->_CODE = '<p></p><p class="text-muted">' . __('Ниже приведен список полей, которые могут быть экспортированы в формат Excel. Выделенные поля являются обязательными для последующей загрузки файла, остальные поля можно добавить или убрать из блока доступных полей по желанию.</p><p><kbd>Id</kbd> или <kbd>Артикул</kbd>') . '</p>';
     }
 
     // Каталоги
@@ -717,14 +772,14 @@ function actionStart() {
         $select_path = $subpath[2];
         $sel_right .= '<option value="orders_email" class="">Email</option>';
         $sel_right .= '<option value="orders_cart" class="">Корзина</option>';
-        $PHPShopGUI->_CODE = '<p></p><p class="text-muted">' . __('Ниже приведен список полей, которые могут быть экспортированы. Выделенные поля являются обязательными для последующей загрузки файла, остальные поля можно добавить или убрать из блока доступных полей по желанию') . '.</p><p><kbd>Id</kbd></p>';
+        $PHPShopGUI->_CODE = '<p></p><p class="text-muted">' . __('Ниже приведен список полей, которые могут быть экспортированы в формат Excel. Выделенные поля являются обязательными для последующей загрузки файла, остальные поля можно добавить или убрать из блока доступных полей по желанию') . '.</p><p><kbd>Id</kbd></p>';
     }
 
 
     $PHPShopGUI->_CODE .= '
     <table width="100%" style="margin-bottom:20px">
         <tr>
-        <td class="text-center" width="48%"><label for="pattern_default">' . __('Экспортируемые поля') . '</label></td>
+        <td class="text-center" width="48%"><label for="pattern_default">' . __('Экспортируемые поля в Excel') . '</label></td>
         <td> </td>
         <td class="text-center"><label for="pattern_more">' . __('Доступные поля') . '</label></td>
         </tr>
@@ -762,17 +817,24 @@ function actionStart() {
     $code_value[] = array('ANSI', 'ansi', $export_code);
     $code_value[] = array('UTF-8', 'utf', $export_code);
 
-    $format_value[] = array('CSV', 'csv', $export_format);
-    $format_value[] = array('CommerceML', 'xml', $export_format);
+    $format_value[] = array('Excel (CSV)', 'csv', $export_format);
+    
+
+    if (empty($subpath[2])){
+        $format_value[] = array('Яндекс (YML)', 'yml', $export_format);
+        $format_value[] = array('Google (RSS)', 'rss', $export_format);
+    }
+    
+    $format_value[] = array('1C (CML)', 'cml', $export_format);
 
     $Tab1 = $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 150)) .
-            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), 1, 'Колонка с характеристиками только для общего каталога', $class) .
-            $PHPShopGUI->setField('Полный путь для изображений', $PHPShopGUI->setCheckbox('export_imgpath', 1, null, @$memory[$_GET['path']]['export_imgpath']), 1, 'Добавляет к изображениям адрес сайта', $class) .
-            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения', $class) .
+            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), 1, 'Колонка с характеристиками только для общего каталога. Для формата Excel', $class) .
+            $PHPShopGUI->setField('Полный путь для изображений', $PHPShopGUI->setCheckbox('export_imgpath', 1, null, @$memory[$_GET['path']]['export_imgpath']), 1, 'Добавляет к изображениям адрес сайта для формата Excel', $class) .
+            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения для формата Excel', $class) .
             $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 150)) .
             $PHPShopGUI->setField('Формат файла', $PHPShopGUI->setSelect('export_format', $format_value, 150), 1, false, $class_xml) .
             $PHPShopGUI->setField('GZIP сжатие', $PHPShopGUI->setCheckbox('export_gzip', 1, null, 0), 1, 'Сокращает размер создаваемого файла') .
-            $PHPShopGUI->setField('Лимит строк', $PHPShopGUI->setInputText(null, 'export_limit', '0,10000', 150), 1, 'Запись c 1 по 10000');
+            $PHPShopGUI->setField('Лимит строк', $PHPShopGUI->setInputText(null, 'export_limit', $export_limit, 150), 1, 'Запись c 1 по 10000');
 
     // Закладка 3
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges']);
@@ -804,10 +866,7 @@ function actionStart() {
 
     $PHPShopGUI->setFooter($ContentFooter);
 
-    // Выбранные данные
-    $select_action_path = $subpath[2];
-    if (empty($select_action_path))
-        $select_action_path = 'product';
+
     if (!empty($_SESSION['select']) and is_array($_SESSION['select'][$select_action_path])) {
 
         if (!empty($_GET['return']))
@@ -819,9 +878,9 @@ function actionStart() {
         $select_message = '<p class="text-muted">' . __('Вы можете выбрать конкретные объекты для экспорта, отметив их галочками и выбрав в меню <span class="glyphicon glyphicon-cog"></span><span class="caret"></span> <em>"Экспортировать выбранные"</em>. По умолчанию будут экспортированы все позиции') . '. <a href="?path=' . $select_path . '"><span class="glyphicon glyphicon-share-alt"></span> ' . __('Выбрать') . '</a></p>';
 
     $sidebarleft[] = array('title' => 'Тип данных', 'content' => $PHPShopGUI->loadLib('tab_menu', false, './exchange/'));
-    
-    if(empty($hideCatalog))
-    $sidebarleft[] = array('title' => 'Прайс-лист', 'content' => $PHPShopGUI->loadLib('tab_menu_xml', false, './exchange/'));
+
+    if (empty($hideCatalog) and $select_action_path=='product')
+        $sidebarleft[] = array('title' => 'Прайс-лист', 'content' => $PHPShopGUI->loadLib('tab_menu_xml', false, './exchange/'));
 
     if (!empty($select_path))
         $sidebarleft[] = array('title' => 'Подсказка', 'content' => $select_message, 'class' => 'hidden-xs');

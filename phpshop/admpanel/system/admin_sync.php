@@ -76,7 +76,8 @@ if(empty($hideCatalog))
                     $PHPShopGUI->setCheckbox('option[exchange_create]', 1, 'Создавать новые товары', $option['exchange_create']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[exchange_create_category]', 1, 'Создавать новые каталоги', $option['exchange_create_category']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[exchange_image]', 1, 'Создавать новые изображения', $option['exchange_image']) . '<br>' .
-                    $PHPShopGUI->setCheckbox('option[exchange_log]', 1, 'Журнал соединений', $option['exchange_log']) . '<br>'
+                    $PHPShopGUI->setCheckbox('option[exchange_log]', 1, 'Журнал соединений', $option['exchange_log']) . '<br>'.
+                    $PHPShopGUI->setCheckbox('option[exchange_clean]', 1, 'Выключить товары, отсутствующие в файле импорта', $option['exchange_clean']) . '<br>'
             ) .
              $PHPShopGUI->setField("Цена",$PHPShopGUI->setInputText(false, 'option[exchange_price1]', $option['exchange_price1'], 300, false, false, false, 'Внешний код' )).
             $PHPShopGUI->setField("Цена 2",$PHPShopGUI->setInputText(false, 'option[exchange_price2]', $option['exchange_price2'], 300, false, false, false, 'Внешний код' )).

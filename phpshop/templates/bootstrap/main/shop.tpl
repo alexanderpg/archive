@@ -257,7 +257,7 @@
             </div>
             <div class="bar-padding-top-fix visible-xs visible-sm"></div>
             <div class="col-md-9 col-xs-12 main">
-                
+
                 @DispShop@
                 @getPhotos@	
 
@@ -310,16 +310,16 @@
                     </ul>
                 </div>
 
-                    <div class="col-md-3 col-sm-4 col-xs-12">
-                        <h5>{Личный кабинет}</h5>
-                        <ul>
-                            <li><a href="/users/">@UsersLogin@</a></li>
-                            <li class="@hideCatalog@"><a href="/users/order.html">{Отследить заказ}</a></li>
-                            <li class="@hideCatalog@"><a href="/users/notice.html">{Уведомления о товарах}</a></li>
-                            @php if($_SESSION['UsersId']) echo '<li><a href="/users/message.html">{Связь с менеджерами}</a></li>
-                            <li><a href="?logout=true">{Выйти}</a></li>';else echo '<li><a href="#" data-toggle="modal" data-target="#userModal">{Войти}</a></li>';php@
-                        </ul>
-                    </div>
+                <div class="col-md-3 col-sm-4 col-xs-12">
+                    <h5>{Личный кабинет}</h5>
+                    <ul>
+                        <li><a href="/users/">@UsersLogin@</a></li>
+                        <li class="@hideCatalog@"><a href="/users/order.html">{Отследить заказ}</a></li>
+                        <li class="@hideCatalog@"><a href="/users/notice.html">{Уведомления о товарах}</a></li>
+                        @php if($_SESSION['UsersId']) echo '<li><a href="/users/message.html">{Связь с менеджерами}</a></li>
+                        <li><a href="?logout=true">{Выйти}</a></li>';else echo '<li><a href="#" data-toggle="modal" data-target="#userModal">{Войти}</a></li>';php@
+                    </ul>
+                </div>
                 <!-- My Account Links Ends -->
                 <!-- Customer Service Links Starts -->
                 <div class="col-md-3 col-sm-4 col-xs-12">
@@ -405,7 +405,6 @@
                             <a href="/users/sendpassword.html" class="pass">{Забыли пароль}</a>
                         </div>
 
-                        @facebookAuth@ @twitterAuth@
                     </div>
                     <div class="modal-footer flex-row">
 
@@ -413,6 +412,10 @@
                         <button type="submit" class="btn btn-primary">{Войти}</button>
                         <a href="/users/register.html" >{Зарегистрироваться}</a>
                     </div>
+
+                    <!-- Yandex ID -->
+                    @yandexid@
+                    <!-- End Yandex ID -->
                 </form>
             </div>
         </div>

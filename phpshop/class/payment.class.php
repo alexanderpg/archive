@@ -46,7 +46,7 @@ class PHPShopPayment extends PHPShopObj {
 /**
  * Массив способов оплат
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopArray
  */
 class PHPShopPaymentArray extends PHPShopArray {
@@ -55,7 +55,7 @@ class PHPShopPaymentArray extends PHPShopArray {
         $this->objSQL = $sql;
         $this->order = array('order' => 'num');
         $this->objBase = $GLOBALS['SysValue']['base']['payment_systems'];
-        parent::__construct('id', "name", 'path', 'enabled', 'yur_data_flag', 'icon');
+        parent::__construct('id', "name", 'path', 'enabled', 'yur_data_flag', 'icon','sum_max','sum_min','discount_max','discount_min');
     }
 
 }

@@ -61,6 +61,13 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setCollapse('Внешний вид', $PHPShopGUI->setField("Иконка", $PHPShopGUI->setIcon($data['icon'], "icon_new", false)) .
             $PHPShopGUI->setField('Цвет', $PHPShopGUI->setInputColor('color_new', $data['color'])));
 
+    $Tab2 = $PHPShopGUI->setField("Стоимость более", $PHPShopGUI->setInputText(null, "sum_max_new", $data['sum_max'], 150, $PHPShopSystem->getDefaultValutaCode()));
+    $Tab2 .= $PHPShopGUI->setField("Стоимость менее", $PHPShopGUI->setInputText(null, "sum_min_new", $data['sum_min'], 150, $PHPShopSystem->getDefaultValutaCode()));
+    $Tab2 .= $PHPShopGUI->setField("Скидка более", $PHPShopGUI->setInputText(null, "discount_max_new", $data['discount_max'], 80, '%'));
+    $Tab2 .= $PHPShopGUI->setField("Скидка менее", $PHPShopGUI->setInputText(null, "discount_min_new", $data['discount_min'], 80, '%'));
+
+    $Tab1 .= $PHPShopGUI->setCollapse('Блокировка', $Tab2);
+
     $Tab1 .= $PHPShopGUI->setCollapse('Сообщение после заказа', $PHPShopGUI->setField("Заголовок:", $PHPShopGUI->setInput("text", "message_header_new", $data['message_header'])) . '<div>' . $oFCKeditor->AddGUI() . '</div>');
 
     // Запрос модуля на закладку

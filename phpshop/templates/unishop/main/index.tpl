@@ -170,7 +170,7 @@
         <!-- Slider Section Starts -->
         <!-- Nested Container Starts -->
         <!-- Carousel Starts -->
-        <div class="slider hidden-xs">
+        <div class="slider">
             <div class="container">
                 <div class="row">
                     @imageSlider@
@@ -412,6 +412,10 @@
                         <button type="submit" class="btn btn-primary">{Войти}</button>
                         <a href="/users/register.html" >{Зарегистрироваться}</a>
                     </div>
+
+                    <!-- Yandex ID -->
+                    @yandexid@
+                    <!-- End Yandex ID -->
                 </form>
             </div>
         </div>

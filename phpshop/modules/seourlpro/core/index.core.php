@@ -27,6 +27,7 @@ class PHPShopSeoProCore extends PHPShopShop {
             header('Location: /shop/CID_' . $data['id'] . '.html', true, 301);
             return true;
         }
+        else parent::setError404();
     }
 
     function index() {
@@ -37,7 +38,6 @@ class PHPShopSeoProCore extends PHPShopShop {
         
         if (!empty($GLOBALS['PHPShopNav']->objNav['id'])) {
             parent::CID();
- 
             // 404 если каталога не существует или мультибаза
             if (empty($this->category_name) or $this->errorMultibase($this->category) or $this->PHPShopCategory->getParam('skin_enabled') == 1 or $GLOBALS['PHPShopNav']->objNav['page'] == 1)
                 parent::setError404();
@@ -79,8 +79,8 @@ class PHPShopSeoProCore extends PHPShopShop {
         if ($seourl_option['paginator'] == 2) {
             if ($page > 1) {
                 $this->doLoadFunction('PHPShopShop', 'set_meta', $row);
-                $this->description .= ' ' . __('Часть') . ' ' . $this->PHPShopNav->getPage();
-                $this->title .= ' ' . __('Страница') . ' ' . $this->PHPShopNav->getPage();
+                $this->description .= ' | ' . __('Страница') . ' ' . $this->PHPShopNav->getPage();
+                $this->title .= ' | ' . __('Страница') . ' ' . $this->PHPShopNav->getPage();
                 return true;
             } 
         }

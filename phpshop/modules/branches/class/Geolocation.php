@@ -28,7 +28,7 @@ class Geolocation
         }
     }
 
-    public function getCurrentCityId(): ?int
+    public function getCurrentCityId()
     {
         // Город определен, его id сохранен. Сразу возвращаем
         if(isset($_SESSION['geolocation_city_id']) && (int) $_SESSION['geolocation_city_id'] > 0) {

@@ -107,7 +107,7 @@
                         </div>
                     </div>
                     <!-- Header Links Ends -->
-                    
+
                     <!-- Shopping Cart Starts -->
                     <div class="col-md-3 col-lg-3  visible-md hidden-sm hidden-xs visible-lg">
                         <div id="cart" class="btn-group pull-right header-color @hideCatalog@">
@@ -211,8 +211,8 @@
                 <!-- Categories Links Ends -->
                 <!-- Фасетный фильтр -->
                 <div class="hide panel panel-default" id="faset-filter">
-                    <div class="faset-filter-name"><span class="close"><i class="fal fa-times"></i></span>{Фильтры}</div>
-                    <div class="panel-body faset-filter-block-wrapper">
+                    <div class="faset-filter-name filter-title btn btn-default">{Фильтры}</div>
+                    <div class="panel-body list-group faset-filter-block-wrapper filter-body-fix">
 
                         <div id="faset-filter-body">{Загрузка}...</div>
 
@@ -446,6 +446,10 @@
                         <button type="submit" class="btn btn-main">{Войти}</button>
                         <a href="/users/register.html" >{Зарегистрироваться}</a>
                     </div>
+
+                    <!-- Yandex ID -->
+                    @yandexid@
+                    <!-- End Yandex ID -->
                 </form>
             </div>
         </div>

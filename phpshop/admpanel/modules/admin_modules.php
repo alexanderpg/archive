@@ -363,7 +363,7 @@ function actionStart() {
             'chat'=>7,
             'crm'=>6,
             'marketplaces'=>6,
-            'payment'=>27,
+            'payment'=>28,
             'credit'=>3,
             'yandex'=>2,
             'sale'=>18,

@@ -126,14 +126,14 @@
                             </div>
                         </div>
                         <!-- Logo Starts -->
-                        
+
                         @php
                         if(empty(PHPShopParser::get('hideCatalog')))
                         $GLOBALS['search_col']=3;
                         else $GLOBALS['search_col']=6;
                         php@
-                        
-                        
+
+
                         <!-- Search Starts -->
                         <div class="col-md-@php echo $GLOBALS['search_col']; php@ hidden-xs">
                             <form id="search_form" action="/search/" role="search" method="get" class="header-color">
@@ -483,6 +483,10 @@
                         <button type="submit" class="btn btn-primary">{Войти}</button>
                         <a href="/users/register.html" >{Зарегистрироваться}</a>
                     </div>
+
+                    <!-- Yandex ID -->
+                    @yandexid@
+                    <!-- End Yandex ID -->
                 </form>
             </div>
         </div>

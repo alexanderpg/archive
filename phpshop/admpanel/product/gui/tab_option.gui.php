@@ -38,13 +38,13 @@ function tab_option($data) {
             if (!empty($v))
                 $parent_array_true[] = $v;
 
-    if (!empty($data['parent'])) {
+    if (!empty($data['parent']) and is_array($parent_array_true)) {
 
         // Подтипы из 1С
         if ($PHPShopSystem->ifSerilizeParam('1c_option.update_option'))
-            $data_option = $PHPShopOrm->select(array('*'), array('uid' => ' IN ("' . @implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 100));
+            $data_option = $PHPShopOrm->select(array('*'), array('uid' => ' IN ("' . implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 300));
         else
-            $data_option = $PHPShopOrm->select(array('*'), array('id' => ' IN ("' . @implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 100));
+            $data_option = $PHPShopOrm->select(array('*'), array('id' => ' IN ("' . implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 300));
     }
 
     if (!empty($data_option) and is_array($data_option))

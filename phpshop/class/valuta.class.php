@@ -14,7 +14,7 @@ require_once(dirname(__FILE__) . "/array.class.php");
 class PHPShopValuta extends PHPShopObj {
 
     /**
-     * Констуруктор
+     * Конструктор
      * @param int $objID ИД валюты
      */
     function __construct($objID) {
@@ -59,10 +59,9 @@ class PHPShopValuta extends PHPShopObj {
     /**
      * Массив всех значений по ключу ISO
      * @param bool $key_iso генерация массива с ключами ISO
-     * Пример: PHPShopValuta::getAll()
      * @return array
      */
-    function getAll($key_iso = false) {
+    static function getAll($key_iso = false) {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['currency']);
         $PHPShopOrm->cache = true;
         $data = $PHPShopOrm->select(array('*'), false, false, array('limit' => 100));
@@ -82,7 +81,7 @@ class PHPShopValuta extends PHPShopObj {
     }
 
     function getArray() {
-        return $this->getAll();
+        return self::getAll();
     }
 
 }

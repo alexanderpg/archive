@@ -11,7 +11,7 @@
         <link rel="apple-touch-icon" href="@icon@">
         <link rel="icon" href="@icon@" type="image/x-icon">
         <link rel="mask-icon" href="@icon@">
-        
+
         <!-- OpenGraph -->
         <meta property="og:title" content="@ogTitle@">
         <meta property="og:image" content="http://@serverName@@ogImage@">
@@ -52,14 +52,14 @@
         </div>
         <header>
             <div class="container ">
-            <!-- Стикер-полоска -->
-            <div class="top_banner_parent @php __hide('sticker_top'); php@">
-                <div class="top-banner @php __hide('sticker_close','cookie'); php@">
-                    <div class="sticker-text">@sticker_top@</div>
-                    <span class="close sticker-close">x</span>
+                <!-- Стикер-полоска -->
+                <div class="top_banner_parent @php __hide('sticker_top'); php@">
+                    <div class="top-banner @php __hide('sticker_close','cookie'); php@">
+                        <div class="sticker-text">@sticker_top@</div>
+                        <span class="close sticker-close">x</span>
+                    </div>
                 </div>
-            </div>
-            <!-- /Стикер-полоска -->
+                <!-- /Стикер-полоска -->
 
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="logo">
@@ -125,7 +125,7 @@
             <nav class="navbar main-navbar" id="navigation">
                 <div class="navbar-header">
                     <div class="visible-xs btn-mobile-menu"><span class="icons-menu"></span></div>
-                    
+
                     <form action="/search/" role="search" method="get" class="visible-xs  mobile-search">
                         <div class="input-group">
                             <input name="words" maxlength="50" id="search" class="form-control" placeholder="{Искать}.." required="" type="search" data-trigger="manual" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true" data-content="">
@@ -378,7 +378,7 @@
                 </div>
                 <!-- Information Links Ends -->
                 <div class="col-md-3 col-sm-4 col-xs-12"> 
-                    
+
                     <!-- Социальные сети -->
                     <ul class="social-menu list-inline">
                         <li class="list-inline-item @php __hide('vk'); php@"><a class="social-button header-top-link" title="ВКонтакте" href="@vk@" target="_blank"><em class="fa fa-vk" aria-hidden="true">.</em></a></li>
@@ -388,7 +388,7 @@
                         <li class="list-inline-item  @php __hide('whatsapp'); php@"><a class="social-button header-top-link" title="WhatsApp" href="@whatsapp@" target="_blank"><em class="fa fa-whatsapp" aria-hidden="true">.</em></a></li>
                     </ul>
                     <!-- / Социальные сети -->
-                    
+
                     <ul>
                         <li class="@hideCatalog@"><a href="/price/" title="Прайс-лист">{Прайс-лист}</a></li>
                         <li><a href="/news/" title="Новости">{Новости}</a></li>
@@ -459,12 +459,17 @@
                             </div>
 
                         </div>
+                        
                         <div class="modal-footer flex-row">
 
                             <input type="hidden" value="1" name="user_enter">
                             <button type="submit" class="btn btn-primary">{Войти}</button>
                             <a href="/users/register.html">{Зарегистрироваться}</a>
                         </div>
+
+                        <!-- Yandex ID -->
+                        @yandexid@
+                        <!-- End Yandex ID -->
                     </form>
                 </div>
             </div>

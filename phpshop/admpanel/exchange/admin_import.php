@@ -1527,10 +1527,10 @@ function actionStart() {
     $code_value[] = array('UTF-8', 'utf', $export_code);
 
     $code_extension[] = array(__('Автоматический'), 'auto', $export_extension);
-    $code_extension[] = array('CSV', 'csv', $export_extension);
-    $code_extension[] = array('YML', 'yml', $export_extension);
-    $code_extension[] = array('XLSX', 'xlsx', $export_extension);
-    $code_extension[] = array('XLS', 'xls', $export_extension);
+    $code_extension[] = array('Excel (CSV)', 'csv', $export_extension);
+    $code_extension[] = array('Яндекс (YML)', 'yml', $export_extension);
+    $code_extension[] = array('Excel (XLSX)', 'xlsx', $export_extension);
+    $code_extension[] = array('Excel (XLS)', 'xls', $export_extension);
 
     $imgfunc_value[] = array(__('Добавить фото к существующим'), 0, $export_imgfunc);
     $imgfunc_value[] = array(__('Заменить фото в базе, без удаления с сервера'), 1, $export_imgfunc);
@@ -1544,12 +1544,12 @@ function actionStart() {
     $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile($_POST['lfile']), 1, 'Поддерживаются файлы csv, xls, xlsx, yml, xml') .
             $PHPShopGUI->setField('Действие', $PHPShopGUI->setSelect('export_action', $action_value, 150, true)) .
             $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 150, true)) .
-            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), false, false, $class) .
-            $PHPShopGUI->setField('Разделитель значений характеристик', $PHPShopGUI->setSelect('export_sortsdelim', $delim_sort, 150), false, false, $class) .
+            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), false, 'Для формата Excel', $class) .
+            $PHPShopGUI->setField('Разделитель значений характеристик', $PHPShopGUI->setSelect('export_sortsdelim', $delim_sort, 150), false, 'Для формата Excel', $class) .
             $PHPShopGUI->setField('Обработка изображений', $PHPShopGUI->setCheckbox('export_imgproc', 1, null, @$memory[$_GET['path']]['export_imgproc']), 1, 'Создание изображения для превью и ватермарк', $class) .
             $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setSelect('export_imgload', $imgload_value, 250), 1, 'Загрузить изображения или использовать ссылки', $class) .
             $PHPShopGUI->setField('Действие для изображений', $PHPShopGUI->setSelect('export_imgfunc', $imgfunc_value, 250), 1, 'Заменить на новые или дополнить изображения', $class) .
-            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения', $class) .
+            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения для формата Excel', $class) .
             $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 150)) .
             $PHPShopGUI->setField('Тип файла', $PHPShopGUI->setSelect('export_extension', $code_extension, 150), 1, null, $yml) .
             $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setSelect('export_key', $key_value, 150, false, false, true), 1, 'Изменение ключа обновления может привести к порче данных', $class) .

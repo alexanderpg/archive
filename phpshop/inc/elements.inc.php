@@ -281,6 +281,17 @@ class PHPShopCoreElement extends PHPShopElements {
             $this->set('hideCatalog', 'hide d-none');
             $this->PHPShopSystem->setSerilizeParam('admoption.nowbuy_enabled', 0);
         }
+
+        // яндекс ID
+        if ($this->PHPShopSystem->ifSerilizeParam('admoption.yandex_id_enabled') and $this->PHPShopSystem->getSerilizeParam('admoption.yandex_id_apikey') !="") {
+            $this->set('yandex_id_apikey', $this->PHPShopSystem->getSerilizeParam('admoption.yandex_id_apikey'));
+            $this->set('yandex_redirect_uri', $_SERVER['SERVER_NAME'] . 'phpshop/ajax/yandexid.php');
+
+            if (PHPShopParser::checkFile("users/yandexid.tpl"))
+                $this->set('yandexid', ParseTemplateReturn('users/yandexid.tpl'));
+            else
+                $this->set('yandexid', ParseTemplateReturn('phpshop/lib/templates/users/yandexid.tpl', true));
+        }
     }
 
     /**
@@ -1946,6 +1957,9 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
+
+
 
 
 

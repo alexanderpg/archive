@@ -183,7 +183,7 @@
                     <ul class="list-group sidebar-nav hidden-xs hidden-sm @php if($GLOBALS['PHPShopNav']->objNav['path']!="shop") echo "hide"; php@">
                         @leftCatal@
                 </ul> 
-                    
+
                 <!-- Фасетный фильтр -->
                 <div class="hide panel panel-default @hideSite@" id="faset-filter">
                     <div class="faset-filter-name"><span class="close"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></span>Фильтры</div>
@@ -240,16 +240,16 @@
 
                     </div>
                 </div>
-           
+
             </div>
 
             <div class="bar-padding-top-fix visible-xs visible-sm"> </div>
 
             <div class="col-lg-7 col-md-9 col-xs-12 main"> 
-                
+
                 @DispShop@
                 @getPhotos@
-                
+
                 <div class="row">
                     <div class="col-xs-12 @php __hide('now_buying'); php@ @hideCatalog@">
                         <h2 class="page-header">@now_buying@</h2>
@@ -317,17 +317,17 @@
                         <li>@button@</li>
                     </ul>
                 </div>
-                
+
                 <div class="col-md-3 col-sm-4 col-xs-12">
-                        <h5>{Личный кабинет}</h5>
-                        <ul>
-                            <li><a href="/users/">@UsersLogin@</a></li>
-                            <li class="@hideCatalog@"><a href="/users/order.html">{Отследить заказ}</a></li>
-                            <li class="@hideCatalog@"><a href="/users/notice.html">{Уведомления о товарах}</a></li>
-                            @php if($_SESSION['UsersId']) echo '<li><a href="/users/message.html">{Связь с менеджерами}</a></li>
-                            <li><a href="?logout=true">{Выйти}</a></li>'; else echo '<li><a href="#" data-toggle="modal" data-target="#userModal">{Войти}</a></li>'; php@
-                        </ul>
-                    </div>
+                    <h5>{Личный кабинет}</h5>
+                    <ul>
+                        <li><a href="/users/">@UsersLogin@</a></li>
+                        <li class="@hideCatalog@"><a href="/users/order.html">{Отследить заказ}</a></li>
+                        <li class="@hideCatalog@"><a href="/users/notice.html">{Уведомления о товарах}</a></li>
+                        @php if($_SESSION['UsersId']) echo '<li><a href="/users/message.html">{Связь с менеджерами}</a></li>
+                        <li><a href="?logout=true">{Выйти}</a></li>'; else echo '<li><a href="#" data-toggle="modal" data-target="#userModal">{Войти}</a></li>'; php@
+                    </ul>
+                </div>
                 <!-- My Account Links Ends -->
                 <!-- Customer Service Links Starts -->
                 <div class="col-md-3 col-sm-4 col-xs-12">
@@ -410,7 +410,6 @@
                             <a href="/users/sendpassword.html" class="pass">{Забыли пароль}</a>
                         </div>
 
-                        @facebookAuth@ @twitterAuth@
                     </div>
                     <div class="modal-footer flex-row">
 
@@ -418,6 +417,10 @@
                         <button type="submit" class="btn btn-primary">{Войти}</button>
                         <a href="/users/register.html" >{Зарегистрироваться}</a>
                     </div>
+
+                    <!-- Yandex ID -->
+                    @yandexid@
+                    <!-- End Yandex ID -->
                 </form>
             </div>
         </div>

@@ -534,6 +534,10 @@
                         <button type="submit" class="btn btn-primary">{Войти}</button>
                         <a href="/users/register.html">{Зарегистрироваться}</a>
                     </div>
+
+                    <!-- Yandex ID -->
+                    @yandexid@
+                    <!-- End Yandex ID -->
                 </form>
             </div>
         </div>

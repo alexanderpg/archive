@@ -14,7 +14,7 @@ function actionStart() {
 
     $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam('base.branches.branches_branches'));
 
-    $select = $PHPShopOrm->select(['max(id) as end']);
+    $select = (int)$PHPShopOrm->select(['max(id) as end']);
 
     $Tab1 = $PHPShopGUI->setField('Название', $PHPShopGUI->setInputText(false, 'name_new', '', 300));
     $Tab1.= $PHPShopGUI->setField('Город', $PHPShopGUI->setSelect('city_id_new', $Branches->getCities(), 300, null, false, true, false, 1, false));

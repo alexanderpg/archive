@@ -136,13 +136,16 @@ class CDEKWidget {
         }
 
         if($cdek_data['type'] === 'courier') {
+            /*
             $address = PHPShopString::win_utf8($order['street']);
             if(!empty($order['house'])) {
                 $address .= ', ' . PHPShopString::win_utf8($order['house']);
             }
             if(!empty($order['flat'])) {
                 $address .= ', ' . PHPShopString::win_utf8($order['flat']);
-            }
+            }*/
+            $status = unserialize($order['status']);
+            $address = PHPShopString::win_utf8($status['maneger']);
         }
 
         if(empty($order['fio']))

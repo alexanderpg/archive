@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_idram_system` (
     `status` int(11) NOT NULL,
     `payment_description` text NOT NULL,
     `payment_status` text NOT NULL,
-    `version` varchar(64) DEFAULT '1.5' NOT NULL,
+    `version` varchar(64) DEFAULT '1.0' NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 

@@ -75,7 +75,8 @@ function addModOption($data) {
 }
 
 function setEditor($name, $value){
-    global $PHPShopSystem, $PHPShopBase;
+    global $PHPShopSystem, $PHPShopBase,$PHPShopGUI;
+    $PHPShopGUI->setEditor($PHPShopSystem->getSerilizeParam("admoption.editor"));
     $oFCKeditor2 = new Editor($name);
     $oFCKeditor2->Height = '450';
     $oFCKeditor2->Config['EditorAreaCSS'] = chr(47) . "phpshop" . chr(47) . "templates" . chr(47) . $PHPShopSystem->getValue('skin') . chr(47) . $PHPShopBase->getParam('css.default');

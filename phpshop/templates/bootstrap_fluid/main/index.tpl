@@ -292,9 +292,9 @@
                             <li><a href="?logout=true">{Выйти}</a></li>'; else echo '<li><a href="#" data-toggle="modal" data-target="#userModal">{Войти}</a></li>'; php@
                         </ul>
                     </div>
-                    
-                    
-                    
+
+
+
                     <!-- My Account Links Ends -->
                     <!-- Customer Service Links Starts -->
                     <div class="col-md-3 col-sm-4 col-xs-12">
@@ -375,7 +375,6 @@
                                 <a href="/users/sendpassword.html" class="pass">{Забыли пароль}</a>
                             </div>
 
-                            @facebookAuth@ @twitterAuth@
                         </div>
                         <div class="modal-footer flex-row">
 
@@ -383,6 +382,10 @@
                             <button type="submit" class="btn btn-primary">{Войти}</button>
                             <a href="/users/register.html" >{Зарегистрироваться}</a>
                         </div>
+
+                        <!-- Yandex ID -->
+                        @yandexid@
+                        <!-- End Yandex ID -->
                     </form>
                 </div>
             </div>

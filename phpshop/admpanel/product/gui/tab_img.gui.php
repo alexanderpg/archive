@@ -45,15 +45,15 @@ function tab_img($data) {
             if (!empty($v))
                 $parent_array_true[] = $v;
 
-    if (!empty($data['parent'])) {
+    if (!empty($data['parent']) and is_array($parent_array_true)) {
 
         $parent_style = null;
-
+        
         // Подтипы из 1С
         if ($PHPShopSystem->ifSerilizeParam('1c_option.update_option'))
-            $data_option = $PHPShopOrm->select(array('*'), array('uid' => ' IN ("' . @implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 100));
+            $data_option = $PHPShopOrm->select(array('*'), array('uid' => ' IN ("' . implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 300));
         else
-            $data_option = $PHPShopOrm->select(array('*'), array('id' => ' IN ("' . @implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 100));
+            $data_option = $PHPShopOrm->select(array('*'), array('id' => ' IN ("' . implode('","', $parent_array_true) . '")', 'parent_enabled' => "='1'"), array('order' => 'num,name DESC'), array('limit' => 300));
     } else
         $parent_style = 'hide';
 
@@ -95,7 +95,7 @@ function tab_img($data) {
                     $value_option[] = array($row_option['parent'] . ' ' . $row_option['parent2'], $row_option['id'], $check);
                 }
 
-            $select_option = $PHPShopGUI->setSelect("foto_parent_new[" . $row['id'] . "]", $value_option, 170, null, false, false, false, false, false, $row['name'], 'selectpicker pull-right img-parent ', false, 'btn btn-default btn-xs hidden-xs');
+            $select_option = $PHPShopGUI->setSelect("foto_parent_new[" . $row['id'] . "]", $value_option, 170, null, false, true, false, false, false, $row['name'], 'selectpicker pull-right img-parent ', false, 'btn btn-default btn-xs hidden-xs');
 
             if (empty($row['info']))
                 $row['info'] = str_replace(array('"', '\''), array('', ''), $data['name']);

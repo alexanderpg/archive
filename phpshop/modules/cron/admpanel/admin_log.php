@@ -15,7 +15,7 @@ function actionStart() {
     if(is_array($data))
         foreach($data as $row) {
 
-            $PHPShopInterface->setRow(PHPShopDate::dataV($row['date']),$row['name'],$row['path'],$row['status']);
+            $PHPShopInterface->setRow(PHPShopDate::dataV($row['date']), array('name' => $row['name'], 'link' => '?path=modules.dir.cron&id=' . $row['job_id'], 'align' => 'left'),$row['path'],$row['status']);
         }
 
     $PHPShopInterface->Compile();

@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 2.7
+ * @version 2.8
  */
 class CommerceMLLoader {
 
@@ -13,6 +13,7 @@ class CommerceMLLoader {
     var $result_path = 'sklad/';
     var $exchange_path = '';
     var $cleanup_import_directory = true;
+    var $cleanup_time = 3600;
 
     public function __construct() {
         global $PHPShopSystem;
@@ -35,6 +36,7 @@ class CommerceMLLoader {
         $this->exchange_price4 = $PHPShopSystem->getSerilizeParam("1c_option.exchange_price4");
         $this->exchange_price5 = $PHPShopSystem->getSerilizeParam("1c_option.exchange_price5");
         $this->exchange_sort_ignore = $PHPShopSystem->getSerilizeParam("1c_option.exchange_sort_ignore");
+        $this->exchange_clean = $PHPShopSystem->getSerilizeParam("1c_option.exchange_clean");
 
         // Параметры ресайзинга
         $this->img_tw = $PHPShopSystem->getSerilizeParam('admoption.img_tw');
@@ -213,6 +215,13 @@ class CommerceMLLoader {
                     $complete_file = fopen($upload_path . 'completed.lock', 'w');
                     fputs($complete_file, time());
                     fclose($complete_file);
+                    
+                    // Выключить товары, отсутствующие в файле импорта
+                    if($this->exchange_clean == 1){
+                         $time = time() - $this->cleanup_time; // -1 час
+                        (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->update(['enabled_new'=>0],['datas'=>'<'.$time]);
+                    }
+                    
                     $response = "success";
                     break;
 

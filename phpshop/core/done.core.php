@@ -8,7 +8,7 @@ $PHPShopOrder = new PHPShopOrderFunction();
 /**
  * Обработчик записи заказа
  * @author PHPShop Software
- * @version 1.6
+ * @version 1.7
  * @package PHPShopCore
  */
 class PHPShopDone extends PHPShopCore {
@@ -131,11 +131,11 @@ class PHPShopDone extends PHPShopCore {
         if (!empty($status)) {
 
             // Смена статуса
-            if (!empty($_SESSION['UsersId'])) {
+            if (!empty($this->userId)) {
                 
                 $_SESSION['UsersStatus'] = $status;
                 
-                (new PHPShopUser($_SESSION['UsersId']))->updateParam(['status_new' => (int) $status]);
+                (new PHPShopUser($this->userId))->updateParam(['status_new' => (int) $status]);
                 $_SESSION['UsersStatusPice'] = (new PHPShopUserStatus($_SESSION['UsersStatus']))->getPrice();
 
             }

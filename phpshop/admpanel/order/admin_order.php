@@ -195,10 +195,12 @@ function actionStart() {
     // Юридические лица
     $PHPShopCompany = new PHPShopCompanyArray();
     $PHPShopCompanyArray = $PHPShopCompany->getArray();
+
     if (is_array($PHPShopCompanyArray)) {
+        $company_value[] = array(__('Все юридические лица'), '', '');
         $company_value[] = array($PHPShopSystem->getSerilizeParam("bank.org_name"), 0, $_GET['where']['a.company']);
         foreach ($PHPShopCompanyArray as $company)
-            $company_value[] = array($company['name'], $company['id'], $data['company']);
+            $company_value[] = array($company['name'], $company['id'], $_GET['where']['a.company']);
     }
 
     // Витрины

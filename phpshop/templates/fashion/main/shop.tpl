@@ -288,8 +288,8 @@
                                     <!-- Catalog  Menu-->
                                     @topcatMenu@
                                     <!-- End Catalog  Menu-->
-                                    
-                                     @php
+
+                                    @php
                                     if(empty(PHPShopParser::get('hideSite'))){
                                     echo '<li class="hs-has-sub-menu navbar-nav-item">
                                         <a id="blogMegaMenu" class="hs-mega-menu-invoker nav-link nav-link-toggle " href="javascript:;" aria-haspopup="true" aria-expanded="false" aria-labelledby="blogSubMenu">{Навигация}</a>
@@ -588,6 +588,10 @@
                                "groupName": "idForm"
                                }'>{Войти по }Email</a>
                             <a class="btn btn-block btn-soft-primary mb-2 @sms_login_enabled@" href="/users/sms.html">{Войти по номеру телефона}</a>
+
+                            <!-- Yandex ID -->
+                            @yandexid@
+                            <!-- End Yandex ID -->
                         </div>
                         <!-- End Sign in -->
 
