@@ -44,6 +44,7 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('ShopID', $PHPShopGUI->setInputText(false, 'shop_id_new', $data['shop_id'], 300));
     $Tab1 .= $PHPShopGUI->setField('Секретный ключ', $PHPShopGUI->setInputText(false, 'api_key_new', $data['api_key'], 300));
     $Tab1 .= $PHPShopGUI->setField('Оплата при статусе', $PHPShopGUI->setSelect('status_new', YandexKassa::getOrderStatuses($data['status']) , 300));
+    $Tab1 .= $PHPShopGUI->setField('Второй чек при статусе', $PHPShopGUI->setSelect('receipt_status_new', YandexKassa::getOrderStatuses($data['receipt_status']) , 300));
     
     
     $payment_mode_value[] = array('Полная предоплата', 1, $data['payment_mode']);

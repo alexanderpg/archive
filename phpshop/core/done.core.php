@@ -8,7 +8,7 @@ $PHPShopOrder = new PHPShopOrderFunction();
 /**
  * Обработчик записи заказа
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopCore
  */
 class PHPShopDone extends PHPShopCore {
@@ -678,6 +678,10 @@ function mailcartforma($val, $option) {
     // Артикул
     if (!empty($val['parent_uid']))
         $val['uid'] = $val['parent_uid'];
+    
+    // Подтип
+    if (!empty($val['parent']))
+        $val['id'] = $val['parent'];
 
     if (empty($val['ed_izm']))
         $val['ed_izm'] = __('шт.');

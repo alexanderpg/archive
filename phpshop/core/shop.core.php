@@ -294,6 +294,9 @@ class PHPShopShop extends PHPShopShopCore {
 
         // Вес
         $this->set('productWeight', $row['weight']);
+        
+        // Большая картинка для schema.org
+        $this->set('productImg', $row['pic_big']);
 
         // Фотогалерея
         $this->image_gallery($row);

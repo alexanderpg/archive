@@ -274,6 +274,7 @@ class YandexDelivery {
             ],
             'info' => [
                 'operator_request_id' => $data->order_id . '_' . mt_rand(1000, 9999),
+                'referral_source' => 'module_cms_PHPShop',
             ],
             'items' => $order_lines,
             'last_mile_policy' => 'self_pickup',
@@ -298,6 +299,7 @@ class YandexDelivery {
                     'platform_id' => $this->STATION_ID,
                 ],
             ],
+            
         ];
 
         $result = $this->request('/api/b2b/platform/offers/create?send_unix=true', $params);

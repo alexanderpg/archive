@@ -301,7 +301,7 @@ class PHPShopPage extends PHPShopCore {
             $this->description = $this->PHPShopCategory->getValue('description');
 
         if ($this->PHPShopCategory->getValue('keywords') != "")
-            $this->description = $this->PHPShopCategory->getValue('keywords');
+            $this->keywords = $this->PHPShopCategory->getValue('keywords');
 
         $this->lastmodified = $lastmodified;
 

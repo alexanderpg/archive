@@ -1,10 +1,16 @@
 <?php
-
+/**
+ * Библиотека работы с ЮКасса API
+ * @author PHPShop Software
+ * @version 1.2
+ * @package PHPShopModules
+ * @todo https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/payments#process-settlement-receipt
+ */
 class YandexKassa {
 
     const YANDEX_KASSA_PAYMENT_ID = 10004;
 
-    private $apiUrl = 'https://api.yookassa.ru/v3/payments';
+    private $apiUrl = 'https://api.yookassa.ru/v3/';
 
     /** @var array */
     public $options;
@@ -18,8 +24,7 @@ class YandexKassa {
     /** @var int */
     private $taxDelivery;
 
-    public function __construct()
-    {
+    public function __construct() {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['yandexkassa']['yandexkassa_system']);
         $this->options = $PHPShopOrm->select();
 
@@ -27,37 +32,36 @@ class YandexKassa {
         $ndsEnabled = $this->PHPShopSystem->getParam('nds_enabled');
         $nds = $this->PHPShopSystem->getParam('nds');
         $this->tax = $this->setTax(empty($ndsEnabled) ? 2 : $nds);
-        
-        if($this->options['payment_mode'] == 1)
+
+        if ($this->options['payment_mode'] == 1)
             $this->payment_mode = 'full_prepayment';
-        else $this->payment_mode = 'full_payment';
+        else
+            $this->payment_mode = 'full_payment';
     }
 
-    
-    
     /**
      * Сборка массива товаров.
      * @param array $cart
      * @param int $discount
      * @return array
      */
-    public function prepareProducts($cart, $discount)
-    {
+    public function prepareProducts($cart, $discount) {
         $items = array();
         $total = 0;
         foreach ($cart as $product) {
-            if($discount > 0 && empty($product['promo_price']))
-                $price = $product['price']  - ($product['price']  * $discount  / 100);
+            if ($discount > 0 && empty($product['promo_price']))
+                $price = $product['price'] - ($product['price'] * $discount / 100);
             else
                 $price = $product['price'];
-            
+
             // НДС
             $PHPShopProduct = new PHPShopProduct($product['id']);
             $yandex_vat_code = $PHPShopProduct->getParam('yandex_vat_code');
-            if(!empty($yandex_vat_code))
+            if (!empty($yandex_vat_code))
                 $tax = $yandex_vat_code;
-            else $tax = $this->tax;
-                
+            else
+                $tax = $this->tax;
+
             $items[] = array(
                 'description' => PHPShopString::win_utf8($product['name']),
                 'quantity' => $product['num'],
@@ -81,16 +85,15 @@ class YandexKassa {
      * @param null|int $deliveryNds
      * @return array|null
      */
-    public function prepareDelivery($deliveryCost = 0, $deliveryNds = null)
-    {
-        if($deliveryCost == 0) {
+    public function prepareDelivery($deliveryCost = 0, $deliveryNds = null) {
+        if ($deliveryCost == 0) {
             return null;
         }
 
         $this->taxDelivery = $this->setTax($deliveryNds);
 
         return array(
-            'description' => PHPShopString::win_utf8('Доставка'),
+            'description' => PHPShopString::win_utf8('Доставка',true),
             'quantity' => 1,
             'amount' => array(
                 'value' => number_format($deliveryCost, 2, '.', ''),
@@ -102,10 +105,50 @@ class YandexKassa {
         );
     }
 
-    public function createPayment($items, $orderNumber, $email, $delivery = null)
-    {
+    /**
+     *  Второй чек
+     */
+    public function createReceipt($items, $payment_id, $order_id, $email, $delivery) {
         // Если есть доставка - добавляем в общий массив товаров
-        if(is_array($delivery)) {
+        if (is_array($delivery)) {
+            $items['items'][] = $delivery;
+            $items['total'] = number_format($delivery['amount']['value'] + $items['total'], 2, '.', '');
+        }
+
+        $parameters = array(
+            'customer' => array(
+                'email' => $email,
+            ),
+            'payment_id' => $payment_id,
+            'type' => 'payment',
+            'send' => true,
+            'items' => $items['items'],
+            'settlements' => array(
+                array(
+                    'type' => 'prepayment',
+                    'amount' => array(
+                        'value' => number_format($items['total'], 2, '.', ''),
+                        'currency' => 'RUB',
+                    )
+                )
+        ));
+
+
+        $payment = $this->request($parameters,'receipts');
+
+        isset($payment['type']) && $payment['type'] === 'error' ? $status = 'Ошибка регистрации чека' : $status = 'Чек успешно зарегистрирован';
+
+        $this->log(array('request' => $parameters, 'response' => $payment), $order_id, $status, 'Второй чек', $payment['id'], isset($payment['status']) ? $payment['status'] : null);
+
+        return $payment;
+    }
+
+    /**
+     *  Создание ссылки на оплату
+     */
+    public function createPayment($items, $orderNumber, $email, $delivery = null) {
+        // Если есть доставка - добавляем в общий массив товаров
+        if (is_array($delivery)) {
             $items['items'][] = $delivery;
             $items['total'] = number_format($delivery['amount']['value'] + $items['total'], 2, '.', '');
         }
@@ -121,7 +164,7 @@ class YandexKassa {
                 'value' => $items['total'],
                 'currency' => 'RUB'
             ),
-            'description' => PHPShopString::win_utf8($this->PHPShopSystem->getName() . ' оплата заказа ' . $orderNumber),
+            'description' => PHPShopString::win_utf8($this->PHPShopSystem->getName()) . ' - ' . $orderNumber,
             'receipt' => array(
                 'customer' => array(
                     'email' => $email
@@ -139,7 +182,7 @@ class YandexKassa {
             )
         );
 
-        $payment = $this->request($parameters);
+        $payment = $this->request($parameters,'payments');
 
         isset($payment['type']) && $payment['type'] === 'error' ? $status = 'Ошибка регистрации платежа' : $status = 'Платеж успешно зарегистрирован';
 
@@ -153,13 +196,12 @@ class YandexKassa {
      * @param string $statusCode
      * @throws Exception
      */
-    public function getLogDataByOrderId($orderId, $statusCode = 'pending')
-    {
+    public function getLogDataByOrderId($orderId, $statusCode = 'pending') {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['yandexkassa']['yandexkassa_log']);
 
         $log = $PHPShopOrm->getOne(array('*'), array('`order_id`=' => '"' . $orderId . '"', '`status_code`=' => '"' . $statusCode . '"'));
 
-        if(!$log) {
+        if (!$log) {
             $this->log(array('orderId' => $orderId, 'status_code' => $statusCode), $orderId, 'Ошибка поиска зарегистрированной оплаты', 'Поиск заказа в журнале модуля');
             throw new \Exception('Запись в журнале о заказе не найдена.');
         }
@@ -171,22 +213,19 @@ class YandexKassa {
      * @param $yandexId
      * @param string $statusCode
      */
-    public function findLogDataByYandexId($yandexId, $statusCode = 'pending')
-    {
+    public function findLogDataByYandexId($yandexId, $statusCode = 'pending') {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['yandexkassa']['yandexkassa_log']);
 
         return $PHPShopOrm->getOne(array('*'), array('`yandex_id`=' => '"' . $yandexId . '"', '`status_code`=' => '"' . $statusCode . '"'));
     }
 
-    public function isPaid()
-    {
-
+    public function isPaid() {
+        
     }
 
-    public function getOrderStatus($yandexOrderId)
-    {
+    public function getOrderStatus($yandexOrderId) {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->apiUrl . '/' . $yandexOrderId);
+        curl_setopt($ch, CURLOPT_URL, $this->apiUrl . 'payments/' . $yandexOrderId);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $this->options['shop_id'] . ':' . $this->options['api_key']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -200,15 +239,13 @@ class YandexKassa {
      * @param int $peymentId
      * @return bool
      */
-    public static function isYandexKassaPaymentMethod($peymentId)
-    {
+    public static function isYandexKassaPaymentMethod($peymentId) {
         return (int) $peymentId === self::YANDEX_KASSA_PAYMENT_ID;
     }
 
-    public function request($parameters = array())
-    {
+    public function request($parameters = array(),$path='payments') {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->apiUrl);
+        curl_setopt($ch, CURLOPT_URL, $this->apiUrl.$path);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Idempotence-Key: ' . uniqid('', true),
@@ -229,8 +266,7 @@ class YandexKassa {
      * @param int $currentStatus
      * @return array
      */
-    public static function getOrderStatuses($currentStatus)
-    {
+    public static function getOrderStatuses($currentStatus) {
         $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
         $OrderStatusArray = $PHPShopOrderStatusArray->getArray();
         $order_status_value[] = array(__('Новый заказ'), 0, $currentStatus);
@@ -241,8 +277,7 @@ class YandexKassa {
         return $order_status_value;
     }
 
-    public static function isHttps()
-    {
+    public static function isHttps() {
         return !empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS']);
     }
 
@@ -262,8 +297,8 @@ class YandexKassa {
         $log = array(
             'message_new' => serialize($message),
             'order_id_new' => $orderIdArray[0],
-            'status_new' => $status,
-            'type_new' => $type,
+            'status_new' => __($status),
+            'type_new' => __($type),
             'yandex_id_new' => $yandexId,
             'status_code_new' => $statusCode,
             'date_new' => time()
@@ -271,8 +306,7 @@ class YandexKassa {
         $PHPShopOrm->insert($log);
     }
 
-    private function setTax($tax = null)
-    {
+    private function setTax($tax = null) {
         if ($tax == "") {
             return 1;
         }
@@ -295,4 +329,5 @@ class YandexKassa {
 
         return $result;
     }
+
 }

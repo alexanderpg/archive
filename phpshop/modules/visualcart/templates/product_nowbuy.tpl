@@ -10,7 +10,7 @@
         {Кто-то купил}:
         <a href="/shop/UID_@product_nowBuy_id@.html"  class="media-heading" title="@product_nowBuy_name@"><h4>@product_nowBuy_name@</h4></a>
         @product_nowBuy_price@ <span class="rubznak">@productValutaName@</span>
-        <p class="nowBuy-sklad">{В наличии}: @product_nowBuy_items@ шт.</p>
+        <p class="nowBuy-sklad">{В наличии}: @product_nowBuy_items@ {шт}.</p>
     </div>
 
 </div>

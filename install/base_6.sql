@@ -696,7 +696,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_orders` (
   `status` text,
   `user` int(11) UNSIGNED DEFAULT '0',
   `seller` enum('0','1') DEFAULT '0',
-  `statusi` tinyint(11) DEFAULT '0',
+  `statusi` int(11) DEFAULT '0',
   `country` varchar(255) DEFAULT '',
   `state` varchar(255) DEFAULT '',
   `city` varchar(255) DEFAULT '',
@@ -1357,12 +1357,13 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexkassa_system` (
   `shop_id` varchar(64) NOT NULL default '',
   `api_key` varchar(255) NOT NULL default '',
   `payment_mode` ENUM('1','2') NOT NULL DEFAULT '1',
+  `receipt_status`int(11) NOT NULL,
   `version` varchar(64) DEFAULT '1.0' NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_yandexkassa_system` (`id`, `status`, `title`, `title_end`, `shop_id`, `api_key`, `version`) VALUES
-(1, 0, 'Оплатить сейчас', 'Оплатите пожалуйста свой заказ', '665601', 'test_IBkYJDzgL1-gaz04YTHNxQekxtaGz6z-7_40u0rRlYs', 1.7);
+INSERT INTO `phpshop_modules_yandexkassa_system` (`id`, `status`, `title`, `title_end`, `shop_id`, `api_key`,`payment_mode`, `version`) VALUES
+(1, 0, 'Оплатить сейчас', 'Оплатите пожалуйста свой заказ', '665601', 'test_IBkYJDzgL1-gaz04YTHNxQekxtaGz6z-7_40u0rRlYs', '1', 1.8);
 
 INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
 (10004, 'Мир, Visa, Mastercard, Юmoney (ЮKassa)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/yookassa.png');

@@ -151,6 +151,10 @@ if (is_array($orders))
         // Запись в базу
         $orderId = $PHPShopOrm->insert($insert);
 
+        // Подтверждение заказа
+        if (!empty($Avito->transition) and ! empty($orderId))
+            $Avito->updateStatusOrder($row['id'], 'confirm');
+
 
         // Оповещение пользователя о новом статусе и списание со склада
         PHPShopObj::loadClass("order");

@@ -38,7 +38,7 @@ function tab_base($data) {
             if (in_array($row['name'], $ready_theme)) {
                 $main = "hide";
                 $panel = 'panel-default';
-                $mes = '  <span class="pull-right text-muted">' . __('загружен') . ' ' . $ready_version[$row['name']] . '</span>';
+                $mes = '  <span class="pull-right text-muted">' . __('текущая версия') . ' ' . $ready_version[$row['name']] . '</span>';
                 $demo = null;
                 $reload = 'skin-reload';
 

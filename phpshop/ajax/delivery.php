@@ -64,6 +64,7 @@ $hook = $PHPShopModules->setHookHandler('delivery', 'delivery', false, array($_R
 if (is_array($hook))
     $_RESULT = $hook;
 
+//print_r($_RESULT);
 
 $_RESULT['dellist'] = PHPShopString::win_utf8($_RESULT['dellist']);
 $_RESULT['adresList'] = PHPShopString::win_utf8($_RESULT['adresList']);

@@ -49,12 +49,12 @@ function OzonsellerUpdate() {
     // Отключение Ozon
     if (!isset($_POST['export_ozon_new']) and ! empty($_POST['name_new'])) {
         $_POST['export_ozon_new'] = 0;
-        //$_POST['export_ozon_task_id_new'] = 0;
-        //$_POST['export_ozon_task_status_new'] = '';
+        $_POST['export_ozon_task_id_new'] = 0;
+        $_POST['export_ozon_task_status_new'] = '';
     }
-    
+
     //if (isset($_POST['enabled_new']) and empty($_POST['enabled_new']))
-       // $_POST['export_ozon_new'] = 0;
+    // $_POST['export_ozon_new'] = 0;
 }
 
 function OzonsellerSave() {
@@ -131,7 +131,10 @@ function OzonsellerSave() {
 
             // SKU для ссылки на товар OZON
             if (empty($data['sku_ozon'])) {
-                $data['sku_ozon']= $OzonSeller->getProduct($data['export_ozon_id'])['items'][0]['sources'][0]['sku'];
+                $data['sku_ozon'] = $OzonSeller->getProduct($data['export_ozon_id'])['items'][0]['sources'][0]['sku'];
+
+                if (!empty($data['sku_ozon']))
+                     $PHPShopOrm->update(['sku_ozon_new' => $data['sku_ozon']], ['id' => '=' . $data['id']]);
             }
 
             // Штрихкод
@@ -143,7 +146,7 @@ function OzonsellerSave() {
                 foreach ($OzonSeller->warehouse as $warehouse) {
                     $result = $OzonSeller->setProductStock([$data], $warehouse['id'])['result']['items'][0]['product_id'];
                     //if (!empty($result))
-                        //$product_id = $result;
+                    //$product_id = $result;
                 }
 
             // Цены

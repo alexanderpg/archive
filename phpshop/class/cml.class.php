@@ -2,7 +2,7 @@
 
 /**
  * Библиотека работы с CommerceML
- * @version 1.8
+ * @version 1.9
  * @package PHPShopClass
  * https://v8.1c.ru/tekhnologii/obmen-dannymi-i-integratsiya/standarty-i-formaty/protokol-obmena-s-saytom/
  * https://dev.1c-bitrix.ru/api_help/sale/xml/contragents.php
@@ -200,7 +200,7 @@ class PHPShopCommerceML {
         if (is_array($data))
             foreach ($data as $row)
                 if (is_array($row)) {
-                    
+
                     $PHPShopOrder = new PHPShopOrderFunction($row['id']);
                     $this->update_status[] = $row['id'];
 
@@ -211,13 +211,13 @@ class PHPShopCommerceML {
                     if (!empty($row['user']))
                         $user = $row['user'];
                     elseif (!empty($row['ozonseller_order_data']))
-                        $user= 'Ozon';
+                        $user = 'Ozon';
                     elseif (!empty($row['wbseller_order_data']))
                         $user = 'WB';
                     elseif (!empty($row['yandex_order_id']))
                         $user = 'Яндекс.Маркет';
                     elseif (!empty($row['megamarket_order_id']))
-                        $user= 'МегаМаркет';
+                        $user = 'МегаМаркет';
 
                     $order = unserialize($row['orders']);
                     $status = unserialize($row['status']);
@@ -296,6 +296,14 @@ class PHPShopCommerceML {
 
                     if (empty($row['fio']))
                         $row['fio'] = $row['org_name'];
+
+                    if (empty($row['fio']) and ! empty($order['Person']['name_person']))
+                        $row['fio'] = $order['Person']['name_person'];
+                    elseif (empty($data['fio']) and !empty($row['user'])){
+                        PHPShopObj::loadClass('user');
+                        $PHPShopUser = new PHPShopUser($row['user']);
+                        $row['fio'] = $PHPShopUser->getParam('name');
+                    }
 
                     // Адрес доставки
                     $adr_info = null;

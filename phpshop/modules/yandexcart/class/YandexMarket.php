@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с Яндекс.Маркет API
  * @author PHPShop Software
- * @version 1.8
+ * @version 2.0
  * @package PHPShopClass
  * @subpackage RestApi
  * @todo https://yandex.ru/dev/market/partner-marketplace-cd/doc/dg/reference/post-campaigns-id-offer-mapping-entries-updates.html
@@ -832,7 +832,12 @@ class YandexMarket {
                 $fee = $this->system->getValue('percent');
 
             $markup = $options['price_markup'];
+
+            // Отдельная колонка цен
+            if ($options['price_' . $campaign_num] > 1)
+                $price_yandex = $product['price' . $options['price_' . $campaign_num]];
         } else {
+
             $price_yandex = $product['price_yandex_' . $campaign_num];
 
             // Наценка %
@@ -842,26 +847,32 @@ class YandexMarket {
                 $fee = $this->system->getValue('percent');
 
             $markup = $options['price_markup_' . $campaign_num];
+
+            // Отдельная колонка цен
+            if ($options['price_' . $campaign_num] > 1)
+                $price_yandex = $product['price' . $options['price_' . $campaign_num]];
         }
 
 
         if (!empty($price_yandex)) {
 
             $price = $price_yandex;
-            $currency = $product['baseinputvaluta'];
-
-            // Если валюта отличается от базовой
-            if ($currency !== $defaultCurrency) {
-                $vkurs = $PHPShopValutaArr[$currency]['kurs'];
-
-                // Если курс нулевой или валюта удалена
-                if (empty($vkurs))
-                    $vkurs = 1;
-
-                // Приводим цену в базовую валюту
-                $price = $price / $vkurs;
-            }
         }
+
+        $currency = $product['baseinputvaluta'];
+
+        // Если валюта отличается от базовой
+        if ($currency !== $defaultCurrency) {
+            $vkurs = $PHPShopValutaArr[$currency]['kurs'];
+
+            // Если курс нулевой или валюта удалена
+            if (empty($vkurs))
+                $vkurs = 1;
+
+            // Приводим цену в базовую валюту
+            $price = $price / $vkurs;
+        }
+
 
         // Наценка руб.
         $price = $price + (int) $markup;
@@ -960,14 +971,12 @@ class YandexMarket {
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
                 'Content-Type: application/json',
-      
             ]);
         // API-Key
         else
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 sprintf('Api-Key: %s', $this->options['auth_token_2']),
                 'Content-Type: application/json',
-
             ]);
 
         curl_setopt($ch, CURLOPT_POST, true);

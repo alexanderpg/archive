@@ -62,9 +62,13 @@ function tab_cart($data, $option = false) {
                     else
                         $code = __('Код') . ': ' . $val['id'];
 
+                    // Внешний код
+                    //$PHPShopProduct = new PHPShopProduct($val['id']);
+                    //$code .= '<br>' . __('Внешний код') . ': ' . $PHPShopProduct->getParam('external_code');
+
                     // Промокод
                     if (!empty($val['promo_code']))
-                        $code .= '<br><span class="text-info">'.__('Купон') . ': ' . $val['promo_code'] . '</span>';
+                        $code .= '<br><span class="text-info">' . __('Купон') . ': ' . $val['promo_code'] . '</span>';
 
                     // Скидка не применилась
                     if (!empty($val['promotion_discount']))
@@ -91,9 +95,9 @@ function tab_cart($data, $option = false) {
   </div>
 </div>';
                     // Цена
-                    $price = $PHPShopOrder->ReturnSumma($val['price']).$currency;
-                    if (!empty((int)$val['price_n'])){
-                        $price .= '<br><s class="text-muted">' . $PHPShopOrder->ReturnSumma($val['price_n']) . '</s>'.$currency;
+                    $price = $PHPShopOrder->ReturnSumma($val['price']) . $currency;
+                    if (!empty((int) $val['price_n'])) {
+                        $price .= '<br><s class="text-muted">' . $PHPShopOrder->ReturnSumma($val['price_n']) . '</s>' . $currency;
                         $promo++;
                     }
 
@@ -104,7 +108,7 @@ function tab_cart($data, $option = false) {
                     $sum += $val['price'] * $val['num'];
                 }
             }
-            
+
     $total = '<table class="pull-right totals">
       <tbody>
       <tr>
@@ -132,9 +136,9 @@ function tab_cart($data, $option = false) {
       ' . $CART['weight'] . ' ' . __('гр.') . '
       </td>
       </tr>';
-    
+
     // Очистка скидки если все товары промо
-    if($n == $promo)
+    if ($n == $promo)
         $PERSON['discount'] = 0;
 
     $total .= '<tr>
@@ -143,15 +147,15 @@ function tab_cart($data, $option = false) {
       ' . (int) $PERSON['discount'] . ' %
       </td>
       </tr>';
-    
-    if(!empty($data['bonus_minus']))
+
+    if (!empty($data['bonus_minus']))
         $total .= '<tr>
       <td>' . __('Списано бонусов') . ':</td>
       <td class="text-right">
-      ' . (int) $data['bonus_minus']. $currency . '
+      ' . (int) $data['bonus_minus'] . $currency . '
       </td>
       </tr>';
-    
+
     $total .= '<tr>
       <td><h5>' . __('Итого') . ':</h5></td>
       <td class="text-right">

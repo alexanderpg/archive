@@ -3,26 +3,25 @@
 /**
  * Библиотека работы с Wildberries Seller API
  * @author PHPShop Software
- * @version 2.0
+ * @version 2.1
  * @package PHPShopModules
  * @todo https://openapi.wb.ru/
  */
 class WbSeller {
 
-    const API_URL = 'https://suppliers-api.wildberries.ru';
-    const GET_PRODUCT_LIST = '/content/v2/get/cards/list';
+    const GET_PRODUCT_LIST = 'https://content-api.wildberries.ru/content/v2/get/cards/list';
     const GET_PRODUCT_PRICE = 'https://discounts-prices-api.wb.ru/api/v2/list/goods/filter';
-    const GET_PARENT_TREE = '/content/v1/object/parent/all';
-    const GET_TREE = '/content/v2/object/all';
-    const GET_TREE_ATTRIBUTE = '/content/v2/object/charcs/';
-    const IMPORT_PRODUCT = '/content/v2/cards/upload';
-    const IMPORT_MEDIA = '/content/v3/media/save';
-    const GET_WAREHOUSE_LIST = '/api/v3/warehouses';
-    const UPDATE_PRODUCT_STOCKS = '/api/v3/stocks/';
+    const GET_PARENT_TREE = 'https://content-api.wildberries.ru/content/v1/object/parent/all';
+    const GET_TREE = 'https://content-api.wildberries.ru/content/v2/object/all';
+    const GET_TREE_ATTRIBUTE = 'https://content-api.wildberries.ru/content/v2/object/charcs/';
+    const IMPORT_PRODUCT = 'https://content-api.wildberries.ru/content/v2/cards/upload';
+    const IMPORT_MEDIA = 'https://content-api.wildberries.ru/content/v3/media/save';
+    const GET_WAREHOUSE_LIST = 'https://marketplace-api.wildberries.ru/api/v3/warehouses';
+    const UPDATE_PRODUCT_STOCKS = 'https://marketplace-api.wildberries.ru/api/v3/stocks/';
     const UPDATE_PRODUCT_PRICES = 'https://discounts-prices-api.wb.ru/api/v2/upload/task';
     const UPDATE_PRODUCT_PRICES_SIZE = 'https://discounts-prices-api.wb.ru/api/v2/upload/task/size';
-    const GET_ORDER_LIST = '/api/v3/orders';
-    const GET_ORDER_NEW = '/api/v3/orders/new';
+    const GET_ORDER_LIST = 'https://marketplace-api.wildberries.ru/api/v3/orders';
+    const GET_ORDER_NEW = 'https://marketplace-api.wildberries.ru/api/v3/orders/new';
 
     public $api_key;
 
@@ -722,18 +721,13 @@ class WbSeller {
         if(empty($this->api_key))
             return false;
 
-        if (strstr($method, 'https'))
-            $api = null;
-        else
-            $api = self::API_URL;
-
         $ch = curl_init();
         $header = [
             'Authorization: ' . $this->api_key,
             'Content-Type: application/json'
         ];
 
-        curl_setopt($ch, CURLOPT_URL, $api . $method);
+        curl_setopt($ch, CURLOPT_URL, $method);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);

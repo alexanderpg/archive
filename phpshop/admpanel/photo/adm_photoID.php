@@ -91,7 +91,7 @@ function actionStart() {
 
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setField("Размещение", $tree_select) .
-            $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['name'], "name_new", false, array('load' => false, 'server' => true, 'url' => false)), 1, 'Загрузите сюда фото. Превью фото будет создано автоматически.') .
+            $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['name'], "name_new", false, array('load' => false, 'server' => false, 'url' => false)), 1, 'Загрузите сюда фото. Превью фото будет создано автоматически.') .
             $PHPShopGUI->setField("Описание", $PHPShopGUI->setTextarea("info_new", $data['info'],true,300)) .
             $PHPShopGUI->setField("Сортировка", $PHPShopGUI->setInputText("№", "num_new", $data['num'], 150));
 

@@ -3,7 +3,7 @@
 /**
  * Обработчик сравнения
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopTest
  */
 class PHPShopCompare extends PHPShopCore {
@@ -40,7 +40,7 @@ class PHPShopCompare extends PHPShopCore {
      * Экшен по умолчанию
      */
     function index() {
-        global $SysValue, $PHPShopSystem, $PHPShopValutaArray, $link_db;
+        global $SysValue, $PHPShopSystem, $PHPShopValutaArray, $link_db, $PHPShopPromotions;
 
         $limit = 40; //Максимум товаров для сравнения
 
@@ -102,21 +102,21 @@ class PHPShopCompare extends PHPShopCore {
                         $as = '<b>';
                         $ae = '</b>';
                     }
-                    $dis.='
+                    $dis .= '
 
 		<tr><td colspan="2">' . $as . $name . $ae . '</td></tr>';
                     $green[] = $catid; //Добавить каталог в разрешенные
                 } elseif (count($goods[$catid]) > $limit) {
-                    $dis.='
+                    $dis .= '
 		<tr><td><br><b>' . $name . '</b> <p class="text-danger">' . __('Cлишком много товаров в сравнение, максимум <b>' . $limit . '</b>. Удалите лишние') . '.</p></td>
 		<td width="50"></td></tr>';
                 } else {
-                    $dis.='
+                    $dis .= '
   <tr><td id=allspec colspan="2"><b>' . $name . '</b> </td>
   </tr>';
                 }
                 foreach ($goods[$catid] as $id => $val) {
-                    $dis.='<tr><td>' . $val['name'] . ' </td><td width="50" class="text-center"><a href="/compare/DID_' . $val['id'] . '.html" class="btn btn-danger btn-xs" title="{Удалить}"><span>X</span></a></td></tr>';
+                    $dis .= '<tr><td>' . $val['name'] . ' </td><td width="50" class="text-center"><a href="/compare/DID_' . $val['id'] . '.html" class="btn btn-danger btn-xs" title="{Удалить}"><span>X</span></a></td></tr>';
                 }
             }
 
@@ -131,16 +131,16 @@ class PHPShopCompare extends PHPShopCore {
                     $as = '<b>' . __('Сравнивается') . ': ';
                     $ae = '</b>';
                 }
-                $dis.='
+                $dis .= '
 		<tr><td colspan="2" id=allspec>' . $as . $name . $ae . '</td>
 		<!--<td>&nbsp;</td>--></tr>';
                 $green[] = "ALL"; //Добавить каталог в разрешенные
             } elseif (count($compare) > $limit) {
-                $dis.='
+                $dis .= '
 		<tr><td colspan="2"><b>' . $name . '</b> <p class="text-danger">' . __('Cлишком много товаров в сравнение, максимум <b>' . $limit . '</b>. Удалите лишние') . '.</p></td>
 		</tr>';
             } else {
-                $dis.='
+                $dis .= '
 		<tr><td colspan="2"><b>' . $name . '</b> <p class="text-danger">' . __('Недостаточно товаров для сравнения. Добавьте еще товары из этой категории') . '</p></td>
 		</tr>';
             }
@@ -158,7 +158,7 @@ class PHPShopCompare extends PHPShopCore {
                     break;
                 }
             } else {
-                $disp.='<p class="text-danger">' . __('Выберите товары для сравнения') . '.</p>';
+                $disp .= '<p class="text-danger">' . __('Выберите товары для сравнения') . '.</p>';
             }
         }
 
@@ -187,7 +187,7 @@ class PHPShopCompare extends PHPShopCore {
                     $comparing = $this->getfullname($COMCID);
                 }
 
-                $disp.='<a name="list"></a><P><h4>' . $comparing . '</h4></P>';
+                $disp .= '<a name="list"></a><P><h4>' . $comparing . '</h4></P>';
 
                 if ($COMCID != "ALL") {
                     $sql = 'select sort from ' . $SysValue['base']['table_name'] . ' where id=' . intval($COMCID);
@@ -262,8 +262,8 @@ class PHPShopCompare extends PHPShopCore {
                     $igood++;
                     $tdR[$igood][] = '<A class="prod-title" href="/shop/UID_' . $val['id'] . '.html" title="' . $val['name'] . '">' . $val['name'] . '</A>';
 
-                    //Выбираем товар из базы
-                    $sql = 'select id,price,pic_small,vendor_array,content,baseinputvaluta from ' . $SysValue['base']['products'] . ' where id=' . intval($val['id']);
+                    // Выбираем товар из базы
+                    $sql = 'select id,price,pic_small,vendor_array,content,baseinputvaluta,category from ' . $SysValue['base']['products'] . ' where id=' . intval($val['id']);
                     $result = mysqli_query($link_db, $sql);
                     @$row = mysqli_fetch_array(@$result);
                     if (trim($row['pic_small'])) {
@@ -277,15 +277,24 @@ class PHPShopCompare extends PHPShopCore {
                     $admoption = unserialize($LoadItems['System']['admoption']);
 
                     // Если цены показывать только после аторизации
-                    if ($admoption['user_price_activate'] == 1 and !$_SESSION['UsersId']) {
+                    if ($admoption['user_price_activate'] == 1 and ! $_SESSION['UsersId']) {
                         $price = "-";
-                    }
-                    else
-                        $price = PHPShopProductFunction::GetPriceValuta($row['id'], array($row['price'], $row['price2'], $row['price3'], $row['price4'], $row['price5']), $row['baseinputvaluta']);
+                    } else {
 
-                    if($PHPShopSystem->getParam("shop_type") == 0){
-                        
-                    $tdR[$igood][] = '<div class="prod-price"><span class="new-price">' . number_format($price,$this->format, '.', ' ') . ' '.$this->PHPShopSystem->getValutaIcon().'</span></div>';
+                        // Промоакции
+                        $promotions = $PHPShopPromotions->getPrice($row);
+                        if (is_array($promotions)) {
+                            $priceColumn = $this->PHPShopSystem->getPriceColumn();
+                            $row[$priceColumn] = $promotions['price'];
+                            $row['price_n'] = $promotions['price_n'];
+                        }
+
+                        $price = PHPShopProductFunction::GetPriceValuta($row['id'], array($row['price'], $row['price2'], $row['price3'], $row['price4'], $row['price5']), $row['baseinputvaluta']);
+                    }
+
+                    if ($PHPShopSystem->getParam("shop_type") == 0) {
+
+                        $tdR[$igood][] = '<div class="prod-price"><span class="new-price">' . number_format($price, $this->format, '.', ' ') . ' ' . $this->PHPShopSystem->getValutaIcon() . '</span></div>';
                     }
                     $chars = unserialize($row['vendor_array']);
                     foreach ($chars as $k => $char) {
@@ -302,7 +311,7 @@ class PHPShopCompare extends PHPShopCore {
                                         $sql2 = 'select name from ' . $SysValue['base']['sort'] . ' where id=' . intval($charid);
                                         $result2 = mysqli_query($link_db, $sql2);
                                         @$row2 = mysqli_fetch_array(@$result2);
-                                        $curchar.=' ' . $row2['name'] . '<br>';
+                                        $curchar .= ' ' . $row2['name'] . '<br>';
                                     }
                             }
                             $tdR[$igood][] = '<div class="prod-sort"><b>' . $name . '</b><br> ' . $curchar . '</div>';
@@ -313,7 +322,7 @@ class PHPShopCompare extends PHPShopCore {
                 // Cтроим таблицу по матрице
                 $rows = count($tdR[0]);
                 $cols = count($goodstowork) + 1;
-                $disp.='<div class="swiper-slider-wrapper compare-wrapper">                            
+                $disp .= '<div class="swiper-slider-wrapper compare-wrapper">                            
                     <div class="swiper-button-prev-block">
                                 <div class="swiper-button-prev btn-prev10">
                                     <i class="fa fa-angle-left" aria-hidden="true"></i>
@@ -326,18 +335,18 @@ class PHPShopCompare extends PHPShopCore {
                             </div><div class="swiper-container compare-slider"><div class="swiper-wrapper">';
 
                 for ($col = 0; $col < $cols; $col++) {
-                    $disp.='<div>';
+                    $disp .= '<div>';
                     for ($row = 0; $row < $rows; $row++) {
                         $value = trim($tdR[$col][$row]);
                         if (!$value) {
                             $value = '&nbsp;';
                         }
 
-                        $disp.='<div>' . $value . '</div>';
+                        $disp .= '<div>' . $value . '</div>';
                     }
-                    $disp.='</div>';
+                    $disp .= '</div>';
                 }
-                $disp.='</div></div></div>';
+                $disp .= '</div></div></div>';
             }
 
         //Если нет товаров, показать пусто. ДОЛЖНО БЫТЬ ПОСЛЕДНЕЙ СТРОКОЙ

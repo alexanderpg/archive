@@ -396,7 +396,7 @@ class PHPShopProductElements extends PHPShopElements {
         else {
             $productPrice = $price;
             $productPriceNew = $this->price($row, true, false);
- 
+
             $this->set('productPrice', $productPrice);
             $this->set('productPriceOld', PHPShopText::strike($productPriceNew . " " . $this->currency, $this->format));
 
@@ -794,9 +794,11 @@ public function getPreviewSorts($products, $currentProduct) {
                     $titles[(int) $value] = $this->previewSorts[(int) $value];
                 }
             }
-            $this->set('previewSortTitle', $sortCategory['name']);
-            $this->set('previewSortValue', implode(', ', $titles));
-            $html .= ParseTemplateReturn("product/preview_sort_one.tpl");
+            if (!empty($titles)) {
+                $this->set('previewSortTitle', $sortCategory['name']);
+                $this->set('previewSortValue', implode(', ', $titles));
+                $html .= ParseTemplateReturn("product/preview_sort_one.tpl");
+            }
         }
     }
 

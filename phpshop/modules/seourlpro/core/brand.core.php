@@ -342,9 +342,9 @@ class PHPShopBrand extends PHPShopShopCore {
                 break;
             case(2): $order = array('order' => 'price' . $order_direction);
                 break;
-            case(3): $order = array('order' => 'num' . $order_direction);
+            case(3): $order = array('order' => 'num, items' . $order_direction);
                 break;
-            default: $order = array('order' => 'num' . $order_direction . ', name' . $order_direction);
+            default: $order = array('order' => 'num, items' . $order_direction);
         }
 
         // Преобзазуем массив уловия сортировки в строку

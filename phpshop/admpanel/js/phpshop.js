@@ -613,6 +613,11 @@ $().ready(function () {
     if ($('#dialog-check').html() > 0) {
         $('#dialog-check').parent('.navbar-btn').removeClass('hide');
     }
+    
+    // Новые лиды
+    if ($('#notes-check').html() > 0) {
+        $('#notes-check').parent('.navbar-btn').removeClass('hide');
+    }
 
 
     // Уроки

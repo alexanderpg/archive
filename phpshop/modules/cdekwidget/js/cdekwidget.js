@@ -1,11 +1,11 @@
 function cdekwidgetWidget() {
     var path = '../phpshop/';
-    if(Number(PHPShopCDEKOptions.admin) === 1) {
+    if (Number(PHPShopCDEKOptions.admin) === 1) {
         path = '../';
     }
 
     var country = 'all';
-    if(Number(PHPShopCDEKOptions.russiaOnly) === 1) {
+    if (Number(PHPShopCDEKOptions.russiaOnly) === 1) {
         country = locale.cdek.country;
     }
 
@@ -33,52 +33,54 @@ function cdekwidgetonChooseAddress(result) {
 
     $('input[name="cdek_type"]').val('courier');
     $('input[name="cdekInfo"]').val(info);
-    $('#deliveryInfo').html(locale.cdek.express_delivery +': ' + result.address);
+    $('#deliveryInfo').html(locale.cdek.express_delivery + ': ' + result.address);
 
     cdekwidgetOnChoose(result);
 }
 
 // Доставка до ПВЗ. Корзина
 function cdekWidgetOnChoosePvz(result) {
-    var info = locale.cdek.pickup_code +': ' + result.id + ', '+locale.cdek.city +' '+ result.cityName + ', '+locale.cdek.pickup_address+' ' + result.PVZ.Address + ', '+locale.cdek.pickup_phone+' ' + result.PVZ.Phone;
+    var info = locale.cdek.pickup_code + ': ' + result.id + ', ' + locale.cdek.city + ' ' + result.cityName + ', ' + locale.cdek.pickup_address + ' ' + result.PVZ.Address + ', ' + locale.cdek.pickup_phone + ' ' + result.PVZ.Phone;
+    
+    cdekwidgetOnChoose(result);
 
     $('input[name="cdekInfo"]').val(info);
     $('input[name="cdek_pvz_id"]').val(result.id);
     $('input[name="cdek_type"]').val('pvz');
-    $('#deliveryInfo').html(locale.cdek.pickup+': ' + result.PVZ.Address);
+    $('#deliveryInfo').html(locale.cdek.pickup + ': ' + result.PVZ.Address);
 
-    cdekwidgetOnChoose(result);
 }
 
 // Курьерская доставка выбор города. Корзина
 function cdekwidgetOnChooseProfile(result) {
-    var info = locale.cdek.express_delivery+': ' +locale.cdek.city+ ' '+result.cityName;
+    var info = locale.cdek.express_delivery + ': ' + locale.cdek.city + ' ' + result.cityName;
+    
+    cdekwidgetOnChoose(result);
 
     $('input[name="cdek_type"]').val('courier');
     $('input[name="cdekInfo"]').val(info);
     $('#deliveryInfo').html(info);
 
-    cdekwidgetOnChoose(result);
 }
 
 // Общие данные для обоих доставок. Корзина
 function cdekwidgetOnChoose(result) {
     $("#cdekwidgetModal").modal("hide");
 
-    if(Number(PHPShopCDEKOptions.admin) === 1) {
+    if (Number(PHPShopCDEKOptions.admin) === 1) {
         cdekAdminWidgetOnChoose(result);
     } else {
         $("#makeyourchoise").val('DONE');
         $('input[name="city_new"]').val(result.cityName);
         $('#cdekSum').val(Number(result.price));
         $("#DosSumma").html(Number(result.price));
-        
+
         // Учет промокода
-        if($("#promocode").parent('.form-group, .input-group').hasClass("has-success"))
+        if ($("#promocode").parent('.form-group, .input-group').hasClass("has-success"))
             $("#TotalSumma").html(Number(result.price) + Number($('#OrderSumma').val()));
-        else 
+        else
             $("#TotalSumma").html(Number(result.price) + Number($('#OrderSumma').val()) - Number($('#SkiSumma').attr('data-discount')));
-        
+
         //console.log(result);
         //console.log(Number(result.price) +'-'+Number($('#OrderSumma').val())+'+'+Number($('#SkiSumma').attr('data-discount')));
     }
@@ -105,7 +107,7 @@ function cdekwidgetStart() {
     $("#makeyourchoise").val(null);
 
     var isIE = /*@cc_on!@*/false || !!document.documentMode;
-    if(isIE) {
+    if (isIE) {
         $('#forpvz').html('<div class="alert alert-danger" role="alert">Пожалуйста, оформите заказ с помощью другого браузера. Выбор пункта выдачи заказов СДЭК может работать некорректно в браузере Internet Explorer.</div>');
     } else {
         cdekwidgetWidget();

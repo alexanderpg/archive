@@ -9,7 +9,7 @@ PHPShopObj::loadClass('delivery');
 /**
  * Обработчик кабинета пользователя
  * @author PHPShop Software
- * @version 2.3
+ * @version 2.4
  * @package PHPShopCore
  */
 class PHPShopUsers extends PHPShopCore {
@@ -728,7 +728,7 @@ class PHPShopUsers extends PHPShopCore {
      * вывод товаров вишлиста
      */
     function action_wishlist() {
-        global $PHPShopSystem;
+        global $PHPShopSystem,$PHPShopPromotions;
 
         // Перехват модуля
         if ($this->setHook(__CLASS__, __FUNCTION__, false, 'START'))
@@ -796,6 +796,14 @@ class PHPShopUsers extends PHPShopCore {
                     } else {
                         $this->set('prodUid', $key);
                         $this->set('wishlistCartHide', null);
+                    }
+
+                    // Промоакции
+                    $promotions = $PHPShopPromotions->getPrice($objProduct->objRow);
+                    if (is_array($promotions)) {
+                        $priceColumn = $this->PHPShopSystem->getPriceColumn();
+                        $objProduct->objRow[$priceColumn] = $promotions['price'];
+                        $objProduct->objRow['price_n'] = $promotions['price_n'];
                     }
 
                     // цена

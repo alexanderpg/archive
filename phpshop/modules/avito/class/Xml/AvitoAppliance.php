@@ -35,11 +35,30 @@ class AvitoAppliance extends BaseAvitoXml implements AvitoPriceInterface {
             $xml .= sprintf('<Longitude>%s</Longitude>', PHPShopString::win_utf8(Avito::getOption('longitude')));
         } else
             $xml .= sprintf('<Address>%s</Address>', PHPShopString::win_utf8(static::getAddress()));
+        
+        if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS']))
+            $ssl = 'https://';
+        else
+            $ssl = 'http://';
+        
+        // Карта проезда
+        $map_url = Avito::getOption('map_url');
+
+        if(!empty($map_url)){
+            if(strstr($map_url,','))
+                $map_img = explode(',',$map_url);
+            
+            else $map_img[]=$map_url;
+            
+            if(is_array($map_img))
+                foreach($map_img as $map)
+                    $product['images'][]=['name'=>trim($map)];           
+        }
 
         if (count($product['images']) > 0) {
             $xml .= '<Images>';
             foreach ($product['images'] as $image) {
-                $xml .= sprintf('<Image url="%s"/>', $image['name']);
+                $xml .= sprintf('<Image url="%s"/>', $ssl.$image['name']);
             }
             $xml .= '</Images>';
         }

@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.4
+ * @version 3.5
  */
 class CommerceMLLoader {
 
@@ -18,7 +18,7 @@ class CommerceMLLoader {
 
     public function __construct() {
         global $PHPShopSystem;
-        
+
         // Параметры обмена
         $this->exchange_zip = $PHPShopSystem->getSerilizeParam("1c_option.exchange_zip");
         $this->exchange_key = $PHPShopSystem->getSerilizeParam("1c_option.exchange_key");
@@ -694,6 +694,13 @@ class CommerceMLLoader {
             // offers.xml
             else if (isset($xml->ПакетПредложений->Предложения) or $_GET['filename'] = 'offers.xml') {
 
+                // Только изменения
+                /*
+                  if (isset($xml->ИзмененияПакетаПредложений)) {
+                  unset($xml);
+                  $xml = simplexml_load_string(str_replace(['ИзмененияПакетаПредложений'], ['ПакетПредложений'], file_get_contents('./goods/' . $_GET['filename'])));
+                  } */
+
                 // Блокировка обновления товаров
                 if (!empty($this->exchange_product_ignore)) {
                     if (strstr($this->exchange_product_ignore, ','))
@@ -721,8 +728,9 @@ class CommerceMLLoader {
                         if (is_array($warehouses)) {
                             $warehouse = null;
 
-                            foreach ($warehouses as $k => $v)
+                            foreach ($warehouses as $k => $v) {
                                 $warehouse .= $v . '/' . $k . '#';
+                            }
 
                             $warehouse = substr($warehouse, 0, strlen($warehouse) - 1);
                         }
@@ -748,14 +756,71 @@ class CommerceMLLoader {
                         // Список подтипов у главного товара
                         $parent_array[$p[0]]['ids'] .= $p[1] . ',';
 
-                        // Цена и склад главного товара
-                        if (empty($parent_array[$p[0]]['price'])) {
-                            $parent_array[$p[0]]['price'] = (string) $item->Цены->Цена[0]->ЦенаЗаЕдиницу[0];
-                            $parent_array[$p[0]]['warehouse'] = $warehouse;
-                        } else if ($parent_array[$p[0]]['price'] > (string) $item->Цены->Цена[0]->ЦенаЗаЕдиницу[0]) {
-                            $parent_array[$p[0]]['price'] = (string) $item->Цены->Цена[0]->ЦенаЗаЕдиницу[0];
-                            $parent_array[$p[0]]['warehouse'] = $warehouse;
+                        // Цена главного товара - внешние коды цены
+                        if (!empty($this->exchange_price1)) {
+
+                            if (isset($item->Цены)) {
+                                foreach ($item->Цены->Цена as $prices) {
+
+                                    if ($this->exchange_price1 == (string) $prices->ИдТипаЦены[0])
+                                        $parent_price1 = (string) $prices->ЦенаЗаЕдиницу[0];
+
+                                    elseif ($this->exchange_price2 == (string) $prices->ИдТипаЦены[0])
+                                        $parent_price2 = (string) $prices->ЦенаЗаЕдиницу[0];
+
+                                    elseif ($this->exchange_price3 == (string) $prices->ИдТипаЦены[0])
+                                        $parent_price3 = (string) $prices->ЦенаЗаЕдиницу[0];
+
+                                    elseif ($this->exchange_price4 == (string) $prices->ИдТипаЦены[0])
+                                        $parent_price4 = (string) $prices->ЦенаЗаЕдиницу[0];
+
+                                    elseif ($this->exchange_price5 == (string) $prices->ИдТипаЦены[0])
+                                        $parent_price5 = (string) $prices->ЦенаЗаЕдиницу[0];
+                                }
+                            }
                         }
+
+                        // Наименьшая цена 1
+                        if (empty($parent_array[$p[0]]['price']) and ! empty((int) $item->Количество[0])) {
+                            $parent_array[$p[0]]['price'] = $parent_price1;
+                        } else if ($parent_array[$p[0]]['price'] > $parent_price1 and ! empty($parent_price1) and ! empty((int) $item->Количество[0])) {
+                            $parent_array[$p[0]]['price'] = $parent_price1;
+                        }
+
+                        // Наименьшая цена 2
+                        if (empty($parent_array[$p[0]]['price2'])) {
+                            $parent_array[$p[0]]['price2'] = $parent_price2;
+                        } else if ($parent_array[$p[0]]['price2'] > $parent_price2 and ! empty($parent_price2) and ! empty((int) $item->Количество[0])) {
+                            $parent_array[$p[0]]['price2'] = $parent_price2;
+                        }
+
+                        // Наименьшая цена 3
+                        if (empty($parent_array[$p[0]]['price3'])) {
+                            $parent_array[$p[0]]['price3'] = $parent_price3;
+                        } else if ($parent_array[$p[0]]['price3'] > $parent_price3 and ! empty($parent_price3) and ! empty((int) $item->Количество[0])) {
+                            $parent_array[$p[0]]['price3'] = $parent_price3;
+                        }
+
+                        // Наименьшая цена 4
+                        if (empty($parent_array[$p[0]]['price4'])) {
+                            $parent_array[$p[0]]['price4'] = $parent_price4;
+                        } else if ($parent_array[$p[0]]['price4'] > $parent_price4 and ! empty($parent_price4) and ! empty((int) $item->Количество[0])) {
+                            $parent_array[$p[0]]['price4'] = $parent_price4;
+                        }
+
+                        // Наименьшая цена 5
+                        if (empty($parent_array[$p[0]]['price5'])) {
+                            $parent_array[$p[0]]['price5'] = $parent_price5;
+                        } else if ($parent_array[$p[0]]['price5'] > $parent_price5 and ! empty($parent_price5) and ! empty((int) $item->Количество[0])) {
+                            $parent_array[$p[0]]['price5'] = $parent_price5;
+                        }
+
+                        // Валюта
+                        if (empty($parent_array[$p[0]]['currensy']))
+                            $parent_array[$p[0]]['currensy'] = (string) $item->Цены->Цена[0]->Валюта[0];
+
+                        // Склад главного товара
+                        $parent_array[$p[0]]['warehouse'][] = $warehouses;
 
                         // Имя подтипа
                         $Наименование = $parent_name = null;
@@ -852,7 +917,7 @@ class CommerceMLLoader {
                     }
 
                     // Форматирование цены 2.04
-                    if (!strpos($price1, '.')) {
+                    if (!strpos($price1, '.') and ! strpos($price2, '.') and ! strpos($price3, '.') and ! strpos($price4, '.') and ! strpos($price5, '.')) {
                         $price1 = preg_replace('/\D+/', '', $price1);
                         $price2 = preg_replace('/\D+/', '', $price2);
                         $price3 = preg_replace('/\D+/', '', $price3);
@@ -868,6 +933,7 @@ class CommerceMLLoader {
 
                     // Добавляем главные товары для подтипов
                     $parent = null;
+
                     if (is_array($parent_array)) {
 
                         $parent = null;
@@ -879,15 +945,44 @@ class CommerceMLLoader {
                             }
 
                             // Форматирование цены 2.04
-                            if (!strpos($price1, '.'))
+                            if (!strpos($prod['price'], '.'))
                                 $prod['price'] = preg_replace('/\D+/', '', $prod['price']);
+                            if (!strpos($prod['price2'], '.'))
+                                $prod['price2'] = preg_replace('/\D+/', '', $prod['price2']);
+                            if (!strpos($prod['price3'], '.'))
+                                $prod['price3'] = preg_replace('/\D+/', '', $prod['price3']);
+                            if (!strpos($prod['price4'], '.'))
+                                $prod['price4'] = preg_replace('/\D+/', '', $prod['price4']);
+                            if (!strpos($prod['price5'], '.'))
+                                $prod['price5'] = preg_replace('/\D+/', '', $prod['price5']);
 
-                            $this->product_array[$id] = array(null, null, null, null, null, null, $prod['warehouse'], $prod['price'], "", "", "", "", "", "", "", null, $parent, $id, 0);
+                            // Склад
+                            if (is_array($prod['warehouse']))
+                                foreach ($prod['warehouse'] as $stocks) {
+
+                                    if (is_array($stocks))
+                                        foreach ($stocks as $k => $stock) {
+                                            $warehouses_parent[$k] += $stock;
+                                        }
+                                }
+
+                            if (is_array($warehouses_parent)) {
+                                $warehouse = null;
+
+                                foreach ($warehouses_parent as $k => $v) {
+                                    $warehouse .= $v . '/' . $k . '#';
+                                }
+
+                                $warehouse = substr($warehouse, 0, strlen($warehouse) - 1);
+                                unset($warehouses_parent);
+                            }
+                            $this->product_array[$id] = array(null, null, null, null, null, null, $warehouse, $prod['price'], $prod['price2'], $prod['price3'], $prod['price4'], $prod['price5'], "", "", $prod['currensy'], null, $parent, $id, 0);
                         }
                     }
 
                     if ($GLOBALS['PHPShopBase']->codBase != 'utf-8')
                         array_walk_recursive($this->product_array, 'self::array2iconv');
+
 
                     $this->writeCsv('sklad/' . $date . '/upload_0.csv', $this->product_array, true);
 
@@ -966,6 +1061,7 @@ OUT: ' . $response . '
             }
         }
     }
+
 }
 
 $_classPath = "../phpshop/";

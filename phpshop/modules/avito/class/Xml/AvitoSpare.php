@@ -15,12 +15,13 @@ class AvitoSpare extends BaseAvitoXml implements AvitoPriceInterface {
         $tier = unserialize($product['tiers']);
 
         $xml = '<Ad>';
-        
-         // Ключ обновления
-        if (Avito::getOption('type') == 1) 
-           $xml .= sprintf('<Id>%s</Id>', $product['id']);
-        else $xml .= sprintf('<Id>%s</Id>', $product['uid']);
-        
+
+        // Ключ обновления
+        if (Avito::getOption('type') == 1)
+            $xml .= sprintf('<Id>%s</Id>', $product['id']);
+        else
+            $xml .= sprintf('<Id>%s</Id>', $product['uid']);
+
         $xml .= sprintf('<ListingFee>%s</ListingFee>', $product['listing_fee']);
 
         if (strstr($product['type'], " / "))
@@ -159,10 +160,29 @@ class AvitoSpare extends BaseAvitoXml implements AvitoPriceInterface {
         if (in_array($product['type_avito'], [207, 208, 209, 210]))
             $xml .= sprintf('<DeviceType>%s</DeviceType>', explode(" / ", $product['type'])[1]);
 
+        if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS']))
+            $ssl = 'https://';
+        else
+            $ssl = 'http://';
+
+        // Карта проезда
+        $map_url = Avito::getOption('map_url');
+
+        if (!empty($map_url)) {
+            if (strstr($map_url, ','))
+                $map_img = explode(',', $map_url);
+            else
+                $map_img[] = $map_url;
+
+            if (is_array($map_img))
+                foreach ($map_img as $map)
+                    $product['images'][] = ['name' => trim($map)];
+        }
+
         if (count($product['images']) > 0) {
             $xml .= '<Images>';
             foreach ($product['images'] as $image) {
-                $xml .= sprintf('<Image url="%s"/>', $image['name']);
+                $xml .= sprintf('<Image url="%s"/>', $ssl . $image['name']);
             }
             $xml .= '</Images>';
         }

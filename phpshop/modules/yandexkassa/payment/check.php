@@ -23,11 +23,14 @@ PHPShopObj::loadClass("system");
 PHPShopObj::loadClass("security");
 PHPShopObj::loadClass("parser");
 PHPShopObj::loadClass("string");
+PHPShopObj::loadClass("lang");
 
 $PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini");
 $PHPShopSystem = new PHPShopSystem();
 $PHPShopModules = new PHPShopModules($_classPath . "modules/");
 $PHPShopModules->checkInstall('yandexkassa');
+
+$PHPShopLang = new PHPShopLang(array('locale' => $_SESSION['lang'], 'path' => 'shop'));
 
 class Payment extends PHPShopPaymentResult {
 
@@ -57,6 +60,10 @@ class Payment extends PHPShopPaymentResult {
 
         // Не доверяем полученному уведомлению (в новом api нет подписи) и делаем повторный запрос в Яндекс.
         $source = file_get_contents('php://input');
+        
+        if(empty($source))
+            exit('Empty input');
+        
         $requestBody = json_decode($source, true);
         $order = $this->YandexKassa->getOrderStatus($requestBody['object']['id']);
         $log = $this->YandexKassa->findLogDataByYandexId($order['id']);

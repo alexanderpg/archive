@@ -44,7 +44,7 @@ class PHPShopDelivery extends PHPShopObj {
             $enabled = $data_fields['enabled'];
             foreach ($num as $key => $value) {
                 if ($enabled[$key]['enabled'] == 1) {
-                    $adres .= __($enabled[$key]['name']) . ": " . $option[$key . "_new"] . $delim;
+                    $adres .= $enabled[$key]['name'] . ": " . $option[$key . "_new"] . $delim;
                 }
             }
         }

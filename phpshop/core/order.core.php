@@ -151,8 +151,14 @@ class PHPShopOrder extends PHPShopCore {
         // Итого товары без акции
         $sum_discount_on += (float) $PHPShopOrder->returnSumma($this->PHPShopCart->getSumWithoutPromo(true), $this->get('discount'));
 
+        // Бонусы
+        $PHPShopBonus = new PHPShopBonus((int) $_SESSION['UsersId']);
+        $bonus = (float) $PHPShopBonus->getUserBonus($sum_discount_on);
+        $this->set('bonus', $bonus);
+        $this->set('max_order_bonus', $PHPShopBonus->max_order_bonus);
+        
         // Итого с учетом бонусов
-        $sum_discount_on -= (float) (new PHPShopBonus((int) $_SESSION['UsersId']))->getUserBonus($sum_discount_on);
+        $sum_discount_on -= $bonus;
 
         // Сумма скидки
         if ($sum_cart > $sum_discount_on)

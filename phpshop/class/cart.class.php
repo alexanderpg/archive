@@ -199,7 +199,7 @@ class PHPShopCart {
     function getWeight() {
         $weight = 0;
         foreach ($this->_CART as $val)
-            $weight += $val['num'] * $val['weight'];
+            $weight += (int)$val['num'] * (int)$val['weight'];
         return $weight;
     }
 

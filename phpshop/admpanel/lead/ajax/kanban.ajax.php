@@ -115,8 +115,8 @@ if (is_array($data))
                 $user_link = null;
                 if (empty($row['fio']))
                     $type = __('Событие') . ' ' . $row['id'];
-                //else
-                   // $type = $row['fio'];
+                else
+                    $type = $row['fio'];
                 $pref = 'c_';
                 $ico = 'glyphicon-bookmark';
                 

@@ -50,8 +50,8 @@ function actionStart() {
 
     $data = $PHPShopOrm->select();
     if ($data['token'] !== '' and $data['client_id'] !== '') {
-       
-        
+
+
         switch ($data['export']) {
             case 0:
                 $export_name = __('Выгрузить цены и склад');
@@ -76,11 +76,9 @@ function actionStart() {
         $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить цены', 'Сохранить и закрыть']);
     }
 
-    $Tab1 .= $PHPShopGUI->setField('Пароль защиты YML файла', $PHPShopGUI->setInputText(
-                    '', 'password_new', $data['password'])
-    );
-    $Tab1 .= $PHPShopGUI->setField('Сервер изображений', $PHPShopGUI->setInputText('http://', 'image_url_new', $data['image_url'])
-    );
+    $Tab1 .= $PHPShopGUI->setField('Пароль защиты YML файла', $PHPShopGUI->setInputText('', 'password_new', $data['password']));
+    $Tab1 .= $PHPShopGUI->setField('Сервер изображений', $PHPShopGUI->setInputText('https://', 'image_url_new', $data['image_url']));
+    $Tab1 .= $PHPShopGUI->setField('Карта проезда', $PHPShopGUI->setTextarea('map_url_new', $data['map_url']),1,'URL изображний через запятую');
 
     $Tab1 .= $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setRadio("type_new", 1, "ID товара", $data['type']) . $PHPShopGUI->setRadio("type_new", 2, "Артикул товара", $data['type']));
     $Tab1 .= $PHPShopGUI->setField('ФИО менеджера', $PHPShopGUI->setInputText(false, 'manager_new', $data['manager']));
@@ -142,6 +140,7 @@ function actionStart() {
 
 
     $Tab_api .= $PHPShopGUI->setField('Статус нового заказа', $PHPShopGUI->setSelect('status_new', $order_status_value, '100%'));
+    $Tab_api .= $PHPShopGUI->setField('Подтверждение заказа', $PHPShopGUI->setCheckbox('transition_new', 1, 'Подтверждение заказа при загрузке', $data['transition']));
     $Tab_api .= $PHPShopGUI->setField('Доставка для заказов', $PHPShopGUI->setSelect('delivery_id_new', $delivery_value, '100%'));
 
     // Статусы автоматической загрузки
@@ -175,7 +174,7 @@ function actionStart() {
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
-            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit").
+            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);
@@ -188,9 +187,9 @@ function actionUpdate() {
 
     // Настройки витрины
     $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);
-    
+
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('use_params_new', 'create_products_new','log_new','create_products_new','link_new');
+    $PHPShopOrm->updateZeroVars('use_params_new', 'create_products_new', 'log_new', 'create_products_new', 'link_new', 'transition_new');
 
     $PHPShopOrm->debug = false;
     $_POST['region_data_new'] = 1;

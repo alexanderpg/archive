@@ -883,7 +883,7 @@ function csv_update($data) {
                                 $row['pic_big'] = $img;
 
                                 // Главное превью
-                                if ($_POST['export_imgload'] == 2) {
+                                if ($_POST['export_imgload'] == 2 and empty($row['pic_small'])) {
                                     $row['pic_small'] = $img;
                                 } else if ($_POST['export_imgload'] == 1 and isset($_POST['export_imgproc'])) {
                                     $row['pic_small'] = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $img);

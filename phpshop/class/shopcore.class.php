@@ -1228,9 +1228,11 @@ public function getPreviewSorts($products, $currentProduct) {
                     $titles[(int) $value] = $this->previewSorts[(int) $value];
                 }
             }
-            $this->set('previewSortTitle', $sortCategory['name']);
-            $this->set('previewSortValue', implode(', ', $titles));
-            $html .= ParseTemplateReturn("product/preview_sort_one.tpl");
+            if (!empty($titles)) {
+                $this->set('previewSortTitle', $sortCategory['name']);
+                $this->set('previewSortValue', implode(', ', $titles));
+                $html .= ParseTemplateReturn("product/preview_sort_one.tpl");
+            }
         }
     }
 

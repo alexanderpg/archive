@@ -2,7 +2,7 @@ ALTER TABLE `phpshop_categories` ADD `condition_cat_avito` varchar(64) DEFAULT '
 ALTER TABLE `phpshop_categories` ADD `export_cat_avito` enum('0','1') DEFAULT '0';
 ALTER TABLE `phpshop_products` ADD `building_avito` text;
 
-UPDATE `phpshop_modules_avito_types` SET `name` = 'Аудио и видеотехника' WHERE `id` = 203;
+UPDATE `phpshop_modules_avito_types` SET `name` = 'Аудио- и видеотехника' WHERE `id` = 203;
 
 INSERT INTO `phpshop_modules_avito_subtypes` (`id`, `name`, `type_id`) VALUES
 (13, 'Аксессуары для автоакустики', 203),
@@ -40,5 +40,11 @@ ALTER TABLE `phpshop_modules_avito_system` ADD `status_import` varchar(64) defau
 ALTER TABLE `phpshop_modules_avito_system` ADD `fee` int(11) NOT NULL;
 ALTER TABLE `phpshop_modules_avito_system` ADD `fee_type` enum('1','2') NOT NULL default '1';
 ALTER TABLE `phpshop_modules_avito_system` ADD `price` int(11) NOT NULL;
+ALTER TABLE `phpshop_modules_avito_system` ADD `client_id` varchar(255) DEFAULT '';
+ALTER TABLE `phpshop_modules_avito_system` ADD `сlient_secret` varchar(255) DEFAULT '';
+ALTER TABLE `phpshop_modules_avito_system` ADD `transition` enum('0','1') NOT NULL default '0';
 ALTER TABLE `phpshop_products` ADD `export_avito_id` varchar(64) NOT NULL default '';
 ALTER TABLE `phpshop_products` ADD `price_avito` float DEFAULT '0';
+
+/* 2.5 */
+ALTER TABLE `phpshop_modules_avito_system` ADD `map_url` varchar(255) DEFAULT '';

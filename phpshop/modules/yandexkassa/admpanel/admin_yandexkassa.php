@@ -15,6 +15,11 @@ function actionStart() {
 
     if (is_array($data))
         foreach ($data as $row) {
+        
+       if(empty($row['type']))
+           $row['type']=$row['order_id'];
+        
+        
             $PHPShopInterface->setRow(array(
                 'name' => $row['type'],
                 'link' => '?path=modules.dir.yandexkassa&id=' . $row['id']),

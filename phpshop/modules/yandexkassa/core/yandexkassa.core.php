@@ -22,7 +22,7 @@ class PHPShopYandexkassa extends PHPShopCore {
      * Ёкшен по умолчанию
      */
     function index() {
-        if(!isset($_REQUEST['order']) || empty($_REQUEST['order'])) {
+        if (!isset($_REQUEST['order']) || empty($_REQUEST['order'])) {
             $this->setError404();
         }
 
@@ -31,15 +31,19 @@ class PHPShopYandexkassa extends PHPShopCore {
             $logOrder = $YandexKassa->getLogDataByOrderId((int) base64_decode($_REQUEST['order']));
             $order = $YandexKassa->getOrderStatus($logOrder['yandex_id']);
 
-            if(isset($order['paid']) && $order['paid']) {
-                $this->parseTemplate($GLOBALS['SysValue']['templates']['yandexkassa']['yandexmoney_success_forma'], true);
+            if (isset($order['paid']) && $order['paid']) {
+                $forma = $GLOBALS['SysValue']['templates']['yandexkassa']['yandexmoney_success_forma'];
             } else {
-                $this->parseTemplate($GLOBALS['SysValue']['templates']['yandexkassa']['yandexmoney_fail_forma'], true);
+                $forma = $GLOBALS['SysValue']['templates']['yandexkassa']['yandexmoney_fail_forma'];
             }
         } catch (\Exception $exception) {
-            $this->parseTemplate($GLOBALS['SysValue']['templates']['yandexkassa']['yandexmoney_fail_forma'], true);
+            $forma = $GLOBALS['SysValue']['templates']['yandexkassa']['yandexmoney_fail_forma'];
         }
-    }
-}
 
-?>
+        if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+            $forma = PHPShopString::win_utf8($forma, true);
+
+        $this->parseTemplate($forma, true);
+    }
+
+}

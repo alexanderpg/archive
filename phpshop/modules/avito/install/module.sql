@@ -22,12 +22,14 @@ CREATE TABLE `phpshop_modules_avito_system` (
   `fee` int(11) NOT NULL,
   `fee_type` enum('1','2') NOT NULL DEFAULT '1',
   `price` int(11) NOT NULL,
+  `transition` enum('0','1') NOT NULL DEFAULT '0',
+  `map_url` varchar(255) DEFAULT '',
   `version` varchar(64) DEFAULT '1.0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_avito_system` (`id`, `password`, `manager`, `address`, `phone`, `preview_description_template`, `image_url`, `latitude`, `longitude`, `client_id`, `ñlient_secret`, `version`, `create_products`, `link`, `log`, `delivery_id`, `export`, `type`, `status`, `status_import`, `fee`, `fee_type`, `price`) VALUES
-(1, '333', '', '', '', '@Description@', '', '', '', '', '', '2.3', '1', '0', '1', '1', '1', '2', 2, 'confirming', 0, '2', 1);
+INSERT INTO `phpshop_modules_avito_system` (`id`, `password`, `manager`, `address`, `phone`, `preview_description_template`, `image_url`, `latitude`, `longitude`, `client_id`, `ñlient_secret`, `version`, `create_products`, `link`, `log`, `delivery_id`, `export`, `type`, `status`, `status_import`, `fee`, `fee_type`, `price`,`transition`) VALUES
+(1, '333', '', '', '', '@Description@', '', '', '', '', '', '2.5', '1', '0', '1', '1', '1', '2', 2, 'confirming', 0, '2', 1,'0');
 
 
 DROP TABLE IF EXISTS `phpshop_modules_avito_category_types`;

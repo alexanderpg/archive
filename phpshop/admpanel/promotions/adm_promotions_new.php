@@ -73,6 +73,8 @@ function actionInsert() {
         $_POST['statuses_new'] = serialize($_POST['statuses']);
 
     $PHPShopOrm->updateZeroVars('block_old_price_new', 'status_check_new', 'hide_old_price_new', 'discount_tip_new', 'products_check_new', 'categories_check_new', 'discount_check_new', 'active_check_new', 'enabled_new');
+    
+    $_POST['date_create_new']=date('Y-m-d H:i:s',time());
 
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);

@@ -26,6 +26,7 @@ class Avito {
         $this->log = $this->options['log'];
         $this->create_products = $this->options['create_products'];
         $this->status_import = $this->options['status_import'];
+        $this->transition = $this->options['transition'];
         $this->type = $this->options['type'];
         $this->fee_type = $this->options['fee_type'];
         $this->fee = $this->options['fee'];
@@ -439,6 +440,31 @@ class Avito {
         $token = json_decode($result, true);
 
         $this->token = $token['access_token'];
+    }
+    
+    /**
+     *  Смена статуса заказа
+     */
+    public function updateStatusOrder($orderId,$status='confirm') {
+        
+        $params = [
+            'orderId' => (string)$orderId,
+            'transition' => (string)$status
+        ];
+
+
+        $method = '/order-management/1/order/applyTransition';
+        $result = $this->post($method, $params);
+
+        $log = [
+            'request' => $params,
+            'result' => $result
+        ];
+
+        // Журнал
+        $this->log($log, $method);
+
+        return $result;
     }
 
     /*
@@ -1166,15 +1192,15 @@ class Avito {
             ['720x480', '720x480', $current],
             ['1024x768', '1024x768', $current],
             ['1200x640', '1200x640', $current],
-            ['1280x720 (НD)', '1280x720 (НD)', $current],
+            ['1280x720 (HD)', '1280x720 (HD)', $current],
             ['1280x960', '1280x960', $current],
             ['1440x1080', '1440x1080', $current],
             ['1728x1296', '1728x1296', $current],
             ['1920x720', '1920x720', $current],
-            ['1920x1080 (Full НD)', '1920x1080 (Full НD)', $current],
+            ['1920x1080 (Full HD)', '1920x1080 (Full HD)', $current],
             ['2048x1536', '2048x1536', $current],
             ['2048х1080', '2048х1080', $current],
-            ['2304х1296 (Super НD)', '2304х1296 (Super НD)', $current],
+            ['2304х1296 (Super HD)', '2304х1296 (Super HD)', $current],
             ['2312x1080', '2312x1080', $current],
             ['2340х1080', '2340х1080', $current],
             ['2560x1080', '2560x1080', $current],

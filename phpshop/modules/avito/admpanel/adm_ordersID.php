@@ -210,7 +210,11 @@ function actionSave() {
 
     // Запись в базу
     $orderId = $PHPShopOrm->insert($insert);
-
+    
+    // Подтверждение заказа
+    if(!empty($Avito->transition) and !empty($orderId))
+        $Avito->updateStatusOrder($_POST['rowID'],'confirm');
+    
     // Оповещение пользователя о новом статусе и списание со склада
     if (!empty($insert['statusi_new'])) {
         PHPShopObj::loadClass("order");

@@ -2,5 +2,5 @@
     <div class="form-group">
         @optionsDisp@
     </div>
-    <span class="hide" id="optionMessage">@optionMessage@</span>
+    <span class="d-none" id="optionMessage">@optionMessage@</span>
 </div>

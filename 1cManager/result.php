@@ -583,7 +583,7 @@ class ReadCsv1C extends PHPShopReadCsvNative {
             if (!empty($CsvToArray[0]))
                 $sql .= "uid='" . $CsvToArray[0] . "', "; // артикул
 
-            if ($this->ObjSystem->getSerilizeParam("1c_option.update_item") == 1) {
+            if ($this->ObjSystem->getSerilizeParam("1c_option.update_item") == 1 and $CsvToArray[6] != "") {
 
                 // Многоскладовость
                 if (strstr($CsvToArray[6], '/')) {
@@ -594,20 +594,20 @@ class ReadCsv1C extends PHPShopReadCsvNative {
 
                 switch ($this->Sklad_status) {
 
-                    // Товар ставится под заказ
+                    // Товар ставится нет в наличии
                     case(3):
                         if ($CsvToArray[6] < 1)
-                            $sql .= "sklad='1', enabled='1', p_enabled='0', ";
+                            $sql .= "sklad='1', enabled='1', ";
                         else
-                            $sql .= "sklad='0', enabled='1', p_enabled='1', ";
+                            $sql .= "sklad='0', enabled='1', ";
                         break;
 
                     // Товар убирается с продаж
                     case(2):
                         if ($CsvToArray[6] < 1)
-                            $sql .= "enabled='0', p_enabled='0', ";
+                            $sql .= "enabled='0', ";
                         else
-                            $sql .= "enabled='1', sklad='0', p_enabled='1', ";
+                            $sql .= "enabled='1', sklad='0', ";
                         break;
 
                     // Не исползуется

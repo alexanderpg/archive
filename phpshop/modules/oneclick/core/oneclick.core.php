@@ -97,17 +97,19 @@ class PHPShopOneclick extends PHPShopCore {
                 $_POST['oneclick_mod_name'] = PHPShopString::utf8_win1251($_POST['oneclick_mod_name']);
                 $_POST['oneclick_mod_message'] = PHPShopString::utf8_win1251($_POST['oneclick_mod_message']);
                 $_POST['oneclick_mod_mail'] = PHPShopString::utf8_win1251($_POST['oneclick_mod_mail']);
+                $_POST['oneclick_mod_product_option'] = PHPShopString::utf8_win1251(PHPShopSecurity::TotalClean($_POST['oneclick_mod_product_option']));
             }
+            else $_POST['oneclick_mod_product_option'] = PHPShopSecurity::TotalClean($_POST['oneclick_mod_product_option']);
 
             if ($this->system['write_order'] == 0)
-                $this->order_num = $this->write($product);
+                $this->order_num = $this->write($product,(string) $_POST['oneclick_mod_product_option']);
             else
-                $this->order_num = $this->write_main_order($product);
+                $this->order_num = $this->write_main_order($product,(string) $_POST['oneclick_mod_product_option']);
 
-            $this->sendMail($product);
+            $this->sendMail($product,(string) $_POST['oneclick_mod_product_option']);
 
             // SMS администратору
-            $this->sms($product);
+            $this->sms($product, (string) $_POST['oneclick_mod_product_option']);
 
             if (isset($_POST['ajax'])) {
                 if (empty($this->system['title']) && empty($this->system['title_end'])) {
@@ -144,11 +146,11 @@ class PHPShopOneclick extends PHPShopCore {
      * SMS оповещение
      * @param PHPShopProduct $product
      */
-    function sms($product) {
+    function sms($product, $option) {
 
         if ($this->PHPShopSystem->ifSerilizeParam('admoption.sms_enabled')) {
 
-            $msg = substr($this->lang('mail_title_adm'), 0, strlen($this->lang('mail_title_adm')) - 1) . ' ' . $product->getName();
+            $msg = substr($this->lang('mail_title_adm'), 0, strlen($this->lang('mail_title_adm')) - 1) . ' ' . $product->getName().$option;
 
             include_once($this->getValue('file.sms'));
             SendSMS($msg);
@@ -158,7 +160,7 @@ class PHPShopOneclick extends PHPShopCore {
     /**
      * @param PHPShopProduct $product
      */
-    function write($product) {
+    function write($product,$option) {
 
         $insert = array();
         $insert['name_new'] = PHPShopSecurity::TotalClean($_POST['oneclick_mod_name'], 2);
@@ -166,7 +168,7 @@ class PHPShopOneclick extends PHPShopCore {
         $insert['datas_new'] = $insert['date_new'] = time();
         $insert['message_new'] = PHPShopSecurity::TotalClean($_POST['oneclick_mod_message'], 2);
         $insert['ip_new'] = $_SERVER['REMOTE_ADDR'];
-        $insert['product_name_new'] = $product->getName();
+        $insert['product_name_new'] = $product->getName().$option;
         $insert['product_image_new'] = $product->getImage();
         $insert['product_id_new'] = $product->objID;
         $insert['product_price_new'] = $this->getPrice($product);
@@ -181,7 +183,7 @@ class PHPShopOneclick extends PHPShopCore {
     /**
      * @param PHPShopProduct $product
      */
-    function write_main_order($product) {
+    function write_main_order($product,$option) {
 
         if (empty($_POST['oneclick_mod_name']))
             $name = 'Имя не указано';
@@ -208,7 +210,7 @@ class PHPShopOneclick extends PHPShopCore {
 
         $order['Cart']['cart'][$product->objID]['id'] = $product->getParam('id');
         $order['Cart']['cart'][$product->objID]['uid'] = $product->getParam("uid");
-        $order['Cart']['cart'][$product->objID]['name'] = $product->getName();
+        $order['Cart']['cart'][$product->objID]['name'] = $product->getName().$option;
         $order['Cart']['cart'][$product->objID]['price'] = $this->getPrice($product);
         $order['Cart']['cart'][$product->objID]['num'] = $qty;
         $order['Cart']['cart'][$product->objID]['weight'] = '';
@@ -340,7 +342,7 @@ class PHPShopOneclick extends PHPShopCore {
     /**
      * @param PHPShopProduct $product
      */
-    public function sendMail($product) {
+    public function sendMail($product,$option) {
         PHPShopObj::loadClass("mail");
 
         $title = $this->PHPShopSystem->getValue('name') . " - " . __('Быстрый заказ') . " - " . PHPShopDate::dataV();
@@ -357,7 +359,7 @@ class PHPShopOneclick extends PHPShopCore {
         if (PHPShopSecurity::true_email($_POST['oneclick_mod_mail']))
             PHPShopParser::set('mail', $_POST['oneclick_mod_mail']);
 
-        PHPShopParser::set('product', $product->getName() . $productId . $this->getPrice($product) . " " . $this->PHPShopSystem->getDefaultValutaCode());
+        PHPShopParser::set('product', $product->getName() . $option. $productId . $this->getPrice($product) . " " . $this->PHPShopSystem->getDefaultValutaCode());
         PHPShopParser::set('product_id', $product->objID);
         PHPShopParser::set('date', PHPShopDate::dataV(false, false));
         PHPShopParser::set('uid', $this->order_num);

@@ -81,11 +81,11 @@ class PHPShopOrderDelivery {
         $mass = unserialize($delivery['data_fields']);
 
         if((int) $delivery['is_folder'] === 1 && !is_array($mass)) {
-            return __("¬ыберите доставку", false);
+            return __("¬ыберите доставку");
         }
 
         if (!is_array($mass))
-            return __("ƒл€ данного типа доставки не требуетс€ дополнительных данных", false);
+            return __("ƒл€ данного типа доставки не требуетс€ дополнительных данных");
 
         $num = $mass['num'];
         asort($num);
