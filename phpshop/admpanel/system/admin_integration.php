@@ -44,19 +44,22 @@ function actionStart() {
                 $PHPShopGUI->setField('Идентификатор поиска', $PHPShopGUI->setInputText(false, 'option[yandex_search_id]', $option['yandex_search_id'], 300)) .
                 $PHPShopGUI->setField("Включить Яндекс.Поиск", $PHPShopGUI->setCheckbox('option[yandex_search_enabled]', 1, 'Использовать Яндекс.Поиск на сайте, вместо стандартного поиска', $option['yandex_search_enabled'])), 'in', true
         );
-    
+
     // Яндекс ID
     if (empty($hideSite))
         $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Яндекс ID', $PHPShopGUI->setField('ClientID', $PHPShopGUI->setInputText(false, 'option[yandex_id_apikey]', $option['yandex_id_apikey'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://oauth.yandex.ru/client/new/id/" target="_blank">Кабинет разработчика</a>')) .
                 $PHPShopGUI->setField("Включить Яндекс ID", $PHPShopGUI->setCheckbox('option[yandex_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью Яндекс ID на сайте', $option['yandex_id_enabled'])), 'in', true
         );
-    
+
     // VK ID
-    if (empty($hideSite))
+    if (empty($hideSite)){
+        $get_token='https://oauth.vk.com/authorize?client_id='.$option['vk_id'].'&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=video,offline&response_type=token&v=5.52';
         $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('VK ID', $PHPShopGUI->setField('ID приложения', $PHPShopGUI->setInputText(false, 'option[vk_id]', $option['vk_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://id.vk.com/about/business/go" target="_blank">Кабинет разработчика</a>')) .
+                $PHPShopGUI->setField('Токен доступа', $PHPShopGUI->setTextarea('option[vk_id_token]', $option['vk_id_token'], false, 300, '100') . $PHPShopGUI->setHelp('Получить <a href="'.$get_token.'" id="client_token" target="_blank">Персональный токен</a>')).
                 $PHPShopGUI->setField('Сервисный ключ', $PHPShopGUI->setInputText(false, 'option[vk_id_apikey]', $option['vk_id_apikey'], 300)) .
                 $PHPShopGUI->setField("Включить VK ID", $PHPShopGUI->setCheckbox('option[vk_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью VK ID на сайте', $option['vk_id_enabled'])), 'in', true
         );
+    }
 
 
     // Google Analitiks
@@ -96,12 +99,20 @@ function actionStart() {
                 $PHPShopGUI->setField("Идентификатор отправителя", $PHPShopGUI->setInputText(null, "option[push_id]", $option['push_id'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://console.firebase.google.com/" target="_blank">Firebase.google.com</a>'))
         );
     }
-    
 
-     // Telegram
+
+    // Telegram
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Telegram', $PHPShopGUI->setField("Новостной бот", $PHPShopGUI->setCheckbox('option[telegram_news_enabled]', 1, 'Включить передачу новостей из группы', $option['telegram_news_enabled'])) .
-            $PHPShopGUI->setField("Анонс", $PHPShopGUI->setInputText("первые", "option[telegram_news_delim]", $option['telegram_news_delim'], 200,'символов')) .
+            $PHPShopGUI->setField("Анонс", $PHPShopGUI->setInputText("первые", "option[telegram_news_delim]", $option['telegram_news_delim'], 200, 'символов')) .
             $PHPShopGUI->setField("API-ключ", $PHPShopGUI->setInputText(null, "option[telegram_news_token]", $option['telegram_news_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://docs.phpshop.ru/stranicy/novosti#zagruzka-novostei-iz-telegram" target="_blank">Инструкция</a>')));
+
+    // VK Reviews
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Отзывы Вконтакте',
+    $PHPShopGUI->setField("Отзывы", $PHPShopGUI->setCheckbox('option[vk_reviews_enabled]', 1, 'Включить передачу отзывов из группы', $option['vk_reviews_enabled'])).
+    $PHPShopGUI->setField("Код подтверждения", $PHPShopGUI->setInputText(null, "option[vk_reviews_confirmation]", $option['vk_reviews_confirmation'], 300)) .
+    $PHPShopGUI->setField("Ключ подтверждения", $PHPShopGUI->setInputText(null, "option[vk_reviews_secret]", $option['vk_reviews_secret'], 300)) .
+    $PHPShopGUI->setField("API-ключ", $PHPShopGUI->setInputText(null, "option[vk_reviews_token]", $option['vk_reviews_token'], 300) . $PHPShopGUI->setHelp('Информация о сервисе, регистрация, получение ключей <a href="https://docs.phpshop.ru/nastroiky/dialog#vkontakte" target="_blank">Инструкция</a>'))
+    );
 
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Новостная лента', $PHPShopGUI->setField("RSS", $PHPShopGUI->setCheckbox('option[rss_graber_enabled]', 1, 'Загружать новости из внешних RSS каналов', $option['rss_graber_enabled']) . $PHPShopGUI->setHelp('Новостные каналы управляются в  разделе <a href="?path=news.rss">RSS каналы</a>'))
     );
@@ -144,7 +155,7 @@ function actionUpdate() {
     $option = unserialize($data['admoption']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled','option.vk_id_enabled');
+    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled', 'option.vk_id_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)
@@ -161,7 +172,7 @@ function actionUpdate() {
     // Telegram регистрация вебхука
     if (!empty($option['telegram_news_enabled']) and ! empty($option['telegram_news_token'])) {
 
-        $url = 'https://api.telegram.org/bot' . $option['telegram_news_token'] . '/setWebhook?url=https://' . $_SERVER['SERVER_NAME'] . '/bot/telegram-news.php/'.md5($option['telegram_news_token']);
+        $url = 'https://api.telegram.org/bot' . $option['telegram_news_token'] . '/setWebhook?url=https://' . $_SERVER['SERVER_NAME'] . '/bot/telegram-news.php/' . md5($option['telegram_news_token']);
         $сurl = curl_init();
         curl_setopt_array($сurl, array(
             CURLOPT_URL => $url,

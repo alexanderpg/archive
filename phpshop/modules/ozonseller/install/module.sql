@@ -15,11 +15,12 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_system` (
 `delivery` INT(11) NOT NULL default '0',
 `create_products` enum('0','1') NOT NULL default '0',
 `log` enum('0','1') NOT NULL default '0',
+`export` enum('0','1','2') NOT NULL default '0',
 `version` varchar(64) DEFAULT '1.0',
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','0','1.9');
+INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','0','0','2.0');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_log` (
 `id` int(11) NOT NULL AUTO_INCREMENT,

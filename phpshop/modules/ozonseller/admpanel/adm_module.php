@@ -12,6 +12,28 @@ PHPShopObj::loadClass("delivery");
 $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_system"));
 $OzonSeller = new OzonSeller();
 
+// Обновление цен
+function actionUpdatePrice() {
+
+    // Безопасность
+    $cron_secure = md5($GLOBALS['SysValue']['connect']['host'] . $GLOBALS['SysValue']['connect']['dbase'] . $GLOBALS['SysValue']['connect']['user_db'] . $GLOBALS['SysValue']['connect']['pass_db']);
+
+    $protocol = 'http://';
+    if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
+        $protocol = 'https://';
+    }
+
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/ozonseller/cron/products.php?s=" . $cron_secure ;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $true_path);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_exec($ch);
+    curl_close($ch);
+}
+
 // Обновление версии модуля
 function actionBaseUpdate() {
     global $PHPShopModules, $PHPShopOrm;
@@ -189,13 +211,36 @@ function actionStart() {
     $data = $PHPShopOrm->select();
 
     if ($data['token'] !== '' and $data['client_id'] !== '') {
-        $PHPShopGUI->action_button['Экспортировать данные'] = [
-            'name' => __('Экспортировать данные'),
+        $PHPShopGUI->action_button['Выгрузить товары'] = [
+            'name' => __('Выгрузить товары'),
             'class' => 'btn btn-default btn-sm navbar-btn ozon-export',
             'type' => 'button',
+            'icon' => 'glyphicon glyphicon-open'
+        ];
+        
+        switch($data['export']){
+            case 0: 
+                $export_name = __('Выгрузить цены и склад');
+                break;
+            case 1: 
+                $export_name = __('Выгрузить цены');
+                break;
+            case 2: 
+                $export_name = __('Выгрузить склад');
+                break;
+            
+        }
+        
+        
+        $PHPShopGUI->action_button['Выгрузить цены'] = [
+            'name' => $export_name,
+            'class' => 'btn btn-default btn-sm navbar-btn ',
+            'type' => 'submit',
+            'action' => 'exportID',
             'icon' => 'glyphicon glyphicon-export'
         ];
-        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Экспортировать данные', 'Сохранить и закрыть']);
+        
+        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить товары', 'Выгрузить цены','Сохранить и закрыть']);
     }
 
     // Статус
@@ -259,7 +304,11 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в OZON', $data['link']));
     $Tab1 .= $PHPShopGUI->setField('Создавать товар', $PHPShopGUI->setCheckbox('create_products_new', 1, 'Создавать автоматически товар из заказа', $data['create_products']));
     $Tab1 .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
-
+    
+    $export_value[]=['Цены и склад', 0, $data['export']];
+    $export_value[]=['Цены', 1, $data['export']];
+    $export_value[]=['Склад', 2, $data['export']];
+    $Tab1 .= $PHPShopGUI->setField('Обновление данных', $PHPShopGUI->setSelect('export_new', $export_value, '100%',true));
 
     if ($data['fee_type'] == 1) {
         $status_pre = '-';
@@ -361,6 +410,7 @@ function actionStart() {
             $PHPShopGUI->setInput("hidden", "locale_ozon_export", __('Экспорт товаров в OZON')) .
             $PHPShopGUI->setInput("hidden", "locale_ozon_export_done", __('Экспорт в OZON выполнен, выгружено % товаров')) .
             $PHPShopGUI->setInput("hidden", "stop", 0) .
+            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit").
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);

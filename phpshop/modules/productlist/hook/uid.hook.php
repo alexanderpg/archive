@@ -33,6 +33,9 @@ class PHPShopProductListElement extends PHPShopProductElements {
         $data = $PHPShopOrm->select(array('*'), array('category' => '=' . intval($category), 'enabled' => "='1'", 'parent_enabled' => "='0'", 'id' => '!=' . $this->PHPShopNav->getId()), array('order' => 'RAND()'), array('limit' => $this->data['num']));
         if (is_array($data)) {
             foreach ($data as $row) {
+                
+                 if (empty($row['pic_small']) or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $row['pic_small']))
+                    continue;
 
                 // Промоакции
                 $promotions = $this->PHPShopPromotions->getPrice($row);
@@ -45,6 +48,7 @@ class PHPShopProductListElement extends PHPShopProductElements {
                 $this->set('productlist_product_id', $row['id']);
                 $this->set('productlist_product_name', $row['name']);
                 $this->set('productlist_product_pic_small', $row['pic_small']);
+
                 $this->set('productlist_product_pic_big', $row['pic_big']);
                 $this->set('productlist_product_price', number_format($this->price($row, false, false), $this->format, '.', ' '));
                 $this->set('productlist_product_price_old', $this->price($row, true, false));
@@ -79,6 +83,7 @@ class PHPShopProductListElement extends PHPShopProductElements {
                 $dis .= PHPShopParser::file($GLOBALS['SysValue']['templates']['productlist']['productlist_product'], true, false, true);
             }
 
+            $this->set('productlist_title', $this->data['title']);
             $this->set('productlist_list', $dis, true);
         }
     }

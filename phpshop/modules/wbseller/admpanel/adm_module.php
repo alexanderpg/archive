@@ -9,6 +9,28 @@ PHPShopObj::loadClass("delivery");
 $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.wbseller.wbseller_system"));
 $WbSeller = new WbSeller();
 
+// Обновление цен
+function actionUpdatePrice() {
+
+    // Безопасность
+    $cron_secure = md5($GLOBALS['SysValue']['connect']['host'] . $GLOBALS['SysValue']['connect']['dbase'] . $GLOBALS['SysValue']['connect']['user_db'] . $GLOBALS['SysValue']['connect']['pass_db']);
+
+    $protocol = 'http://';
+    if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS'])) {
+        $protocol = 'https://';
+    }
+
+    $true_path = $protocol . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . "/phpshop/modules/wbseller/cron/products.php?s=" . $cron_secure ;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $true_path);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_exec($ch);
+    curl_close($ch);
+}
+
 // Обновление версии модуля
 function actionBaseUpdate() {
     global $PHPShopModules, $PHPShopOrm;
@@ -21,27 +43,38 @@ function actionBaseUpdate() {
 
 // Функция обновления
 function actionUpdate() {
-    global $PHPShopModules,$PHPShopOrm;
+    global $PHPShopModules, $PHPShopOrm;
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new','create_products_new','log_new');
+    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new', 'log_new');
 
     $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.wbseller.wbseller_system"));
     $PHPShopOrm->debug = false;
     $action = $PHPShopOrm->update($_POST);
 
-    header('Location: ?path=modules&id=' . $_GET['id']);
 
+    header('Location: ?path=modules&id=' . $_GET['id']);
     return $action;
 }
 
 function actionStart() {
-    global $PHPShopGUI, $PHPShopOrm, $WbSeller;
+    global $PHPShopGUI, $PHPShopOrm, $WbSeller,$TitlePage, $select_name;
 
     $PHPShopGUI->field_col = 4;
 
     // Выборка
     $data = $PHPShopOrm->select();
+    
+    if ($data['token'] !== '') {
+        $PHPShopGUI->action_button['Выгрузить цены'] = [
+            'name' => __('Выгрузить цены'),
+            'class' => 'btn btn-default btn-sm navbar-btn ',
+            'type' => 'submit',
+            'action' => 'exportID',
+            'icon' => 'glyphicon glyphicon-export'
+        ];
+        $PHPShopGUI->setActionPanel($TitlePage, $select_name, ['Выгрузить цены', 'Сохранить и закрыть']);
+    }
 
     // Статус
     $status[] = [__('Новый заказ'), 0, $data['status']];
@@ -61,16 +94,16 @@ function actionStart() {
 
     $Tab1 = $PHPShopGUI->setField('API key', $PHPShopGUI->setTextarea('token_new', $data['token'], false, '100%', '100'));
     $Tab1 .= $PHPShopGUI->setField('Статус нового заказа', $PHPShopGUI->setSelect('status_new', $order_status_value, '100%'));
-    
-    
+
+
     // Статусы автоматической загрузки
     $order_status_import_value[] = array(__('Ничего не выбрано'), 0, $data['status_import']);
     foreach ($WbSeller->status_list as $k => $status_val) {
         $order_status_import_value[] = array(__($status_val), $k, $data['status_import']);
     }
     $Tab1 .= $PHPShopGUI->setField('Статус заказа в WB для автоматической загрузки', $PHPShopGUI->setSelect('status_import_new', $order_status_import_value, '100%'));
-    
-        // Доставка
+
+    // Доставка
     $PHPShopDeliveryArray = new PHPShopDeliveryArray();
 
     $DeliveryArray = $PHPShopDeliveryArray->getArray();
@@ -88,7 +121,7 @@ function actionStart() {
 
     $Tab1 .= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setSelect('delivery_new', $delivery_value, '100%'));
 
-    
+
     $Tab1 .= $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setRadio("type_new", 1, "ID товара", $data['type']) . $PHPShopGUI->setRadio("type_new", 2, "Артикул товара", $data['type']));
     $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в Wildberries', $data['link']));
     $Tab1 .= $PHPShopGUI->setField('Создавать товар', $PHPShopGUI->setCheckbox('create_products_new', 1, 'Создавать автоматически товар из заказа', $data['create_products']));
@@ -125,7 +158,8 @@ function actionStart() {
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
-            $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
+            $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit").
+            $PHPShopGUI->setInput("submit", "exportID", "Применить", "right", 80, "", "but", "actionUpdatePrice.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);
     return true;

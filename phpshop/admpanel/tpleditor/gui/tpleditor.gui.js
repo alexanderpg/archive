@@ -17,7 +17,7 @@ $().ready(function () {
             }
     );
 
-    $('[data-toggle="popover"]').css('cursor', 'pointer').attr('title', 'Подсказка');
+    $('[data-toggle="popover"]').css('cursor', 'pointer').attr('title', locale.help);
     $('.panel[data-toggle="popover"]').hover(
             function () {
                 $(this).toggleClass('panel-primary text-primary').css('box-shadow', '0 0 6px rgba(122,122,122,0.2)');

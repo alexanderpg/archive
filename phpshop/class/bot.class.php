@@ -75,6 +75,36 @@ class PHPShopBot {
         $this->PHPShopOrm->insert($insert, '');
     }
 
+    public function downloadFile($url, $path) {
+
+        $newfname = $path;
+        $url = iconv("windows-1251", "utf-8//IGNORE", $url);
+
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ),
+        );
+
+        $file = @fopen($url, 'rb', false, stream_context_create($arrContextOptions));
+        if ($file) {
+            $newf = fopen($newfname, 'wb');
+            if ($newf) {
+                while (!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                }
+            }
+        }
+        if ($file) {
+            fclose($file);
+        }
+        if ($newf) {
+            fclose($newf);
+            return true;
+        }
+    }
+
     // Отправка картинки
     public function send_image($id, $message, $file) {
         return true;
@@ -152,13 +182,13 @@ class PHPShopBot {
 /**
  * Библиотека VK Bot
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopClass
  */
 class PHPShopVKBot extends PHPShopBot {
 
     protected $bot = 'vk';
-    protected $version = '5.81';
+    protected $version = '5.199';
 
     /**
      * Конструктор
@@ -167,6 +197,7 @@ class PHPShopVKBot extends PHPShopBot {
 
         $this->PHPShopSystem = new PHPShopSystem();
 
+        // Chat
         $this->confirmation = $this->PHPShopSystem->getSerilizeParam('admoption.vk_confirmation');
         $this->secret = $this->PHPShopSystem->getSerilizeParam('admoption.vk_secret');
         $this->token = $this->PHPShopSystem->getSerilizeParam('admoption.vk_token');
@@ -176,7 +207,102 @@ class PHPShopVKBot extends PHPShopBot {
         if ($this->token == '')
             $this->enabled = 0;
 
+        // ID
+        $this->id_token = $this->PHPShopSystem->getSerilizeParam('admoption.vk_id_token');
+
+        // Reviews
+        $this->reviews_confirmation = $this->PHPShopSystem->getSerilizeParam('admoption.vk_reviews_confirmation');
+        $this->reviews_secret = $this->PHPShopSystem->getSerilizeParam('admoption.vk_reviews_secret');
+        $this->reviews_enabled = $this->PHPShopSystem->getSerilizeParam('admoption.vk_reviews_enabled');
+        $this->reviews_token = $this->PHPShopSystem->getSerilizeParam('admoption.vk_reviews_token');
+
+        if ($this->reviews_token == '')
+            $this->reviews_enabled = 0;
+
         $this->PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['dialog']);
+    }
+
+    private function logtest($data) {
+
+        ob_start();
+        print_r($data);
+        $log = ob_get_clean();
+
+        $file = './log.txt';
+
+        $content = '
+==== ' . date('d-m-y H:i:s') . '=====
+' . $log;
+
+        $fp = fopen($file, "a+");
+        if ($fp) {
+            fputs($fp, $content);
+            fclose($fp);
+        }
+    }
+
+    public function add_reviews($chat) {
+        $this->token = $this->reviews_token;
+        $insert['name_new'] = PHPShopString::utf8_win1251($this->user($chat['object']['from_id']));
+        $insert['otsiv_new'] = nl2br(PHPShopString::utf8_win1251(strip_tags($chat['object']['text'])));
+        $insert['tema_new'] = __('Отзыв от ').$insert['name_new'];
+        $insert['datas_new'] = $chat['object']['date'];
+        $insert['flag_new'] = 1;
+
+        if (is_array($chat['object']['attachments']))
+            foreach ($chat['object']['attachments'] as $message) {
+
+                // Картинка
+                if (is_array($message['photo'])) {
+
+                    $file = $message['photo']['photo_807'];
+                    $image = '/UserFiles/Image/' . pathinfo(parse_url($file)['path'])['basename'];
+                    $alt = strip_tags($message['photo']['text']);
+
+                    // Загрузка картинки
+                    if ($this->downloadFile($file, $_SERVER['DOCUMENT_ROOT'] . $image)) {
+                        $insert['otsiv_new'] .= '<p><img src="' . $image . '" referrerpolicy="no-referrer" alt="' . $alt . '" class="img-responsive img-fluid"></p>';
+                    }
+                }
+
+                // Видео
+                if (is_array($message['video'])) {
+
+                    // Плеер
+                    if (!empty($this->id_token)) {
+                        $video = $this->video($message['video']['owner_id'], $message['video']['id']);
+                        $insert['otsiv_new'] .= '<p class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="' . $video . '"></iframe></p>';
+                    }
+
+                    // Картинка
+                    if (empty($video)) {
+
+                        $file = $message['video']['photo_800'];
+                        $image = '/UserFiles/Image/' . pathinfo(parse_url($file)['path'])['basename'];
+
+                        // Загрузка картинки
+                        if ($this->downloadFile($file, $_SERVER['DOCUMENT_ROOT'] . $image)) {
+                            $insert['otsiv_new'] .= '<p><img src="' . $image . '" referrerpolicy="no-referrer" alt="" class="img-responsive img-fluid"></p>';
+                        }
+                    }
+                }
+            }
+
+        // Запись в базу
+        (new PHPShopOrm($GLOBALS['SysValue']['base']['gbook']))->insert($insert);
+    }
+
+    // Видео файл
+    public function video($owner_id, $id) {
+
+        $this->token = $this->id_token;
+        $data = array(
+            'videos' => $owner_id . '_' . $id,
+            'v' => $this->version,
+        );
+
+        $out = $this->request('video.get', $data);
+        return $out['response']['items'][0]['player'];
     }
 
     public function user($id) {
@@ -187,8 +313,7 @@ class PHPShopVKBot extends PHPShopBot {
         );
         $out = $this->request('users.get', $data);
 
-
-        $user_name = $out[response][0][first_name] . ' ' . $out[response][0][last_name];
+        $user_name = $out['response'][0]['first_name'] . ' ' . $out['response'][0]['last_name'];
         return $user_name;
     }
 
@@ -641,36 +766,6 @@ class PHPShopTelegramBot extends PHPShopBot {
             return true;
     }
 
-    public function downloadFile($url, $path) {
-
-        $newfname = $path;
-        $url = iconv("windows-1251", "utf-8//IGNORE", $url);
-
-        $arrContextOptions = array(
-            "ssl" => array(
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ),
-        );
-
-        $file = @fopen($url, 'rb', false, stream_context_create($arrContextOptions));
-        if ($file) {
-            $newf = fopen($newfname, 'wb');
-            if ($newf) {
-                while (!feof($file)) {
-                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
-                }
-            }
-        }
-        if ($file) {
-            fclose($file);
-        }
-        if ($newf) {
-            fclose($newf);
-            return true;
-        }
-    }
-
     public function add_news($message) {
 
         $this->token = $this->news_token;
@@ -716,17 +811,15 @@ class PHPShopTelegramBot extends PHPShopBot {
             // Загрузка файла видео
             if ($this->downloadFile($video, $_SERVER['DOCUMENT_ROOT'] . $mp4)) {
                 $insert['podrob_new'] = '<div><video src="' . $mp4 . '" controls="controls"></video></div>';
-                
             }
-            
+
             $thumb = $this->file($thumb);
             $image = '/UserFiles/Image/' . pathinfo($thumb)['basename'];
-            
+
             // Загрузка картинки
             if ($this->downloadFile($thumb, $_SERVER['DOCUMENT_ROOT'] . $image)) {
                 $insert['icon_new'] = $image;
             }
-            
         }
 
         if (!empty($this->news_delim))

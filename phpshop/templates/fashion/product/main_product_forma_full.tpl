@@ -250,7 +250,7 @@
 
     <div class="w-lg-100 border-top space-2 mx-lg-auto @php __hide('productlist_list'); php@">
         <div class="mb-3 mb-sm-5">
-            <h4>{Похожие товары}</h4> 
+            <h4>@productlist_title@</h4> 
         </div>
         <!-- Slick Carousel -->
         <div class="js-slick-carousel slick slick-gutters-3 slick-equal-height z-index-2 mx-md-auto mb-5 mb-md-9" data-hs-slick-carousel-options='{
@@ -288,4 +288,45 @@
         <!-- End Slick Carousel -->
 
     </div>
+      <div class="w-lg-100 border-top space-2 mx-lg-auto @php __hide('productlist_list'); php@">
+        <div class="mb-3 mb-sm-5">
+            <h4>@productsimilar_title@</h4> 
+        </div>
+        <!-- Slick Carousel -->
+        <div class="js-slick-carousel slick slick-gutters-3 slick-equal-height z-index-2 mx-md-auto mb-5 mb-md-9" data-hs-slick-carousel-options='{
+             "slidesToShow": 5,
+             "slidesToScroll": 3,
+             "dots": true,
+             "dotsClass": "slick-pagination",
+             "responsive": [{
+             "breakpoint": 1200,
+             "settings": {
+             "slidesToShow": 5
+             }
+             }, {
+             "breakpoint": 992,
+             "settings": {
+             "slidesToShow": 4
+             }
+             }, {
+             "breakpoint": 768,
+             "settings": {
+             "slidesToShow": 3
+             }
+             }, {
+             "breakpoint": 554,
+             "settings": {
+             "slidesToShow": 2,
+             "slidesToScroll": 2
+
+             }
+             }]
+             }'>
+
+            @productsimilar_list@
+        </div>
+        <!-- End Slick Carousel -->
+
+    </div>
+    
 </div>

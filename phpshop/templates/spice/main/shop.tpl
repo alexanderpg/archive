@@ -274,7 +274,7 @@
 
                     <div class="panel panel-default  hidden-xs  hidden-sm @php __hide('productlist_list'); php@ @hideSite@">
                         <div class="panel-heading">
-                            <div class="panel-title">{Похожие товары}</div>
+                            <div class="panel-title">@productlist_title@</div>
                         </div>
                         <div class="panel-body">
                             <div id="productlist">
@@ -284,6 +284,20 @@
 
                         </div>
                     </div>
+                    
+                    <div class="panel panel-default  hidden-xs  hidden-sm @php __hide('productsimilar_list'); php@ @hideSite@">
+                    <div class="panel-heading">
+                        <div class="panel-title">@productsimilar_title@</div>
+                    </div>
+                    <div class="panel-body">
+                        <div id="productlist">
+                            <table>@productsimilar_list@</table>
+                        </div>
+
+
+                    </div>
+                </div>
+
 
                     <div class="panel panel-default  hidden-xs  hidden-sm @php __hide('productlastview'); php@ @hideSite@">
                         <div class="panel-heading">

@@ -11,7 +11,7 @@ function modulesSubMenu() {
         $menu = "../modules/" . $path . "/install/module.xml";
         $db = xml2array($menu, false, true);
         $modName = $db['name'];
-        if (!empty($_SESSION['support']) and $_SESSION['support'] < $db['sign'])
+        if ((!empty($_SESSION['support']) and $_SESSION['support'] < $db['sign']) or ( !empty($db['pro']) and empty($_SESSION['mod_pro'])))
             header('Location: ./admin.php?path=modules');
         if (is_array($db['adminmenu']['podmenu'][0])) {
             foreach ($db['adminmenu']['podmenu'] as $val) {
@@ -75,5 +75,6 @@ if (file_exists($path) and ! empty($mod_podmenu))
     include_once($path);
 else
     header('Location: ?path=modules&install=check')
+
     
 ?>

@@ -3,7 +3,7 @@
 /**
  * Элемент стандартных системных переменных
  * @author PHPShop Software
- * @version 1.9
+ * @version 2.0
  * @package PHPShopElements
  */
 class PHPShopCoreElement extends PHPShopElements {
@@ -1736,14 +1736,21 @@ class PHPShopBannerElement extends PHPShopElements {
         elseif (defined("HostMain"))
             $where['flag'] .= ' and (servers ="" or servers REGEXP "i1000i")';
 
-        // Каталоги
+// Каталоги
         if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
 
             // Корневой каталог
             $true_cid = $GLOBALS['PHPShopSeoPro']->getCID();
 
+            // Товар
+            if (empty($true_cid) and $this->PHPShopNav->getPath() == "id") {
+
+                $product_id = $GLOBALS['PHPShopSeoPro']->getID();
+                $PHPShopProduct = new PHPShopProduct((int) $product_id);
+                $true_cid = $PHPShopProduct->getParam('category');
+            }
             // Вложенный подкаталог
-            if (empty($true_cid) and $this->PHPShopNav->objNav['truepath'] != '/' and $this->PHPShopNav->notPath(array('page', 'news', 'gbook'))) {
+            else if (empty($true_cid) and $this->PHPShopNav->objNav['truepath'] != '/' and $this->PHPShopNav->notPath(array('page', 'news', 'gbook'))) {
                 $GLOBALS['PHPShopSeoPro']->catArrayToMemory();
                 $true_cid = $GLOBALS['PHPShopSeoPro']->getCID();
             }
@@ -2085,6 +2092,7 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
 
 
 

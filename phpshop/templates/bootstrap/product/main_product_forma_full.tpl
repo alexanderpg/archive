@@ -44,7 +44,7 @@
                 <br>
                 @promotionInfo@
                 
-                 @productsproperty@
+                @productsproperty@
 
                 @saferouteCart@
                 @productservices_list@

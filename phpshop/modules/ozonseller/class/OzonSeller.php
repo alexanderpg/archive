@@ -5,7 +5,7 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с Ozon Seller API
  * @author PHPShop Software
- * @version 2.4
+ * @version 2.6
  * @package PHPShopModules
  * @todo https://docs.ozon.ru/api/seller/#tag/Environment
  */
@@ -29,6 +29,11 @@ class OzonSeller {
     const GET_PRODUCT_ATTRIBUTES = '/v3/products/info/attributes';
     const GET_PRODUCT_PRICES = '/v4/product/info/prices';
     const UPDATE_PRODUCT_PRICES = '/v1/product/import/prices';
+    const ADD_PRODUCT_BARCODE = '/v1/barcode/add';
+    const GET_ACTIONS = '/v1/actions';
+    const GET_ACTIONS_PRODUCT = '/v1/actions/products';
+    const GET_PRODUCT_INFO_LIST = '/v2/product/info/list';
+    const DEACTIVATE_ACTIONS_PRODUCT = '/v1/actions/products/deactivate';
 
     public $api_key;
     public $client_id;
@@ -59,6 +64,7 @@ class OzonSeller {
         $this->delivery = $this->options['delivery'];
         $this->create_products = $this->options['create_products'];
         $this->log = $this->options['log'];
+        $this->export = $this->options['export'];
 
         $this->status_list = [
             'acceptance_in_progress' => 'идёт приёмка',
@@ -77,6 +83,86 @@ class OzonSeller {
             $this->ssl = 'https://';
         else
             $this->ssl = 'http://';
+    }
+
+    /**
+     * Выключение товаров из акции
+     */
+    public function deactivationActionsProduct($action_id, $product_id) {
+
+
+        $params = [
+            "action_id" => (int) $action_id,
+            "product_ids" => $product_id
+        ];
+
+        $result = $this->request(self::DEACTIVATE_ACTIONS_PRODUCT, $params);
+
+        // Журнал
+        $log['params'] = $params;
+        $log['result'] = $result;
+
+        $this->log($log, null, self::DEACTIVATE_ACTIONS_PRODUCT);
+
+        return $result;
+    }
+
+    /**
+     * Получение списка товаров в акции
+     */
+    public function getActionsProduct($action_id) {
+
+        $params = [
+            "action_id" => (int) $action_id
+        ];
+
+        $result = $this->request(self::GET_ACTIONS_PRODUCT, $params);
+
+        // Журнал
+        $log['params'] = $params;
+        $log['result'] = $result;
+
+        $this->log($log, null, self::GET_ACTIONS_PRODUCT);
+
+        return $result;
+    }
+
+    /**
+     * Получение списка акций
+     */
+    public function getActions() {
+
+        $result = $this->request(self::GET_ACTIONS);
+
+        // Журнал
+        $log['params'] = [];
+        $log['result'] = $result;
+
+        $this->log($log, null, self::GET_ACTIONS);
+
+        return $result;
+    }
+
+    /**
+     *  Передача штрихкода
+     */
+    public function addBarcode($product) {
+
+        $params["barcodes"][] = [
+            "barcode" => (string) $product['barcode_ozon'],
+            "sku" => (int) $product['sku_ozon']
+        ];
+
+        $result = $this->request(self::ADD_PRODUCT_BARCODE, $params);
+
+
+        // Журнал
+        $log['params'] = $params;
+        $log['result'] = $result;
+
+        $this->log($log, $product['sku_ozon'], self::ADD_PRODUCT_BARCODE);
+
+        return $result;
     }
 
     /**
@@ -272,9 +358,9 @@ class OzonSeller {
         $price = ($price + (($price * $this->percent) / 100));
         $price = round($price, intval($this->format));
 
-        if(empty($price))
-            $price=null;
-        
+        if (empty($price))
+            $price = 0;
+
         return $price;
     }
 
@@ -283,15 +369,11 @@ class OzonSeller {
      */
     public function setProductPrice($products) {
 
-        if (is_array($products)) {
-            foreach ($products as $product) {
+        if ($this->export != 2) {
 
-                // Если нет OZON ID
-                if (empty($product['export_ozon_id'])) {
-                    $info = $this->sendProductsInfo($product)['result']['items'][0];
-                } else {
-
-                    $info['product_id'] = $product['export_ozon_id'];
+            if (is_array($products)) {
+                $n = 0;
+                foreach ($products as $product) {
 
                     // Ключ обновления артикул
                     if ($this->type == 2) {
@@ -299,46 +381,55 @@ class OzonSeller {
                     } else {
                         $info['offer_id'] = $product['id'];
                     }
-                }
 
-                // price columns
-                $price = $product['price'];
-                $oldprice = $product['price_n'];
+                    // price columns
+                    $price = $product['price'];
+                    $oldprice = $product['price_n'];
 
-                if (!empty($product['price_ozon'])) {
-                    $price = $product['price_ozon'];
-                } elseif (!empty($product['price' . (int) $this->price])) {
-                    $price = $product['price' . (int) $this->price];
-                }
-
-                if ($this->fee > 0) {
-                    if ($this->fee_type == 1) {
-                        $price = $price - ($price * $this->fee / 100);
-                        $oldprice = $oldprice - ($oldprice * $this->fee / 100);
-                    } else {
-                        $price = $price + ($price * $this->fee / 100);
-                        $oldprice = $oldprice + ($oldprice * $this->fee / 100);
+                    if (!empty($product['price_ozon'])) {
+                        $price = $product['price_ozon'];
+                    } elseif (!empty($product['price' . (int) $this->price])) {
+                        $price = $product['price' . (int) $this->price];
                     }
+
+                    if ($this->fee > 0) {
+                        if ($this->fee_type == 1) {
+                            $price = $price - ($price * $this->fee / 100);
+                            $oldprice = $oldprice - ($oldprice * $this->fee / 100);
+                        } else {
+                            $price = $price + ($price * $this->fee / 100);
+                            $oldprice = $oldprice + ($oldprice * $this->fee / 100);
+                        }
+                    }
+
+                    $params['prices'][$n] = [
+                        'offer_id' => PHPShopString::win_utf8($info['offer_id']),
+                        'price' => (string) $this->price($price, $product['baseinputvaluta']),
+                        'min_price' => (string) $this->price($price, $product['baseinputvaluta']),
+                        'old_price' => (string) $this->price($oldprice, $product['baseinputvaluta']),
+                        'price_strategy_enabled' => (string) "DISABLED",
+                        'auto_action_enabled' => (string) "DISABLED",
+                    ];
+
+                    // OZON ID
+                    if (!empty($product['export_ozon_id'])) {
+                        $params['prices'][$n]['product_id'] = $product['export_ozon_id'];
+                    }
+
+                    $n++;
                 }
 
-                $params['prices'][] = [
-                    'offer_id' => PHPShopString::win_utf8($info['offer_id']),
-                    'product_id' => $info['product_id'],
-                    'price' => (string) $this->price($price, $product['baseinputvaluta']),
-                    'old_price' => (string) $this->price($oldprice, $product['baseinputvaluta']),
-                ];
+                $result = $this->request(self::UPDATE_PRODUCT_PRICES, $params);
             }
 
-            $result = $this->request(self::UPDATE_PRODUCT_PRICES, $params);
+            // Журнал
+            $log['params'] = $params;
+            $log['result'] = $result;
+
+            $this->log($log, $product['id'], self::UPDATE_PRODUCT_PRICES);
+
+            return $result;
         }
-
-        // Журнал
-        $log['params'] = $params;
-        $log['result'] = $result;
-
-        $this->log($log, $product['id'], self::UPDATE_PRODUCT_PRICES);
-
-        return $result;
     }
 
     /**
@@ -346,15 +437,11 @@ class OzonSeller {
      */
     public function setProductStock($products, $warehouse) {
 
-        if (is_array($products)) {
-            foreach ($products as $product) {
+        if ($this->export != 1) {
 
-                // Если нет OZON ID
-                if (empty($product['export_ozon_id'])) {
-                    $info = $this->sendProductsInfo($product)['result']['items'][0];
-                } else {
-
-                    $info['product_id'] = $product['export_ozon_id'];
+            if (is_array($products)) {
+                $n = 0;
+                foreach ($products as $product) {
 
                     // Ключ обновления артикул
                     if ($this->type == 2) {
@@ -362,29 +449,35 @@ class OzonSeller {
                     } else {
                         $info['offer_id'] = $product['id'];
                     }
+
+                    if (empty($product['enabled']) or $product['items'] < 0)
+                        $product['items'] = 0;
+
+                    $params['stocks'][$n] = [
+                        'offer_id' => $info['offer_id'],
+                        'stock' => (int) $product['items'],
+                        'warehouse_id' => $warehouse
+                    ];
+
+                    // OZON ID
+                    if (!empty($product['export_ozon_id'])) {
+                        $params['stocks'][$n]['product_id'] = $product['export_ozon_id'];
+                    }
+
+                    $n++;
                 }
 
-                if (empty($product['enabled']) or $product['items'] < 0)
-                    $product['items'] = 0;
-
-                $params['stocks'][] = [
-                    'offer_id' => $info['offer_id'],
-                    'product_id' => $info['product_id'],
-                    'stock' => (int) $product['items'],
-                    'warehouse_id' => $warehouse
-                ];
+                $result = $this->request(self::UPDATE_PRODUCT_STOCKS, $params);
             }
 
-            $result = $this->request(self::UPDATE_PRODUCT_STOCKS, $params);
+            // Журнал
+            $log['params'] = $params;
+            $log['result'] = $result;
+
+            $this->log($log, $product['id'], self::UPDATE_PRODUCT_STOCKS);
+
+            return $result;
         }
-
-        // Журнал
-        $log['params'] = $params;
-        $log['result'] = $result;
-
-        $this->log($log, $product['id'], self::UPDATE_PRODUCT_STOCKS);
-
-        return $result;
     }
 
     /**
@@ -502,14 +595,19 @@ class OzonSeller {
     /**
      * Атрибуты товара из Ozon
      */
-    public function getProductAttribures($product_id, $flag = 'product_id') {
+    public function getProductAttribures($product_id, $flag = 'product_id', $limit = 1) {
+
+        if (!is_array($product_id))
+            $product = [$product_id];
+        else
+            $product = $product_id;
 
         $params = [
             'filter' => [
-                $flag => [$product_id],
+                $flag => $product_id,
                 'visibility' => 'ALL',
             ],
-            'limit' => 1,
+            'limit' => $limit,
         ];
 
         $result = $this->request(self::GET_PRODUCT_ATTRIBUTES, $params);
@@ -564,6 +662,47 @@ class OzonSeller {
     }
 
     /**
+     *  Список данных по товарам из Ozon
+     */
+    public function getProductInfoList($offer_id = null, $product_id = null, $sku = null) {
+
+        if (!empty($offer_id)) {
+
+            if (is_array($offer_id))
+                $params['offer_id'] = $offer_id;
+            else
+                $params['offer_id'] = [$offer_id];
+        }
+
+        if (!empty($product_id)) {
+
+            if (is_array($product_id))
+                $params['product_id'] = $product_id;
+            else
+                $params['product_id'] = [$product_id];
+        }
+
+        if (!empty($sku)) {
+
+            if (is_array($sku))
+                $params['sku'] = $sku;
+            else
+                $params['sku'] = [$sku];
+        }
+
+
+        $result = $this->request(self::GET_PRODUCT_INFO_LIST, $params);
+
+        // Журнал
+        $log['params'] = $params;
+        $log['result'] = $result;
+
+        $this->log($log, 0, self::GET_PRODUCT_INFO_LIST);
+
+        return $result;
+    }
+
+    /**
      *  Список товаров из Ozon
      */
     public function getProductList($visibility = "ALL", $offer_id = null, $product_id = null, $limit = null) {
@@ -578,11 +717,21 @@ class OzonSeller {
             'limit' => $limit,
         ];
 
-        if (!empty($offer_id))
-            $params['filter']['offer_id'] = [$offer_id];
+        if (!empty($offer_id)) {
 
-        if (!empty($product_id))
-            $params['filter']['product_id'] = [$product_id];
+            if (is_array($offer_id))
+                $params['filter']['offer_id'] = $offer_id;
+            else
+                $params['filter']['offer_id'] = [$offer_id];
+        }
+
+        if (!empty($product_id)) {
+
+            if (is_array($product_id))
+                $params['filter']['product_id'] = $product_id;
+            else
+                $params['filter']['product_id'] = [$product_id];
+        }
 
 
 
@@ -731,7 +880,7 @@ class OzonSeller {
                 // Название товара
                 $list[] = [
                     'complex_id' => 0,
-                    'id' => (int)4180,
+                    'id' => (int) 4180,
                     'values' => [0 => ['value' => (string) PHPShopString::win_utf8($product['name'])]],
                 ];
 
@@ -747,8 +896,8 @@ class OzonSeller {
                 $dictionary_value_id = $this->getAttributesValues(8229, $category_ozonseller, $type, false, $category->getParam('category_ozonseller'));
                 $list[] = [
                     'complex_id' => 0,
-                    'id' => (int)8229,
-                    'values' => [0 => ['value' => (string) PHPShopString::win_utf8($type), 'dictionary_value_id' => (int)$dictionary_value_id]],
+                    'id' => (int) 8229,
+                    'values' => [0 => ['value' => (string) PHPShopString::win_utf8($type), 'dictionary_value_id' => (int) $dictionary_value_id]],
                 ];
 
                 if (is_array($arrayVendor))
@@ -760,6 +909,7 @@ class OzonSeller {
                           'value' => PHPShopString::win_utf8($product['name']),
                           ];
                           } */
+
 
                         if (!empty($arrayVendorValue[$idCategory]['name'])) {
                             if (!empty($value['name'])) {
@@ -773,23 +923,23 @@ class OzonSeller {
 
                                 if (is_array($arr)) {
                                     foreach ($arr as $k => $v) {
-                                        
-                                        if(empty($v))
+
+                                        if (empty($v))
                                             continue;
-                                        
+
                                         $values[$k] = [
                                             "value" => PHPShopString::win_utf8($v)
                                         ];
                                         $dictionary_value_id = $this->getAttributesValues($value['attribute_ozonseller'], $category_ozonseller, $v, false, $category->getParam('category_ozonseller'));
                                         if (!empty($dictionary_value_id))
-                                            $values[$k]["dictionary_value_id"] = (int)$dictionary_value_id;
+                                            $values[$k]["dictionary_value_id"] = (int) $dictionary_value_id;
                                     }
                                 }
                             }
                         }
 
-                        if (!empty($value['attribute_ozonseller']) and ! empty($values))
-                            $list[] = ["id" => (int)$value['attribute_ozonseller'], 'complex_id' => 0, "values" => $values];
+                        if (!empty($value['attribute_ozonseller']) and ! empty($values) and $value['attribute_ozonseller'] != 8229)
+                            $list[] = ["id" => (int) $value['attribute_ozonseller'], 'complex_id' => 0, "values" => $values];
                     }
 
                 return ['attributes' => $list, 'category' => $category_ozonseller];
@@ -918,13 +1068,13 @@ class OzonSeller {
 
             $params['items'][] = [
                 "attributes" => $this->getAttributes($prod)['attributes'],
-                "barcode" => (string) $prod['barcode_ozon'],
-                "description_category_id" => (int)$this->getAttributes($prod)['category'],
+                //"barcode" => (string) $prod['barcode_ozon'],
+                "description_category_id" => (int) $this->getAttributes($prod)['category'],
                 "color_image" => "",
                 "complex_attributes" => [],
-                "depth" => (int)$prod['length'],
+                "depth" => (int) $prod['length'],
                 "dimension_unit" => "cm",
-                "height" => (int)$prod['height'],
+                "height" => (int) $prod['height'],
                 "images" => $this->getImages($prod['id'], $prod['pic_big']),
                 "images360" => [],
                 "name" => PHPShopString::win_utf8($prod['name']),
@@ -935,17 +1085,16 @@ class OzonSeller {
                 "price" => (string) $this->price($price, $prod['baseinputvaluta']),
                 "primary_image" => "",
                 "vat" => (string) $this->vat,
-                "weight" => (int)$prod['weight'],
+                "weight" => (int) $prod['weight'],
                 "weight_unit" => "g",
-                "width" => (int)$prod['width']
+                "width" => (int) $prod['width']
             ];
 
 
             $result = $this->request(self::IMPORT_PRODUCT, $params);
 
             // Лог JSON
-            $this->log_json(json_encode($params), 0, 'sendProducts JSON');
-            
+            //$this->log_json(json_encode($params), 0, 'sendProducts JSON');
             // Журнал
             $log['params'] = $params;
             $log['result'] = $result;

@@ -104,7 +104,7 @@ function actionStart() {
 
     if (!empty($json_data['data']) and is_array($json_data['data'])) {
 
-        $PHPShopInterface->setRow('Итого и средние', array('name' => $json_data['totals'][1], 'align' => 'center'), array('name' => $json_data['totals'][0], 'align' => 'center'), array('name' => round($json_data['totals'][2], 2), 'align' => 'center'), array('name' => round($json_data['totals'][3], 2), 'align' => 'center'));
+        $PHPShopInterface->setRow(__('Итого и средние'), array('name' => $json_data['totals'][1], 'align' => 'center'), array('name' => $json_data['totals'][0], 'align' => 'center'), array('name' => round($json_data['totals'][2], 2), 'align' => 'center'), array('name' => round($json_data['totals'][3], 2), 'align' => 'center'));
 
         $json_data = $json_data['data'];
 

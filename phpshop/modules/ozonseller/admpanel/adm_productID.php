@@ -35,11 +35,11 @@ function addOzonsellerProductTab($data) {
 
     $tab .= $PHPShopGUI->setField('Цена OZON', $PHPShopGUI->setInputText(null, 'price_ozon_new', $data['price_ozon'], 150, $valuta_def_name), 2);
     $tab .= $PHPShopGUI->setField("Штрихкод", $PHPShopGUI->setInputText(null, 'barcode_ozon_new', $data['barcode_ozon'], 150));
-    $tab .= $PHPShopGUI->setField("SKU OZON", $PHPShopGUI->setInputText(null, 'sku_ozon_new', $data['sku_ozon'], 150),1,'Используется для ссылки на товар в OZON');
+    $tab .= $PHPShopGUI->setField("SKU OZON", $PHPShopGUI->setInputText(null, 'sku_ozon_new', $data['sku_ozon'], 150), 1, 'Используется для ссылки на товар в OZON');
 
 
     if (!empty($data['export_ozon']))
-        $tab .= $PHPShopGUI->setField('OZON ID', $PHPShopGUI->setInputText(null, 'export_ozon_id_new', $data['export_ozon_id'], 150),1,'Используется для обновления товара в OZON');
+        $tab .= $PHPShopGUI->setField('OZON ID', $PHPShopGUI->setInputText(null, 'export_ozon_id_new', $data['export_ozon_id'], 150), 1, 'Используется для обновления товара в OZON');
 
     $PHPShopGUI->addTab(array("OZON", $tab, true));
 }
@@ -88,6 +88,10 @@ function OzonsellerUpdate($post) {
                         // SKU для ссылки на товар OZON
                         $_POST['sku_ozon_new'] = $OzonSeller->getProduct($info['product_id'])['result']['sku'];
 
+                        // Передача штрихкода
+                        if (!empty($_POST['barcode_ozon_new']) and ! empty($_POST['sku_ozon_new']))
+                            $OzonSeller->addBarcode(['barcode_ozon' => $_POST['barcode_ozon_new'], 'sku_ozon' => $_POST['sku_ozon_new']]);
+
                         $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_id_new' => $info['product_id'], 'sku_ozon_new' => $_POST['sku_ozon_new']], ['id' => '=' . (int) $data['id']]);
                         $_POST['export_ozon_id_new'] = $info['product_id'];
                         $OzonSeller->clean_log($data['id']);
@@ -125,8 +129,16 @@ function OzonsellerUpdate($post) {
             else {
 
                 // SKU для ссылки на товар OZON
-                if (empty($_POST['sku_ozon_new']))
-                    $_POST['sku_ozon_new'] = $OzonSeller->getProduct($data['export_ozon_id'])['result']['sku'];
+                if (empty($_POST['sku_ozon_new'])) {
+
+                    $getProduct = $OzonSeller->getProduct($data['export_ozon_id'])['result'];
+                    $_POST['sku_ozon_new'] = $getProduct['sku'];
+
+                }
+
+                // Штрихкод
+                if (!empty($_POST['barcode_ozon_new']) and !empty($_POST['sku_ozon_new']))
+                    $OzonSeller->addBarcode(['barcode_ozon' => $_POST['barcode_ozon_new'], 'sku_ozon' => $_POST['sku_ozon_new']]);
 
                 if (isset($_POST['items_new']))
                     $data['items'] = $_POST['items_new'];

@@ -1,1 +1,1 @@
-<span class="badge badge-pill badge-dark">{ешђ}</span>
+<span class="sale bg-dark text-white" style="position: unset;">{ешђ}</span>

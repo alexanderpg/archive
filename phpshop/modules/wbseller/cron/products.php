@@ -67,31 +67,33 @@ if (is_array($data)) {
         }
 
         $prices[] = [
-            'nmId' => (int) $prod['export_wb_id'],
+            'nmID' => (int) $prod['export_wb_id'],
             'price' => (int) $WbSeller->price($price, $prod['baseinputvaluta']),
+            'discount' => (int) 0
         ];
 
         if (empty($prod['barcode_wb']))
             $prod['barcode_wb'] = $prod['uid'];
 
-        if($prod['items'] < 0)
-            $prod['items']=0;
-        
+        if ($prod['items'] < 0)
+            $prod['items'] = 0;
+
         $stocks[] = [
             'barcode_wb' => (string) $prod['barcode_wb'],
             'uid' => (string) PHPShopString::win_utf8($prod['uid']),
             'enabled' => (int) $prod['enabled'],
-            'items' => (int) $prod['items'],
-            'price' => (int) $WbSeller->price($price, $prod['baseinputvaluta']),
+            'items' => (int) $prod['items']
         ];
     }
 
 
     // Цены
-    $result = $WbSeller->sendPrices(['data'=>$prices]);
+    if (is_array($prices))
+        $result = $WbSeller->sendPrices(['data' => $prices]);
 
     // Остатки
-    $WbSeller->setProductStock($stocks);
+    if (is_array($stocks))
+        $WbSeller->setProductStock($stocks);
 
     if (!empty($result['uploadId']))
         echo "Цены и остатки успешно отправлены для " . count($prices) . " товаров";

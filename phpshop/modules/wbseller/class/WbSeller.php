@@ -20,6 +20,7 @@ class WbSeller {
     const GET_WAREHOUSE_LIST = '/api/v3/warehouses';
     const UPDATE_PRODUCT_STOCKS = '/api/v3/stocks/';
     const UPDATE_PRODUCT_PRICES = 'https://discounts-prices-api.wb.ru/api/v2/upload/task';
+    const UPDATE_PRODUCT_PRICES_SIZE = 'https://discounts-prices-api.wb.ru/api/v2/upload/task/size';
     const GET_ORDER_LIST = '/api/v3/orders';
     const GET_ORDER_NEW = '/api/v3/orders/new';
 
@@ -556,6 +557,31 @@ class WbSeller {
 
         $this->log($log, null, self::UPDATE_PRODUCT_PRICES);
 
+        // Проверка на размеры
+        /*
+        if ($result['errorText'] == 'No goods for process') {
+
+            $getProductPrice = $this->getProductPrice($params['data'][0]['nmID']);
+            $sizeID = $getProductPrice['data']['listGoods'][0]['sizes'][0]['sizeID'];
+
+            if (!empty($sizeID)) {
+
+                $prices[] = [
+                    'nmID' => (int) $params['data'][0]['nmID'],
+                    'sizeID' => (int) $sizeID,
+                    'price' => (int) $params['data'][0]['price'],
+                ];
+
+                $result = $this->request(self::UPDATE_PRODUCT_PRICES_SIZE, ['data' => $prices]);
+
+                // Журнал
+                $log['params'] = ['data' => $prices];
+                $log['result'] = $result;
+
+                $this->log($log, null, self::UPDATE_PRODUCT_PRICES_SIZE);
+            }
+        }*/
+
         return $result;
     }
 
@@ -609,7 +635,7 @@ class WbSeller {
             }
 
             //if (empty($prod['barcode_wb']))
-                //$prod['barcode_wb'] = $prod['uid'];
+            //$prod['barcode_wb'] = $prod['uid'];
 
             $variants = [[
             "vendorCode" => (string) PHPShopString::win_utf8($prod['uid']),

@@ -24,8 +24,7 @@ function marketplacesRssHook($obj) {
     }
 }
 
-function setProducts_google_hook($obj, $data)
-{
+function setProducts_google_hook($obj, $data) {
     $add = null;
 
     // Brand из характеристики, если не задано принудительно в карточке товара.
@@ -33,22 +32,22 @@ function setProducts_google_hook($obj, $data)
         foreach ($data['val']['vendor_array'] as $v) {
             // Brand
             if (!empty($obj->brand_array[$v[0]])) {
-                $add .='<g:brand>' . $obj->brand_array[$v[0]] . '</g:brand>';
+                $add .= '<g:brand>' . $obj->brand_array[$v[0]] . '</g:brand>';
             }
-    }
+        }
 
     // Brand из карточки товара
     if (!empty($data['val']['vendor_name']))
-        $add .='<g:brand>' . $data['val']['vendor_name'] . '</g:brand>';
+        $add .= '<g:brand>' . $data['val']['vendor_name'] . '</g:brand>';
 
-    if(!empty($data['val']['barcode'])) {
+    if (!empty($data['val']['barcode'])) {
         $add .= '<g:gtin>' . $data['val']['barcode'] . '</g:gtin>';
     }
 
-    if(!empty($data['val']['vendor_code'])) {
+    if (!empty($data['val']['vendor_code'])) {
         $add .= '<g:mbn>' . $data['val']['vendor_code'] . '</g:mbn>';
     }
-    
+
     // condition
     switch ($data['val']['condition']) {
         case 2:
@@ -70,21 +69,26 @@ function setProducts_google_hook($obj, $data)
     // price columns
     $price = $data['val']['price'];
     $fee = 0;
+    $markup = (int) $options['price_ali_markup'];
 
-    if(!empty($data['val']['price_google'])) {
+    if (!empty($data['val']['price_google'])) {
         $price = $data['val']['price_google'];
-    } elseif(isset($options['price_google']) && (int) $options['price_google'] > 1 && !empty($data['val']['price' . (int) $options['price_google']])) {
+    } elseif (isset($options['price_google']) && (int) $options['price_google'] > 1 && !empty($data['val']['price' . (int) $options['price_google']])) {
         $price = $data['val']['price' . (int) $options['price_google']];
     }
-    if(isset($options['price_google_fee']) && (float) $options['price_google_fee'] > 0) {
+    if (isset($options['price_google_fee']) && (float) $options['price_google_fee'] > 0) {
         $fee = (float) $options['price_google_fee'];
     }
 
-    if($fee > 0) {
+    // Наценка руб.
+    $price = $price + (int) $markup;
+
+    // Наценка %
+    if ($fee > 0) {
         $price = $price + ($price * $fee / 100);
     }
 
-    $data['xml'] = str_replace('<g:price>' . $data['val']['price'] . ' '.$obj->defvalutaiso.'</g:price>', '<g:price>' . $price . ' '.$obj->defvalutaiso.'</g:price>', $data['xml']);
+    $data['xml'] = str_replace('<g:price>' . $data['val']['price'] . ' ' . $obj->defvalutaiso . '</g:price>', '<g:price>' . $price . ' ' . $obj->defvalutaiso . '</g:price>', $data['xml']);
 
     return $data['xml'];
 }

@@ -393,7 +393,7 @@ class PHPShopShop extends PHPShopShopCore {
         } else {
             $cat = 0;
             $parent_category_row = array(
-                'name' => 'Каталог',
+                'name' => __('Каталог'),
                 'id' => 0
             );
         }
@@ -1157,7 +1157,7 @@ function CID_Category($mode = false) {
     } else {
         $cat = 0;
         $parent_category_row = array(
-            'name' => 'Каталог',
+            'name' => __('Каталог'),
             'id' => 0
         );
     }

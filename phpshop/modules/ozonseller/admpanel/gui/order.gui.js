@@ -1,4 +1,38 @@
 $().ready(function () {
+    
+    // Удалить с выбранными
+    $("body").on('click', ".select-action .select-deactivation", function (event) {
+        event.preventDefault();
+
+        var chk = $('input[name="items"]:checkbox:checked').length;
+        var i = 0;
+
+        if (chk > 0) {
+
+            $.MessageBox({
+                buttonDone: "OK",
+                buttonFail: locale.cancel,
+                message: locale.confirm_wishlist_delete
+            }).done(function () {
+
+                $('input[name="items"]:checkbox:checked').each(function () {
+                    var id = $(this).closest('.data-row');
+                    $('.status_edit_' + $(this).attr('data-id')).ajaxSubmit({
+                        dataType: "json",
+                        success: function (json) {
+                            if (json['success'] == 1) {
+                                id.remove();
+                                showAlertMessage(locale.save_done);
+                                i++;
+                            } else
+                                showAlertMessage(locale.save_false, true);
+                        }
+                    });
+                });
+            })
+        } else
+            alert(locale.select_no);
+    });
 
     // Остановить автоматизацмю
     $(".success-notification .close").on('click', function (event) {

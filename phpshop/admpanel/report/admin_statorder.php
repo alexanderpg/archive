@@ -152,7 +152,7 @@ function actionStart() {
     if (!empty($array_order_date) and is_array($array_order_date))
         foreach ($array_order_date as $date => $sum) {
             $canvas_value.='"' . $sum . '",';
-            $canvas_label.='"' . $date . '",';
+            $canvas_label.='"' . __($date) . '",';
         }
 
     if (empty($canvas_value))

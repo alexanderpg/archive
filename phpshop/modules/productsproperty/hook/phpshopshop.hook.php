@@ -8,34 +8,56 @@ function productsproperty_UID_hook($obj, $row, $rout) {
 
         if (is_array($productsproperty_array)) {
 
-            $list = null;
+            $list = $forma = null;
 
             foreach ($productsproperty_array as $n => $property) {
 
-                if (!empty($property['name']))
-                    $list .= PHPShopText::h5($property['name'], 'property-name');
+                if (!empty($property['name'])) {
+                    $obj->set('productsproperty_title', $property['name']);
+                    $list = null;
+                }
+                else continue;
 
                 foreach ($property['property'] as $k => $val) {
+
+
                     if (!empty($val)) {
 
-                        if ($row['id'] == $property['id'][$k]) {
-                            $list .= PHPShopText::button($val, false, $class = 'btn btn-default property-value-' . ($n + 1) . ' active property-active') . ' ';
-                        } else {
+                        $PHPShopProduct = new PHPShopProduct($property['id'][$k]);
 
-                            $seo_name = (new PHPShopProduct($property['id'][$k]))->getParam('prod_seo_name');
+                        if ($row['id'] == $property['id'][$k]) {
+                            $class = 'active property-active';
+                            $link = 'javascript:void(0);';
+                        } else {
+                            $class = null;
+
+                            $seo_name = $PHPShopProduct->getParam('prod_seo_name');
                             if (!empty($seo_name))
                                 $link = '/id/' . $seo_name . '-' . $property['id'][$k] . '.html';
                             else
                                 $link = '/shop/UID_' . $property['id'][$k] . '.html';
-
-                            $list .= PHPShopText::a($link, $val, $val, false, false, false, 'btn btn-default property-value-' . ($n + 1)) . ' ';
                         }
+
+
+                        $price = $PHPShopProduct->getPrice();
+
+
+
+                        //$list .= PHPShopText::a($link, $val, $val, false, false, false, 'btn btn-default property-value-' . ($n + 1)) . ' ';
+                        $obj->set('productsproperty_link', $link);
+                        $obj->set('productsproperty_class', $class);
+                        $obj->set('productsproperty_num', ($n + 1));
+                        $obj->set('productsproperty_name', $val);
+                        $obj->set('productsproperty_price', $price);
+                        $list .= PHPShopParser::file($GLOBALS['SysValue']['templates']['productsproperty']['product'], true, false, true);
                     }
                 }
+                $obj->set('productsproperty_list', $list);
+                $forma .= PHPShopParser::file($GLOBALS['SysValue']['templates']['productsproperty']['forma'], true, false, true);
             }
 
             if (!empty($list)) {
-                $obj->set('productsproperty_list', $list);
+                $obj->set('productsproperty_forma', $forma);
                 $obj->set('productsproperty', PHPShopParser::file($GLOBALS['SysValue']['templates']['productsproperty']['productsproperty'], true, false, true));
             }
         }

@@ -82,7 +82,7 @@ function actionStart() {
         $data['category'] = intval($_GET['cat']);
 
     if (empty($_GET['id'])) {
-        $data['ed_izm'] = $ed_izm = 'רע.';
+        $data['ed_izm'] = $ed_izm = __('רע.');
         $data['baseinputvaluta'] = $PHPShopSystem->getDefaultOrderValutaId();
         $data['name'] = __('Íמגûי עמגאנ');
         $data['enabled'] = 1;

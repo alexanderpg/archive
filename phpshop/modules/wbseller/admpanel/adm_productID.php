@@ -75,12 +75,13 @@ function WbsellerUpdate() {
             }
 
             // Информация
-            $export_wb_id = $WbSeller->getProduct($data['uid'])['cards'][0]['nmID'];
-
+            $getProduct = $WbSeller->getProduct($data['uid'])['cards'][0];
+            $export_wb_id = $getProduct['nmID'];
+            $barcode_wb = $getProduct['sizes'][0]['skus'][0];
 
             if (!empty($export_wb_id)) {
                 $_POST['export_wb_id_new'] = $data['export_wb_id'] = $export_wb_id;
-                $PHPShopOrm->update(['export_wb_id_new' => $export_wb_id], ['id' => '=' . (int) $_POST['rowID']]);
+                $PHPShopOrm->update(['export_wb_id_new' => $export_wb_id,'barcode_wb_new'=>$barcode_wb], ['id' => '=' . (int) $_POST['rowID']]);
 
                 // Фото
                 $WbSeller->sendImages($data);
@@ -88,6 +89,11 @@ function WbsellerUpdate() {
         }
         // Товар выгружен, обновление цен и остатков
         else {
+
+            // SKU
+            if (empty($_POST['barcode_wb_new'])) {
+                $_POST['barcode_wb_new'] = $WbSeller->getProduct($data['uid'])['cards'][0]['sizes'][0]['skus'][0];
+            }
 
             // Склад
             $WbSeller->setProductStock([$data]);
@@ -110,11 +116,12 @@ function WbsellerUpdate() {
             }
 
             $prices[] = [
-                'nmId' => (int) $data['export_wb_id'],
+                'nmID' => (int) $data['export_wb_id'],
                 'price' => (int) $WbSeller->price($price, $data['baseinputvaluta']),
+                'discount' => (int) 0
             ];
 
-            $WbSeller->sendPrices($prices);
+            $WbSeller->sendPrices(['data' => $prices]);
         }
     } else
         $PHPShopOrm->update(['export_wb_task_status_new' => '', 'export_wb_id_new' => 0], ['id' => '=' . (int) $_POST['rowID']]);

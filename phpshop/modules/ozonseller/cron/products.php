@@ -39,7 +39,7 @@ PHPShopObj::loadClass("modules");
 $PHPShopModules = new PHPShopModules($_classPath . "modules/");
 
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-$data = $PHPShopOrm->getList(['*'], ['export_ozon' => '>0', 'export_ozon_id' => '>0'], ['order' => 'datas desc'], ['limit' => 100]);
+$data = $PHPShopOrm->getList(['*'], ['export_ozon' => "='1'"], ['order' => 'datas desc'], ['limit' => 100]);
 $count = 0;
 if (is_array($data)) {
 
@@ -62,6 +62,6 @@ if (is_array($data)) {
                 $count++;
         }
 
-    echo "Цены и остатки успешно отправлены для " . $count . " товаров";
+    echo "Данные успешно отправлены для " . $count . " товаров";
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 
-$TitlePage="Журнал выполнения задач Cron";
+$TitlePage=__("Журнал выполнения задач Cron");
 
 function actionStart() {
     global $PHPShopInterface,$PHPShopModules,$TitlePage,$select_name;
@@ -15,7 +15,7 @@ function actionStart() {
     if(is_array($data))
         foreach($data as $row) {
 
-            $PHPShopInterface->setRow(PHPShopDate::dataV($row['date']), array('name' => $row['name'], 'link' => '?path=modules.dir.cron&id=' . $row['job_id'], 'align' => 'left'),$row['path'],$row['status']);
+            $PHPShopInterface->setRow(PHPShopDate::dataV($row['date']), array('name' => $row['name'], 'link' => '?path=modules.dir.cron&id=' . $row['job_id'], 'align' => 'left'),$row['path'],__($row['status']));
         }
 
     $PHPShopInterface->Compile();

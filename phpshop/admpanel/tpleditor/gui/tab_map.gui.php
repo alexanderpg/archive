@@ -3,6 +3,9 @@
 // Обертка парсера
 function MapValueReturn($m) {
     global $MapValue;
+    
+    if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+        $MapValue[$m[1]]['description']=PHPShopString::win_utf8($MapValue[$m[1]]['description'],true);
 
     $result = 'data-toggle="popover" data-title="@' . $m[1] . '@" data-content="<p>' . $MapValue[$m[1]]['description'] . '</p>';
 
@@ -12,7 +15,7 @@ function MapValueReturn($m) {
     } else
         $search = null;
 
-    $result .= '<div><span class=\'glyphicon glyphicon-share-alt\'></span> <a href=\'?path=tpleditor&name=' . $_GET['name'] . '&file=/' . $MapValue[$m[1]]['path'] . $search . '\'><code>' . $MapValue[$m[1]]['path'] . '</code></a></div>" data-trigger="click"';
+    $result .= '<div><span class=\'glyphicon glyphicon-share-alt\'></span> <a href=\'?path=tpleditor&name=' . $_GET['name'] . '&file=/' . $MapValue[$m[1]]['path'] . $search . '\'><code>' . $MapValue[$m[1]]['path'] . '</code></a></div>"  data-trigger="click"';
 
 
     return $result;

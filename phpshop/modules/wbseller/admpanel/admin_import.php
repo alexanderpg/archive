@@ -61,7 +61,7 @@ function actionStart() {
                 $data[$products_list['nmID']]['category']=$products_list['subjectName'];  
                 $data[$products_list['nmID']]['name'] = PHPShopString::utf8_win1251($products_list['title']);
                 $data[$products_list['nmID']]['status'] = 'wait';
-                $data[$products_list['nmID']]['link'] = '?path=modules.dir.wbseller.import&id=' . $products_list['nmUUID'];
+                $data[$products_list['nmID']]['link'] = '?path=modules.dir.wbseller.import&id=' . $products_list['vendorCode'];
                 $data[$products_list['nmID']]['image']=$products_list['photos'][0]['tm'];
                 $data[$products_list['nmID']]['vendorCode'] = $products_list['vendorCode'];
             }

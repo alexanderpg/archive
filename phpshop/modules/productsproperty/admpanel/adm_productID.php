@@ -46,6 +46,27 @@ function addProductIDProductsproperty($data) {
             '<span style="float:left">&nbsp;</span>' .
             $PHPShopGUI->setInputText(null, 'productsproperty_array[1][property][3]', $productsproperty_array[1]['property'][3], 90, false, 'left')
     );
+    
+    $Tab .= $PHPShopGUI->setField('Наименование свойства 3', $PHPShopGUI->setInputText(null, 'productsproperty_array[2][name]', $productsproperty_array[2]['name']));
+    $Tab .= $PHPShopGUI->setField('ID товаров', 
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][id][0]', $productsproperty_array[2]['id'][0], 90, '<a href="#" data-target="[name=\'productsproperty_array[2][id][0]\']" class="tag-search"><span class="glyphicon glyphicon-search"></span></a>', 'left') .
+            '<span style="float:left">&nbsp;</span>' .
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][id][1]', $productsproperty_array[2]['id'][1], 90, '<a href="#" data-target="[name=\'productsproperty_array[2][id][1]\']" class="tag-search"><span class="glyphicon glyphicon-search"></span></a>', 'left') .
+            '<span style="float:left">&nbsp;</span>' .
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][id][2]', $productsproperty_array[2]['id'][2], 90, '<a href="#" data-target="[name=\'productsproperty_array[2][id][2]\']" class="tag-search"><span class="glyphicon glyphicon-search"></span></a>', 'left') .
+            '<span style="float:left">&nbsp;</span>' .
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][id][3]', $productsproperty_array[2]['id'][3], 90, '<a href="#" data-target="[name=\'productsproperty_array[2][id][3]\']" class="tag-search"><span class="glyphicon glyphicon-search"></span></a>', 'left')
+    );
+
+    $Tab .= $PHPShopGUI->setField('Названия отображений', 
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][property][0]', $productsproperty_array[2]['property'][0], 90, false, 'left') .
+            '<span style="float:left">&nbsp;</span>' .
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][property][1]', $productsproperty_array[2]['property'][1], 90, false, 'left') .
+            '<span style="float:left">&nbsp;</span>' .
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][property][2]', $productsproperty_array[2]['property'][2], 90, false, 'left') .
+            '<span style="float:left">&nbsp;</span>' .
+            $PHPShopGUI->setInputText(null, 'productsproperty_array[2][property][3]', $productsproperty_array[2]['property'][3], 90, false, 'left')
+    );
 
     $PHPShopGUI->addTab(array("Свойства", $Tab, true));
 }

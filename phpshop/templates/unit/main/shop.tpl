@@ -354,7 +354,7 @@
             <div class="container">
                 <div>
                     <div class="product-head page-header not-center">
-                        {Похожие товары}
+                        @productlist_title@
                     </div>
                     <div class="swiper-slider-wrapper">
                         <div class="swiper-button-prev-block">
@@ -370,6 +370,32 @@
                         <div class="swiper-container list-slider">
                             <div class="swiper-wrapper">
                                 <div class="row"> @productlist_list@</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+         <section class="specMain @php __hide('productlist_list'); php@ @hideSite@">
+            <div class="container">
+                <div>
+                    <div class="product-head page-header not-center">
+                        @productsimilar_title@
+                    </div>
+                    <div class="swiper-slider-wrapper">
+                        <div class="swiper-button-prev-block">
+                            <div class="swiper-button-prev btn-prev6">
+                                <i class="fa fa-angle-left" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="swiper-button-next-block">
+                            <div class="swiper-button-next btn-next6">
+                                <i class="fa fa-angle-right" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        <div class="swiper-container list-slider">
+                            <div class="swiper-wrapper">
+                                <div class="row"> @productsimilar_list@</div>
                             </div>
                         </div>
                     </div>

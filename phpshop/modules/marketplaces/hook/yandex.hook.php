@@ -38,7 +38,6 @@ function setProducts_marketplaces_hook($obj, $data) {
             // Цвет
             if (!empty($data['val']['color']))
                 $add .= '<cus_skucolor>' . $data['val']['color'] . '</cus_skucolor>';
-            
         } else {
 
             // Размер
@@ -72,6 +71,7 @@ function setProducts_marketplaces_hook($obj, $data) {
     // price columns
     $price = $data['val']['price'];
     $fee = 0;
+    $markup = 0;
 
     // Цена Сбермаркет
     if (Marketplaces::isSbermarket()) {
@@ -82,6 +82,7 @@ function setProducts_marketplaces_hook($obj, $data) {
         }
         if (isset($options['price_sbermarket_fee']) && (float) $options['price_sbermarket_fee'] > 0) {
             $fee = (float) $options['price_sbermarket_fee'];
+            $markup = (int) $options['price_sbermarket_markup'];
         }
     }
 
@@ -94,6 +95,7 @@ function setProducts_marketplaces_hook($obj, $data) {
         }
         if (isset($options['price_cdek_fee']) && (float) $options['price_cdek_fee'] > 0) {
             $fee = (float) $options['price_cdek_fee'];
+            $markup = (int) $options['price_cdek_markup'];
         }
     }
 
@@ -106,6 +108,7 @@ function setProducts_marketplaces_hook($obj, $data) {
         }
         if (isset($options['price_ali_fee']) && (float) $options['price_ali_fee'] > 0) {
             $fee = (float) $options['price_ali_fee'];
+            $markup = (int) $options['price_ali_markup'];
         }
 
         if (!empty($data['val']['length']))
@@ -116,6 +119,10 @@ function setProducts_marketplaces_hook($obj, $data) {
             $add .= '<height>' . $data['val']['height'] . '</height>';
     }
 
+    // Наценка руб.
+    $price = $price + (int) $markup;
+
+    // Наценка %
     if ($fee > 0) {
         $price = $price + ($price * $fee / 100);
     }
@@ -216,7 +223,7 @@ function setProducts_marketplaces_hook($obj, $data) {
 
     if (Marketplaces::isSbermarket())
         $add .= '<outlets><outlet id="1" instock="' . $data['val']['items'] . '"></outlet></outlets>';
-    
+
     if (Marketplaces::isCdek())
         $add .= '<count>' . $data['val']['items'] . '</count>';
 

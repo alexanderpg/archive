@@ -208,7 +208,7 @@ function actionStart() {
               </div>
                 <div class="panel-body" style="padding:0px 5px 0px 5px">
                  <div class="intro-canvas">
-                     <canvas id="canvas" data-title="посетителей"  data-value=\'[' . substr($canvas_value, 0, strlen($canvas_value) - 1) . ']\' data-label=\'[' . substr($canvas_label, 0, strlen($canvas_label) - 1) . ']\'></canvas>
+                     <canvas id="canvas" data-title="'.__('посетителей').'"  data-value=\'[' . substr($canvas_value, 0, strlen($canvas_value) - 1) . ']\' data-label=\'[' . substr($canvas_label, 0, strlen($canvas_label) - 1) . ']\'></canvas>
                  </div>
                </div>
           </div>

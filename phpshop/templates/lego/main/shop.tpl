@@ -87,8 +87,7 @@
                     <div class="col-md-12 col-xs-12 inner-nowbuy main">
 
                         <h2 class="product-head page-header">
-                            <a href="" title="@productlastview_title@">{Похожие товары}</a>
-
+                            @productlist_title@
                         </h2>
 
                         <div class="swiper-slider-wrapper">
@@ -105,6 +104,37 @@
                             <div class="swiper-container list-slider">
                                 <div class="swiper-wrapper">
                                     <div class="row"> @productlist_list@</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="spec @php __hide('productsimilar_list'); php@ @hideSite@">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 col-xs-12 inner-nowbuy main">
+
+                        <h2 class="product-head page-header">
+                            @productsimilar_title@
+                        </h2>
+
+                        <div class="swiper-slider-wrapper">
+                            <div class="swiper-button-prev-block">
+                                <div class="swiper-button-prev btn-prev5">
+                                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="swiper-button-next-block">
+                                <div class="swiper-button-next btn-next5">
+                                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="swiper-container list-slider">
+                                <div class="swiper-wrapper">
+                                    <div class="row"> @productsimilar_list@</div>
                                 </div>
                             </div>
                         </div>

@@ -72,7 +72,7 @@ function actionStart() {
 
         if (is_array($json_data)) {
 
-            $PHPShopInterface->setRow('Итого и средние', $json_data['totals'][0], $json_data['totals'][1], $json_data['totals'][2], round($json_data['totals'][3], 2) . '%', round($json_data['totals'][4], 2) . '%', round($json_data['totals'][5], 2), round($json_data['totals'][6] / 60, 2));
+            $PHPShopInterface->setRow(__('Итого и средние'), $json_data['totals'][0], $json_data['totals'][1], $json_data['totals'][2], round($json_data['totals'][3], 2) . '%', round($json_data['totals'][4], 2) . '%', round($json_data['totals'][5], 2), round($json_data['totals'][6] / 60, 2));
 
 
             $canvas_data = $json_data = $json_data['data'];
@@ -125,7 +125,7 @@ function actionStart() {
               </div>
                 <div class="panel-body" style="padding:0px 5px 0px 5px">
                  <div class="intro-canvas">
-                     <canvas id="canvas" data-title="посетителей"  data-value=\'[' . substr($canvas_value, 0, strlen($canvas_value) - 1) . ']\' data-label=\'[' . substr($canvas_label, 0, strlen($canvas_label) - 1) . ']\'></canvas>
+                     <canvas id="canvas" data-title="'.__('посетителей').'"  data-value=\'[' . substr($canvas_value, 0, strlen($canvas_value) - 1) . ']\' data-label=\'[' . substr($canvas_label, 0, strlen($canvas_label) - 1) . ']\'></canvas>
                  </div>
                </div>
           </div>
