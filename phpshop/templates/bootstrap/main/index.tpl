@@ -415,12 +415,13 @@
         <div class="cookie-message hide"><p></p><a href="#" class="btn btn-default btn-sm">Ok</a></div>
 
         <link rel="stylesheet" href="@pathTemplate@css/font-awesome.min.css"> 
+        <link href="@pathTemplateMin@css/bar.css" rel="stylesheet">
         <link rel="stylesheet" href="@pathTemplate@css/solid-menu.css"> 
         <link href="@pathTemplateMin@css/menu.css" rel="stylesheet">
         <script src="@pathTemplate@/js/jquery.maskedinput.min.js"></script>
         <link href="@pathTemplate@css/bootstrap-select.min.css" rel="stylesheet"> 
         <link href="@pathTemplate@css/suggestions.min.css" rel="stylesheet">
-        <link href="@pathTemplateMin@css/bar.css" rel="stylesheet">
+  
         <script src="@pathTemplate@/js/bootstrap.min.js"></script>
         <script src="@pathTemplate@/js/bootstrap-select.min.js"></script>
         <script src="@pathTemplate@/js/jquery.lazyloadxt.min.js"></script>

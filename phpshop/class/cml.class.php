@@ -2,7 +2,7 @@
 
 /**
  * Библиотека работы с CommerceML
- * @version 1.7
+ * @version 1.8
  * @package PHPShopClass
  * https://v8.1c.ru/tekhnologii/obmen-dannymi-i-integratsiya/standarty-i-formaty/protokol-obmena-s-saytom/
  * https://dev.1c-bitrix.ru/api_help/sale/xml/contragents.php
@@ -170,7 +170,7 @@ class PHPShopCommerceML {
 	</Каталог>';
 
         $xml = '<?xml version="1.0" encoding="windows-1251"?>
-<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . 'T'.date("H:i:s").'">
+<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . 'T' . date("H:i:s") . '">
     <Классификатор>
     <Ид>1</Ид>
     <Наименование>Классификатор (Основной каталог товаров)</Наименование>
@@ -200,13 +200,25 @@ class PHPShopCommerceML {
         if (is_array($data))
             foreach ($data as $row)
                 if (is_array($row)) {
-
+                    
                     $PHPShopOrder = new PHPShopOrderFunction($row['id']);
                     $this->update_status[] = $row['id'];
 
                     $num = 0;
                     $id = $row['id'];
                     $uid = $row['uid'];
+
+                    if (!empty($row['user']))
+                        $user = $row['user'];
+                    elseif (!empty($row['ozonseller_order_data']))
+                        $user= 'Ozon';
+                    elseif (!empty($row['wbseller_order_data']))
+                        $user = 'WB';
+                    elseif (!empty($row['yandex_order_id']))
+                        $user = 'Яндекс.Маркет';
+                    elseif (!empty($row['megamarket_order_id']))
+                        $user= 'МегаМаркет';
+
                     $order = unserialize($row['orders']);
                     $status = unserialize($row['status']);
                     $sum = $PHPShopOrder->returnSumma($order['Cart']['sum'], $order['Person']['discount']);
@@ -311,8 +323,8 @@ class PHPShopCommerceML {
 	<Документ>
                 <Ид>' . $row['id'] . '</Ид>
 		<Номер>' . $row['uid'] . '</Номер>
-		<Дата>' . PHPShopDate::get($row['datas'], false, true). 'T'.date("H:i:s") . '</Дата>
-                <Время>'.date("H:i:s").'</Время>
+		<Дата>' . PHPShopDate::get($row['datas'], false, true) . 'T' . date("H:i:s") . '</Дата>
+                <Время>' . date("H:i:s") . '</Время>
                 <Комментарий>' . html_entity_decode($status['maneger']) . '[Номер документа на сайте: ' . $row['uid'] . ']</Комментарий>
 		<ХозОперация>Заказ товара</ХозОперация>
 		<Роль>Продавец</Роль>
@@ -320,7 +332,7 @@ class PHPShopCommerceML {
 		<Сумма>' . $row['sum'] . '</Сумма>
                 <Контрагенты>
 		   <Контрагент>
-                     <Ид>' . $row['user'] . '</Ид>
+                     <Ид>' . $user . '</Ид>
 		      <Наименование>' . html_entity_decode($row['fio']) . '</Наименование>
 		      <ПолноеНаименование>' . html_entity_decode($row['org_name']) . '</ПолноеНаименование>
 		      <ИНН>' . $row['org_inn'] . '</ИНН>
@@ -374,11 +386,13 @@ class PHPShopCommerceML {
                 }
 
         $xml = '<?xml version="1.0" encoding="windows-1251"?>
-<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . 'T'.date("H:i:s"). '">
+<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . 'T' . date("H:i:s") . '">
 	' . $xml . '
 </КоммерческаяИнформация>';
 
         return $xml;
     }
+
 }
+
 ?>

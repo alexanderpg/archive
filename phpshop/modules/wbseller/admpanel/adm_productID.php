@@ -29,32 +29,23 @@ function addWbsellerProductTab($data) {
     $PHPShopGUI->addTab(array("WB", $tab, true));
 }
 
-function WbsellerUpdate() {
-
+function WbsellerUpdate(){
+    
     // Отключение 
-    if (!isset($_POST['export_wb_new']) and ! isset($_POST['ajax'])) {
+    if (!isset($_POST['export_wb_new']) and ! empty($_POST['name_new'])) {
         $_POST['export_wb_new'] = 0;
-        $_POST['export_wb_task_status_new'] = '';
-        $_POST['export_wb_id_new'] = '';
+        //$_POST['export_wb_task_status_new'] = '';
+        // $_POST['export_wb_id_new'] = '';
     }
+    
+    // if (isset($_POST['enabled_new']) and empty($_POST['enabled_new']))
+       // $_POST['export_wb_new'] = 0;
+}
+
+function WbsellerSave() {
 
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
     $data = $PHPShopOrm->getOne(['*'], ['id' => '=' . (int) $_POST['rowID']]);
-
-    if (isset($_POST['enabled_new']) and empty($_POST['enabled_new']))
-        $_POST['items_new'] = $_POST['export_wb_new'] = 0;
-
-    if (isset($_POST['items_new']))
-        $data['items'] = (int) $_POST['items_new'];
-
-    if (isset($_POST['price_new']))
-        $data['price'] = $_POST['price_new'];
-
-    if (isset($_POST['export_wb_new']))
-        $data['export_wb'] = (int) $_POST['export_wb_new'];
-
-    if (isset($_POST['barcode_wb_new']))
-        $data['barcode_wb'] = (string) $_POST['barcode_wb_new'];
 
     if (!empty($data['export_wb'])) {
 
@@ -70,7 +61,7 @@ function WbsellerUpdate() {
                 $result = $WbSeller->sendProducts($data);
 
                 if (is_array($result) and empty($result['error'])) {
-                    $PHPShopOrm->update(['export_wb_task_status_new' => time()], ['id' => '=' . (int) $_POST['rowID']]);
+                    $PHPShopOrm->update(['export_wb_task_status_new' => time()], ['id' => '=' . (int) $data['id']]);
                 }
             }
 
@@ -80,8 +71,8 @@ function WbsellerUpdate() {
             $barcode_wb = $getProduct['sizes'][0]['skus'][0];
 
             if (!empty($export_wb_id)) {
-                $_POST['export_wb_id_new'] = $data['export_wb_id'] = $export_wb_id;
-                $PHPShopOrm->update(['export_wb_id_new' => $export_wb_id, 'barcode_wb_new' => $barcode_wb], ['id' => '=' . (int) $_POST['rowID']]);
+                $data['export_wb_id'] = $export_wb_id;
+                $PHPShopOrm->update(['export_wb_id_new' => $export_wb_id, 'barcode_wb_new' => $barcode_wb], ['id' => '=' . (int) $data['id']]);
 
                 // Фото
                 $WbSeller->sendImages($data);
@@ -91,9 +82,10 @@ function WbsellerUpdate() {
         else {
 
             // SKU
-            if (empty($_POST['barcode_wb_new'])) {
+            /*
+            if (empty($data['barcode_wb'])) {
                 $_POST['barcode_wb_new'] = $WbSeller->getProduct($data['uid'])['cards'][0]['sizes'][0]['skus'][0];
-            }
+            }*/
 
             // Склад
             $WbSeller->setProductStock([$data]);
@@ -131,13 +123,15 @@ function WbsellerUpdate() {
 
             $WbSeller->sendPrices(['data' => $prices]);
         }
-    } else
-        $PHPShopOrm->update(['export_wb_task_status_new' => '', 'export_wb_id_new' => 0], ['id' => '=' . (int) $_POST['rowID']]);
+    } 
+    //else
+       // $PHPShopOrm->update(['export_wb_task_status_new' => '', 'export_wb_id_new' => 0], ['id' => '=' . $data['id']]);
 }
 
 $addHandler = array(
     'actionStart' => 'addWbsellerProductTab',
     'actionDelete' => false,
+    'actionSave' => 'WbsellerSave',
     'actionUpdate' => 'WbsellerUpdate',
     'actionOptionEdit' => 'addWbsellerProductTab',
 );

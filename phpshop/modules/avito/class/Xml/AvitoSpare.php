@@ -17,7 +17,12 @@ class AvitoSpare extends BaseAvitoXml implements AvitoPriceInterface {
         $xml = '<Ad>';
         $xml .= sprintf('<Id>%s</Id>', $product['id']);
         $xml .= sprintf('<ListingFee>%s</ListingFee>', $product['listing_fee']);
-        $xml .= sprintf('<GoodsType>%s</GoodsType>', $product['type']);
+
+        if (strstr($product['type'], " / "))
+            $xml .= sprintf('<GoodsType>%s</GoodsType>', explode(" / ", $product['type'])[0]);
+        else
+            $xml .= sprintf('<GoodsType>%s</GoodsType>', $product['type']);
+
         $xml .= sprintf('<EquipmentType>%s</EquipmentType>', $product['subtype']);
         $xml .= sprintf('<AdStatus>%s</AdStatus>', $product['status']);
         $xml .= sprintf('<ManagerName>%s</ManagerName>', PHPShopString::win_utf8(Avito::getOption('manager')));
@@ -145,9 +150,9 @@ class AvitoSpare extends BaseAvitoXml implements AvitoPriceInterface {
             }
         }
 
-
-
-
+        // Противоугонные устройств
+        if (in_array($product['type_avito'], [207, 208, 209, 210]))
+            $xml .= sprintf('<DeviceType>%s</DeviceType>', explode(" / ", $product['type'])[1]);
 
         if (count($product['images']) > 0) {
             $xml .= '<Images>';

@@ -6,8 +6,8 @@ include_once dirname(dirname(__DIR__)) . '/class/Avito.php';
  * Базовый класс для генерации XML для Авито.
  * Class BaseAvitoXml
  */
-class BaseAvitoXml
-{
+class BaseAvitoXml {
+
     /** @var string */
     protected $xml;
 
@@ -16,7 +16,6 @@ class BaseAvitoXml
 
     /** @var PHPShopSystem */
     private $PHPShopSystem;
-
     private $ssl = 'http://';
     private $categories = [];
     private $xmlPriceId;
@@ -40,8 +39,7 @@ class BaseAvitoXml
                 exit('Login error!');
     }
 
-    public function setAds()
-    {
+    public function setAds() {
         $this->xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $this->xml .= '<Ads formatVersion="3" target="Avito.ru">';
 
@@ -66,15 +64,15 @@ class BaseAvitoXml
         echo $this->xml;
     }
 
-    public function getProducts($getAll = false)
-    {
+    public function getProducts($getAll = false) {
+        
         // Исходное изображение
         $image_source = $this->PHPShopSystem->ifSerilizeParam('admoption.image_save_source');
         $result = array();
 
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
 
-        if(count(array_keys($this->categories)) === 0) {
+        if (count(array_keys($this->categories)) === 0) {
             return [];
         }
 
@@ -86,8 +84,10 @@ class BaseAvitoXml
             'category' => ' IN (' . implode(',', array_keys($this->categories)) . ')'
         );
 
-        if ($getAll)
+        if ($getAll){
             unset($where['export_avito']);
+            unset($where['items']);
+        }
 
         $products = $PHPShopOrm->getList(array('*'), $where);
 
@@ -97,13 +97,13 @@ class BaseAvitoXml
             $product['description'] = '<![CDATA[' . PHPShopString::win_utf8(trim(strip_tags($product['description'], '<p><br><strong><em><ul><ol><li>'))) . ']]>';
 
             $product['name'] = '<![CDATA[' . PHPShopString::win_utf8(trim(strip_tags($product['name']))) . ']]>';
-            if(!empty($product['name_avito'])) {
+            if (!empty($product['name_avito'])) {
                 $product['name'] = '<![CDATA[' . PHPShopString::win_utf8(trim(strip_tags($product['name_avito']))) . ']]>';
             }
 
             $PHPShopOrm = new PHPShopOrm('phpshop_foto');
             $images = $PHPShopOrm->getList(array('*'), array('parent' => '=' . $product['id']), array('order' => 'num'));
-            if(count($images) === 0) {
+            if (count($images) === 0) {
                 $images[] = array('name' => $product['pic_big']);
             }
 
@@ -115,33 +115,37 @@ class BaseAvitoXml
                         $images[$key]['name'] = str_replace(".", "_big.", $image['name']);
 
                     $image_url = Avito::getOption('image_url');
-                    if(empty($image_url))
-                       $image_url =  $_SERVER['SERVER_NAME'];
+                    if (empty($image_url))
+                        $image_url = $_SERVER['SERVER_NAME'];
 
                     $images[$key]['name'] = $this->ssl . $image_url . $image['name'];
                 }
             }
 
+            // Склад
+            if ($product['items'] < 1)
+                $product['items'] = 0;
+
             $result[$product['id']] = array(
-                "id"             => $product['id'],
-                "category"       => PHPShopString::win_utf8($this->categories[$product['category']]['category']),
-                "type"           => PHPShopString::win_utf8($this->categories[$product['category']]['type']),
-                "subtype"        => PHPShopString::win_utf8($this->categories[$product['category']]['subtype']),
-                "subtype_id"        => $this->categories[$product['category']]['subtype_avito'],
-                "name"           => str_replace(array('&#43;', '&#43'), '+', $product['name']),
-                "images"         => $images,
-                "price"          => $this->getProductPrice($product),
-                "description"    => $product['description'],
-                "prod_seo_name"  => $product['prod_seo_name'],
-                "condition"      => PHPShopString::win_utf8($product['condition_avito']),
-                "status"         => $product['ad_status_avito'],
-                "listing_fee"    => $product['listing_fee_avito'],
-                "ad_type"        => PHPShopString::win_utf8($product['ad_type_avito']),
+                "id" => $product['id'],
+                "category" => PHPShopString::win_utf8($this->categories[$product['category']]['category']),
+                "type" => PHPShopString::win_utf8($this->categories[$product['category']]['type']),
+                "subtype" => PHPShopString::win_utf8($this->categories[$product['category']]['subtype']),
+                "subtype_id" => $this->categories[$product['category']]['subtype_avito'],
+                "name" => str_replace(array('&#43;', '&#43'), '+', $product['name']),
+                "images" => $images,
+                "price" => $this->getProductPrice($product),
+                "description" => $product['description'],
+                "prod_seo_name" => $product['prod_seo_name'],
+                "condition" => PHPShopString::win_utf8($product['condition_avito']),
+                "status" => $product['ad_status_avito'],
+                "listing_fee" => $product['listing_fee_avito'],
+                "ad_type" => PHPShopString::win_utf8($product['ad_type_avito']),
                 "category_avito" => $this->categories[$product['category']]['category_avito'],
-                "oem"            => $product['oem_avito'],
-                "tiers"          => $product['tiers_avito'],
-                "items"          => $product['items'],
-                "building_avito"          => $product['building_avito'],
+                "oem" => $product['oem_avito'],
+                "tiers" => $product['tiers_avito'],
+                "items" => $product['items'],
+                "building_avito" => $product['building_avito'],
                 "type_avito" => $this->categories[$product['category']]['type_avito']
             );
         }
@@ -149,9 +153,8 @@ class BaseAvitoXml
         return $result;
     }
 
-    public static function getAddress()
-    {
-        if(!empty(Avito::getOption('address'))) {
+    public static function getAddress() {
+        if (!empty(Avito::getOption('address'))) {
             return Avito::getOption('address');
         }
 
@@ -164,8 +167,7 @@ class BaseAvitoXml
      * @param array $product
      * @return float
      */
-    private function getProductPrice($product)
-    {
+    private function getProductPrice($product) {
         $PHPShopPromotions = new PHPShopPromotions();
         $PHPShopValuta = new PHPShopValutaArray();
         $currencies = $PHPShopValuta->getArray();
@@ -197,11 +199,10 @@ class BaseAvitoXml
     /**
      * Заполнение свойства categories массивом вида id категории => название категории в Авито.
      */
-    private function loadCategories()
-    {
+    private function loadCategories() {
         $orm = new PHPShopOrm('phpshop_modules_avito_categories');
 
-        if(is_array($this->xmlPriceId)) {
+        if (is_array($this->xmlPriceId)) {
             $categories = array_column($orm->getList(['id'], ['xml_price_id' => sprintf(' IN (%s)', implode(',', $this->xmlPriceId))]), 'id');
         } else {
             $categories = array_column($orm->getList(['id'], ['xml_price_id' => sprintf('="%s"', $this->xmlPriceId)]), 'id');
@@ -222,16 +223,16 @@ class BaseAvitoXml
 
         foreach ($categories as $category) {
             $avitoCategory = $this->Avito->getCategoryById((int) $category['category_avito']);
-            if(!empty($avitoCategory)) {
+            if (!empty($avitoCategory)) {
                 $this->categories[$category['id']] = array(
-                    'category'       => $avitoCategory,
-                    'type'           => $this->Avito->getAvitoType($category['type_avito']),
-                    'subtype'        => $this->Avito->getAvitoSubType($category['subtype_avito']),
+                    'category' => $avitoCategory,
+                    'type' => $this->Avito->getAvitoType($category['type_avito']),
+                    'subtype' => $this->Avito->getAvitoSubType($category['subtype_avito']),
                     'subtype_avito' => $category['subtype_avito'],
                     'category_avito' => (int) $category['category_avito'],
-                    'site_title'     => $category['name'],
-                    'site_id'        => (int) $category['id'],
-                    'type_avito'        => (int) $category['type_avito']
+                    'site_title' => $category['name'],
+                    'site_id' => (int) $category['id'],
+                    'type_avito' => (int) $category['type_avito']
                 );
             }
         }
@@ -261,7 +262,7 @@ class BaseAvitoXml
                 foreach ($vendor_array as $v) {
                     foreach ($v as $value)
                         if (is_numeric($value))
-                            $sortValue.= (int) $value . ',';
+                            $sortValue .= (int) $value . ',';
                 }
 
             if (!empty($sortValue)) {
@@ -281,12 +282,12 @@ class BaseAvitoXml
                             if (!empty($value['name'])) {
                                 $arr = array();
                                 foreach ($arrayVendorValue[$idCategory]['id'] as $valueId) {
-                                    $arr[] = $arrayVendorValue[$idCategory]['name'][(int)$valueId];
+                                    $arr[] = $arrayVendorValue[$idCategory]['name'][(int) $valueId];
                                 }
 
                                 $sortValueName = implode(', ', $arr);
 
-                                $dis.=PHPShopText::li($value['name'] . ': ' . $sortValueName, null, '');
+                                $dis .= PHPShopText::li($value['name'] . ': ' . $sortValueName, null, '');
                             }
                         }
                     }
@@ -296,34 +297,33 @@ class BaseAvitoXml
         }
     }
 
-    private function replaceDescriptionVariables($product)
-    {
+    private function replaceDescriptionVariables($product) {
         $template = Avito::getOption('preview_description_template');
 
-        if(empty(trim($template))) {
+        if (empty(trim($template))) {
             return '';
         }
 
-        if(stripos($template, '@Content@') !== false) {
+        if (stripos($template, '@Content@') !== false) {
             $template = str_replace('@Content@', $product['content'], $template);
         }
-        if(stripos($template, '@Description@') !== false) {
+        if (stripos($template, '@Description@') !== false) {
             $template = str_replace('@Description@', $product['description'], $template);
         }
-        if(stripos($template, '@Attributes@') !== false) {
+        if (stripos($template, '@Attributes@') !== false) {
             $template = str_replace('@Attributes@', $this->sort_table($product), $template);
         }
-        if(stripos($template, '@Catalog@') !== false) {
+        if (stripos($template, '@Catalog@') !== false) {
             $template = str_replace('@Catalog@', $this->categories[$product['category']]['site_title'], $template);
         }
-        if(stripos($template, '@Product@') !== false) {
+        if (stripos($template, '@Product@') !== false) {
             $template = str_replace('@Product@', $product['name'], $template);
         }
-        if(stripos($template, '@Article@') !== false) {
-            $template = str_replace('@Article@', __('Артикул').': '.$product['uid'], $template);
+        if (stripos($template, '@Article@') !== false) {
+            $template = str_replace('@Article@', __('Артикул') . ': ' . $product['uid'], $template);
         }
-        if(stripos($template, '@Subcatalog@') !== false) {
-            if(count($this->categoriesForPath) === 0) {
+        if (stripos($template, '@Subcatalog@') !== false) {
+            if (count($this->categoriesForPath) === 0) {
                 $orm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
                 $this->categoriesForPath = array_column($orm->getList(['id', 'name', 'parent_to'], false, false, ['limit' => 100000]), null, 'id');
             }
@@ -356,4 +356,5 @@ class BaseAvitoXml
             }
         }
     }
+
 }

@@ -92,10 +92,10 @@ class AddToTemplateVisualCartAjax {
      * Затирание старой памяти
      */
     function clean_memory() {
-        
+
         // Сохранение личных данных покупателя
         $this->get_memory(false);
-        
+
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['visualcart']['visualcart_memory']);
         $PHPShopOrm->delete(array('memory' => "='" . $this->memory . "'"));
     }
@@ -113,13 +113,16 @@ class AddToTemplateVisualCartAjax {
         }
 
         if (PHPShopSecurity::true_tel($_POST['tel']))
-            $update['tel_new'] = $_POST['tel'];
+            $update['tel_new'] = $_SESSION['UsersTel'] = $_POST['tel'];
 
         if (PHPShopSecurity::true_email($_POST['mail']))
             $update['mail_new'] = $_POST['mail'];
 
         if (!empty($_POST['name']))
             $update['name_new'] = PHPShopSecurity::TotalClean(PHPShopString::utf8_win1251($_POST['name']));
+
+        if (!empty($_POST['fio']))
+            $update['name_new'] = $_SESSION['UsersName'] = PHPShopSecurity::TotalClean(PHPShopString::utf8_win1251($_POST['fio']));
 
         $PHPShopOrm->update($update, array('memory' => '="' . $this->memory . '"'));
 

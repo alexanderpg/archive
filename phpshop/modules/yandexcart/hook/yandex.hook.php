@@ -9,7 +9,6 @@ function setProducts_yandexcart_hook($obj, $data) {
             // Adult
             if ($data['val']['adult'] == 1)
                 $add .= '<adult>true</adult>';
-            
         } else
             return;
     } else {
@@ -58,48 +57,14 @@ function setProducts_yandexcart_hook($obj, $data) {
         if (!empty($obj->yandex_module_options['description_template'])) {
             $orm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
             $obj->yandex_categories = array_column($orm->getList(['id', 'name', 'parent_to'], false, false, ['limit' => 100000]), null, 'id');
-
             $data['xml'] = str_replace(
-                    '<description>' . $obj->cleanStr($data['val']['description']) . '</description>', '<description><![CDATA[' . $obj->cleanStr(
+                    '<description>' . $data['val']['description'] . '</description>', '<description><![CDATA[' . 
                             yandexReplaceDescriptionVariables($obj, $data['val'], $obj->yandex_module_options['description_template'])
-                    ) . ']]></description>', $data['xml']
+                     . ']]></description>', $data['xml']
             );
         }
 
-        $yandexOptions = unserialize($obj->yandex_module_options['options']);
-
-        // price columns
-        $price = $data['val']['price'];
-        $fee = 0;
-
-        // Цена Яндекс.Маркет ADV и FBS
-        if ($obj->yandex_module_options['model'] === 'ADV' || $obj->yandex_module_options['model'] === 'FBS') {
-            if (isset($yandexOptions['price']) && (int) $yandexOptions['price'] > 1 && !empty($data['val']['price' . (int) $yandexOptions['price']])) {
-                $price = $data['val']['price' . (int) $yandexOptions['price']];
-            }
-            if (isset($yandexOptions['price_fee']) && (float) $yandexOptions['price_fee'] > 0) {
-                $fee = (float) $yandexOptions['price_fee'];
-            }
-        }
-        // Цена Яндекс.Маркет DBS
-        elseif ($obj->yandex_module_options['model'] === 'DBS') {
-            if (!empty($data['val']['price_yandex_dbs'])) {
-                $price = $data['val']['price_yandex_dbs'];
-            } elseif (isset($yandexOptions['price_dbs']) && (int) $yandexOptions['price_dbs'] > 1 && !empty($data['val']['price' . (int) $yandexOptions['price']])) {
-                $price = $data['val']['price' . (int) $yandexOptions['price_dbs']];
-            }
-            if (isset($yandexOptions['price_dbs_fee']) && (float) $yandexOptions['price_dbs_fee'] > 0) {
-                $fee = (float) $yandexOptions['price_dbs_fee'];
-            }
-        }
-
-        // Наценка руб.
-        $price = $price + (int) $yandexOptions['price_markup'];
-
-        // Наценка %
-        if ($fee > 0) {
-            $price = $price + ($price * $fee / 100);
-        }
+        $price = (int) $obj->YandexMarket->getPrice($data['val'], $_GET['campaign']);
 
         $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . $price . '</price>', $data['xml']);
 
@@ -133,16 +98,6 @@ function setProducts_yandexcart_hook($obj, $data) {
         else
             $add .= '<pickup>false</pickup>';
 
-        // Store
-        if ($data['val']['store'] == 1)
-            $add .= '<store>true</store>';
-        else
-            $add .= '<store>false</store>';
-
-        // Notes
-        if (!empty($data['val']['sales_notes']))
-            $add .= '<sales_notes>' . $data['val']['sales_notes'] . '</sales_notes>';
-
         // Гарантия
         if ($data['val']['manufacturer_warranty'] == 1)
             $add .= '<manufacturer_warranty>true</manufacturer_warranty>';
@@ -150,10 +105,6 @@ function setProducts_yandexcart_hook($obj, $data) {
         // Страна
         if (!empty($data['val']['country_of_origin']))
             $add .= '<country_of_origin>' . $data['val']['country_of_origin'] . '</country_of_origin>';
-
-        // Модель
-        if (!empty($data['val']['model']))
-            $add .= '<model>' . $data['val']['model'] . '</model>';
 
         // Штрихкод
         if (!empty($data['val']['barcode']))
@@ -163,6 +114,10 @@ function setProducts_yandexcart_hook($obj, $data) {
         if ($data['val']['adult'] == 1)
             $add .= '<adult>true</adult>';
 
+        // market-sku
+        if (!empty($data['val']['market_sku']))
+            $add .= '<market-sku>' . $data['val']['market_sku'] . '</market-sku>';
+
         // min-quantity
         if (!empty($data['val']['yandex_min_quantity']))
             $add .= '<min-quantity>' . $data['val']['yandex_min_quantity'] . '</min-quantity>';
@@ -171,20 +126,9 @@ function setProducts_yandexcart_hook($obj, $data) {
         if (!empty($data['val']['yandex_step_quantity']))
             $add .= '<step-quantity>' . $data['val']['yandex_step_quantity'] . '</step-quantity>';
 
-        // market-sku
-        if (!empty($data['val']['market_sku']))
-            $add .= '<market-sku>' . $data['val']['market_sku'] . '</market-sku>';
-
-        // shop-sku, count, cpa
-        if ($obj->yandex_module_options['model'] === 'FBS') {
-            $add .= '<shop-sku>' . $data['val']['id'] . '</shop-sku>';
-            if ((int) $data['val']['cpa'] !== 2) {
-                $add .= '<cpa>' . $data['val']['cpa'] . '</cpa>';
-            }
-        }
-
-        if ($obj->yandex_module_options['model'] === 'FBS' or $obj->yandex_module_options['model'] === 'DBS')
-            $add .= '<count>' . $data['val']['items'] . '</count>';
+        // Склад
+        $items = (int) $obj->YandexMarket->getWarehouse($data['val'], $_GET['campaign']);
+        $add .= '<count>' . $items . '</count>';
 
 
         // Компания, которая произвела товар
@@ -270,6 +214,11 @@ function PHPShopYml_yandexcart_hook($obj) {
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['yandexcart']['yandexcart_system']);
     $obj->yandex_module_options = $PHPShopOrm->select();
     $options = unserialize($obj->yandex_module_options['options']);
+
+    include_once dirname(__FILE__) . '/../class/YandexMarket.php';
+    $obj->YandexMarket = new YandexMarket();
+    
+    $_GET['image_source']=true;
 
     // Пароль
     if (!empty($obj->yandex_module_options['password']))

@@ -224,7 +224,7 @@ function actionStart() {
 
     $sklad_status_value[] = array('Не используется', 1, $option['sklad_status']);
     $sklad_status_value[] = array('Товар убирается с продаж', 2, $option['sklad_status']);
-    $sklad_status_value[] = array('Товар ставится под заказ', 3, $option['sklad_status']);
+    $sklad_status_value[] = array('Товара нет в наличии', 3, $option['sklad_status']);
 
     $search_enabled_value[] = array('Искать в заказах', 2, $option['search_enabled']);
     $search_enabled_value[] = array('Искать в товарах', 3, $option['search_enabled']);

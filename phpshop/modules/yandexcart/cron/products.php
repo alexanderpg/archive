@@ -39,19 +39,48 @@ PHPShopObj::loadClass("modules");
 $PHPShopModules = new PHPShopModules($_classPath . "modules/");
 
 $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-$products = $PHPShopOrm->getList(['*'], ['yml' => "='1'"], ['order' => 'datas desc'], ['limit' => 2000]);
 $count = 0;
-if (is_array($products)) {
 
-    include_once dirname(__FILE__) . '/../class/YandexMarket.php';
-    $Market = new YandexMarket();
+include_once dirname(__FILE__) . '/../class/YandexMarket.php';
+$Market = new YandexMarket();
+
+// Компания 1
+$products = $PHPShopOrm->getList(['*'], ['yml' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+if (is_array($products) and count($products) > 0) {
 
     // Склад
-    $Market->updateStocks($products);
-    
-    // Цены
-    $Market->updatePrices($products);
+    $Market->updateStocks($products, false);
 
-    echo "Данные успешно отправлены для " . count($products) . " товаров";
+    // Цены
+    $Market->updatePrices($products, false);
+
+    $count += count($products);
 }
-?>
+
+// Компания 2
+$products = $PHPShopOrm->getList(['*'], ['yml_2' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+if (is_array($products) and count($products) > 0) {
+
+    // Склад
+    $Market->updateStocks($products, 2);
+
+    // Цены
+    $Market->updatePrices($products, 2);
+
+    $count += count($products);
+}
+
+// Компания 3
+$products = $PHPShopOrm->getList(['*'], ['yml_3' => "='1'"], ['order' => 'datas desc'], ['limit' => 1000]);
+if (is_array($products) and count($products) > 0) {
+
+    // Склад
+    $Market->updateStocks($products, 3);
+
+    // Цены
+    $Market->updatePrices($products, 3);
+
+    $count += count($products);
+}
+
+echo "Данные отправлены для " . $count . " товаров";

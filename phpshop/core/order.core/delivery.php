@@ -36,9 +36,12 @@ class PHPShopOrderDelivery {
             //$html .= ParseTemplateReturn($this->getTemplate(), true);
             $html .= '<INPUT TYPE="HIDDEN" id="makeyourchoise" VALUE="DONE">';
         }
+        
+        // Если доставка только одна
+        /*
         if($this->allowedDeliveries === 1) {
             $html .= '<IMG onload="UpdateDeliveryJq(' . (int) $delivery['id'] . ',this);" SRC="' . $this->getTemplateAsset('images/shop/flag_green.gif') . '"  style="display:none;">';
-        }
+        }*/
 
         return $html;
     }

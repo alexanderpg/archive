@@ -460,7 +460,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_oneclick_system` (
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_modules_oneclick_system` (`id`, `enabled`, `title`, `title_end`, `serial`, `windows`, `display`, `write_order`, `captcha`, `status`, `version`, `only_available`) VALUES
-(1, '0', 'Спасибо, Ваш заказ принят!', 'Наши менеджеры свяжутся с Вами для уточнения деталей.', '', '1', '0', '1', '1', 0, '1.8', '0');
+(1, '0', 'Спасибо, Ваш заказ принят!', 'Наши менеджеры свяжутся с Вами для уточнения деталей.', '', '1', '0', '1', '1', 0, '1.9', '0');
 
 DROP TABLE IF EXISTS `phpshop_modules_productday_system`;
 CREATE TABLE IF NOT EXISTS `phpshop_modules_productday_system` (
@@ -931,6 +931,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_products` (
   `yandex_vat_code` int(11) default 0,
   `external_code` varchar(64) DEFAULT '',
   `type` enum('1','2') DEFAULT '1',
+  `import_id` VARCHAR(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `category` (`category`),
   KEY `enabled` (`enabled`),
@@ -1341,6 +1342,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_exchanges_log` (
   `status` enum('0','1') NOT NULL DEFAULT '0',
   `info` text NOT NULL,
   `option` blob NOT NULL,
+  `import_id` VARCHAR(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 

@@ -453,6 +453,7 @@
     <!-- Согласие на использование cookie  -->
     <div class="cookie-message hide"><p></p><a href="#" class="btn btn-default btn-sm">Ok</a></div>
 
+    <link href="@pathTemplateMin@css/bar.css" rel="stylesheet">
     <link href="@pathTemplate@css/font-awesome.min.css" rel="stylesheet">
     <link href="@pathTemplateMin@css/iconfont.css" rel="stylesheet">
     <link href="@pathTemplate@css/bootstrap.offcanvas.min.css" rel="stylesheet">
@@ -460,7 +461,6 @@
     <link href="@pathTemplate@css/jquery.bxslider.css" rel="stylesheet">
     <link href="@pathTemplate@css/jquery-ui.min.css" rel="stylesheet">
     <link href="@pathTemplate@css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="@pathTemplateMin@css/bar.css" rel="stylesheet">
     <link href="@pathTemplate@css/suggestions.min.css" rel="stylesheet">
     <script src="@pathTemplate@/js/bootstrap.min.js"></script>
     <script src="@pathTemplate@/js/owl.carousel.min.js"></script>

@@ -26,26 +26,17 @@ function addMegamarketProductTab($data) {
 }
 
 function MegamarketUpdate() {
-
+    
     // Отключение 
-    if (!isset($_POST['export_megamarket_new']) and ! isset($_POST['ajax'])) {
+    if (!isset($_POST['export_megamarket_new']) and ! empty($_POST['name_new'])) {
         $_POST['export_megamarket_new'] = 0;
     }
+}
+
+function MegamarketSave() {
 
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
     $data = $PHPShopOrm->getOne(['*'], ['id' => '=' . (int) $_POST['rowID']]);
-
-    if (isset($_POST['enabled_new']) and empty($_POST['enabled_new']))
-        $_POST['items_new'] = $_POST['export_megamarket_new'] = 0;
-
-    if (isset($_POST['items_new']))
-        $data['items'] = (int) $_POST['items_new'];
-
-    if (isset($_POST['price_new']))
-        $data['price'] = $_POST['price_new'];
-
-    if (isset($_POST['export_megamarket_new']))
-        $data['export_megamarket'] = (int) $_POST['export_megamarket_new'];
 
     if (!empty($data['export_megamarket'])) {
 
@@ -95,6 +86,7 @@ function MegamarketUpdate() {
 $addHandler = array(
     'actionStart' => 'addMegamarketProductTab',
     'actionDelete' => false,
+    'actionSave' => 'MegamarketSave',
     'actionUpdate' => 'MegamarketUpdate'
 );
 ?>

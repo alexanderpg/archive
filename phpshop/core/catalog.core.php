@@ -3,7 +3,7 @@
 /**
  * Обработчик тестовой страницы
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopTest
  */
 class PHPShopCatalog extends PHPShopCore {
@@ -22,12 +22,13 @@ class PHPShopCatalog extends PHPShopCore {
         global $PHPShopShopCatalogElement;
 
         // Мета
-        $this->title = __('Каталоги').' - ' . $this->PHPShopSystem->getValue("name");
-        $this->description = __('Каталоги').' ' . $this->PHPShopSystem->getValue("name");
+        $this->title = __('Каталог').' - ' . $this->PHPShopSystem->getValue("name");
+        $this->description = __('Каталог').' ' . $this->PHPShopSystem->getValue("name");
         
         // Определяем переменые
-        $this->set('pageTitle', __('Каталоги'));
         $this->set('catalogList', $this->catalog());
+        $this->set('pageTitle', __('Каталог'));
+        $this->set('catalogName', __('Каталог'));
         
         // Подключаем шаблон
         $this->parseTemplate($this->getValue('templates.catalog_info_forma'));

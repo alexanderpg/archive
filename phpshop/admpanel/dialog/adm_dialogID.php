@@ -26,7 +26,7 @@ function actionStart() {
             'bot' => 'message',
             'isview' => 1,
             'isview_user' => 0,
-            'ai'=>0
+            'ai' => 0
         );
 
         if (!empty($user))
@@ -288,7 +288,7 @@ function fileAdd() {
  */
 function viewMessage($data, $ajax = false) {
     global $chat_ids, $chat_name;
-    
+
 
     $message = null;
     if (is_array($data)) {
@@ -299,6 +299,9 @@ function viewMessage($data, $ajax = false) {
 
             if (empty($row['isview']) and empty($ajax))
                 continue;
+
+            if (strlen($row['name']) < 5)
+                $row['name'] = 'User' . $row['user_id'];
 
             $chat_ids[] = $row['id'];
 
@@ -328,7 +331,7 @@ function viewMessage($data, $ajax = false) {
              <div class="incoming_msg">
               <div class="received_msg">
                 <div class="received_withd_msg">
-                   <span class="time_date">' .$row['name']. ': '. PHPShopDate::get($row['time'], true) . '</span>
+                   <span class="time_date">' . $row['name'] . ': ' . PHPShopDate::get($row['time'], true) . '</span>
                     <p>' . nl2br($row['message']) . '</p>
                     <span class="time_date"><div class="row">' . $flist . '</div></span>
                  </div>

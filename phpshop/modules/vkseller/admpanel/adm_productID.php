@@ -34,38 +34,23 @@ function addVksellerProductTab($data) {
 function VksellerUpdate() {
 
     // Отключение VK
-    if (!isset($_POST['export_vk_new']) and ! isset($_POST['ajax'])) {
+    if (!isset($_POST['export_vk_new']) and ! empty($_POST['name_new'])) {
         $_POST['export_vk_new'] = 0;
-        $_POST['export_vk_task_status_new'] = '';
-        $_POST['export_vk_id_new'] = '';
+        // $_POST['export_vk_task_status_new'] = '';
+        //$_POST['export_vk_id_new'] = '';
     }
+}
+
+function VksellerSave() {
 
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
     $data = $PHPShopOrm->getOne(['*'], ['id' => '=' . (int) $_POST['rowID']]);
 
-    if (isset($_POST['enabled_new']) and empty($_POST['enabled_new']))
-        $_POST['items_new'] = $_POST['export_vk_new'] = 0;
+    if ($data['items'] > 0)
+        $prod['deleted'] = 0;
+    else
+        $prod['deleted'] = 1;
 
-    if (isset($_POST['items_new'])) {
-        $data['items'] = (int) $_POST['items_new'];
-
-        if ($data['items'] > 0)
-            $prod['deleted'] = 0;
-        else
-            $prod['deleted'] = 1;
-    }
-
-    if (isset($_POST['content_new']))
-        $data['content'] = $_POST['content_new'];
-
-    if (isset($_POST['description_new']))
-        $data['description'] = $_POST['description_new'];
-
-    if (isset($_POST['price_new']))
-        $data['price'] = $_POST['price_new'];
-
-    if (isset($_POST['export_vk_new']))
-        $data['export_vk'] = (int) $_POST['export_vk_new'];
 
     if (!empty($data['export_vk'])) {
 
@@ -100,9 +85,9 @@ function VksellerUpdate() {
 
                 // Товар выгрузился
                 if (!empty($export_vk_id)) {
-                    $PHPShopOrm->update(['export_vk_task_status_new' => time(), 'export_vk_id_new' => $export_vk_id], ['id' => '=' . (int) $_POST['rowID']]);
+                    $PHPShopOrm->update(['export_vk_task_status_new' => time(), 'export_vk_id_new' => $export_vk_id], ['id' => '=' . (int) $data['id']]);
                     $VkSeller->clean_log($data['id']);
-                    unset($_POST['export_vk_id_new']);
+                    //unset($_POST['export_vk_id_new']);
                 }
                 // Ошибка
                 elseif (!empty($export_vk['error']['error_msg'])) {
@@ -114,13 +99,13 @@ function VksellerUpdate() {
                 $VkSeller->updateProduct($data);
             }
         }
-    } else
-        $PHPShopOrm->update(['export_vk_task_status_new' => 0, 'export_vk_id_new' => 0, 'export_vk_id_new' => 0], ['id' => '=' . (int) $_POST['rowID']]);
+    }
 }
 
 $addHandler = array(
     'actionStart' => 'addVksellerProductTab',
     'actionDelete' => false,
-    'actionUpdate' => 'VksellerUpdate'
+    'actionUpdate' => 'VksellerUpdate',
+    'actionSave' => 'VksellerSave',
 );
 ?>

@@ -1,38 +1,35 @@
 
-
-
-
-<div class="product-block-wrapper-fix list-fix">
-    <div class="thumbnail">
-       
-        <div class="product-btn">
-        
-        <button class=" addToWishList @elementCartHide@" data-uid="@productlastview_product_id@"><span class="icons icons-green icons-small icons-wishlist"></span></button>
-        <button class=" addToCompareList " data-uid="@productlastview_product_id@"><span class="icons icons-green icons-small icons-compare"></span></button>
+<div class="js-slide mt-1 mb-3">
+    <!-- Product -->
+    <div class="card shadow-soft transition-3d-hover text-center" style="min-height:400px;">
+        <div class="position-relative">
+            <img class="card-img-top" src="@productlastview_product_pic_small@" alt="@productlastview_product_name@" loading="lazy">
         </div>
-        <div class="caption ">
-           <a href="@shopDir@@productlastview_product_url@.html" title="@productlastview_product_name@">
-        <div class="d-flex  justify-content-between align-items-start last-block">
-            
-<div class="last-info">
-            <div class="product-name">@productlastview_product_name@</div>
-                        <div class="d-flex justify-content-between align-items-start">
-                <div class="product-price">
-               
-                    <div class=" price-old @php __hide('productlastview_product_price_old'); php@">@productlastview_product_price_old@</div>
-                    <div class="price-new">@productlastview_product_price@<span class="rubznak">@productlastview_product_currency@</span></div>
 
+        <div class="card-body pt-4 px-3 pb-0">
+            <div class="mb-2">
+                <span class="d-block font-size-1">
+                    <a class="text-inherit" title="@productlastview_product_name@" href="@shopDir@@productlastview_product_url@.html">@productlastview_product_name@ </a>
+                </span>
+            </div>
+        </div>
+
+
+        <div class="card-footer border-0 pt-0 pb-1 px-1">
+            <div class="d-block">
+                <span class="text-dark font-weight-bold">@productlastview_product_price@<span class="rubznak">@productValutaName@</span></span>
+                <span class="text-body ml-1 @php __hide('productlastview_product_price_old'); php@" ><del>@productlastview_product_price_old@</del></span>
+            </div>
+            <div class="mb-3">
+                <div class="d-inline-flex align-items-center small">
+                    <div class="rating text-warning mr-0">
+                        <div class="rating_blank"></div>
+                        <div class="rating_votes" style="width:@productlastview_product_rating@%"></div>
+                    </div>
                 </div>
-              
             </div>
-            </div>
-            <div class="product-image position-relative">
-                <img data-src="@productlastview_product_pic_small@" alt="@productlastview_product_name@" class="swiper-lazy" src="@productlastview_product_pic_small@">
-            </div>
-            </div>
-</a>
-           
-        </div>
+        </div>  
 
     </div>
+    <!-- End Product -->
 </div>

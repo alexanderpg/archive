@@ -369,7 +369,6 @@ if (!empty($_COOKIE['fullscreen'])) {
                                     <li><a href="https://docs.phpshop.ru" target="_blank"><?php _e('Учебник'); ?></a></li>
                                     <li><a href="?path=support"><?php _e('Техподдержка'); ?> <span class="glyphicon glyphicon-info-sign <?php echo $update_style; ?>"></span></a></li>
                                     <li class="<?php echo $hideSite; ?>"><a href="#" id="presentation-select"><?php _e('Обучение'); ?></a></li>
-                                    <li><a href="https://www.phpshop.ru/loads/files/setup.exe" target="_blank"><?php _e('Утилиты'); ?> EasyControl</a></li>
                                     <li class="divider"></li>
 
                                     <li><a href="?path=update"><span class="glyphicon glyphicon-cloud-download <?php echo $update_style; ?>"></span> <?php _e('Мастер обновления'); ?></a></li>

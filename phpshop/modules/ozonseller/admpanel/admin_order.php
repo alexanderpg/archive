@@ -125,7 +125,7 @@ function actionStart() {
 
     // Правый сайдбар
     if ($total > 0) {
-        $stat = '<div class="order-stat-container">' . __('Сумма:') . ' <b>' . number_format($total, 2, ',', ' ') . '</b> ' . $currency . '<br>' . __('Количество:') . ' <b>' . count($orders) . '</b> ' . __('шт.');
+        $stat = '<div class="order-stat-container">' . __('Сумма:') . ' <b>' . number_format($total, 0, ',', ' ') . '</b> ' . $currency . '<br>' . __('Количество:') . ' <b>' . count($orders) . '</b> ' . __('шт.');
         $sidebarright[] = array('title' => 'Статистика', 'content' => $stat);
     }
 

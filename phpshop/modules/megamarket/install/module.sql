@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_megamarket_log` (
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
-ALTER TABLE `phpshop_orders` ADD `megamarket_order_id` text NOT NULL;
+ALTER TABLE `phpshop_orders` ADD `megamarket_order_id` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_products` ADD `export_megamarket` enum('0','1') DEFAULT '0';
 ALTER TABLE `phpshop_products` ADD `price_megamarket` float DEFAULT '0';
+
+ALTER TABLE `phpshop_orders` ADD INDEX(`megamarket_order_id`); 

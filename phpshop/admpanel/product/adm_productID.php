@@ -241,6 +241,7 @@ function actionStart() {
 
     // Опции вывода
     $Tab_info .= $PHPShopGUI->setField('Опции вывода', $PHPShopGUI->setCheckbox('enabled_new', 1, 'В каталоге', $data['enabled']) . '<br>' .
+            $PHPShopGUI->setCheckbox('sklad_new', 1, 'Нет в наличии', $data['sklad']). '<br>' .
             $PHPShopGUI->setCheckbox('spec_new', 1, 'Спецпредложение', $data['spec']) . '<br>' .
             $PHPShopGUI->setCheckbox('newtip_new', 1, 'Новинка', $data['newtip']));
     $Tab_info .= $PHPShopGUI->setField('Сортировка', $PHPShopGUI->setInputText('&#8470;', 'num_new', $data['num'], 100));
@@ -287,7 +288,6 @@ function actionStart() {
     }
     $Tab_price .= $PHPShopGUI->setField('Старая цена', $PHPShopGUI->setInputText(null, 'price_n_new', $data['price_n'], 150, $valuta_def_name));
     $Tab_price .= $PHPShopGUI->setField('Закупочная цена', $PHPShopGUI->setInputText(null, 'price_purch_new', $data['price_purch'], 150, $valuta_def_name));
-    $Tab_price .= $PHPShopGUI->setField('Под заказ', $PHPShopGUI->setCheckbox('sklad_new', 1, '', $data['sklad']));
 
     // Валюта
     if (empty($hideCatalog))
@@ -305,7 +305,7 @@ function actionStart() {
 
     if (empty($hideCatalog)) {
         $Tab1 .= $PHPShopGUI->setCollapse('Цены', $Tab_price, 'in', true, true, array('type' => 'price'));
-        $Tab1 .= $PHPShopGUI->setCollapse('Яндекс Маркет', $Tab_yml, false);
+        //$Tab1 .= $PHPShopGUI->setCollapse('Яндекс Маркет', $Tab_yml, false);
         $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_info_size);
     }
 

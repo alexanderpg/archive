@@ -624,6 +624,8 @@ function csv_update($data) {
                     $text = preg_replace("/\r|\n/", ' ', $text);
 
                     $row['title'] = PHPShopString::utf8_win1251($text);
+                    $row['title_enabled'] = 1;
+                    
                 }
             }
 
@@ -650,6 +652,7 @@ function csv_update($data) {
                     $text = preg_replace("/\r|\n/", ' ', $text);
 
                     $row['descrip'] = PHPShopString::utf8_win1251($text);
+                    $row['descrip_enabled'] =  1;
                 }
             }
 

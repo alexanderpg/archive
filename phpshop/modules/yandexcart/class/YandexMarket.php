@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Библиотека работы с Yandex.Market API
+ * Библиотека работы с Яндекс.Маркет API
  * @author PHPShop Software
  * @version 1.6
  * @package PHPShopClass
@@ -34,12 +34,306 @@ class YandexMarket {
         $this->type = $this->options['type'];
         $this->export = $this->options['export'];
         $this->log = $this->options['log'];
+        $this->create_products = $this->options['create_products'];
+
+        $this->status_list = [
+            'PROCESSING' => 'В обработке',
+            'CANCELLED' => 'Отменен',
+            'DELIVERED' => 'Получен покупателем',
+            'DELIVERY' => 'Передан в службу доставки',
+            'PICKUP' => 'Доставлен в пункт самовывоза',
+            'UNPAID' => 'Оформлен, но еще не оплачен'
+        ];
+    }
+
+    /**
+     *  Заказ уже загружен?
+     */
+    public function checkOrderBase($id) {
+
+        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['orders']);
+        $data = $PHPShopOrm->getOne(['id'], ['yandex_order_id' => '="' . $id . '"']);
+        if (!empty($data['id']))
+            return $data['id'];
+    }
+
+    /**
+     * Номер заказа
+     */
+    function setOrderNum() {
+
+        $PHPShopOrm = new PHPShopOrm();
+        $res = $PHPShopOrm->query("select uid from " . $GLOBALS['SysValue']['base']['orders'] . " order by id desc LIMIT 0, 1");
+        $row = mysqli_fetch_array($res);
+        $last = $row['uid'];
+        $all_num = explode("-", $last);
+        $ferst_num = $all_num[0];
+
+        if ($ferst_num < 100)
+            $ferst_num = 100;
+        $order_num = $ferst_num + 1;
+
+        // Номер заказа
+        $ouid = $order_num . "-" . substr(abs(crc32(uniqid(session_id()))), 0, 3);
+        return $ouid;
+    }
+
+    /**
+     *  Создание товара
+     */
+    public function addProduct($id) {
+        global $PHPShopSystem;
+
+        $product_info = $this->getProductList($visibility = "ALL", $id, null, $limit = 1)['result']['offerMappings'][0]['offer'];
+
+        $insert['name_new'] = PHPShopString::utf8_win1251($product_info['name']);
+        $insert['uid_new'] = PHPShopString::utf8_win1251($product_info['offerId']);
+        $insert['yml_new'] = 1;
+        $insert['datas_new'] = time();
+        $insert['user_new'] = $_SESSION['idPHPSHOP'];
+        $insert['barcode_new'] = $product_info['barcodes'][0];
+        $insert['vendor_name_new'] = $product_info['vendor'];
+        $insert['vendor_code_new'] = $product_info['vendorCode'];
+        $insert['country_of_origin_new'] = $product_info['manufacturerCountriese'][0];
+
+
+        // Категория
+        //$insert['category_new'] = (new PHPShopOrm($GLOBALS['SysValue']['base']['categories']))->getOne(['id,name'], ['category_ozonseller' => '="' . $product_info['category_id'] . '"'])['id'];
+
+        $insert['items_new'] = 1;
+        $insert['enabled_new'] = 1;
+
+        // Цена
+        $insert['price_new'] = $product_info['basicPrice']['value'];
+        $insert['price_n_new'] = $product_info['basicPrice']['discountBase'];
+
+        $insert['baseinputvaluta_new'] = $PHPShopSystem->getDefaultOrderValutaId();
+        $insert['weight_new'] = $product_info['weightDimensions']['weight'];
+        $insert['height_new'] = $product_info['weightDimensions']['height'];
+        $insert['width_new'] = $product_info['weightDimensions']['width'];
+        $insert['length_new'] = $product_info['weightDimensions']['length'];
+        $insert['content_new'] = PHPShopString::utf8_win1251($product_info['description']);
+
+        $prodict_id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->insert($insert);
+
+        // Создание изображений
+        $this->addProductImage($product_info['pictures'], $prodict_id);
+
+        return $prodict_id;
+    }
+
+    /**
+     *  Создание изображений
+     */
+    public function addProductImage($mediaFiles, $prodict_id) {
+        global $PHPShopSystem;
+
+        require_once $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/thumb/phpthumb.php';
+        $width_kratko = $PHPShopSystem->getSerilizeParam('admoption.width_kratko');
+        $img_tw = $PHPShopSystem->getSerilizeParam('admoption.img_tw');
+        $img_th = $PHPShopSystem->getSerilizeParam('admoption.img_th');
+
+        // Папка картинок
+        $path = $PHPShopSystem->getSerilizeParam('admoption.image_result_path');
+        if (!empty($path))
+            $path = $path . '/';
+
+        $img_load = 0;
+
+        if (is_array($mediaFiles)) {
+            foreach ($mediaFiles as $k => $img) {
+
+                if (!empty($img)) {
+
+
+                    // Файл загружен
+                    if ($this->downloadFile($img, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . 'img' . $prodict_id . '_' . ($k + 1) . '.jpg'))
+                        $img_load++;
+                    else
+                        continue;
+
+                    // Новое имя
+                    $img = $GLOBALS['dir']['dir'] . '/UserFiles/Image/' . $path . 'img' . $prodict_id . '_' . ($k + 1) . '.jpg';
+
+                    // Запись в фотогалерее
+                    $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+                    $PHPShopOrmImg->insert(array('parent_new' => $prodict_id, 'name_new' => $img, 'num_new' => ($k + 1)));
+
+                    $file = $_SERVER['DOCUMENT_ROOT'] . $img;
+                    $name = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif"), $file);
+
+                    if (!file_exists($name) and file_exists($file)) {
+
+                        // Генерация тубнейла 
+                        if (!empty($_POST['export_imgproc'])) {
+                            $thumb = new PHPThumb($file);
+                            $thumb->setOptions(array('jpegQuality' => $width_kratko));
+                            $thumb->resize($img_tw, $img_th);
+                            $thumb->save($name);
+                        } else
+                            copy($file, $name);
+                    }
+
+                    // Главное изображение
+                    if ($k == 0 and ! empty($file)) {
+
+                        $update['pic_big_new'] = $img;
+
+                        // Главное превью
+                        $update['pic_small_new'] = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif"), $img);
+                    }
+                }
+            }
+
+            (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->update($update, ['id' => '=' . intval($prodict_id)]);
+        }
+    }
+
+    /**
+     *  Загрузка изображения по ссылке 
+     */
+    public function downloadFile($url, $path) {
+        $newfname = $path;
+
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ),
+        );
+
+        $file = fopen($url, 'rb', false, stream_context_create($arrContextOptions));
+        if ($file) {
+            $newf = fopen($newfname, 'wb');
+            if ($newf) {
+                while (!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                }
+            }
+        }
+        if ($file) {
+            fclose($file);
+        }
+        if ($newf) {
+            fclose($newf);
+            return true;
+        }
+    }
+
+    /**
+     *  Статусы заказа
+     */
+    public function getStatus($name) {
+        return $this->status_list[$name];
+    }
+
+    /*
+     *  Данные по заказу
+     */
+
+    public function getOrder($orderId, $campaign_num = false) {
+
+        if (!empty($campaign_num))
+            $campaign = $this->options['campaign_id_' . $campaign_num];
+        else
+            $campaign = $this->options['campaign_id'];
+
+        if (!empty($campaign)) {
+
+            $method = 'campaigns/' . trim($campaign) . '/orders/' . $orderId;
+            $result = $this->get($method, null);
+
+            $log = [
+                'result' => $result
+            ];
+
+            // Журнал
+            $this->log($log, $method);
+
+            return $result;
+        }
+    }
+
+    /*
+     *  Список заказов
+     */
+
+    public function getOrderList($date1, $date2, $status, $limit, $campaign_num = false) {
+
+        if (!empty($campaign_num))
+            $campaign = $this->options['campaign_id_' . $campaign_num];
+        else
+            $campaign = $this->options['campaign_id'];
+
+        if (!empty($campaign)) {
+            $params = [
+                'fromDate' => $date1,
+                'limit' => $limit,
+                'toDate' => $date2,
+            ];
+
+            if (!empty($status))
+                $params['status'] = $status;
+
+
+            $method = 'campaigns/' . trim($campaign) . '/orders';
+            $result = $this->get($method, http_build_query($params));
+
+            $log = [
+                'request' => $params,
+                'result' => $result
+            ];
+
+            // Журнал
+            $this->log($log, $method);
+
+            return $result;
+        }
+    }
+
+    /**
+     *  Список товаров из Яндекс.Маркет
+     */
+    public function getProductList($visibility = "ALL", $offer_id = null, $vendorName = null, $limit = 5) {
+
+
+        if ($visibility == 'ALL')
+            $params['archived'] = 'false';
+        else
+            $params['archived'] = 'true';
+
+        if (!empty($offer_id)) {
+            $params['offerIds'] = [$offer_id];
+            unset($params['archived']);
+        }
+
+        if (!empty($vendorName)) {
+            $params['vendorNames'] = [$vendorName];
+        }
+
+        $method = 'businesses/' . trim($this->options['businesses_id']) . '/offer-mappings?limit=' . $limit;
+        $result = $this->post($method, $params);
+
+        $log = [
+            'request' => $params,
+            'result' => $result
+        ];
+
+        // Журнал
+        $this->log($log, $method);
+
+        return $result;
     }
 
     // Обновление цен
-    public function updatePrices($products) {
+    public function updatePrices($products, $campaign_num = false) {
 
         if ($this->export != 2) {
+
+            if (!empty($campaign_num))
+                $campaign = $this->options['campaign_id_' . $campaign_num];
+            else
+                $campaign = $this->options['campaign_id'];
 
             if (is_array($products)) {
                 foreach ($products as $product) {
@@ -48,25 +342,32 @@ class YandexMarket {
                     if ($this->options['type'] == 1)
                         $product['uid'] = $product['id'];
                     else
-                        $product['uid'] = PHPShopString::utf8_win1251($product['uid']);
+                        $product['uid'] = PHPShopString::win_utf8($product['uid']);
 
-                    $prices["offers"][] = [
-                        "offerId" => (string) $product['uid'],
-                        "price" => [
-                            "value" => (int) $this->getPrice($product),
-                            "currencyId" => "RUR"
-                        ]
-                    ];
+                    if (!empty($product['uid']) and strlen($product['uid']) > 2)
+                        $prices["offers"][] = [
+                            "offerId" => (string) $product['uid'],
+                            "price" => [
+                                "value" => (int) $this->getPrice($product, $campaign_num),
+                                "currencyId" => "RUR"
+                            ]
+                        ];
                 }
 
 
-                $method = 'campaigns/' . trim($this->options['campaign_id']) . '/offer-prices/updates';
+                $method = 'campaigns/' . trim($campaign) . '/offer-prices/updates';
                 $result = $this->post($method, $prices);
 
-                $log = [
-                    'request' => $prices,
-                    'result' => $result
-                ];
+                if (count($prices) < 50)
+                    $log = [
+                        'request' => $prices,
+                        'result' => $result
+                    ];
+                else
+                    $log = [
+                        'result' => $result
+                    ];
+
 
                 // Журнал
                 $this->log($log, $method);
@@ -74,10 +375,31 @@ class YandexMarket {
         }
     }
 
+    // Получение остатков по складам
+    public function getWarehouse($product, $campaign_num) {
+
+        if (!empty($campaign_num))
+            $warehouse = $this->options['warehouse_' . $campaign_num];
+        else
+            $warehouse = $this->options['warehouse'];
+
+        if (empty($warehouse))
+            $items = $product['items'];
+        else
+            $items = $product['items' . $warehouse];
+
+        return $items;
+    }
+
     // Обновление остатков
-    public function updateStocks($products) {
+    public function updateStocks($products, $campaign_num = false) {
 
         if ($this->export != 1) {
+
+            if (!empty($campaign_num))
+                $campaign = $this->options['campaign_id_' . $campaign_num];
+            else
+                $campaign = $this->options['campaign_id'];
 
             if (is_array($products)) {
                 foreach ($products as $product) {
@@ -86,27 +408,36 @@ class YandexMarket {
                     if ($this->options['type'] == 1)
                         $product['uid'] = $product['id'];
                     else
-                        $product['uid'] = PHPShopString::utf8_win1251($product['uid']);
+                        $product['uid'] = PHPShopString::win_utf8($product['uid']);
 
-                    if ($product['items'] < 0)
-                        $product['items'] = 0;
+                    // Склад
+                    $items = $this->getWarehouse($product, $campaign_num);
 
-                    $skus["skus"][] = [
-                        "sku" => (string) $product['uid'],
-                        "items" => [[
-                        "count" => (int) $product['items'],
-                            ]]
-                    ];
+                    if ($items < 0)
+                        $items = 0;
+
+                    if (!empty($product['uid']) and strlen($product['uid']) > 2)
+                        $skus["skus"][] = [
+                            "sku" => (string) $product['uid'],
+                            "items" => [[
+                            "count" => (int) $items,
+                                ]]
+                        ];
                 }
 
 
-                $method = 'campaigns/' . trim($this->options['campaign_id']) . '/offers/stocks';
+                $method = 'campaigns/' . trim($campaign) . '/offers/stocks';
                 $result = $this->put($method, $skus);
 
-                $log = [
-                    'request' => $skus,
-                    'result' => $result
-                ];
+                if (count($skus) < 50)
+                    $log = [
+                        'request' => $skus,
+                        'result' => $result
+                    ];
+                else
+                    $log = [
+                        'result' => $result
+                    ];
 
                 // Журнал
                 $this->log($log, $method);
@@ -119,7 +450,7 @@ class YandexMarket {
 
         if ($this->log == 1) {
 
-            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['yandexcart']['yandexcart_log']);
+            $PHPShopOrm = new PHPShopOrm('phpshop_modules_yandexcart_log');
 
             $log = array(
                 'message_new' => serialize($data),
@@ -333,17 +664,30 @@ class YandexMarket {
         return $result;
     }
 
-    public function changeStatus($orderId, $status) {
-        $this->put('campaigns/' . trim($this->options['campaign_id']) . '/orders/' . $orderId . '/status.json', $status);
+    public function changeStatus($orderId, $status, $campaign_num = false) {
+
+        if (!empty($campaign_num))
+            $campaign = $this->options['campaign_id_' . $campaign_num];
+        else
+            $campaign = $this->options['campaign_id'];
+
+        $this->put('campaigns/' . trim($campaign) . '/orders/' . $orderId . '/status.json', $status);
     }
 
-    public function getOutlets($regionId = 0) {
+    public function getOutlets($regionId = 0, $campaign_num = false) {
+
+        if (!empty($campaign_num))
+            $campaign = $this->options['campaign_id_' . $campaign_num];
+        else
+            $campaign = $this->options['campaign_id'];
+
+
         $parameters = [];
         if ((int) $regionId > 0) {
             $parameters['region_id'] = (int) $regionId;
         }
 
-        $outlets = $this->get('campaigns/' . trim($this->options['campaign_id']) . '/outlets.json', $parameters);
+        $outlets = $this->get('campaigns/' . trim($campaign) . '/outlets.json', $parameters);
 
         if (isset($outlets['outlets']) && is_array($outlets['outlets'])) {
             return $outlets['outlets'];
@@ -352,13 +696,13 @@ class YandexMarket {
         return [];
     }
 
-    public function getOutletsSelectOptions($regionId = 0, $current = null) {
+    public function getOutletsSelectOptions($regionId = 0, $current = null, $campaign_num = false) {
         $current = unserialize($current);
         if (!is_array($current)) {
             $current = [];
         }
 
-        $outlets = $this->getOutlets($regionId);
+        $outlets = $this->getOutlets($regionId, $campaign_num = false);
 
         $result = [];
         foreach ($outlets as $outlet) {
@@ -413,7 +757,7 @@ class YandexMarket {
         return null;
     }
 
-    private function getPrice($product) {
+    public function getPrice($product, $campaign_num) {
         global $PHPShopValutaArray;
 
         $promotions = new PHPShopPromotions();
@@ -443,6 +787,15 @@ class YandexMarket {
         if (is_array($promotions)) {
             $price = $promotions['price'];
         }
+
+        // Отдельное поле цены
+        if (empty($campaign_num))
+            $price_yandex = $product['price_yandex'];
+        else
+            $price_yandex = $product['price_yandex_' . $campaign_num];
+
+        if (!empty($price_yandex))
+            $price = $price_yandex;
 
         $currency = $product['baseinputvaluta'];
 
@@ -524,9 +877,18 @@ class YandexMarket {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id'])
-        ]);
+
+        // OAuth 2.0
+        if (empty($this->options['auth_token_2']))
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
+            ]);
+        // API-Key
+        else
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                sprintf('Api-Key: %s', $this->options['auth_token_2']),
+            ]);
+
         $result = json_decode(curl_exec($ch), 1);
         curl_close($ch);
 
@@ -540,11 +902,22 @@ class YandexMarket {
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen(json_encode($parameters))
-        ));
+
+        // OAuth 2.0
+        if (empty($this->options['auth_token_2']))
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
+            ]);
+        // API-Key
+        else
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                sprintf('Api-Key: %s', $this->options['auth_token_2']),
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
+            ]);
+
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($parameters));
 
@@ -562,11 +935,22 @@ class YandexMarket {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
-        ]);
+
+        // OAuth 2.0
+        if (empty($this->options['auth_token_2']))
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                sprintf('Authorization: OAuth oauth_token="%s", oauth_client_id="%s"', $this->options['client_token'], $this->options['client_id']),
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
+            ]);
+        // API-Key
+        else
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                sprintf('Api-Key: %s', $this->options['auth_token_2']),
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen(PHPShopString::json_safe_encode($parameters))
+            ]);
+
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, PHPShopString::json_safe_encode($parameters));
 
@@ -574,11 +958,11 @@ class YandexMarket {
         $status = curl_getinfo($ch);
 
         if ($status['http_code'] === 401) {
-            throw new \Exception('Доступ запрещен. Пожалуйста, проверьте введенный ID приложения Яндекс.OAuth и OAuth-токен.');
+            //throw new \Exception('Доступ запрещен. Пожалуйста, проверьте введенный ID приложения Яндекс.OAuth и OAuth-токен.');
         }
 
         if ($status['http_code'] === 413) {
-            throw new \Exception('Request Entity Too Large.');
+            //throw new \Exception('Request Entity Too Large.');
         }
 
         curl_close($ch);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ёлемент формы ссылки на товар в VK
+ * Ёлемент формы ссылки на товар в яћ
  */
 function uid_mod_yandexcart_hook($obj, $row, $rout) {
    

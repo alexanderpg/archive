@@ -8,21 +8,22 @@ include_once dirname(__DIR__) . '/Xml/AvitoPriceInterface.php';
  * @author PHPShop Software
  * @version 1.1
  */
-class AvitoStock extends BaseAvitoXml implements AvitoPriceInterface
-{
-    public static function getXml($product)
-    {
+class AvitoStock extends BaseAvitoXml implements AvitoPriceInterface {
+
+    public static function getXml($product) {
+        
+        if ($product['items'] < 0)
+            $product['items'] = 0;
 
         $xml = '<item>
-        <id>'.$product['id'].'</id>
-        <stock>'.$product['items'].'</stock>
+        <id>' . $product['id'] . '</id>
+        <stock>' . $product['items'] . '</stock>
        </item>';
 
         return $xml;
     }
-    
-    public function setAds()
-    {
+
+    public function setAds() {
         $this->xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $this->xml .= '<items date="' . date('Y-m-d\TH:i:s') . '" formatVersion="1">';
 
@@ -34,5 +35,7 @@ class AvitoStock extends BaseAvitoXml implements AvitoPriceInterface
 
         $this->xml .= '</items>';
     }
+
 }
+
 ?>

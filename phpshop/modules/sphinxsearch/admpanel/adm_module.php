@@ -6,13 +6,11 @@ $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.sphinxsearch.sphinx
 // Обновление версии модуля
 function actionBaseUpdate() {
     global $PHPShopModules, $PHPShopOrm;
-
     $PHPShopOrm->clean();
     $option = $PHPShopOrm->select();
     $new_version = $PHPShopModules->getUpdate($option['version']);
     $PHPShopOrm->clean();
-
-    return $PHPShopOrm->update(['version_new' => $new_version]);
+    $action = $PHPShopOrm->update(array('version_new' => $new_version));
 }
 
 // Функция обновления
@@ -87,6 +85,7 @@ function actionStart() {
             $PHPShopGUI->setField('Информационная строка', $PHPShopGUI->setCheckbox('search_show_informer_string_new', 1, 'Отображать строку "Найдено XX результатов в XX категориях."', $data['search_show_informer_string'])) .
             $PHPShopGUI->setField('Дополнительные категории', $PHPShopGUI->setCheckbox('use_additional_categories_new', 1, 'Отображать дополнительные категории товаров', $data['use_additional_categories'])) .
             $PHPShopGUI->setField('Товаров в быстром поиске', $PHPShopGUI->setInputText(false, 'ajax_search_products_cnt_new', $data['ajax_search_products_cnt'], 50)) .
+            $PHPShopGUI->setField('Категорий в быстром поиске', $PHPShopGUI->setInputText(false, 'ajax_search_categories_cnt_new', $data['ajax_search_categories_cnt'], 50)) .
             $PHPShopGUI->setField('Сначала в наличии', $PHPShopGUI->setCheckbox('available_sort_new', 1, 'Выводить сначала товары в наличии', $data['available_sort'])) .
             $PHPShopGUI->setField('Искать сначала по артикулу', $PHPShopGUI->setCheckbox('search_uid_first_new', 1, 'Сначала искать по совпадению артикула', $data['search_uid_first'])) .
             $PHPShopGUI->setField('Искать в Яндексе', $PHPShopGUI->setCheckbox('yandexsearch_new', 1, 'Искать в Яндексе если ничего не найдено', $data['yandexsearch'], $PHPShopGUI->disabled_yandexcloud))
@@ -129,6 +128,27 @@ index productsIndex
 	index_exact_words = 1
 	min_infix_len = " . $data['misprints_from_cnt'] . "
 	html_strip = 1
+}
+
+source categoriesSrc : mainConfSourse
+{
+
+	sql_query		= SELECT id,name \
+					FROM phpshop_categories where skin_enabled='0';
+
+	#type of group fields
+	sql_field_string = name
+}
+
+index categoriesIndex
+{
+	source					= categoriesSrc
+	path					= /var/lib/sphinx/data/categoriesIndex
+	morphology				= stem_enru, Soundex, Metaphone
+	min_word_len		= 1
+	expand_keywords		= 1
+	index_exact_words	= 1
+	min_infix_len		= 3
 }
 
 indexer
@@ -197,8 +217,7 @@ searchd
 
     $Tab3 = $PHPShopGUI->setInfo($info);
 
-    // Форма регистрации
-    $Tab4 = $PHPShopGUI->setPay();
+    $Tab4 = $PHPShopGUI->setPay($serial = false, false, $data['version'], true);
 
     // Вывод формы закладки
     $PHPShopGUI->setTab(["Основное", $Tab1, true], ["Инструкция", $Tab3], ["Конфигурация", $Tab2], ["О Модуле", $Tab4]);

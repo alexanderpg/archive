@@ -11,7 +11,7 @@ function actionStart() {
     $data = $PHPShopOrm->select(array('*'), array('id' => '=' . $_GET['id']));
     
     // Панель заголовка
-    $PHPShopGUI->setActionPanel($TitlePage. ' &#8470; '.$data['order_id'], $select_name, array('Закрыть'));
+    $PHPShopGUI->setActionPanel($TitlePage. ' &#8470;'.$data['id'], $select_name, array('Закрыть'));
 
     // Переводим в читаемый вид
     ob_start();

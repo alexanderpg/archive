@@ -160,3 +160,7 @@ ALTER TABLE `phpshop_categories` ADD INDEX(`menu`);
 ALTER TABLE `phpshop_categories` ADD INDEX(`tile`);
 ALTER TABLE `phpshop_categories` ADD INDEX(`podcatalog_view`);
 ALTER TABLE `phpshop_categories` ADD INDEX(`dop_cat`);
+
+/*652*/
+ALTER TABLE `phpshop_products` ADD `import_id` VARCHAR(64) NOT NULL DEFAULT '';
+ALTER TABLE `phpshop_exchanges_log` ADD `import_id` VARCHAR(64) NOT NULL DEFAULT '';

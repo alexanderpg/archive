@@ -22,7 +22,7 @@ class SphinxSearch {
         $port = self::getOption('port');
         $host = self::getOption('host');
 
-        if (!empty($port) and !empty($host)) {
+        if (!empty($port) and ! empty($host)) {
 
             $link_db = @mysqli_connect($host, null, null, null, $port);
             if ($link_db) {
@@ -86,15 +86,15 @@ class SphinxSearch {
         // Область поиска
         if ($pole === 1) {
             if (self::getOption('search_uid_first') == 1)
-                $query = '(@uid ' . $query . ')|(@name ' . $query.')';
+                $query = '(@uid ' . $query . ')|(@name ' . $query . ')';
             else
-                $query = '(@name ' . $query . ')|(@uid ' . $query.')';
+                $query = '(@name ' . $query . ')|(@uid ' . $query . ')';
         }
         else {
             if (self::getOption('search_uid_first') == 1)
-                $query = '(@uid ' . $query . ')|(@name ' . $query . ')|(@content ' . $query.')';
+                $query = '(@uid ' . $query . ')|(@name ' . $query . ')|(@content ' . $query . ')';
             else
-                $query = '(@name ' . $query . ')|(@uid ' . $query . ')|(@content ' . $query.')';
+                $query = '(@name ' . $query . ')|(@uid ' . $query . ')|(@content ' . $query . ')';
         }
 
         $result = $this->query($query, $sort, $from, $size, array_values($categories));
@@ -224,13 +224,28 @@ class SphinxSearch {
                 }
 
                 $count[$row['category']] ++;
-                $category[]=$row['category'];
+                $category[] = $row['category'];
 
                 $i++;
                 $total++;
             }
 
-        return ['product' => $product, 'total' => $total, 'count' => $count,'categories'=>$category];
+        return ['product' => $product, 'total' => $total, 'count' => $count, 'categories' => $category];
+    }
+    
+    public function query_categories($query) {
+
+        if ($this->link_db)
+            $result = mysqli_query($this->link_db, "SELECT * FROM categoriesIndex WHERE MATCH('" . PHPShopString::win_utf8($query) . "') ORDER BY WEIGHT() DESC LIMIT ".(int)self::getOption('ajax_search_categories_cnt'));
+
+        if ($result)
+            while ($row = mysqli_fetch_array($result)) {
+                $categories[]=[
+                    'name'=> PHPShopString::utf8_win1251($row['name']),
+                    'id'=>$row['id']];
+            }
+            
+        return $categories;
     }
 
     function getYandexSearchCloud($search) {
@@ -264,7 +279,17 @@ class SphinxSearch {
         }
     }
 
+    /**
+     *  Поиск по именам категорий
+     */
+    function searchCategories($query, $obj) {
+        
+        $data = $this->query_categories($query);
+        return $obj->product_grid($data, 1, 'search/search_ajax_catalog_forma.tpl', $obj->line);
+    }
+
     public function searchAjax($query, $obj, $limit = 5) {
+
         // Убираем дублирование в другой раскладке
         $wordsArr = explode(' ', urldecode(PHPShopSecurity::true_search($query)));
         $query = implode(' ', array_slice($wordsArr, 0, ceil(count($wordsArr) / 2)));
@@ -273,6 +298,9 @@ class SphinxSearch {
         if (defined('HostID') or defined('HostMain')) {
             $categories = $this->getServerCategories();
         }
+
+        // Поиск по каталогам
+        $grid = $this->searchCategories($query, $obj);
 
         // Сортировка
         if ((int) self::getOption('available_sort') == 1) {
@@ -294,10 +322,9 @@ class SphinxSearch {
             $productsIds = array_column($result['product'], 'id');
 
 
-        if (count($productsIds) === 0) {
+        if (count($productsIds) === 0 and empty($grid)) {
             exit;
         }
-        $grid = '';
 
         if (count($productsIds) > 0) {
             $products = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))

@@ -81,6 +81,20 @@ $().ready(function () {
         });
     });
     
+    $('body').on('change', '[name="fio_new"]', function () {
+        var data = [];
+        data.push({name: 'update', value: 1});
+        data.push({name: 'type', value: 'json'});
+        data.push({name: 'fio', value: this.value});
+        
+        $.ajax({
+            url: ROOT_PATH + '/phpshop/modules/visualcart/ajax/visualcart.php',
+            type: 'post',
+            data: data,
+            dataType: 'json'
+        });
+    });
+    
     $('body').on('change', '[name="mail"]', function () {
         var data = [];
         data.push({name: 'update', value: 1});

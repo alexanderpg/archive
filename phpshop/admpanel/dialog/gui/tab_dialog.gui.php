@@ -7,9 +7,9 @@ function tab_dialog() {
     $tab=$where=$limit=$data_notview=null;
 
     if (empty($_GET['search']) and empty($_GET['uid']) and empty($_GET['id'])) {
-        $limit = array('limit' => 50);
-        $where = array('isview' => "='1'");
-        $whereisnotview = array('isview' => "='0'");
+        $limit = array('limit' => 100);
+        $where = array('isview' => "='1'",'message'=>'!=""');
+        $whereisnotview = array('isview' => "='0'",'message'=>'!=""');
     } elseif (!empty($_GET['search'])) {
         $where = array('staffid' => "='1'", 'name' => " LIKE '%" . PHPShopSecurity::TotalClean($_GET['search']) . "%'");
         $whereisnotview = null;
@@ -26,7 +26,7 @@ function tab_dialog() {
         $empty=true;
     }
     elseif(!empty($_GET['id'])){
-        $limit = array('limit' => 50);
+        $limit = array('limit' => 100);
 	}
 
     $PHPShopOrm->debug = false;
@@ -69,7 +69,7 @@ function tab_dialog() {
             else
                 $class = null;
 
-            $data_chat = $PHPShopOrm->select(array('chat_id,id,message,name,time,bot,user_id'), array('staffid' => "='1'", 'isview' => "='0'", 'chat_id' => '=' . intval($row['chat_id'])), array('order' => 'id desc'), array('limit' => 50));
+            $data_chat = $PHPShopOrm->select(array('chat_id,id,message,name,time,bot,user_id'), array('staffid' => "='1'", 'isview' => "='0'", 'chat_id' => '=' . intval($row['chat_id']),'message'=>'!=""'), array('order' => 'id desc'), array('limit' => 100));
 
 
             if (is_array($data_chat))
@@ -78,13 +78,15 @@ function tab_dialog() {
                 $count = 0;
 
             if (empty($data_chat[0]['staffid'])) {
-                $row = $PHPShopOrm->select(array('*'), array('staffid' => "='1'", 'chat_id' => '=' . intval($row['chat_id'])),array('order' => 'id desc'),array('limit'=>1));
+                $row = $PHPShopOrm->select(array('*'), array('staffid' => "='1'", 'chat_id' => '=' . intval($row['chat_id']),'message'=>'!=""'),array('order' => 'id desc'),array('limit'=>1));
                 
                 if (empty($row['name']) and $data_chat[0]['bot'] != 'message')
                     continue;
             }
 
             $row['name'] = mb_substr($row['name'], 0, 20,$GLOBALS['PHPShopLang']->charset);
+            if(strlen($row['name']) < 5)
+                $row['name']='User'.$row['user_id'];
 
             if (!empty($count))
                 $badge = '<span class="badge pull-right" id="badge-' . $row['chat_id'] . '">' . $count . '</span>';

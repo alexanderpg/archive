@@ -356,11 +356,6 @@ class PHPShopYml {
                 if (empty($row['description']))
                     $row['description'] = $row['content'];
 
-                if ($row['p_enabled'] == 1)
-                    $p_enabled = "true";
-                else
-                    $p_enabled = "false";
-
                 // Чистка тегов
                 if (empty($_GET['striptag'])) {
                     $description = '<![CDATA[' . trim(strip_tags($row['description'], '<p><h3><ul><li><br>')) . ']]>';
@@ -406,7 +401,6 @@ class PHPShopYml {
                     "length" => $row['length'],
                     "width" => $row['width'],
                     "height" => $row['height'],
-                    "p_enabled" => $p_enabled,
                     "yml_bid_array" => unserialize($row['yml_bid_array']),
                     "uid" => $uid,
                     "vkurs" => $vkurs,
@@ -546,7 +540,6 @@ class PHPShopYml {
             "length" => $row['length'],
             "width" => $row['width'],
             "height" => $row['height'],
-            "p_enabled" => $parent_array['p_enabled'],
             "yml_bid_array" => $parent_array['yml_bid_array'],
             "uid" => $uid,
             "description" => $parent_array['description'],
@@ -701,14 +694,8 @@ function setProducts() {
 
         $csv_export_count++;
 
-        $bid_str = null;
         $vendor = $param = null;
         $id = $val['id'];
-
-        // Если есть bid
-        if (!empty($val['yml_bid_array']['bid']))
-            $bid_str = '  bid="' . $val['yml_bid_array']['bid'] . '" ';
-
 
         // Стандартный урл
         $url = '/shop/UID_' . $val['id'];
@@ -770,7 +757,7 @@ function setProducts() {
         }
 
         $xml = '
-<offer id="' . $val['id'] . '" available="' . $val['p_enabled'] . '" ' . $bid_str . $group_id . $type . $retailQuantity . '>
+<offer id="' . $val['id'] . '" available="true" ' . $group_id . $type . $retailQuantity . '>
  <url>' . $this->ssl . $_SERVER['SERVER_NAME'] . $GLOBALS['SysValue']['dir']['dir'] . $url . '.html' . $group_postfix . '</url>
       <price>' . $val['price'] . '</price>';
 

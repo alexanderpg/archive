@@ -512,13 +512,13 @@
     <div class="cookie-message hide"><p></p><a href="#" class="btn btn-default btn-sm">Ok</a></div>
 
     <!-- JQuery Plugins  -->
+    <link href="@pathTemplateMin@css/bar.css" rel="stylesheet">
     <link href="@pathTemplate@css/fontello.css" rel="stylesheet">
     <link href="@pathTemplate@css/jquery.bxslider.css" rel="stylesheet">
     <link href="@pathTemplate@css/jquery-ui.min.css" rel="stylesheet">
     <link href="@pathTemplate@css/bootstrap-select.min.css" rel="stylesheet">
     <link href="@pathTemplateMin@css/responsive.css" rel="stylesheet">
     <link href="@pathTemplate@css/animate.css" rel="stylesheet">
-    <link href="@pathTemplateMin@css/bar.css" rel="stylesheet">
     <link href="@pathTemplate@css/font-awesome.min.css" rel="stylesheet">
     <link href="@pathTemplate@css/suggestions.min.css" rel="stylesheet">
     <script src="@pathTemplate@/js/bootstrap.min.js"></script>

@@ -44,128 +44,112 @@ function addOzonsellerProductTab($data) {
     $PHPShopGUI->addTab(array("OZON", $tab, true));
 }
 
-function OzonsellerUpdate($post) {
+function OzonsellerUpdate() {
 
     // Отключение Ozon
     if (!isset($_POST['export_ozon_new']) and ! empty($_POST['name_new'])) {
         $_POST['export_ozon_new'] = 0;
-        $_POST['export_ozon_task_id_new'] = 0;
-        $_POST['export_ozon_task_status_new'] = '';
+        //$_POST['export_ozon_task_id_new'] = 0;
+        //$_POST['export_ozon_task_status_new'] = '';
     }
+    
+    //if (isset($_POST['enabled_new']) and empty($_POST['enabled_new']))
+       // $_POST['export_ozon_new'] = 0;
+}
 
-    //if(empty($_POST['export_ozon_id_new']))
-    // unset($_POST['export_ozon_id_new']);
-    // Изменение склада
-    if (isset($_POST['enabled_new'])) {
+function OzonsellerSave() {
 
-        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-        $data = $PHPShopOrm->getOne(['*'], ['id' => '=' . (int) $_POST['rowID']]);
+    $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
+    $data = $PHPShopOrm->getOne(['*'], ['id' => '=' . (int) $_POST['rowID']]);
 
-        // Товар для OZON
-        if (!empty($data['export_ozon']) or ! empty($_POST['export_ozon_new'])) {
+    // Товар для OZON
+    if (!empty($data['export_ozon'])) {
 
-            $OzonSeller = new OzonSeller();
+        $OzonSeller = new OzonSeller();
 
-            // Товар еще не выгружен
-            if (empty($data['export_ozon_id'])) {
+        // Товар еще не выгружен
+        if (empty($data['export_ozon_id'])) {
 
-                // Выгрузка
-                if (empty($data['export_ozon_task_id'])) {
-                    $result = $OzonSeller->sendProducts($data);
-                    $task_id = $data['export_ozon_task_id'] = $result['result']['task_id'];
-                    $error = $result['message'];
-                } else
-                    $task_id = $data['export_ozon_task_id'];
+            // Выгрузка
+            if (empty($data['export_ozon_task_id'])) {
+                $result = $OzonSeller->sendProducts($data);
+                $task_id = $data['export_ozon_task_id'] = $result['result']['task_id'];
+                $error = $result['message'];
+            } else
+                $task_id = $data['export_ozon_task_id'];
 
-                if (!empty($task_id) and empty($error)) {
+            if (!empty($task_id) and empty($error)) {
 
-                    // Проверка статуса выгрузки
-                    $info = $OzonSeller->sendProductsInfo($data)['result']['items'][0];
+                // Проверка статуса выгрузки
+                $info = $OzonSeller->sendProductsInfo($data)['result']['items'][0];
 
-                    // Товар выгрузился
-                    if (!empty($info['product_id'])) {
+                // Товар выгрузился
+                if (!empty($info['product_id'])) {
 
-                        // SKU для ссылки на товар OZON
-                        $_POST['sku_ozon_new'] = $OzonSeller->getProduct($info['product_id'])['result']['sku'];
+                    // SKU для ссылки на товар OZON
+                    $data['sku_ozon'] = $OzonSeller->getProduct($info['product_id'])['result']['sku'];
 
-                        // Передача штрихкода
-                        if (!empty($_POST['barcode_ozon_new']) and ! empty($_POST['sku_ozon_new']))
-                            $OzonSeller->addBarcode(['barcode_ozon' => $_POST['barcode_ozon_new'], 'sku_ozon' => $_POST['sku_ozon_new']]);
+                    // Передача штрихкода
+                    if (!empty($data['barcode_ozon']) and ! empty($data['sku_ozon']))
+                        $OzonSeller->addBarcode(['barcode_ozon' => $data['barcode_ozon'], 'sku_ozon' => $data['sku_ozon']]);
 
-                        $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_id_new' => $info['product_id'], 'sku_ozon_new' => $_POST['sku_ozon_new']], ['id' => '=' . (int) $data['id']]);
-                        $_POST['export_ozon_id_new'] = $info['product_id'];
-                        $OzonSeller->clean_log($data['id']);
-                    }
-                    // Ошибка
-                    elseif (is_array($info['errors']) and count($info['errors']) > 0) {
-
-                        if (empty($info['status']))
-                            $info['status'] = 'error';
-
-                        foreach ($info['errors'] as $k => $er) {
-
-                            // Ссылки
-                            $er['description'] = preg_replace("~(http|https|ftp|ftps)://(.*?)(\s|\n|[,.?!](\s|\n)|$)~", '<a href="$1://$2" target="_blank">[ссылка]</a>$3', $er['description']);
-                            $error .= ($k + 1) . ' - ' . PHPShopString::utf8_win1251($er['description']) . '<br>';
-                        }
-
-                        $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status']], ['id' => '=' . (int) $data['id']]);
-                    }
-                    // В ожидании
-                    elseif ($info['status'] == 'pending') {
-                        $error = __('Товар поставлен в очередь на запись, сервис OZON временно занят. Требуется повторное отправление данных для завершения выгрузки.');
-                        $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_task_id_new' => $task_id], ['id' => '=' . (int) $data['id']]);
-                    }
-
-                    if (!empty($error))
-                        $OzonSeller->export_log($error, $data['id'], $data['name'], $data['pic_small']);
+                    $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_id_new' => $info['product_id'], 'sku_ozon_new' => $data['sku_ozon']], ['id' => '=' . $data['id']]);
+                    $data['export_ozon_id'] = $info['product_id'];
+                    $OzonSeller->clean_log($data['id']);
                 }
-                // Ошибка 
-                elseif (!empty($error)) {
+                // Ошибка
+                elseif (is_array($info['errors']) and count($info['errors']) > 0) {
+
+                    if (empty($info['status']))
+                        $info['status'] = 'error';
+
+                    foreach ($info['errors'] as $k => $er) {
+
+                        // Ссылки
+                        $er['description'] = preg_replace("~(http|https|ftp|ftps)://(.*?)(\s|\n|[,.?!](\s|\n)|$)~", '<a href="$1://$2" target="_blank">[ссылка]</a>$3', $er['description']);
+                        $error .= ($k + 1) . ' - ' . PHPShopString::utf8_win1251($er['description']) . '<br>';
+                    }
+
+                    $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status']], ['id' => '=' . (int) $data['id']]);
+                }
+                // В ожидании
+                elseif ($info['status'] == 'pending') {
+                    $error = __('Товар поставлен в очередь на запись, сервис OZON временно занят. Требуется повторное отправление данных для завершения выгрузки.');
+                    $PHPShopOrm->update(['export_ozon_task_status_new' => $info['status'], 'export_ozon_task_id_new' => $task_id], ['id' => '=' . (int) $data['id']]);
+                }
+
+                if (!empty($error))
                     $OzonSeller->export_log($error, $data['id'], $data['name'], $data['pic_small']);
-                }
             }
-            // Товар выгружен, обновление цен и остатков
-            else {
-
-                // SKU для ссылки на товар OZON
-                if (empty($_POST['sku_ozon_new'])) {
-
-                    $getProduct = $OzonSeller->getProduct($data['export_ozon_id'])['result'];
-                    $_POST['sku_ozon_new'] = $getProduct['sku'];
-
-                }
-
-                // Штрихкод
-                if (!empty($_POST['barcode_ozon_new']) and !empty($_POST['sku_ozon_new']))
-                    $OzonSeller->addBarcode(['barcode_ozon' => $_POST['barcode_ozon_new'], 'sku_ozon' => $_POST['sku_ozon_new']]);
-
-                if (isset($_POST['items_new']))
-                    $data['items'] = $_POST['items_new'];
-
-                if (isset($_POST['price_new']))
-                    $data['price'] = $_POST['price_new'];
-
-
-                if (isset($_POST['enabled_new']))
-                    $data['enabled'] = $_POST['enabled_new'];
-
-                // Склад
-                if (is_array($OzonSeller->warehouse))
-                    foreach ($OzonSeller->warehouse as $warehouse) {
-                        $result = $OzonSeller->setProductStock([$data], $warehouse['id'])['result']['items'][0]['product_id'];
-                        if (!empty($result))
-                            $product_id = $result;
-                    }
-
-                // Цены
-                $OzonSeller->setProductPrice([$data]);
-
-                // Ошибка обновления, не найден OZON ID, сбрасываем статусы
-                if (empty($product_id)) {
-                    //$PHPShopOrm->update(['export_ozon_task_status_new' => '', 'export_ozon_task_id_new' => ''], ['id' => '=' . $_POST['rowID']]);
-                }
+            // Ошибка 
+            elseif (!empty($error)) {
+                $OzonSeller->export_log($error, $data['id'], $data['name'], $data['pic_small']);
             }
+        }
+        // Товар выгружен, обновление цен и остатков
+        else {
+
+            // SKU для ссылки на товар OZON
+            if (empty($data['sku_ozon'])) {
+
+                $getProduct = $OzonSeller->getProduct($data['export_ozon_id'])['result'];
+                $data['sku_ozon'] = $getProduct['sku'];
+            }
+
+            // Штрихкод
+            if (!empty($data['barcode_ozon']) and ! empty($data['sku_ozon']))
+                $OzonSeller->addBarcode(['barcode_ozon' => $data['barcode_ozon'], 'sku_ozon' => $data['sku_ozon']]);
+
+            // Склад
+            if (is_array($OzonSeller->warehouse))
+                foreach ($OzonSeller->warehouse as $warehouse) {
+                    $result = $OzonSeller->setProductStock([$data], $warehouse['id'])['result']['items'][0]['product_id'];
+                    //if (!empty($result))
+                        //$product_id = $result;
+                }
+
+            // Цены
+            $OzonSeller->setProductPrice([$data]);
         }
     }
 }
@@ -174,6 +158,7 @@ $addHandler = array(
     'actionStart' => 'addOzonsellerProductTab',
     'actionDelete' => false,
     'actionUpdate' => 'OzonsellerUpdate',
+    'actionSave' => 'OzonsellerSave',
     'actionOptionEdit' => 'addOzonsellerProductTab',
 );
 ?>

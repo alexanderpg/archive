@@ -3,7 +3,7 @@
 /**
  * Библиотека Dialog Bot
  * @author PHPShop Software
- * @version 1.6
+ * @version 1.7
  * @package PHPShopClass
  */
 class PHPShopBot {
@@ -334,7 +334,7 @@ class PHPShopVKBot extends PHPShopBot {
                 // Картинка
                 if (is_array($message['photo'])) {
 
-                    $file = $message['photo']['photo_807'];
+                    $file = $message['photo']['orig_photo']['url'];
                     $image = '/UserFiles/Image/' . pathinfo(parse_url($file)['path'])['basename'];
                     $alt = strip_tags($message['photo']['text']);
 
