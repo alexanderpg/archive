@@ -5,17 +5,17 @@ PHPShopObj::loadClass("valuta");
 /**
  * Библиотека работы с Ozon Seller API
  * @author PHPShop Software
- * @version 2.3
+ * @version 2.4
  * @package PHPShopModules
  * @todo https://docs.ozon.ru/api/seller/#tag/Environment
  */
 class OzonSeller {
 
-    const GET_PARENT_TREE = '/v2/category/tree';
-    const GET_TREE_ATTRIBUTE = '/v3/category/attribute';
-    const GET_ATTRIBUTE_VALUES = '/v2/category/attribute/values';
+    const GET_PARENT_TREE = '/v1/description-category/tree';
+    const GET_TREE_ATTRIBUTE = '/v1/description-category/attribute';
+    const GET_ATTRIBUTE_VALUES = '/v1/description-category/attribute/values';
     const API_URL = 'https://api-seller.ozon.ru';
-    const IMPORT_PRODUCT = '/v2/product/import';
+    const IMPORT_PRODUCT = '/v3/product/import';
     const IMPORT_PRODUCT_INFO = '/v1/product/import/info';
     const GET_FBS_ORDER_LIST = '/v3/posting/fbs/list';
     const GET_FBS_ORDER = '/v3/posting/fbs/get';
@@ -58,6 +58,7 @@ class OzonSeller {
         $this->status_import = $this->options['status_import'];
         $this->delivery = $this->options['delivery'];
         $this->create_products = $this->options['create_products'];
+        $this->log = $this->options['log'];
 
         $this->status_list = [
             'acceptance_in_progress' => 'идёт приёмка',
@@ -94,6 +95,7 @@ class OzonSeller {
         $insert['user_new'] = $_SESSION['idPHPSHOP'];
         $insert['export_ozon_task_status_new'] = time();
         $insert['barcode_ozon_new'] = $product_info['barcode'];
+        $insert['sku_ozon_new'] = $product_info['sku'];
 
         // Категория
         $insert['category_new'] = (new PHPShopOrm($GLOBALS['SysValue']['base']['categories']))->getOne(['id,name'], ['category_ozonseller' => '="' . $product_info['category_id'] . '"'])['id'];
@@ -270,6 +272,9 @@ class OzonSeller {
         $price = ($price + (($price * $this->percent) / 100));
         $price = round($price, intval($this->format));
 
+        if(empty($price))
+            $price=null;
+        
         return $price;
     }
 
@@ -650,16 +655,20 @@ class OzonSeller {
      * Запись в журнал
      */
     public function log($message, $id, $type) {
-        $PHPShopOrm = new PHPShopOrm('phpshop_modules_ozonseller_log');
 
-        $log = array(
-            'message_new' => serialize($message),
-            'order_id_new' => $id,
-            'type_new' => $type,
-            'date_new' => time()
-        );
+        if (!empty($this->log)) {
 
-        $PHPShopOrm->insert($log);
+            $PHPShopOrm = new PHPShopOrm('phpshop_modules_ozonseller_log');
+
+            $log = array(
+                'message_new' => serialize($message),
+                'order_id_new' => $id,
+                'type_new' => $type,
+                'date_new' => time()
+            );
+
+            $PHPShopOrm->insert($log);
+        }
     }
 
     /**
@@ -681,7 +690,7 @@ class OzonSeller {
     private function getAttributes($product) {
 
         $category = new PHPShopCategory((int) $product['category']);
-        $category_ozonseller = $category->getParam('category_ozonseller');
+        $category_ozonseller = (new PHPShopOrm('phpshop_modules_ozonseller_type'))->getOne(['parent_to'], ['id' => '=' . $category->getParam('category_ozonseller')])['parent_to'];
 
         $sort = $category->unserializeParam('sort');
         $sortCat = $sortValue = null;
@@ -693,6 +702,8 @@ class OzonSeller {
             }
 
         if (!empty($sortCat)) {
+
+            $PHPShopOrmType = new PHPShopOrm('phpshop_modules_ozonseller_type');
 
             // Массив имен характеристик
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['sort_categories']);
@@ -712,21 +723,32 @@ class OzonSeller {
                 // Массив значений характеристик
                 $PHPShopOrm = new PHPShopOrm();
                 $result = $PHPShopOrm->query("select * from " . $GLOBALS['SysValue']['base']['sort'] . " where id IN ( $sortValue 0) order by num");
-                while (@$row = mysqli_fetch_array($result)) {
+                while ($row = mysqli_fetch_array($result)) {
                     $arrayVendorValue[$row['category']]['name'][$row['id']] = $row['name'];
                     $arrayVendorValue[$row['category']]['id'][] = $row['id'];
                 }
 
                 // Название товара
                 $list[] = [
-                    'id' => 4180,
-                    'values' => [0 => ['value' => PHPShopString::win_utf8($product['name'])]],
+                    'complex_id' => 0,
+                    'id' => (int)4180,
+                    'values' => [0 => ['value' => (string) PHPShopString::win_utf8($product['name'])]],
                 ];
 
                 // Описание
                 $list[] = [
-                    'id' => 4191,
-                    'values' => [0 => ['value' => PHPShopString::win_utf8(strip_tags($product['content'], '<br><ul><li>'))]],
+                    'complex_id' => 0,
+                    'id' => (int) 4191,
+                    'values' => [0 => ['value' => (string) PHPShopString::win_utf8(strip_tags($product['content'], '<br><ul><li>'))]],
+                ];
+
+                // Тип товара
+                $type = $PHPShopOrmType->getOne(['name'], ['id' => '=' . $category->getParam('category_ozonseller')])['name'];
+                $dictionary_value_id = $this->getAttributesValues(8229, $category_ozonseller, $type, false, $category->getParam('category_ozonseller'));
+                $list[] = [
+                    'complex_id' => 0,
+                    'id' => (int)8229,
+                    'values' => [0 => ['value' => (string) PHPShopString::win_utf8($type), 'dictionary_value_id' => (int)$dictionary_value_id]],
                 ];
 
                 if (is_array($arrayVendor))
@@ -751,17 +773,23 @@ class OzonSeller {
 
                                 if (is_array($arr)) {
                                     foreach ($arr as $k => $v) {
+                                        
+                                        if(empty($v))
+                                            continue;
+                                        
                                         $values[$k] = [
                                             "value" => PHPShopString::win_utf8($v)
                                         ];
-                                        $dictionary_value_id = $this->getAttributesValues($value['attribute_ozonseller'], $category_ozonseller, $v);
+                                        $dictionary_value_id = $this->getAttributesValues($value['attribute_ozonseller'], $category_ozonseller, $v, false, $category->getParam('category_ozonseller'));
                                         if (!empty($dictionary_value_id))
-                                            $values[$k]["dictionary_value_id"] = $dictionary_value_id;
+                                            $values[$k]["dictionary_value_id"] = (int)$dictionary_value_id;
                                     }
                                 }
                             }
                         }
-                        $list[] = ["id" => $value['attribute_ozonseller'], "values" => $values];
+
+                        if (!empty($value['attribute_ozonseller']) and ! empty($values))
+                            $list[] = ["id" => (int)$value['attribute_ozonseller'], 'complex_id' => 0, "values" => $values];
                     }
 
                 return ['attributes' => $list, 'category' => $category_ozonseller];
@@ -769,14 +797,15 @@ class OzonSeller {
         }
     }
 
-    public function getAttributesValues($attribute_id, $category_id, $sort_name, $return_array = false) {
+    public function getAttributesValues($attribute_id, $description_category_id, $sort_name, $return_array, $type_id) {
 
         $sort_name = PHPShopString::win_utf8($sort_name);
         $str = [];
 
         $params = [
             'attribute_id' => $attribute_id,
-            'category_id' => $category_id,
+            'description_category_id' => $description_category_id,
+            'type_id' => $type_id,
             'last_value_id' => 0,
             'limit' => 1000,
             'language' => 'DEFAULT'
@@ -788,7 +817,7 @@ class OzonSeller {
         $log['params'] = $params;
         $log['result'] = $result;
 
-        //$this->log($log, $attribute_id, self::GET_ATTRIBUTE_VALUES);
+        $this->log($log, $attribute_id, self::GET_ATTRIBUTE_VALUES);
 
         if (is_array($result['result'])) {
             foreach ($result['result'] as $val) {
@@ -830,10 +859,12 @@ class OzonSeller {
         if (!$this->image_save_source or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $pic_main_b))
             $pic_main_b = $pic_main;
 
-        if (!strstr($pic_main_b, 'https'))
-            $pic_main_b = 'https://' . $_SERVER['SERVER_NAME'] . $pic_main_b;
+        if (!empty($pic_main_b)) {
+            if (!strstr($pic_main_b, 'https'))
+                $pic_main_b = 'https://' . $_SERVER['SERVER_NAME'] . $pic_main_b;
 
-        $images[] = $pic_main_b;
+            $images[] = $pic_main_b;
+        }
 
         if (is_array($data)) {
             foreach ($data as $row) {
@@ -888,12 +919,12 @@ class OzonSeller {
             $params['items'][] = [
                 "attributes" => $this->getAttributes($prod)['attributes'],
                 "barcode" => (string) $prod['barcode_ozon'],
-                "category_id" => $this->getAttributes($prod)['category'],
+                "description_category_id" => (int)$this->getAttributes($prod)['category'],
                 "color_image" => "",
                 "complex_attributes" => [],
-                "depth" => $prod['length'],
+                "depth" => (int)$prod['length'],
                 "dimension_unit" => "cm",
-                "height" => $prod['height'],
+                "height" => (int)$prod['height'],
                 "images" => $this->getImages($prod['id'], $prod['pic_big']),
                 "images360" => [],
                 "name" => PHPShopString::win_utf8($prod['name']),
@@ -904,16 +935,17 @@ class OzonSeller {
                 "price" => (string) $this->price($price, $prod['baseinputvaluta']),
                 "primary_image" => "",
                 "vat" => (string) $this->vat,
-                "weight" => $prod['weight'],
+                "weight" => (int)$prod['weight'],
                 "weight_unit" => "g",
-                "width" => $prod['width']
+                "width" => (int)$prod['width']
             ];
 
 
             $result = $this->request(self::IMPORT_PRODUCT, $params);
 
             // Лог JSON
-            //$this->log_json(json_encode($params), 0, 'sendProducts');
+            $this->log_json(json_encode($params), 0, 'sendProducts JSON');
+            
             // Журнал
             $log['params'] = $params;
             $log['result'] = $result;
@@ -943,7 +975,7 @@ class OzonSeller {
         $log['params'] = $params;
         $log['result'] = $result;
 
-        //$this->log($log, null, self::GET_TREE_ATTRIBUTE);
+        $this->log($log, null, self::GET_TREE_ATTRIBUTE);
 
         return $result;
     }

@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с RSS каналами
  * @author PHPShop Software
- * @version 1.6
+ * @version 2.0
  * @package PHPShopClass
  */
 class PHPShopRssParser {
@@ -45,7 +45,8 @@ class PHPShopRssParser {
             $servers = " and f.servers REGEXP 'i" . HostID . "i'";
         } elseif (defined("HostMain"))
             $servers = " and (f.servers = '' or f.servers REGEXP 'i1000i')";
-        else $servers=null;
+        else
+            $servers = null;
 
         $date1 = strtotime(date("Y-m-d"));
         $date = time();
@@ -81,8 +82,7 @@ class PHPShopRssParser {
         $nnn = $rdf->get_array_item();
         if ($temp) {
             return $nnn;
-        }
-        else
+        } else
             return false;
     }
 
@@ -97,8 +97,7 @@ class PHPShopRssParser {
                 $date = strtotime(date("Y-m-d")) + round(86400 / $day_num);
             else
                 $date = $last_date + round(86400 / $day_num);
-        }
-        else
+        } else
             $date = time();
 
         $sql = "UPDATE " . $SysValue['base']['rssgraber'] . " set last_load = '$date' WHERE id = '$link_id'";
@@ -133,7 +132,7 @@ class PHPShopRssParser {
             @$result = mysqli_query($link_db, @$sql);
             @$n = mysqli_num_rows(@$result);
 
-            if (empty($n) and !empty($title)) {
+            if (empty($n) and ! empty($title)) {
 
                 $PHPShopOrm = new PHPShopOrm($SysValue['base']['news']);
                 $PHPShopOrm->debug = $this->debug;
@@ -176,10 +175,9 @@ class PHPShopRssParser {
                 while ($row = @mysqli_fetch_array($result)) {
                     $news = $this->parse_rss($row['link'], $row['news_num']);
                     if ($news) {
-                        $this->add_news($news, $row['news_num'],$row['servers']);
+                        $this->add_news($news, $row['news_num'], $row['servers']);
                         $this->add_rss_jurnal($row['id'], 1, $row['last_load'], $row['day_num']);
-                    }
-                    else
+                    } else
                         $this->add_rss_jurnal($row['id'], 0, $row['last_load'], $row['day_num']);
                 }
         }
@@ -313,10 +311,15 @@ class fase4_rdf {
             $this->_parse_mode = "all";
         }
 
-        $this->_depth[$parser]++;
-        array_push($this->_tags, $name);
-        $this->_cdepth[$parser]++;
-        array_push($this->_ctags, $name);
+        $this->_depth[(int)$parser] ++;
+
+        if (is_array($this->_tags))
+            array_push($this->_tags, $name);
+
+        $this->_cdepth[(int)$parser] ++;
+
+        if (is_array($this->_ctags))
+            array_push($this->_ctags, $name);
     }
 
 // END _startElement()
@@ -354,9 +357,9 @@ class fase4_rdf {
 
     function _endElement($parser, $name) {
         array_pop($this->_tags);
-        $this->_depth[$parser]--;
+        $this->_depth[(int)$parser] --;
         array_pop($this->_ctags);
-        $this->_cdepth[$parser]--;
+        $this->_cdepth[(int)$parser] --;
         switch ($name) {
             case "item":
                 if (empty($this->_max_count) OR $this->_item_count < $this->_max_count) {
@@ -486,16 +489,16 @@ class fase4_rdf {
         if ($clean) {
             $text = preg_replace("/^\s+/", "", $text);
             if ($this->_parse_mode == "all") {
-                if ($this->_item[$this->_tags[$this->_depth[$parser]]]) {
-                    $this->_item[$this->_tags[$this->_depth[$parser]]] .= $text;
+                if ($this->_item[$this->_tags[$this->_depth[(int)$parser]]]) {
+                    $this->_item[$this->_tags[$this->_depth[(int)$parser]]] .= $text;
                 } else {
-                    $this->_item[$this->_tags[$this->_depth[$parser]]] = $text;
+                    $this->_item[$this->_tags[$this->_depth[(int)$parser]]] = $text;
                 }
             } elseif ($this->_parse_mode == "channel") {
-                if ($this->_citem[$this->_ctags[$this->_cdepth[$parser]]]) {
-                    $this->_citem[$this->_ctags[$this->_cdepth[$parser]]] .= $text;
+                if ($this->_citem[$this->_ctags[$this->_cdepth[(int)$parser]]]) {
+                    $this->_citem[$this->_ctags[$this->_cdepth[(int)$parser]]] .= $text;
                 } else {
-                    $this->_citem[$this->_ctags[$this->_cdepth[$parser]]] = $text;
+                    $this->_citem[$this->_ctags[$this->_cdepth[(int)$parser]]] = $text;
                 }
             }
         }

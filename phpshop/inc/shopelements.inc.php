@@ -1357,7 +1357,7 @@ class PHPShopShopCatalogElement extends PHPShopProductElements {
     function treegenerator($array) {
         $tree_select = $check = false;
 
-        if (is_array($array['sub'])) {
+        if (is_array($array) and is_array($array['sub'])) {
             foreach ($array['sub'] as $k => $v) {
 
                 if ($this->multimenu and $this->tree_array[$k]['vid'] != 1)
@@ -1483,7 +1483,7 @@ class PHPShopShopCatalogElement extends PHPShopProductElements {
 
             foreach ($this->tree_array[0]['sub'] as $k => $v) {
 
-                if ($this->tree_array[$k]['vid'] != 1)
+                if (is_array($this->tree_array) and $this->tree_array[$k]['vid'] != 1)
                     $check = $this->treegenerator($this->tree_array[$k]);
 
                 $this->set('catalogName', $v);

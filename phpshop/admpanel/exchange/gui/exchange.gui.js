@@ -6,7 +6,7 @@ $().ready(function () {
 
     // Блокировка помощника для URL
     $('body').on('click', '#promtUrl', function () {
-        $('#bot').bootstrapToggle('off').bootstrapToggle('disable');
+        //$('#bot').bootstrapToggle('off').bootstrapToggle('disable');
     });
 
 

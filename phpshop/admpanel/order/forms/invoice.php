@@ -16,13 +16,14 @@ $PHPShopOrder = new PHPShopOrderFunction($_GET['orderID']);
 // Юридические лица
 $company = $PHPShopOrder->getParam('company');
 $PHPShopSystem->setCompany($company);
-$LoadItems['System']['nds']=$PHPShopOrder->PHPShopSystem->getParam('nds');
+$LoadItems['System']['nds'] = $PHPShopOrder->PHPShopSystem->getParam('nds');
 
 // Подключаем реквизиты
 $SysValue['bank'] = $LoadBanc = unserialize($LoadItems['System']['bank']);
 
 $sql = "select * from " . $SysValue['base']['orders'] . " where id=" . intval($_GET['orderID']);
 $n = 1;
+$sum=$num=0;
 @$result = mysqli_query($link_db, $sql);
 $row = mysqli_fetch_array(@$result);
 $id = $row['id'];
@@ -33,6 +34,11 @@ $status = unserialize($row['status']);
 $nds = $LoadItems['System']['nds'];
 $dis = $this_nds_summa = $sum = $num = $weight = $adr_info = null;
 foreach ($order['Cart']['cart'] as $val) {
+
+    // Услуга
+    if ($val['type'] == 2)
+        continue;
+
     $this_price = ($PHPShopOrder->returnSumma(number_format($val['price'], "2", ".", ""), $order['Person']['discount']));
     $this_nds = number_format($this_price * $nds / (100 + $nds), "2", ".", "");
     $this_price_bez_nds = ($this_price - $this_nds) * $val['num'];
@@ -110,11 +116,11 @@ if ($LoadItems['System']['nds_enabled']) {
     $nds = $LoadItems['System']['nds'];
     $nds = number_format($sum * ($nds / (100 + $nds)), "2", ".", "");
 }
-$sum = number_format($sum, "2", ".", "");
+$sum = number_format($sum+$deliveryPrice, "2", ".", "");
 
 $name_person = $order['Person']['name_person'];
 
-if ($row['org_name'] or @$order['Person']['org_name'])
+if ($row['org_name'] or @ $order['Person']['org_name'])
     $org_name = $order['Person']['org_name'] . $row['org_name'];
 else
     $org_name = $row['fio'];
@@ -139,7 +145,7 @@ if ($row['city'])
     $adr_info .= ", " . __("город") . ": " . $row['city'];
 if ($row['index'])
     $adr_info .= ", " . __("индекс") . ": " . $row['index'];
-if ($row['street'] OR !empty($order['Person']['adr_name']))
+if ($row['street'] OR ! empty($order['Person']['adr_name']))
     $adr_info .= ", " . __("улица") . ": " . $row['street'] . @$order['Person']['adr_name'];
 if ($row['house'])
     $adr_info .= ", " . __("дом") . ": " . $row['house'];
@@ -160,10 +166,10 @@ $LoadBanc['org_sig'] = $PHPShopSystem->getSerilizeParam('bank.org_sig');
 $LoadBanc['org_sig_buh'] = $PHPShopSystem->getSerilizeParam('bank.org_sig_buh');
 $LoadBanc['org_stamp'] = $PHPShopSystem->getSerilizeParam('bank.org_stamp');
 $LoadBanc['org_stamp'] = $PHPShopSystem->getSerilizeParam('bank.org_stamp');
-$LoadBanc['org_adres']=$PHPShopSystem->getSerilizeParam('bank.org_adres');
-$LoadBanc['org_inn']=$PHPShopSystem->getSerilizeParam('bank.org_inn');
-$LoadBanc['org_kpp']=$PHPShopSystem->getSerilizeParam('bank.org_kpp');
-$LoadItems['System']['company']=$PHPShopSystem->getParam('company');
+$LoadBanc['org_adres'] = $PHPShopSystem->getSerilizeParam('bank.org_adres');
+$LoadBanc['org_inn'] = $PHPShopSystem->getSerilizeParam('bank.org_inn');
+$LoadBanc['org_kpp'] = $PHPShopSystem->getSerilizeParam('bank.org_kpp');
+$LoadItems['System']['company'] = $PHPShopSystem->getParam('company');
 ?>
 <!doctype html>
 <head>
@@ -198,19 +204,22 @@ $LoadItems['System']['company']=$PHPShopSystem->getParam('company');
                     <?php _e("Исправление № --  от --") ?></td>
             </tr>
             <tr>
-                <td valign="top"><?php _e("Продавец");
+                <td valign="top"><?php
+                    _e("Продавец");
                     echo ": " . $LoadItems['System']['company']
                     ?><br />					
-                    <?php _e("Адрес");
+                    <?php
+                    _e("Адрес");
                     echo ": " . $LoadBanc['org_adres']
                     ?>, <?php echo $LoadItems['System']['tel'] ?> <br />							
                     <?php _e("Идентификационный номер продавца (ИНН)") ?> <?php echo $LoadBanc['org_inn'] ?>\<?php echo $LoadBanc['org_kpp'] ?> <br />							
                     <?php _e("Грузоотправитель и его адрес: Он же") ?>	<br />						
-                    <?php _e("Грузополучатель и его адрес");
+                    <?php
+                    _e("Грузополучатель и его адрес");
                     echo @$adr_info
                     ?>	<br />						
                     <?php _e("К платежно-расчетному документу") ?>       <br />							
-                    <?php echo __("Покупатель") . ": " . $org_name ?>	<br />						
+<?php echo __("Покупатель") . ": " . $org_name ?>	<br />						
 <?php echo __("Адрес") . ": " . @$adr_info ?> <br />							
 <?php echo __("Идентификационный номер покупателя (ИНН)") . ": " . $order['Person']['org_inn'] . $row['org_inn'] . "/ " . __("КПП") . ":" . @$order['Person']['org_kpp'] . $row['org_kpp'] ?> <br />							
                 </td>
@@ -262,7 +271,7 @@ $LoadItems['System']['company']=$PHPShopSystem->getParam('company');
                             <td colspan="8"><b><?php _e("Всего к оплате") ?></b></td>
 
                             <td align="right"><?php echo $this_nds_summa + $summa_nds_dos; ?></td>
-                            <td align="right"><?php echo $row['sum']; ?></td>
+                            <td align="right"><?php echo $sum; ?></td>
                             <td colspan="3">&nbsp;</td>
 
                         </tr>

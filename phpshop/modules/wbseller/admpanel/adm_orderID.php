@@ -77,17 +77,10 @@ function actionStart() {
 
     // Даннеы по товары из WB
     if (empty($prod)) {
-        $product_info = $WbSeller->getProduct([$order_info['article']])['data'][0];
-        $prod['pic_small'] = $product_info['mediaFiles'][0];
-        $prod['uid'] = PHPShopString::utf8_win1251($order_info['article']);
-
-        // Поиск имени
-        if (is_array($product_info['characteristics']))
-            foreach ($product_info['characteristics'] as $characteristics) {
-
-                if (!empty($characteristics[PHPShopString::win_utf8('Наименование')]))
-                    $prod['name'] = PHPShopString::utf8_win1251($characteristics[PHPShopString::win_utf8('Наименование')]);
-            }
+        $product_info = $WbSeller->getProductList($order_info['skus'][0], 1)['cards'][0];
+        $prod['pic_small'] = $product_info['photos'][0]['tm'];
+        $prod['uid'] = PHPShopString::utf8_win1251($product_info['vendorCode']);
+        $prod['name'] = PHPShopString::utf8_win1251($product_info['title']);
 
         $link = 'https://www.wildberries.ru/catalog/' . $product_info['nmID'] . '/detail.aspx';
     }
@@ -105,12 +98,12 @@ function actionStart() {
     $name = '
 <div class="media">
   <div class="media-left">
-    <a href="'.$link.'" target="_blank" >
+    <a href="' . $link . '" target="_blank" >
       ' . $icon . '
     </a>
   </div>
    <div class="media-body">
-    <div class="media-heading"><a href="'.$link.'" target="_blank">' . $prod['name'] . '</a></div>
+    <div class="media-heading"><a href="' . $link . '" target="_blank">' . $prod['name'] . '</a></div>
     ' . $type_name . ': ' . $prod['uid'] . '
   </div>
 </div>';
@@ -125,6 +118,7 @@ function actionStart() {
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $_GET['id'], "right", 70, "", "but") .
+            $PHPShopGUI->setInput("hidden", "status", $_GET['status'], "right", 70, "", "but") .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionSave.order.edit");
 
     // Футер
@@ -140,7 +134,7 @@ function actionSave() {
     global $WbSeller;
 
     // Данные по заказу
-    $orders = $WbSeller->getOrderList($_POST['date_start'], $_POST['date_end'])['orders'];
+    $orders = $WbSeller->getOrderList($_POST['date_start'], $_POST['date_end'],$_POST['status'])['orders'];
 
     if (is_array($orders)) {
         foreach ($orders as $order) {
@@ -149,7 +143,9 @@ function actionSave() {
             }
         }
     }
+    
 
+    
     $name = 'WB';
     $phone = null;
     $mail = null;
@@ -169,12 +165,12 @@ function actionSave() {
     }
 
     // Данные по товару
-    $product = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['id,uid,name,pic_small'], [$type => '="' . (string) $order_info['article'] . '"']);
+    $product = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['id,uid,name,pic_small'], [$type => '="' . (string) PHPShopString::utf8_win1251($order_info['article']) . '"']);
 
     if (empty($product) and ! empty($WbSeller->create_products)) {
 
         // Создание товара
-        $product_id = $WbSeller->addProduct($order_info['article']);
+        $product_id = $WbSeller->addProduct($order_info['skus'][0]);
         $product = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['id,uid,name,pic_small'], ['id' => '=' . (int) $product_id]);
     }
 

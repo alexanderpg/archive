@@ -37,8 +37,8 @@ function actionStart() {
         $type = 'id';
     }
 
-    if (is_array($products['data']['cards'])) {
-        foreach ($products['data']['cards'] as $products_list) {
+    if (is_array($products['cards'])) {
+        foreach ($products['cards'] as $products_list) {
 
             // Проверка товара в локальной базе
             $PHPShopProduct = new PHPShopProduct(PHPShopString::utf8_win1251($products_list['vendorCode']), $type);
@@ -48,55 +48,30 @@ function actionStart() {
                 if (!empty($new))
                     continue;
 
-                $data[$products_list['product_id']] = $PHPShopProduct->getArray();
-                $data[$products_list['product_id']]['status'] = 'imported';
+                //$data[$products_list['product_id']] = $PHPShopProduct->getArray();
+                $data[$products_list['nmID']]['status'] = 'imported';
                 $data[$products_list['nmID']]['vendorCode'] = $products_list['vendorCode'];
-                $data[$products_list['product_id']]['image'] = $PHPShopProduct->getImage();
-                $data[$products_list['product_id']]['link'] = '?path=product&id=' . $PHPShopProduct->getParam("id");
-
-                $data[$products_list['product_id']]['category'] = $PHPShopCategory[$PHPShopProduct->getParam("category")]['name'];
+                $data[$products_list['nmID']]['image'] = $PHPShopProduct->getImage();
+                $data[$products_list['nmID']]['link'] = '?path=product&id=' . $PHPShopProduct->getParam("id");
+                $data[$products_list['nmID']]['name'] = $PHPShopProduct->getParam("name");
+                $data[$products_list['nmID']]['category'] = $PHPShopCategory[$PHPShopProduct->getParam("category")]['name'];
             } else {
 
-                // Массив артикулов
-                $vendorCodes[] = $products_list['vendorCode'];
+                   
+                $data[$products_list['nmID']]['category']=$products_list['subjectName'];  
+                $data[$products_list['nmID']]['name'] = PHPShopString::utf8_win1251($products_list['title']);
+                $data[$products_list['nmID']]['status'] = 'wait';
+                $data[$products_list['nmID']]['link'] = '?path=modules.dir.wbseller.import&id=' . $products_list['nmUUID'];
+                $data[$products_list['nmID']]['image']=$products_list['photos'][0]['tm'];
+                $data[$products_list['nmID']]['vendorCode'] = $products_list['vendorCode'];
             }
         }
     }
-
-    if (is_array($vendorCodes)) {
-
-
-        $products = $WbSeller->getProduct($vendorCodes);
-
-        if (is_array($products['data']))
-            foreach ($products['data'] as $products_list) {
-
-                // Поиск имени
-                if (is_array($products_list['characteristics']))
-                    foreach ($products_list['characteristics'] as $characteristics) {
-                    
-                    if(!empty($characteristics[PHPShopString::win_utf8('Наименование')]))
-                         $data[$products_list['nmID']]['name'] = $characteristics[PHPShopString::win_utf8('Наименование')]; 
-                    
-                    if(!empty($characteristics[PHPShopString::win_utf8('Предмет')]))
-                         $data[$products_list['nmID']]['category'] = $characteristics[PHPShopString::win_utf8('Предмет')]; 
-                    
-                    }
-                    
-                $data[$products_list['nmID']]['status'] = 'wait';
-                $data[$products_list['nmID']]['link'] = '?path=modules.dir.wbseller.import&id=' . $products_list['vendorCode'];
-                $data[$products_list['nmID']]['image']=$products_list['mediaFiles'][0];
-                $data[$products_list['nmID']]['vendorCode'] = $products_list['vendorCode'];
-            }
-    }
-
 
     $status = [
         'imported' => '<span class="text-mutted">' . __('Загружен') . '</span>',
         'wait' => '<span class="text-success">' . __('Готов к загрузке') . '</span>',
     ];
-
-
 
     if (is_array($data))
         foreach ($data as $row) {
@@ -118,7 +93,7 @@ function actionStart() {
                 $uid = '<div class="text-muted">' . $type_name . ' ' . PHPShopString::utf8_win1251($row['uid']) . '</div>';
 
 
-            $PHPShopInterface->setRow($icon, array('name' => PHPShopString::utf8_win1251($row['name'], true), 'addon' => $uid, 'link' => $row['link']), PHPShopString::utf8_win1251($row['category']), $status[$row['status']]);
+            $PHPShopInterface->setRow($icon, array('name' => $row['name'], 'addon' => $uid, 'link' => $row['link']), PHPShopString::utf8_win1251($row['category']), $status[$row['status']]);
         }
 
 

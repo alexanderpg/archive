@@ -14,11 +14,12 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_system` (
 `status_import` varchar(64) default '',
 `delivery` INT(11) NOT NULL default '0',
 `create_products` enum('0','1') NOT NULL default '0',
+`log` enum('0','1') NOT NULL default '0',
 `version` varchar(64) DEFAULT '1.0',
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','1.8');
+INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','0','1.9');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_log` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -47,6 +48,7 @@ ALTER TABLE `phpshop_products` ADD `price_ozon` float DEFAULT '0';
 ALTER TABLE `phpshop_products` ADD `export_ozon_task_status` varchar(64) default '';
 ALTER TABLE `phpshop_products` ADD `barcode_ozon` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_products` ADD `export_ozon_id` int(11) DEFAULT 0;
+ALTER TABLE `phpshop_products` ADD `sku_ozon` int(11) DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_export` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -55,5 +57,12 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_export` (
 `product_id` int(11) NOT NULL,
 `product_name` VARCHAR(255) NOT NULL,
 `product_image` VARCHAR(255) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
+
+CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_type` (
+`id` int(11) NOT NULL,
+`name` varchar(255) NOT NULL,
+`parent_to` int(11) NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;

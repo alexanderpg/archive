@@ -364,6 +364,8 @@ CREATE TABLE IF NOT EXISTS `phpshop_menu` (
   `dir` varchar(64) DEFAULT NULL,
   `element` enum('0','1') DEFAULT '0',
   `servers` varchar(64) DEFAULT '',
+  `dop_cat` VARCHAR(255) DEFAULT '',
+  `mobile` enum('0','1') DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `flag` (`flag`),
   KEY `element` (`element`)
@@ -918,6 +920,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_products` (
   `price_purch` float DEFAULT '0',
   `yandex_vat_code` int(11) default 0,
   `external_code` varchar(64) DEFAULT '',
+  `type` enum('1','2') DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `category` (`category`),
   KEY `enabled` (`enabled`),
@@ -1361,7 +1364,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_system` (
     `secret_key` varchar(64) NOT NULL default '',
     `gateway` varchar(64) NOT NULL default '',
     `force_payment` enum('0','1') NOT NULL default '0',
-    `version` varchar(64) DEFAULT '2.2',
+    `version` varchar(64) DEFAULT '1.0',
     `enabled_taxation` int DEFAULT 0,
     `status` int(11) NOT NULL,
     `title_end` text NOT NULL,
@@ -1370,7 +1373,17 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_system` (
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_modules_tinkoff_system` (`id`, `title`, `terminal`, `secret_key`, `gateway`, `force_payment`, `version`, `enabled_taxation`, `status`, `title_end`, `taxation`) VALUES
-(1, 'Платежная система Тинькофф Банка', 'TinkoffBankTest', 'TinkoffBankTest', 'https://securepay.tinkoff.ru/v2', '0', 2.2, 0, 0, '', 'osn');
+(1, 'Платежная система Тинькофф Банка', 'TinkoffBankTest', 'TinkoffBankTest', 'https://securepay.tinkoff.ru/v2', '0', 2.4, 0, 0, '', 'osn');
 
 INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
 (10032, 'Мир, Visa, Mastercard (Tinkoff)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tinkoff.png');
+
+CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` int(11) NOT NULL,
+  `message` blob NOT NULL,
+  `order_id` varchar(64) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `type` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;

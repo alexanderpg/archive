@@ -327,6 +327,10 @@
                         <!-- Yandex ID -->
                         @yandexid@
                         <!-- End Yandex ID -->
+
+                        <!-- VK ID -->
+                        @vkid@
+                        <!-- End VK ID -->
                     </form>
                 </div>
             </div>

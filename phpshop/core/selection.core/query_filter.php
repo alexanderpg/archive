@@ -37,10 +37,23 @@ function query_filter($obj) {
 
     // Логика поиска
     $filter_logic = (int) $obj->PHPShopSystem->getSerilizeParam('admoption.filter_logic');
-    if (empty($filter_logic))
-        $filter_sort = 'and';
-    else
-        $filter_sort = 'or';
+
+    switch ($filter_logic) {
+
+        case 0:
+            $filter_sort = 'and';
+            $filter_sort_search = 'and';
+            break;
+
+        case 1:
+            $filter_sort = 'or';
+            $filter_sort_search = 'and';
+            break;
+
+        case 2:
+            $filter_sort = $filter_sort_search = 'or';
+            break;
+    }
 
     // Сортировка по характеристикам
     if (is_array($v)) {
@@ -61,7 +74,7 @@ function query_filter($obj) {
             // Обычный отбор []
             elseif (PHPShopSecurity::true_num($key) and PHPShopSecurity::true_num($value)) {
                 $hash = $key . "-" . $value;
-                $sort .= " vendor REGEXP 'i" . $hash . "i' ".$filter_sort;
+                $sort .= " vendor REGEXP 'i" . $hash . "i' " . $filter_sort;
                 $sortQuery .= "&v[$key]=$value";
             }
         }

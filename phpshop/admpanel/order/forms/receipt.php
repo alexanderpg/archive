@@ -26,6 +26,7 @@ $SysValue['bank'] = unserialize($LoadItems['System']['bank']);
 
 $sql = "select * from " . $SysValue['base']['table_name1'] . " where id=" . intval($_GET['orderID']);
 $n = 1;
+$sum=$num=0;
 @$result = mysqli_query($link_db, $sql);
 $row = mysqli_fetch_array(@$result);
 $ouid = $row['uid'];
@@ -33,6 +34,10 @@ $order = unserialize($row['orders']);
 $dis = $sum = $num = $weight = null;
 if (is_array($order['Cart']['cart']))
     foreach ($order['Cart']['cart'] as $val) {
+    
+            // Услуга
+        if($val['type'] == 2)
+            continue;
 
         if (!empty($val['parent_uid']))
             $val['uid'] = $val['parent_uid'];
@@ -89,7 +94,7 @@ if ($LoadItems['System']['nds_enabled']) {
     $nds = $LoadItems['System']['nds'];
     $nds = number_format($sum * $nds / (100 + $nds), "2", ".", "");
 }
-$sum = number_format($sum, "2", ".", "");
+$sum = number_format($sum+$deliveryPrice, "2", ".", "");
 
 $PERSON = $order['Person'];
 if ($PERSON['discount'] > 0) {
@@ -166,7 +171,7 @@ $LoadBanc = unserialize($LoadItems['System']['bank']);
             </tr>
             <?php
             echo $dis;
-            $my_total = $row['sum'];
+            $my_total = $sum;
             $my_nds = number_format($my_total * $LoadItems['System']['nds'] / (100 + $LoadItems['System']['nds']), "2", ".", "");
             ?>
             <tr>
@@ -186,7 +191,7 @@ $LoadBanc = unserialize($LoadItems['System']['bank']);
 
             <tr><td colspan=7 style="border: 0px; border-top: 1px solid #000000;">&nbsp;</td></tr>
         </table>
-        <p><b><?php echo __("Всего наименований")." ".($num + 1)." ".__("на сумму")." ". $row['sum']. " " . $PHPShopOrder->default_valuta_code; ?>
+        <p><b><?php echo __("Всего наименований")." ".($num + 1)." ".__("на сумму")." ". $my_total. " " . $PHPShopOrder->default_valuta_code; ?>
                 <br />
                 <?php
                 $iw = new inwords;

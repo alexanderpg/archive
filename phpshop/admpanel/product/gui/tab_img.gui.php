@@ -80,7 +80,7 @@ function tab_img($data) {
             $select = $PHPShopGUI->setSelect("foto_num_new[" . $row['id'] . "]", $num, 45, null, false, false, false, false, false, $row['id'], 'selectpicker pull-right img-num ', false, 'btn btn-default btn-xs hidden-xs');
 
             unset($value_option);
-            $value_option[] = array(__('Основной товар'), 0, 0);
+            //$value_option[] = array(__('Основной товар'), 0, 0);
             if (!empty($data_option) and is_array($data_option))
                 foreach ($data_option as $row_option) {
 
@@ -95,7 +95,7 @@ function tab_img($data) {
                     $value_option[] = array($row_option['parent'] . ' ' . $row_option['parent2'], $row_option['id'], $check);
                 }
 
-            $select_option = $PHPShopGUI->setSelect("foto_parent_new[" . $row['id'] . "]", $value_option, 170, null, false, true, false, false, false, $row['name'], 'selectpicker pull-right img-parent ', false, 'btn btn-default btn-xs hidden-xs');
+            $select_option = $PHPShopGUI->setSelect("foto_parent_new[" . $row['id'] . "]", $value_option, 170, null, false, true, false, false, true, $row['name'], 'selectpicker pull-right img-parent ', false, 'btn btn-default btn-xs hidden-xs');
 
             if (empty($row['info']))
                 $row['info'] = str_replace(array('"', '\''), array('', ''), $data['name']);

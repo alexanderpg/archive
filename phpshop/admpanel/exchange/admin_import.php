@@ -93,14 +93,15 @@ $key_name = array(
     'price_purch' => 'Закупочная цена',
     'files' => 'Файлы',
     'external_code' => 'Внешний код',
-    'barcode' => 'Штрихкод'
+    'barcode' => 'Штрихкод',
+    'rate_count' => 'Голоса'
 );
 
 if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
     unset($key_name);
 
 // Стоп лист
-$key_stop = array('password', 'wishlist', 'sort', 'yml_bid_array', 'status', 'datas', 'price_search', 'vid', 'name_rambler', 'servers', 'skin', 'skin_enabled', 'secure_groups', 'icon_description', 'title_enabled', 'title_shablon', 'descrip_shablon', 'descrip_enabled', 'productsgroup_check', 'productsgroup_product', 'keywords_enabled', 'keywords_shablon', 'rate_count', 'sort_cache', 'sort_cache_created_at', 'parent_title', 'menu', 'order_by', 'order_to', 'org_ras', 'org_bank', 'org_kor', 'org_bik', 'org_city', 'admin', 'org_fakt_adres');
+$key_stop = array('password', 'wishlist', 'sort', 'yml_bid_array', 'status', 'datas', 'price_search', 'vid', 'name_rambler', 'servers', 'skin', 'skin_enabled', 'secure_groups', 'icon_description', 'title_enabled', 'title_shablon', 'descrip_shablon', 'descrip_enabled', 'productsgroup_check', 'productsgroup_product', 'keywords_enabled', 'keywords_shablon', 'sort_cache', 'sort_cache_created_at', 'parent_title', 'menu', 'order_by', 'order_to', 'org_ras', 'org_bank', 'org_kor', 'org_bik', 'org_city', 'admin', 'org_fakt_adres');
 
 if (empty($subpath[2]))
     $subpath[2] = null;
@@ -1007,6 +1008,7 @@ function actionSave() {
             $csv_file = $_POST['furl'];
             $path_parts = pathinfo($csv_file);
             $csv_file_name = $path_parts['basename'];
+            $url = true;
         }
     }
 
@@ -1165,6 +1167,42 @@ function actionSave() {
             }
         }
 
+        // RSS
+        else if ($_POST['export_extension'] == 'rss') {
+
+            $_POST['export_code'] = 'ansi';
+            $feed = str_replace(['g:'], [''], file_get_contents($csv_file));
+            $xml = simplexml_load_string($feed);
+
+            // Товары
+            $yml_array[] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "ISO"];
+
+            foreach ($xml->channel[0]->item as $item) {
+
+                // Склад
+                if ((string) $item->availability == "in stock")
+                    $warehouse = 1;
+                else
+                    $warehouse = 0;
+
+                // Картинки
+                if (is_array((array) $item->image_link))
+                    $images = implode(",", (array) $item->image_link);
+                else
+                    $images = (string) $item->image_link;
+
+                // Цена
+                $price = explode(" ", (string) $item->price[0]);
+
+                $yml_array[] = [(string) $item->id[0], PHPShopString::utf8_win1251((string) $item->title[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, $price[0], $price[1], (int) $item->categoryId[0]];
+            }
+
+
+            // Временный файл
+            $csv_file = './csv/product.rss.csv';
+            PHPShopFile::writeCsv($csv_file, $yml_array);
+        }
+
         // XLSX
         else if ($_POST['export_extension'] == 'xlsx') {
 
@@ -1196,6 +1234,14 @@ function actionSave() {
                 PHPShopFile::writeCsv($csv_file, $xls->rows());
             } else {
                 echo SimpleXLS::parseError();
+            }
+        }
+        // Копируем CSV файл локально для автоматизации
+        else if ($_POST['export_extension'] == 'csv' and ! empty($url) and ! empty($_POST['bot'])) {
+            
+            if (!empty($_POST['furl'])){
+                $csv_file = './csv/' . $path_parts['basename'];
+                @file_put_contents($csv_file, @file_get_contents($_POST['furl']));
             }
         }
 
@@ -1537,6 +1583,7 @@ function actionStart() {
     $code_extension[] = array(__('Автоматический'), 'auto', $export_extension);
     $code_extension[] = array('Excel (CSV)', 'csv', $export_extension);
     $code_extension[] = array('Яндекс (YML)', 'yml', $export_extension);
+    $code_extension[] = array('Google (RSS)', 'rss', $export_extension);
     $code_extension[] = array('Excel (XLSX)', 'xlsx', $export_extension);
     $code_extension[] = array('Excel (XLS)', 'xls', $export_extension);
 

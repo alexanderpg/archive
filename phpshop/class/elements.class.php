@@ -139,7 +139,7 @@ class PHPShopElements {
      */
     function getValue($param) {
         $param = explode(".", $param);
-        if (isset($this->SysValue[$param[0]][$param[1]]))
+        if (is_array($param) and isset($this->SysValue[$param[0]][$param[1]]))
             return $this->SysValue[$param[0]][$param[1]];
     }
 

@@ -17,15 +17,17 @@ function addOzonsellerTab($data) {
         $OzonSeller = new OzonSeller();
 
         $PHPShopGUI->addJSFiles('../modules/ozonseller/admpanel/gui/order.gui.js');
-        $category_ozonseller = (new PHPShopOrm('phpshop_modules_ozonseller_categories'))->getOne(['name'],['id'=>'='.$data['category_ozonseller']])['name'];
-
+        $category_ozonseller = (new PHPShopOrm('phpshop_modules_ozonseller_type'))->getOne(['name','parent_to','id'],['id'=>'='.$data['category_ozonseller']]);
+        $category_ozonseller_parent = (new PHPShopOrm('phpshop_modules_ozonseller_categories'))->getOne(['name','parent_to','id'],['id'=>'='.$category_ozonseller['parent_to']]);
+        
+        if(!empty($category_ozonseller_parent['name']))
+        $value = $category_ozonseller_parent['name'].' - '.$category_ozonseller['name'];
+        
         $tree_select = '
-        <input data-set="3" name="category_ozonseller" class="search_ozoncategory form-control input-sm" type="search" data-trigger="manual" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true"  data-content="" placeholder="' . __('Найти...') . '" value="' . $category_ozonseller . '"><input name="category_ozonseller_new" type="hidden" value="' . $data['category_ozonseller'] . '">';
-
+        <input data-set="3" name="category_ozonseller" class="search_ozoncategory form-control input-sm" type="search" data-trigger="manual" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true"  data-content="" placeholder="' . __('Найти...') . '" value="' . $value . '"><input name="category_ozonseller_new" type="hidden" value="' . $data['category_ozonseller'] . '">';
 
         // Размещение
         $Tab1 = $PHPShopGUI->setCollapse('Размещение в OZON', $tree_select);
-
 
         // Характеристики локальные
         $sort = unserialize($data['sort']);
@@ -34,13 +36,16 @@ function addOzonsellerTab($data) {
             $sort_data = $PHPShopSort->getList($select = array('id,name,attribute_ozonseller'), array('id' => ' IN(' . implode(',', $sort) . ')'), array('order' => 'num,name'));
         }
 
-
         // Характеристики с Ozon
         $Tab2 = null;
-        $sort_ozon_data = $OzonSeller->getTreeAttribute(["category_id" => [$data['category_ozonseller']], "attribute_type" => "REQUIRED"]);
-        if (is_array($sort_ozon_data['result'][0]['attributes'])) {
-            foreach ($sort_ozon_data['result'][0]['attributes'] as $sort_ozon_value) {
+        $sort_ozon_data = $OzonSeller->getTreeAttribute(["description_category_id" => $category_ozonseller['parent_to'],"type_id"=>$category_ozonseller['id']]);
+
+        if (is_array($sort_ozon_data['result'])) {
+            foreach ($sort_ozon_data['result'] as $sort_ozon_value) {
                 $name = PHPShopString::utf8_win1251($sort_ozon_value['name']);
+                
+                if($sort_ozon_value['is_required'] != 1 or $name == 'Тип' or $name == 'Название')
+                    continue;
 
                 $sort_select_value = [];
                 if (is_array($sort_data)) {
@@ -56,16 +61,16 @@ function addOzonsellerTab($data) {
                     }
                 }
 
-                $help_list = $OzonSeller->getAttributesValues($sort_ozon_value['id'], $data['category_ozonseller'], null, true);
+                $help_list = $OzonSeller->getAttributesValues($sort_ozon_value['id'], $category_ozonseller['parent_to'], null, true,$category_ozonseller['id']);
                 if (count($help_list) > 0)
                     $help = '<a data-toggle="collapse" href="#collapseOzonValue' . $sort_ozon_value['id'] . '" aria-expanded="false" aria-controls="collapseExample">' . __('Доступные значения') . '</a><div class="collapse" id="collapseOzonValue' . $sort_ozon_value['id'] . '"><div class="well well-sm">' . implode('<br>', $help_list) . '</div></div>';
                 else
                     $help = null;
 
-                if (empty($sort_ozon_value['dictionary_id']) and $name == 'Название') {
-                    continue;
+                //if (empty($sort_ozon_value['dictionary_id']) and $name == 'Название') {
+                    //continue;
                     //$sort_ozon_value['description'] = __('Будет заполнено автоматически из имени товара.');
-                }
+                //}
 
                 $Tab2 .= $PHPShopGUI->setField($name, $PHPShopGUI->setSelect('attribute_ozonseller[' . $sort_ozon_value['id'] . ']', $sort_select_value, '100%') . $PHPShopGUI->setHelp(PHPShopString::utf8_win1251($sort_ozon_value['description']) . '<br>' . $help,false,false),1,  $sort_ozon_value['id'], null,'control-label', false);
             }

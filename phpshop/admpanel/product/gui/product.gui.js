@@ -10,6 +10,69 @@ $().ready(function () {
     $("body").on('change', '#baseinputvaluta_new', function () {
         $('[data-type="price"] .input-group-addon').html($(this).attr('data-code'));
     });
+    
+    // Копировать подтип
+    $("body").on('click', '.data-row .value-copy', function () {
+        
+        var parent = $(this).closest('.data-row');
+        var name = $(this).closest('.data-row').find('input[data-edit=parent_new]').val();
+        var items = $(this).closest('.data-row').find('input[data-edit=items_new]').val();
+        var price = $(this).closest('.data-row').find('input[data-edit=price_new]').val();
+        var parent2 = $(this).closest('.data-row').find('input[data-edit=parent2_new]').val();
+        var pic_small = $(this).closest('.data-row').find('img').attr('src');
+        var pic_big = $(this).closest('.data-row').find('img').attr('data-big');
+        
+        if (name != '' || parent2 != '') {
+
+            var data = [];
+
+            data.push({name: 'actionList[saveID]', value: 'actionInsert.catalog.create'});
+            data.push({name: 'saveID', value: 1});
+            data.push({name: 'parent_new', value: escape(name)});
+            data.push({name: 'items_new', value: items});
+            data.push({name: 'price_new', value: price});
+            data.push({name: 'parent2_new', value: escape(parent2)});
+            data.push({name: 'name_new', value: escape($('[name="name_new"]').val() + ' ' + name + ' ' + parent2)});
+            data.push({name: 'parent_enabled_new', value: 1});
+            data.push({name: 'enabled_new', value: 1});
+            data.push({name: 'ajax', value: 1});
+            data.push({name: 'parent', value: $('input[name="rowID"]').val()});
+            data.push({name: 'category_new', value: $('select[name="category_new"]').val()});
+            data.push({name: 'baseinputvaluta_new', value: $('input[name="baseinputvaluta_new"]:checked').val()});
+            data.push({name: 'pic_small_new', value: pic_small});
+            data.push({name: 'pic_big_new', value: pic_big});
+
+            $.ajax({
+                mimeType: 'text/html; charset=' + locale.charset,
+                url: '?path=product&action=new',
+                type: 'post',
+                data: data,
+                dataType: "json",
+                async: false,
+                success: function (json) {
+                    if (json['success'] != '') {
+                        parent.after('<tr class="data-row" data-row="' + json['success'] + '"><td><img src="'+pic_small+'" data-big="'+pic_big+'" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object"></td><td style="text-align:left"><input style="width:100%" data-id="' + json['success'] + '" data-edit="parent_new" class="editable form-control input-sm"  value="' + name + '"></td><td style="text-align:left"><input style="width:100%" data-id="' + json['success'] + '" data-edit="parent2_new" class="editable form-control input-sm"  value="' + parent2 + '"></td><td style="text-align:left"><input style="width:100%" class="editable form-control input-sm" data-edit="items_new" data-id="' + json['success'] + '" value="' + parseInt(0 + items) + '"></td><td style="text-align:left"><input style="width:100%" class="editable form-control input-sm" data-edit="price_new" data-id="' + json['success'] + '" value="' + parseInt(0 + price) + '"></td><td style="text-align:center"><div class="dropdown" id="dropdown_action"><a href="#" class="dropdown-toggle btn btn-default btn-sm" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></a><ul class="dropdown-menu" role="menu" ><li><a href="#" data-id="' + json['success'] + '" class="value-edit">Редактировать</a></li><li class="divider"></li><li><a href="#" data-id="' + json['success'] + '" class="value-delete">Удалить <span class="glyphicon glyphicon-trash"></span></a></li></ul></div></td><td></td></tr>');
+
+                        // Цена главного товара
+                        if ($('input[name="price_new"]').val() == 0)
+                            $('input[name="price_new"]').val(price);
+
+                        // Добавление в список изображений
+                        $('.img-parent .selectpicker').prepend('<option value="' + json['success'] + '">' + escape(name) + '</option>');
+                        $('.img-parent').selectpicker('refresh');
+
+                        showAlertMessage(locale.save_done);
+
+                    } else
+                        showAlertMessage(locale.save_false, true);
+                }
+            });
+            $(this).closest('.data-row').find('input[name=name2_option_new]').val('');
+            $(this).closest('.data-row').find('input[name=name_option_new]').val('');
+            $(this).closest('.data-row').find('input[name=items_value]').val('');
+        }
+    });
+
 
     // Добавить подтип
     $("body").on('click', 'button[name=addOption]', function () {
@@ -465,7 +528,7 @@ $().ready(function () {
         var data = [];
         var id = $(this).selectpicker('val');
 
-        if (id == 0)
+        if (id == null || id == 0)
             return true;
 
         var text = $(this).find('option:selected').text();

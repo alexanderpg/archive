@@ -11,6 +11,7 @@ function tab_option($data) {
     $PHPShopInterface = new PHPShopInterface();
     $PHPShopInterface->action_title['value-edit'] = 'Редактировать';
     $PHPShopInterface->action_title['value-delete'] = 'Удалить';
+    $PHPShopInterface->action_title['value-copy'] = 'Сделать копию';
 
     PHPShopObj::loadClass("sort");
     $PHPShopParentNameArray = new PHPShopParentNameArray(array('id' => '=' . @$CategoryArray[$data['category']]['parent_title']));
@@ -52,12 +53,12 @@ function tab_option($data) {
 
             // Иконка
             if (!empty($row['pic_small']))
-                $image = '<img src="' . $row['pic_small'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
+                $image = '<img src="' . $row['pic_small'] . '" data-big="'.$row['pic_big'].'" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
             elseif (!empty($data['pic_small'])) {
-                $image = '<img src="' . $data['pic_small'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
+                $image = '<img src="' . $data['pic_small'] . '" data-big="'.$data['pic_big'].'" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
                 $row['pic_small'] = $data['pic_small'];
             } else
-                $image = '<img class="media-object" src="./images/no_photo.gif">';
+                $image = '<img class="media-object" data-big="" src="./images/no_photo.gif">';
 
 
             // Название
@@ -74,7 +75,7 @@ function tab_option($data) {
                 $row['color'] = '';
 
             $PHPShopInterface->setRow(array('name' => $image, 'link' => $row['pic_small'], 'target' => '_blank', 'align' => 'left'), array('name' => $row['parent'], 'editable' => 'parent_new', 'id' => $row['id']), array('name' => $row['parent2'], 'editable' => 'parent2_new', 'id' => $row['id'], 'color' => $row['color']), array('name' => $row['items'], 'align' => 'center', 'editable' => 'items_new', 'id' => $row['id']), array('name' => $row['price'], 'editable' => 'price_new', 'id' => $row['id']), array('action' =>
-                array('value-edit', '|', 'value-delete', 'id' => $row['id']), 'align' => 'center'), array('name' => $icon));
+                array('value-edit', 'value-copy', '|', 'value-delete', 'id' => $row['id']), 'align' => 'center'), array('name' => $icon));
         }
 
     $PHPShopInterface->setRow(array('name' => null), array('name' => '<input style="width:100%" data-id="" placeholder="' . __('Добавить') . '" name="name_option_new" class="form-control input-sm" value="">'), array('name' => '<input style="width:100%" data-id="" placeholder="' . __('Добавить') . '" name="name2_option_new" class="form-control input-sm " value="">'), array('name' => '<input style="width:100%" class="form-control input-sm" name="items_option_new" value="1">'), array('name' => '<input style="width:100%" class="form-control input-sm" name="price_option_new" value="' . $data['price'] . '">'), array('name' => '<button data-toggle="tooltip" data-placement="top" type="button" name="addOption" class="btn btn-default btn-sm" value="" data-original-title="' . __('Добавить подтип') . '"><span class="glyphicon glyphicon-plus"></span> ' . __('Добавить') . '</button>', 'align' => 'left'), '');

@@ -232,6 +232,10 @@ function actionStart() {
             $PHPShopGUI->setCheckbox('newtip_new', 1, 'Новинка', $data['newtip']));
     $Tab_info .= $PHPShopGUI->setField('Сортировка', $PHPShopGUI->setInputText('&#8470;', 'num_new', $data['num'], 100));
 
+    $type_value[] = array('Товар', 1, $data['type']);
+    $type_value[] = array('Услуга', 2, $data['type']);
+    $Tab_info .= $PHPShopGUI->setField('Тип', $PHPShopGUI->setSelect('type_new', $type_value, 100, true));
+
     if (!empty($_GET['view']) and $_GET['view'] == 'option')
         $Tab_info .= $PHPShopGUI->setField('Связи', $PHPShopGUI->setRadio('parent_enabled_new', 0, 'Обычный товар', $data['parent_enabled']) . $PHPShopGUI->setRadio('parent_enabled_new', 1, 'Подтип товара', $data['parent_enabled']));
 
@@ -534,7 +538,7 @@ function actionUpdate() {
         if (isset($_POST['editID'])) {
             if (!empty($_POST['files_new']) and is_array($_POST['files_new'])) {
                 foreach ($_POST['files_new'] as $k => $files) {
-                    
+
                     if (empty($files['name']))
                         $files['name'] = pathinfo($files['path'])['basename'];
 
@@ -665,8 +669,14 @@ function actionUpdate() {
     // Права пользователя
     $_POST['user_new'] = $_SESSION['idPHPSHOP'];
 
+
+    if (strstr($_POST['rowID'], ","))
+        $where = ['id' => ' IN (' . $_POST['rowID'] . ')'];
+    else
+        $where = ['id' => '=' . $_POST['rowID']];
+
     $PHPShopOrm->debug = false;
-    $action = $PHPShopOrm->update($_POST, array('id' => '=' . $_POST['rowID']));
+    $action = $PHPShopOrm->update($_POST, $where);
     $PHPShopOrm->clean();
 
     // Списывание со склада

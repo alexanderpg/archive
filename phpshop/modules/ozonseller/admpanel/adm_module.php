@@ -66,7 +66,7 @@ function actionUpdate() {
         actionUpdateCategory();
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new','create_products_new');
+    $PHPShopOrm->updateZeroVars('link_new', 'create_products_new','log_new');
 
     // Складs
     if (is_array($_POST['warehouse'])) {
@@ -125,14 +125,25 @@ function setChildrenCategory($tree_array, $parent_to) {
 
     if (is_array($tree_array)) {
         foreach ($tree_array as $category) {
-            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['title']), 'id_new' => $category['category_id'], 'parent_to_new' => $parent_to]);
 
-            if (is_array($category['children'])) {
-                foreach ($category['children'] as $children) {
-                    $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['title']), 'id_new' => $children['category_id'], 'parent_to_new' => $category['category_id']]);
-                    if (is_array($children['children']))
-                        setChildrenCategory($children['children'], $children['category_id']);
+            // Категория
+            if (!empty($category['description_category_id'])) {
+                $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['category_name']), 'id_new' => $category['description_category_id'], 'parent_to_new' => $parent_to]);
+
+                if (is_array($category['children'])) {
+                    foreach ($category['children'] as $children) {
+
+                        if (!empty($children['category_name']))
+                            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['category_name']), 'id_new' => $children['description_category_id'], 'parent_to_new' => $category['description_category_id']]);
+
+                        if (is_array($children['children']))
+                            setChildrenCategory($children['children'], $children['description_category_id']);
+                    }
                 }
+            }
+            // Тип
+            else {
+                (new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_type")))->insert(['name_new' => PHPShopString::utf8_win1251($category['type_name']), 'id_new' => $category['type_id'], 'parent_to_new' => $parent_to]);
             }
         }
     }
@@ -142,7 +153,7 @@ function setChildrenCategory($tree_array, $parent_to) {
 function actionUpdateCategory() {
     global $PHPShopModules, $OzonSeller;
 
-    $getTree = $OzonSeller->getTree(['category_id' => 0]);
+    $getTree = $OzonSeller->getTree(['description_category_id' => 0]);
     $tree_array = $getTree['result'];
 
     $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_categories"));
@@ -150,16 +161,18 @@ function actionUpdateCategory() {
 
     // Очистка
     $PHPShopOrm->query('TRUNCATE TABLE `' . $PHPShopModules->getParam("base.ozonseller.ozonseller_categories") . '`');
+    $PHPShopOrm->query('TRUNCATE TABLE `' . $PHPShopModules->getParam("base.ozonseller.ozonseller_type") . '`');
 
     if (is_array($tree_array)) {
         foreach ($tree_array as $category) {
-            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['title']), 'id_new' => $category['category_id'], 'parent_to_new' => 0]);
+            $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($category['category_name']), 'id_new' => $category['description_category_id'], 'parent_to_new' => 0]);
 
             if (is_array($category['children'])) {
                 foreach ($category['children'] as $children) {
-                    $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['title']), 'id_new' => $children['category_id'], 'parent_to_new' => $category['category_id']]);
-                    if (is_array($children['children']))
-                        setChildrenCategory($children['children'], $children['category_id']);
+
+                        $PHPShopOrm->insert(['name_new' => PHPShopString::utf8_win1251($children['category_name']), 'id_new' => $children['description_category_id'], 'parent_to_new' => $category['description_category_id']]);
+                        if (is_array($children['children']))
+                            setChildrenCategory($children['children'], $children['description_category_id']);
                 }
             }
         }
@@ -237,11 +250,15 @@ function actionStart() {
 
     $PHPShopOrmCat = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_categories"));
     $category = $PHPShopOrmCat->select(['COUNT(`id`) as num']);
+    
+    $PHPShopOrmType = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_type"));
+    $type = $PHPShopOrmType->select(['COUNT(`id`) as num']);
 
-    $Tab1 .= $PHPShopGUI->setField('База категорий', $PHPShopGUI->setText($category['num'] . ' ' . __('записей в локальной базе'), null, false, false) . '<br>' . $PHPShopGUI->setCheckbox('load', 1, 'Обновить базу категорий товаров для OZON', 0));
+    $Tab1 .= $PHPShopGUI->setField('База категорий и типов', $PHPShopGUI->setText(($category['num']+$type['num']) . ' ' . __('записей в локальной базе'), null, false, false) . '<br>' . $PHPShopGUI->setCheckbox('load', 1, 'Обновить базу категорий и типов товаров', 0));
 
     $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в OZON', $data['link']));
     $Tab1 .= $PHPShopGUI->setField('Создавать товар', $PHPShopGUI->setCheckbox('create_products_new', 1, 'Создавать автоматически товар из заказа', $data['create_products']));
+    $Tab1 .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
 
 
     if ($data['fee_type'] == 1) {
@@ -355,19 +372,19 @@ function actionStart() {
  */
 function actionCategorySearch() {
 
-    $PHPShopOrm = new PHPShopOrm('phpshop_modules_ozonseller_categories');
-    $PHPShopOrm->debug = false;
-    $data = $PHPShopOrm->getList(['*'], ['name' => " LIKE '%" . $_POST['words'] . "%'", 'parent_to' => '!=0']);
+    $PHPShopOrmCat = new PHPShopOrm('phpshop_modules_ozonseller_categories');
+    $PHPShopOrmType = new PHPShopOrm('phpshop_modules_ozonseller_type');
+    $data = $PHPShopOrmType->getList(['*'], ['name' => " LIKE '%" . $_POST['words'] . "%'", 'parent_to' => '!=0']);
     if (is_array($data)) {
         foreach ($data as $row) {
 
-            $parent = $PHPShopOrm->getOne(['name'], ['id' => '=' . $row['parent_to']])['name'];
+            $parent = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $row['parent_to']])['name'];
 
-            $child = $PHPShopOrm->getOne(['name'], ['parent_to' => '=' . $row['id']])['name'];
+            $child = $PHPShopOrmCat->getOne(['name'], ['parent_to' => '=' . $row['id']])['name'];
             if ($child)
                 continue;
 
-            $result .= '<a href=\'#\' class=\'select-search\' data-id=\'' . $row['id'] . '\'  data-name=\'' . $row['name'] . '\'    >' . $parent . ' &rarr; ' . $row['name'] . '</a><br>';
+            $result .= '<a href=\'#\' class=\'select-search-ozon\'  data-id=\'' . $row['id'] . '\'  data-name=\'' . $parent.' - '.$row['name'] . '\'    >' . $parent . ' &rarr; ' . $row['name'] . '</a><br>';
         }
         $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 

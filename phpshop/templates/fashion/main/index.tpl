@@ -602,10 +602,14 @@
                                     <a href="/users/register.html">{Зарегистрироваться}</a>
                                 </p>
                             </div>
-                            
+
                             <!-- Yandex ID -->
                             @yandexid@
                             <!-- End Yandex ID -->
+
+                            <!-- VK ID -->
+                            @vkid@
+                            <!-- End VK ID -->
 
                             <a class="js-animation-link btn btn-block btn-primary mb-2" href="#"
                                data-hs-show-animation-options='{
@@ -614,7 +618,7 @@
                                }'>{Войти по }Email</a>
                             <a class="btn btn-block btn-soft-primary mb-2 @sms_login_enabled@" href="/users/sms.html">{Войти по номеру телефона}</a>
 
-                            
+
                         </div>
                         <!-- End Sign in -->
 

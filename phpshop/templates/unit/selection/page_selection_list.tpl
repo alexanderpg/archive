@@ -24,14 +24,14 @@
                     <div class="btn-group filter-menu" data-toggle="buttons">
 
                         <label class="btn btn-sm btn-sort @fSetCactive@">
-                            <input type="radio" name="s" value="=3" data-url="?s=3" @fSetCchecked@> {Популярные} 
+                            <input type="radio" name="s" value="=3" data-url="?@productVendor@s=3" @fSetCchecked@> {Популярные} 
                         </label>
 
                         <label class="btn btn-sm btn-sort @fSetBactive@" >
-                            <input type="radio" name="s" value="2&f=2" data-url="?s=2&f=2" @fSetBchecked@> {Дорогие}
+                            <input type="radio" name="s" value="2&f=2" data-url="?@productVendor@s=2&f=2" @fSetBchecked@> {Дорогие}
                         </label>
                         <label class="btn btn-sm btn-sort @fSetAactive@" >
-                            <input type="radio" name="s" value="2&f=1" data-url="?s=2&f=1" @fSetAchecked@> {Дешевые}
+                            <input type="radio" name="s" value="2&f=1" data-url="?@productVendor@s=2&f=1" @fSetAchecked@> {Дешевые}
                         </label>
                     </div>
                 </div>

@@ -81,7 +81,7 @@ if (is_array($orders)) {
         if (empty($product) and !empty($WbSeller->create_products)) {
 
             // Создание товара
-            $product_id = $WbSeller->addProduct($order_info['article']);
+            $product_id = $WbSeller->addProduct($order_info['skus'][0]);
             $product = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['id,uid,name,pic_small'], ['id' => '=' .(int) $product_id]); 
         }
         

@@ -12,8 +12,8 @@ function uid_mod_ozonseller_hook($obj, $row, $rout) {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['ozonseller']['ozonseller_system']);
         $options = $PHPShopOrm->select();
         
-        if($options['link'] == 1 and !empty($row['export_ozon_id'])){
-            $obj->set('ozonseller_link','https://www.ozon.ru/product/' . $row['export_ozon_id']);
+        if($options['link'] == 1 and !empty($row['sku_ozon'])){
+            $obj->set('ozonseller_link','https://www.ozon.ru/product/' . $row['sku_ozon']);
         }
     }
 }

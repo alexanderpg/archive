@@ -50,6 +50,13 @@ function actionStart() {
         $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Яндекс ID', $PHPShopGUI->setField('ClientID', $PHPShopGUI->setInputText(false, 'option[yandex_id_apikey]', $option['yandex_id_apikey'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://oauth.yandex.ru/client/new/id/" target="_blank">Кабинет разработчика</a>')) .
                 $PHPShopGUI->setField("Включить Яндекс ID", $PHPShopGUI->setCheckbox('option[yandex_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью Яндекс ID на сайте', $option['yandex_id_enabled'])), 'in', true
         );
+    
+    // VK ID
+    if (empty($hideSite))
+        $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('VK ID', $PHPShopGUI->setField('ID приложения', $PHPShopGUI->setInputText(false, 'option[vk_id]', $option['vk_id'], 300) . $PHPShopGUI->setHelp('Персональные ключи для домена выдаются через <a href="https://id.vk.com/about/business/go" target="_blank">Кабинет разработчика</a>')) .
+                $PHPShopGUI->setField('Сервисный ключ', $PHPShopGUI->setInputText(false, 'option[vk_id_apikey]', $option['vk_id_apikey'], 300)) .
+                $PHPShopGUI->setField("Включить VK ID", $PHPShopGUI->setCheckbox('option[vk_id_enabled]', 1, 'Использовать OAuth авторизацию с помощью VK ID на сайте', $option['vk_id_enabled'])), 'in', true
+        );
 
 
     // Google Analitiks
@@ -137,7 +144,7 @@ function actionUpdate() {
     $option = unserialize($data['admoption']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled');
+    $PHPShopOrm->updateZeroVars('option.recaptcha_enabled', 'option.dadata_enabled', 'option.sms_enabled', 'option.sms_status_order_enabled', 'option.notice_enabled', 'option.metrica_enabled', 'option.metrica_widget', 'option.metrica_ecommerce', 'option.google_enabled', 'option.google_analitics', 'option.rss_graber_enabled', 'option.yandexmap_enabled', 'option.push_enabled', 'option.metrica_webvizor', 'option.yandex_search_enabled', 'option.sms_login', 'option.hcaptcha_enabled', 'option.yandex_speller_enabled', 'option.yandex_id_enabled', 'option.telegram_news_enabled','option.vk_id_enabled');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

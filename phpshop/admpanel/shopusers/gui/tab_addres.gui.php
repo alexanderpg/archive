@@ -6,6 +6,7 @@ function tab_addres($row) {
     $PHPShopGUI->field_col = 3;
     $mass = unserialize($row);
     $dis=null;
+    $count=0;
     
     if(!is_array($mass))
         $mass=array();
@@ -15,7 +16,12 @@ function tab_addres($row) {
         $mass['list'][]=array('fio_new'=>__('Покупатель'));
     
     if (is_array($mass['list'])){
+        
         foreach ($mass['list'] as $adrId => $adresData) {
+            
+            if($count>10)
+                continue;
+            else $count++;
 
 
             if ($mass['main'] == $adrId)

@@ -135,7 +135,7 @@ class PHPShopPage extends PHPShopCore {
         // Прикрываем страницу от дубля
         if ($row['category'] == 2000)
             return $this->setError404();
-        elseif (empty($row['id']))
+        elseif (empty($row['id']) or $link != $row['link'])
             return $this->setError404();
 
         $this->category = $row['category'];

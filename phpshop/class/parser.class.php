@@ -113,7 +113,7 @@ class PHPShopParser {
     }
 
     /**
-     * —оздание системной переменной дл€ парсинга
+     * —оздание системной переменной
      * @param string $name им€
      * @param mixed $value значение
      * @param bool $flag [1] - добавить, [0] - переписать
@@ -491,4 +491,21 @@ function __hide($name, $type = 'parser', $class = 'hide d-none') {
         echo $class;
 }
 
-?>
+/**
+ * ¬ыдача переменной шаблонизатора
+ * @param string $name
+ * @return string
+ */
+function __get($name) {
+    return PHPShopParser::get($name);
+}
+
+/**
+ * —оздание переменной шаблонизатора
+ * @param string $name им€
+ * @param mixed $value значение
+ * @param bool $flag [1] - добавить, [0] - переписать
+ */
+function __set($name, $value, $flag = false) {
+    return PHPShopParser::set($name, $value, $flag);
+}

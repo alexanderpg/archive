@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File TinkoffMerchantAPI
  *
@@ -11,7 +12,6 @@
  * @link     http://tinkoff.ru
  */
 //namespace Tinkoff;
- 
 //use HttpException;
 
 /**
@@ -31,9 +31,8 @@
  * @property bool|string paymentUrl
  * @property bool|string paymentId
  */
+class TinkoffMerchantAPI {
 
-class TinkoffMerchantAPI
-{
     private $_api_url;
     private $_terminalKey;
     private $_secretKey;
@@ -50,8 +49,7 @@ class TinkoffMerchantAPI
      * @param string $secretKey   Secret key for terminal
      * @param string $api_url     Url for API
      */
-    public function __construct($terminalKey, $secretKey, $api_url)
-    {
+    public function __construct($terminalKey, $secretKey, $api_url) {
         $this->_api_url = $api_url;
         $this->_terminalKey = $terminalKey;
         $this->_secretKey = $secretKey;
@@ -64,31 +62,30 @@ class TinkoffMerchantAPI
      *
      * @return bool|string
      */
-    public function __get($name)
-    {
+    public function __get($name) {
         switch ($name) {
-        case 'paymentId':
-            return $this->_paymentId;
-        case 'status':
-            return $this->_status;
-        case 'error':
-            return $this->_error;
-        case 'paymentUrl':
-            return $this->_paymentUrl;
-        case 'response':
-            return htmlentities($this->_response);
-        default:
-            if ($this->_response) {
-                if ($json = json_decode($this->_response, true)) {
-                    foreach ($json as $key => $value) {
-                        if (strtolower($name) == strtolower($key)) {
-                            return $json[$key];
+            case 'paymentId':
+                return $this->_paymentId;
+            case 'status':
+                return $this->_status;
+            case 'error':
+                return $this->_error;
+            case 'paymentUrl':
+                return $this->_paymentUrl;
+            case 'response':
+                return htmlentities($this->_response);
+            default:
+                if ($this->_response) {
+                    if ($json = json_decode($this->_response, true)) {
+                        foreach ($json as $key => $value) {
+                            if (strtolower($name) == strtolower($key)) {
+                                return $json[$key];
+                            }
                         }
                     }
                 }
-            }
 
-            return false;
+                return false;
         }
     }
 
@@ -99,8 +96,7 @@ class TinkoffMerchantAPI
      *
      * @return bool
      */
-    public function init($args)
-    {
+    public function init($args) {
         return $this->buildQuery('Init', $args);
     }
 
@@ -111,8 +107,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function getState($args)
-    {
+    public function getState($args) {
         return $this->buildQuery('GetState', $args);
     }
 
@@ -123,8 +118,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function confirm($args)
-    {
+    public function confirm($args) {
         return $this->buildQuery('Confirm', $args);
     }
 
@@ -136,8 +130,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function charge($args)
-    {
+    public function charge($args) {
         return $this->buildQuery('Charge', $args);
     }
 
@@ -148,8 +141,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function addCustomer($args)
-    {
+    public function addCustomer($args) {
         return $this->buildQuery('AddCustomer', $args);
     }
 
@@ -160,8 +152,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function getCustomer($args)
-    {
+    public function getCustomer($args) {
         return $this->buildQuery('GetCustomer', $args);
     }
 
@@ -172,8 +163,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function removeCustomer($args)
-    {
+    public function removeCustomer($args) {
         return $this->buildQuery('RemoveCustomer', $args);
     }
 
@@ -184,8 +174,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function getCardList($args)
-    {
+    public function getCardList($args) {
         return $this->buildQuery('GetCardList', $args);
     }
 
@@ -196,8 +185,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function removeCard($args)
-    {
+    public function removeCard($args) {
         return $this->buildQuery('RemoveCard', $args);
     }
 
@@ -206,8 +194,7 @@ class TinkoffMerchantAPI
      *
      * @return mixed
      */
-    public function resend()
-    {
+    public function resend() {
         return $this->buildQuery('Resend', array());
     }
 
@@ -221,14 +208,13 @@ class TinkoffMerchantAPI
      * @return mixed
      * @throws HttpException
      */
-    public function buildQuery($path, $args)
-    {
+    public function buildQuery($path, $args) {
         $url = $this->_api_url;
         if (is_array($args)) {
-            if (! array_key_exists('TerminalKey', $args)) {
+            if (!array_key_exists('TerminalKey', $args)) {
                 $args['TerminalKey'] = $this->_terminalKey;
             }
-            if (! array_key_exists('Token', $args)) {
+            if (!array_key_exists('Token', $args)) {
                 $args['Token'] = $this->_genToken($args);
             }
         }
@@ -238,6 +224,19 @@ class TinkoffMerchantAPI
         return $this->_sendRequest($url, $args);
     }
 
+    public function log($message, $order_id, $status, $type) {
+
+        $PHPShopOrm = new PHPShopOrm("phpshop_modules_tinkoff_log");
+        $log = array(
+            'message_new' => serialize($message),
+            'order_id_new' => $order_id,
+            'status_new' => $status,
+            'type_new' => $type,
+            'date_new' => time()
+        );
+        $PHPShopOrm->insert($log);
+    }
+
     /**
      * Generates token
      *
@@ -245,13 +244,13 @@ class TinkoffMerchantAPI
      *
      * @return string
      */
-    private function _genToken($args)
-    {
+    private function _genToken($args) {
         $token = '';
         $args['Password'] = $this->_secretKey;
-        ksort($args);
+        //ksort($args);
 
         foreach ($args as $arg) {
+            if(!is_array($arg))
             $token .= $arg;
         }
         $token = hash('sha256', $token);
@@ -264,8 +263,7 @@ class TinkoffMerchantAPI
      *
      * @return string
      */
-    private function _combineUrl()
-    {
+    private function _combineUrl() {
         $args = func_get_args();
         $url = '';
         foreach ($args as $arg) {
@@ -291,8 +289,7 @@ class TinkoffMerchantAPI
      * @return mixed
      * @throws HttpException
      */
-    private function _sendRequest($api_url, $args)
-    {
+    private function _sendRequest($api_url, $args) {
         $this->_error = '';
         //todo add string $args support
         //$proxy = 'http://192.168.5.22:8080';
@@ -300,7 +297,7 @@ class TinkoffMerchantAPI
         if (is_array($args)) {
             $args = json_encode($args);
         }
-       /*Debug::trace($args);*/
+        /* Debug::trace($args); */
 
         if ($curl = curl_init()) {
             curl_setopt($curl, CURLOPT_URL, $api_url);
@@ -328,14 +325,16 @@ class TinkoffMerchantAPI
             }
 
             curl_close($curl);
+            
+            //$this->log(['request'=>$args,'result'=>$json],$obj->ouid, 'Получение токена', 'Token');
 
             return $out;
-
         } else {
             throw new HttpException(
-                'Can not create connection to ' . $api_url . ' with args '
-                . $args, 404
+            'Can not create connection to ' . $api_url . ' with args '
+            . $args, 404
             );
         }
     }
+
 }

@@ -2,7 +2,7 @@
 
 /**
  * Панель печатных форм
- * @param array $row массив данных
+ * @param array $data массив данных
  * @return string 
  */
 function tab_print($data) {
@@ -31,6 +31,9 @@ function tab_print($data) {
     
      // Гарантия
     $disp.=$PHPShopGUI->setButton('Гарантия', 'briefcase', 'btn-print-order','./order/forms/warranty.php?orderID=' . $data['id']);
+    
+    // Акт
+    $disp.=$PHPShopGUI->setButton('Акт', 'file', 'btn-print-order','./order/forms/act.php?orderID=' . $data['id']);
 
     return $disp;
 }

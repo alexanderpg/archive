@@ -119,7 +119,8 @@ $key_name = array(
     'price_purch' => 'Закупочная цена',
     'files' => 'Файлы',
     'external_code' => 'Внешний код',
-    'barcode' => 'Штрихкод'
+    'barcode' => 'Штрихкод',
+    'rate_count' => 'Голоса'
 );
 
 // Функция обновления

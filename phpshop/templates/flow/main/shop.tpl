@@ -597,6 +597,10 @@
                             <!-- Yandex ID -->
                             @yandexid@
                             <!-- End Yandex ID -->
+                            
+                            <!-- VK ID -->
+                            @vkid@
+                            <!-- End VK ID -->
 
                             <a class="js-animation-link btn btn-block btn-primary mb-2" href="#"
                                data-hs-show-animation-options='{

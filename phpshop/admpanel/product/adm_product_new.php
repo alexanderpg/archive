@@ -302,6 +302,9 @@ function actionStart() {
             $PHPShopGUI->setCheckbox('newtip_new', 1, 'Новинка', $data['newtip']));
     $Tab_info .= $PHPShopGUI->setField('Сортировка', $PHPShopGUI->setInputText('&#8470;', 'num_new', $data['num'], 100));
 
+    $type_value[] = array('Товар', 1, $data['type']);
+    $type_value[] = array('Услуга', 2, $data['type']);
+    $Tab_info .= $PHPShopGUI->setField('Тип', $PHPShopGUI->setSelect('type_new', $type_value, 100, true));
 
     $Tab_rating = $PHPShopGUI->setField('Значение', $PHPShopGUI->setInputText(null, 'rate_new', $data['rate'], 50), 1, 'Значение от 0 до 5');
     $Tab_rating .= $PHPShopGUI->setField('Голоса', $PHPShopGUI->setInputText(null, 'rate_count_new', $data['rate_count'], 50));
@@ -374,7 +377,7 @@ function actionStart() {
 
     // Статьи
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['page']);
-    $data_page = $PHPShopOrm->select(['*'], ['category'=>'!=2000','enabled'=>"='1'"], array('order' => 'name'), array('limit' => 500));
+    $data_page = $PHPShopOrm->select(['*'], ['category' => '!=2000', 'enabled' => "='1'"], array('order' => 'name'), array('limit' => 500));
 
     if (strstr($data['page'], ',')) {
         $data['page'] = explode(",", $data['page']);
@@ -393,7 +396,7 @@ function actionStart() {
         }
 
     // Статьи
-   $Tab_docs = $PHPShopGUI->setCollapse('Статьи', $PHPShopGUI->setSelect('page_new[]', $value, '100%',false, false, true, false, false, true));
+    $Tab_docs = $PHPShopGUI->setCollapse('Статьи', $PHPShopGUI->setSelect('page_new[]', $value, '100%', false, false, true, false, false, true));
 
     // Файлы
     $Tab_docs .= $PHPShopGUI->setCollapse('Файлы', $PHPShopGUI->loadLib('tab_files', $data));

@@ -88,7 +88,7 @@ if (is_array($data)) {
 
 
     // Цены
-    $result = $WbSeller->sendPrices($prices);
+    $result = $WbSeller->sendPrices(['data'=>$prices]);
 
     // Остатки
     $WbSeller->setProductStock($stocks);

@@ -46,17 +46,7 @@ function actionStart() {
 
     $PHPShopGUI->field_col = 4;
 
-    $product_array = $WbSeller->getProduct([$_GET['id']])['data'];
-
-    if (is_array($product_array))
-        foreach ($product_array as $row) {
-
-            if ($row['vendorCode'] == $_GET['id'])
-                $product_info = $row;
-            else
-                continue;
-        }
-
+    $product_info = $WbSeller->getProduct($_GET['id'])['cards'][0];
 
     if (!empty($product_info['nmID']))
         $PHPShopGUI->action_button['Загрузить товар'] = array(
@@ -69,7 +59,7 @@ function actionStart() {
         );
 
 
-    $PHPShopGUI->setActionPanel(__('Товар') . ': ' . PHPShopString::utf8_win1251($_GET['id']) . '', false, array('Загрузить товар'));
+    $PHPShopGUI->setActionPanel(__('Товар') . ': ' . PHPShopString::utf8_win1251($product_info['title'], true) . '', false, array('Загрузить товар'));
 
     // Знак рубля
     if ($PHPShopSystem->getDefaultValutaIso() == 'RUB' or $PHPShopSystem->getDefaultValutaIso() == 'RUR')
@@ -77,31 +67,12 @@ function actionStart() {
     else
         $currency = $PHPShopSystem->getDefaultValutaCode();
 
-
-    // Поиск имени
     if (is_array($product_info['characteristics']))
         foreach ($product_info['characteristics'] as $characteristics) {
 
-            if (!empty($characteristics[PHPShopString::win_utf8('Наименование')]))
-                $product_info['name'] = $characteristics[PHPShopString::win_utf8('Наименование')];
-
-            if (!empty($characteristics[PHPShopString::win_utf8('Предмет')]))
-                $product_info['category'] = $characteristics[PHPShopString::win_utf8('Предмет')];
-
-            if (!empty($characteristics[PHPShopString::win_utf8('Описание')]))
-                $product_info['description'] = $characteristics[PHPShopString::win_utf8('Описание')];
-
-            if (!empty($characteristics[PHPShopString::win_utf8('Вес товара с упаковкой (г)')]))
-                $product_info['weight'] = $characteristics[PHPShopString::win_utf8('Вес товара с упаковкой (г)')][0];
-
-            if (!empty($characteristics[PHPShopString::win_utf8('Ширина предмета')]))
-                $product_info['width'] = $characteristics[PHPShopString::win_utf8('Ширина предмета')][0] * 100;
-
-            if (!empty($characteristics[PHPShopString::win_utf8('Высота упаковки')]))
-                $product_info['height'] = $characteristics[PHPShopString::win_utf8('Высота упаковки')][0] * 100;
-
-            if (!empty($characteristics[PHPShopString::win_utf8('Длина упаковки')]))
-                $product_info['length'] = $characteristics[PHPShopString::win_utf8('Длина упаковки')][0] * 100;
+            // Вес
+            if ($characteristics['name'] == PHPShopString::win_utf8('Вес товара с упаковкой (г)'))
+                $product_info['weight'] = $characteristics['value'];
         }
 
 
@@ -156,21 +127,21 @@ function actionStart() {
     $oFCKeditor->Height = '400';
     $oFCKeditor->Value = PHPShopString::utf8_win1251($product_info['description']);
 
-    if (is_array($product_info['mediaFiles']) and count($product_info['mediaFiles']) > 0) {
+    if (is_array($product_info['photos']) and count($product_info['photos']) > 0) {
         $icon = null;
-        foreach ($product_info['mediaFiles'] as $img)
-            if (!empty($img) and ! stristr($img, '.mp4'))
-                $icon .= '<div class="pull-left" style="padding:3px">' . $PHPShopGUI->setIcon($img, "images[]", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true)) . '</div>';
+        foreach ($product_info['photos'] as $img)
+            if (!empty($img) and ! stristr($img['big'], '.mp4'))
+                $icon .= '<div class="pull-left" style="padding:3px">' . $PHPShopGUI->setIcon($img['big'], "images[]", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true)) . '</div>';
     } else
         $icon = $PHPShopGUI->setIcon('./images/no_photo.gif', "pic", true, array('load' => false, 'server' => true, 'url' => true, 'view' => true));
 
 
-    $Tab1 = $PHPShopGUI->setField("Название", $PHPShopGUI->setTextarea('name_new', PHPShopString::utf8_win1251($product_info['name'], true)));
-    $Tab1 .= $PHPShopGUI->setField("Артикул", $PHPShopGUI->setInputText(null, 'uid_new', PHPShopString::utf8_win1251($_GET['id'])));
+    $Tab1 = $PHPShopGUI->setField("Название", $PHPShopGUI->setTextarea('name_new', PHPShopString::utf8_win1251($product_info['title'], true)));
+    $Tab1 .= $PHPShopGUI->setField("Артикул", $PHPShopGUI->setInputText(null, 'uid_new', PHPShopString::utf8_win1251($product_info['vendorCode'])));
     $Tab1 .= $PHPShopGUI->setField("Изображения", $icon);
     $Tab1 .= $PHPShopGUI->setField("WB ID", $PHPShopGUI->setText($PHPShopGUI->setLink('https://www.wildberries.ru/catalog/' . $product_info['nmID'] . '/detail.aspx', $product_info['nmID'])) . $PHPShopGUI->setInput("hidden", "export_wb_id_new", $product_info['nmID']));
     $Tab1 .= $PHPShopGUI->setField("Шрихкод", $PHPShopGUI->setInputText(null, 'barcode_wb_new', $product_info['sizes'][0]['skus'][0]));
-    $Tab1 .= $PHPShopGUI->setField("Категория в WB", $PHPShopGUI->setText(PHPShopString::utf8_win1251($product_info['category'], true)) . $PHPShopGUI->setInput("hidden", "category_wbseller", PHPShopString::utf8_win1251($product_info['category'])));
+    $Tab1 .= $PHPShopGUI->setField("Категория в WB", $PHPShopGUI->setText(PHPShopString::utf8_win1251($product_info['subjectName'], true)) . $PHPShopGUI->setInput("hidden", "category_wbseller", PHPShopString::utf8_win1251($product_info['category'])));
 
     // Выбор каталога
     $Tab1 .= $PHPShopGUI->setField("Размещение", $tree_select);
@@ -184,7 +155,7 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Сортировка', $PHPShopGUI->setInputText('&#8470;', 'num_new', 0, 150));
 
     // Цена
-    $product_price = $product_info['sizes'][0]['price'];
+    $product_price = $WbSeller->getProductPrice($product_info['nmID'])['data']['listGoods'][0]['sizes'][0]['price'];
 
     $Tab1 .= $PHPShopGUI->setField("Цена", $PHPShopGUI->setInputText(null, 'price_new', (float) $product_price, 150));
     $Tab1 .= $PHPShopGUI->setField("Старая цена", $PHPShopGUI->setInputText(null, 'price_n_new', (float) 0, 150));
@@ -206,9 +177,9 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Валюта', $valuta_area);
 
     $Tab_size = $PHPShopGUI->setField("Вес", $PHPShopGUI->setInputText(null, 'weight_new', $product_info['weight'], 100, __('г&nbsp;&nbsp;&nbsp;&nbsp;')));
-    $Tab_size .= $PHPShopGUI->setField("Высота", $PHPShopGUI->setInputText(null, 'height_new', $product_info['height'] / 100, 100, __('cм')));
-    $Tab_size .= $PHPShopGUI->setField("Ширина", $PHPShopGUI->setInputText(null, 'width_new', $product_info['width'] / 100, 100, __('cм')));
-    $Tab_size .= $PHPShopGUI->setField("Длина", $PHPShopGUI->setInputText(null, 'length_new', $product_info['depth'] / 100, 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Высота", $PHPShopGUI->setInputText(null, 'height_new', $product_info['dimensions']['height'], 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Ширина", $PHPShopGUI->setInputText(null, 'width_new', $product_info['dimensions']['width'], 100, __('cм')));
+    $Tab_size .= $PHPShopGUI->setField("Длина", $PHPShopGUI->setInputText(null, 'length_new', $product_info['dimensions']['length'], 100, __('cм')));
 
     $Tab1 = $PHPShopGUI->setCollapse('Данные', $Tab1);
     $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_size);
@@ -218,26 +189,25 @@ function actionStart() {
     $Tab_sort = null;
 
     if (is_array($product_info['characteristics']))
-        foreach ($product_info['characteristics'] as $attributes) {
-
-            foreach ($attributes as $key => $val) {
-                unset($value_new);
-
-                if ($key == PHPShopString::win_utf8('Наименование') or $key == PHPShopString::win_utf8('Предмет') or $key == PHPShopString::win_utf8('Описание')) {
-                    continue;
-                }
-
-                if (is_array($val))
-                    $sort_name = PHPShopString::utf8_win1251($val[0], true);
-                else
-                    $sort_name = PHPShopString::utf8_win1251($val, true);
+        foreach ($product_info['characteristics'] as $val) {
 
 
-                $value_new[] = [__('Ничего не выбрано'), 0];
-                $value_new[] = array($sort_name, $sort_name, $sort_name);
+            unset($value_new);
 
-                $Tab_sort .= $PHPShopGUI->setField(PHPShopString::utf8_win1251($key, true), $PHPShopGUI->setSelect('vendor_array[' . PHPShopString::utf8_win1251($key, true) . ']', $value_new, '100%', false, false, false, false, 1, false, false, 'selectpicker'));
+            if ($val['name'] == PHPShopString::win_utf8('Вес товара с упаковкой (г)') or $val['name'] == PHPShopString::win_utf8('Раздел меню')) {
+                continue;
             }
+
+            if (is_array($val['value']))
+                $sort_name = PHPShopString::utf8_win1251($val['value'][0], true);
+            else
+                $sort_name = PHPShopString::utf8_win1251($val, true);
+
+
+            $value_new[] = [__('Ничего не выбрано'), 0];
+            $value_new[] = array($sort_name, $sort_name, $sort_name);
+
+            $Tab_sort .= $PHPShopGUI->setField(PHPShopString::utf8_win1251($val['name'], true), $PHPShopGUI->setSelect('vendor_array[' . PHPShopString::utf8_win1251($val['name'], true) . ']', $value_new, '100%', false, false, false, false, 1, false, false, 'selectpicker'));
         }
 
     $Tab2 .= $PHPShopGUI->setCollapse("Характеристики", $Tab_sort);
@@ -362,7 +332,7 @@ function wb_sort($sort_name, $sort_value, $category) {
  * Экшен загрузки товара
  */
 function actionSave() {
-    global $PHPShopSystem,$WbSeller;
+    global $PHPShopSystem, $WbSeller;
 
     $_POST['export_wb_task_status_new'] = time();
     $_POST['export_wb_new'] = 1;

@@ -68,10 +68,10 @@ function actionStart() {
         $currency = $PHPShopSystem->getDefaultValutaCode();
 
     // Категория Ozon
-    $PHPShopOrmCat = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_categories"));
+    $PHPShopOrmCat = new PHPShopOrm($PHPShopModules->getParam("base.ozonseller.ozonseller_type"));
 
     // Категория БД
-    $category = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $product_info['category_id']])['name'];
+    $category = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $_GET['type_id']])['name'];
 
 
     $PHPShopCategoryArray = new PHPShopCategoryArray(false, ["id", "name", "parent_to", "category_ozonseller"]);
@@ -94,14 +94,14 @@ function actionStart() {
 
     if (is_array($tree_array[0]['sub']))
         foreach ($tree_array[0]['sub'] as $k => $v) {
-            $check = treegenerator($tree_array[$k], 1, $product_info['category_id']);
+            $check = treegenerator($tree_array[$k], 1, $_GET['type_id']);
 
             if (empty($tree_array[$k]))
                 $disabled = null;
             else
                 $disabled = ' disabled';
 
-            if ($CategoryArray[$k]['category_ozonseller'] == $product_info['category_id'])
+            if ($CategoryArray[$k]['category_ozonseller'] == $_GET['type_id'])
                 $selected = 'selected';
             else
                 $selected = null;
@@ -133,8 +133,9 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField("Артикул", $PHPShopGUI->setInputText(null, 'uid_new', PHPShopString::utf8_win1251($product_info['offer_id'])));
     $Tab1 .= $PHPShopGUI->setField("Изображение", $icon);
     $Tab1 .= $PHPShopGUI->setField("OZON ID", $PHPShopGUI->setText($product_info['id']));
+    $Tab1 .= $PHPShopGUI->setField("SKU OZON", $PHPShopGUI->setInputText(null, 'sku_ozon_new', $_GET['sku'], 150));
     $Tab1 .= $PHPShopGUI->setField("Шрихкод", $PHPShopGUI->setInputText(null, 'barcode_ozon_new', $product_info['barcode']));
-    $Tab1 .= $PHPShopGUI->setField("Категория в Ozon", $PHPShopGUI->setText($category,"left", false, false) . $PHPShopGUI->setInput("hidden", "category_ozonseller", $product_info['category_id']));
+    $Tab1 .= $PHPShopGUI->setField("Категория в Ozon", $PHPShopGUI->setText($category,"left", false, false) . $PHPShopGUI->setInput("hidden", "category_ozonseller", $_GET['type_id']).$PHPShopGUI->setInput("hidden", "description_category_id", $product_info['description_category_id']));
 
     // Выбор каталога
     $Tab1 .= $PHPShopGUI->setField("Размещение", $tree_select);
@@ -177,9 +178,9 @@ function actionStart() {
     $Tab2 = $PHPShopGUI->setCollapse("Описание", $oFCKeditor->AddGUI());
 
     // Характеристики с Ozon
-    $sort_ozon_data = $OzonSeller->getTreeAttribute(["category_id" => [$product_info['category_id']], "attribute_type" => "REQUIRED"]);
-    if (is_array($sort_ozon_data['result'][0]['attributes'])) {
-        foreach ($sort_ozon_data['result'][0]['attributes'] as $sort_ozon_value) {
+    $sort_ozon_data = $OzonSeller->getTreeAttribute(["description_category_id" => $product_info['description_category_id'],"type_id"=>$_GET['type_id']]);
+    if (is_array($sort_ozon_data['result'])) {
+        foreach ($sort_ozon_data['result'] as $sort_ozon_value) {
             $attribute[$sort_ozon_value['id']] = PHPShopString::utf8_win1251($sort_ozon_value['name'],true);
         }
     }
@@ -361,9 +362,9 @@ function actionSave() {
     }
 
     // Характеристики с Ozon
-    $sort_ozon_data = $OzonSeller->getTreeAttribute(["category_id" => [$category_ozonseller], "attribute_type" => "REQUIRED"]);
-    if (is_array($sort_ozon_data['result'][0]['attributes'])) {
-        foreach ($sort_ozon_data['result'][0]['attributes'] as $sort_ozon_value) {
+    $sort_ozon_data = $OzonSeller->getTreeAttribute(["description_category_id" => $_POST["description_category_id"],"type_id"=>$category_ozonseller]);
+    if (is_array($sort_ozon_data['result'])) {
+        foreach ($sort_ozon_data['result'] as $sort_ozon_value) {
             $attribute[$sort_ozon_value['id']] = PHPShopString::utf8_win1251($sort_ozon_value['name']);
         }
     }

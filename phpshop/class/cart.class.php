@@ -8,7 +8,7 @@ if (!defined("OBJENABLED")) {
 /**
  * Корзина товаров
  * @author PHPShop Software
- * @version 2.0
+ * @version 2.1
  * @package PHPShopClass
  */
 class PHPShopCart {
@@ -95,11 +95,12 @@ class PHPShopCart {
                 "price_n" => $this->getCartProductPrice($objProduct, 'price_n'),
                 "price_purch" => $this->applyCurrency($objProduct->getParam("price_purch"),true),
                 "uid" => $objProduct->getParam("uid"),
-                "num" => abs(@$this->_CART[$xid]['num'] + $num),
+                "num" => abs($this->_CART[$xid]['num'] + $num),
                 "ed_izm" => $objProduct->getParam("ed_izm"),
                 "pic_small" => $objProduct->getParam("pic_small"),
                 "weight" => $objProduct->getParam("weight"),
-                "category" => $objProduct->getParam("category")
+                "category" => $objProduct->getParam("category"),
+                "type" => $objProduct->getParam("type")
             );
 
             $weight = $objProduct->getParam("weight");

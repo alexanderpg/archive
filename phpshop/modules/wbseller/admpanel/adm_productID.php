@@ -31,7 +31,7 @@ function addWbsellerProductTab($data) {
 
 function WbsellerUpdate() {
 
-    // Отключение Ozon
+    // Отключение 
     if (!isset($_POST['export_wb_new']) and ! isset($_POST['ajax'])) {
         $_POST['export_wb_new'] = 0;
         $_POST['export_wb_task_status_new'] = '';
@@ -62,30 +62,29 @@ function WbsellerUpdate() {
 
         // Товар еще не выгружен
         if (empty($data['export_wb_id'])) {
-            
-            
+
+
             if (empty($data['export_wb_task_status'])) {
 
                 // Загрузка
-                $result = $WbSeller->sendProducts([$data]);
+                $result = $WbSeller->sendProducts($data);
 
                 if (is_array($result) and empty($result['error'])) {
                     $PHPShopOrm->update(['export_wb_task_status_new' => time()], ['id' => '=' . (int) $_POST['rowID']]);
-                   
                 }
             }
 
-
             // Информация
-            $export_wb_id = $WbSeller->getProduct([$data['uid']])['data'][0]['nmID'];
+            $export_wb_id = $WbSeller->getProduct($data['uid'])['cards'][0]['nmID'];
 
-            if (!empty($export_wb_id)){
+
+            if (!empty($export_wb_id)) {
+                $_POST['export_wb_id_new'] = $data['export_wb_id'] = $export_wb_id;
                 $PHPShopOrm->update(['export_wb_id_new' => $export_wb_id], ['id' => '=' . (int) $_POST['rowID']]);
-                
-                 // Фото
-                 $WbSeller->sendImages($data);
+
+                // Фото
+                $WbSeller->sendImages($data);
             }
-  
         }
         // Товар выгружен, обновление цен и остатков
         else {

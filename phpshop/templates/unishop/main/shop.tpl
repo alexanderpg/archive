@@ -24,7 +24,7 @@
         <!-- Preload -->
         <link rel="preload" href="@php echo $GLOBALS['SysValue']['dir']['templates'].chr(47).$_SESSION['skin']; php@css/bootstrap.min.css" as="style">
         <link rel="preload" href="@pageCss@" as="style">
-        <link rel="preload" href="@php echo $GLOBALS['SysValue']['dir']['templates'].chr(47).$_SESSION['skin']; php@css/@unishop_theme@.css" as="style">   
+        <link rel="preload" href="@php echo $GLOBALS['SysValue']['dir']['templates'].chr(47).$_SESSION['skin']; php@css/@unishop_theme@.css" as="style">
         <link rel="preload" href="@php echo $GLOBALS['SysValue']['dir']['templates'].chr(47).$_SESSION['skin']; php@css/swiper.min.css" as="style">
 
         <link rel="preload" href="@php echo $GLOBALS['SysValue']['dir']['templates'].chr(47).$_SESSION['skin']; php@css/font-awesome.min.css"  as="font" type="font/woff2" crossorigin>
@@ -202,11 +202,11 @@
                                         <div class="row">
                                             <div class="col-md-6" id="price-filter-val-min">
                                                 <span>{от}</span>
-                                                <input type="text" class="form-control input-sm" name="min" value="@price_min@" > 
+                                                <input type="text" class="form-control input-sm" name="min" value="@price_min@" >
                                             </div>
                                             <div class="col-md-6" id="price-filter-val-max">
                                                 <span>{до}</span>
-                                                <input type="text" class="form-control input-sm" name="max" value="@price_max@"> 
+                                                <input type="text" class="form-control input-sm" name="max" value="@price_max@">
                                             </div>
                                         </div>
                                         <p></p>
@@ -430,6 +430,10 @@
                         <!-- Yandex ID -->
                         @yandexid@
                         <!-- End Yandex ID -->
+
+                        <!-- VK ID -->
+                        @vkid@
+                        <!-- End VK ID -->
                     </form>
                 </div>
             </div>

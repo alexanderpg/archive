@@ -24,7 +24,7 @@ function actionUpdate() {
     global $PHPShopModules,$PHPShopOrm;
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('link_new','create_products_new');
+    $PHPShopOrm->updateZeroVars('link_new','create_products_new','log_new');
 
     $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.wbseller.wbseller_system"));
     $PHPShopOrm->debug = false;
@@ -92,6 +92,7 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setRadio("type_new", 1, "ID товара", $data['type']) . $PHPShopGUI->setRadio("type_new", 2, "Артикул товара", $data['type']));
     $Tab1 .= $PHPShopGUI->setField('Ссылка на товар', $PHPShopGUI->setCheckbox('link_new', 1, 'Показать ссылку на товар в Wildberries', $data['link']));
     $Tab1 .= $PHPShopGUI->setField('Создавать товар', $PHPShopGUI->setCheckbox('create_products_new', 1, 'Создавать автоматически товар из заказа', $data['create_products']));
+    $Tab1 .= $PHPShopGUI->setField('Журнал операций', $PHPShopGUI->setCheckbox('log_new', 1, null, $data['log']));
 
     $Tab1 = $PHPShopGUI->setCollapse('Настройки', $Tab1);
 
@@ -141,7 +142,7 @@ function actionCategorySearch() {
     if (is_array($data)) {
         foreach ($data as $row) {
 
-            $result .= '<a href=\'#\' class=\'select-search\' data-name=\'' . PHPShopString::utf8_win1251($row['objectName']) . '\'>' . PHPShopString::utf8_win1251($row['parentName']) . ' &rarr; ' . PHPShopString::utf8_win1251($row['objectName']) . '</a><br>';
+            $result .= '<a href=\'#\' class=\'select-search-wb\'  data-id=\'' . (int) $row['subjectID'] . '\' data-name=\'' . PHPShopString::utf8_win1251($row['subjectName']) . '\'>' . PHPShopString::utf8_win1251($row['parentName']) . ' &rarr; ' . PHPShopString::utf8_win1251($row['subjectName']) . '</a><br>';
         }
         $result .= '<button type="button" class="close pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 

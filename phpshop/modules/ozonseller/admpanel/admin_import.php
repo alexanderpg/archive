@@ -43,7 +43,6 @@ function actionStart() {
     if (is_array($products['result']['items'])) {
         foreach ($products['result']['items'] as $products_list) {
 
-
             // Проверка товара в локальной базе
             $PHPShopProduct = new PHPShopProduct(PHPShopString::utf8_win1251($products_list['offer_id']), $type);
             if (!empty($PHPShopProduct->getName())) {
@@ -61,10 +60,11 @@ function actionStart() {
                 $data[$products_list['product_id']]['category'] = $PHPShopCategory[$PHPShopProduct->getParam("category")]['name'];
                 
             } else {
+                
                 $data[$products_list['product_id']] = $OzonSeller->getProduct($products_list['product_id'])['result'];
                 
                 $data[$products_list['product_id']]['status'] = 'wait';
-                $data[$products_list['product_id']]['link'] ='?path=modules.dir.ozonseller.import&id='.$products_list['product_id'];
+                $data[$products_list['product_id']]['link'] ='?path=modules.dir.ozonseller.import&id='.$products_list['product_id'].'&type_id='.$data[$products_list['product_id']]['type_id'].'&sku='.$data[$products_list['product_id']]['sku'];
 
                 // Категория
                 $category = $PHPShopOrmCat->getOne(['name'], ['id' => '=' . $data[$products_list['product_id']]['category_id']]);
@@ -87,7 +87,7 @@ function actionStart() {
             if (!empty($row['primary_image']))
                 $icon = '<img src="' . $row['primary_image'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
             else
-                continue;
+               $icon=mull;
 
             // Артикул
             if (!empty($row['offer_id']))

@@ -1,25 +1,25 @@
 <?php
+
 /**
  * Библиотека работы с Wildberries Seller API
  * @author PHPShop Software
- * @version 1.5
+ * @version 2.0
  * @package PHPShopModules
  * @todo https://openapi.wb.ru/
  */
 class WbSeller {
 
     const API_URL = 'https://suppliers-api.wildberries.ru';
-    const GET_PRODUCT_LIST = '/content/v1/cards/cursor/list';
-    const GET_PRODUCT = '/content/v1/cards/filter';
+    const GET_PRODUCT_LIST = '/content/v2/get/cards/list';
+    const GET_PRODUCT_PRICE = 'https://discounts-prices-api.wb.ru/api/v2/list/goods/filter';
     const GET_PARENT_TREE = '/content/v1/object/parent/all';
-    const GET_TREE = '/content/v1/object/all';
-    const GET_TREE_ATTRIBUTE = '/content/v1/object/characteristics/';
-    const IMPORT_PRODUCT = '/content/v1/cards/upload';
-    const IMPORT_ADD_PRODUCT = '/content/v1/cards/upload/add';
-    const IMPORT_MEDIA = '/content/v1/media/save';
+    const GET_TREE = '/content/v2/object/all';
+    const GET_TREE_ATTRIBUTE = '/content/v2/object/charcs/';
+    const IMPORT_PRODUCT = '/content/v2/cards/upload';
+    const IMPORT_MEDIA = '/content/v3/media/save';
     const GET_WAREHOUSE_LIST = '/api/v3/warehouses';
     const UPDATE_PRODUCT_STOCKS = '/api/v3/stocks/';
-    const UPDATE_PRODUCT_PRICES = '/public/api/v1/prices';
+    const UPDATE_PRODUCT_PRICES = 'https://discounts-prices-api.wb.ru/api/v2/upload/task';
     const GET_ORDER_LIST = '/api/v3/orders';
     const GET_ORDER_NEW = '/api/v3/orders/new';
 
@@ -50,6 +50,7 @@ class WbSeller {
         $this->status_import = $this->options['status_import'];
         $this->delivery = $this->options['delivery'];
         $this->create_products = $this->options['create_products'];
+        $this->log = $this->options['log'];
 
         $this->status_list = [
             'new' => 'Новые заказы',
@@ -68,44 +69,17 @@ class WbSeller {
     public function addProduct($id) {
         global $PHPShopSystem;
 
-        $product_array = $this->getProduct([$id])['data'];
+        $product_info = $this->getProductList($id, 1)['cards'][0];
 
-        if (is_array($product_array))
-            foreach ($product_array as $row) {
-
-                if ($row['vendorCode'] == $id)
-                    $product_info = $row;
-                else
-                    continue;
-            }
-
-        // Поиск имени
         if (is_array($product_info['characteristics']))
             foreach ($product_info['characteristics'] as $characteristics) {
 
-                if (!empty($characteristics[PHPShopString::win_utf8('Наименование')]))
-                    $product_info['name'] = $characteristics[PHPShopString::win_utf8('Наименование')];
-
-                if (!empty($characteristics[PHPShopString::win_utf8('Предмет')]))
-                    $product_info['category'] = $characteristics[PHPShopString::win_utf8('Предмет')];
-
-                if (!empty($characteristics[PHPShopString::win_utf8('Описание')]))
-                    $product_info['description'] = $characteristics[PHPShopString::win_utf8('Описание')];
-
-                if (!empty($characteristics[PHPShopString::win_utf8('Вес товара с упаковкой (г)')]))
-                    $product_info['weight'] = $characteristics[PHPShopString::win_utf8('Вес товара с упаковкой (г)')][0];
-
-                if (!empty($characteristics[PHPShopString::win_utf8('Ширина предмета')]))
-                    $product_info['width'] = $characteristics[PHPShopString::win_utf8('Ширина предмета')][0] * 100;
-
-                if (!empty($characteristics[PHPShopString::win_utf8('Высота упаковки')]))
-                    $product_info['height'] = $characteristics[PHPShopString::win_utf8('Высота упаковки')][0] * 100;
-
-                if (!empty($characteristics[PHPShopString::win_utf8('Длина упаковки')]))
-                    $product_info['length'] = $characteristics[PHPShopString::win_utf8('Длина упаковки')][0] * 100;
+                // Вес
+                if ($characteristics['name'] == PHPShopString::win_utf8('Вес товара с упаковкой (г)'))
+                    $product_info['weight'] = $characteristics['value'];
             }
 
-        $insert['name_new'] = PHPShopString::utf8_win1251($product_info['name']);
+        $insert['name_new'] = PHPShopString::utf8_win1251($product_info['title']);
         $insert['uid_new'] = PHPShopString::utf8_win1251($product_info['vendorCode']);
         $insert['export_wb_id_new'] = PHPShopString::utf8_win1251($product_info['nmID']);
         $insert['export_wb_new'] = 1;
@@ -115,8 +89,8 @@ class WbSeller {
         $insert['barcode_wb_new'] = PHPShopString::utf8_win1251($product_info['sizes'][0]['skus'][0]);
 
         // Категория
-        $insert['category_new'] = (new PHPShopOrm($GLOBALS['SysValue']['base']['categories']))->getOne(['id,name'], ['category_wbseller' => '="' . PHPShopString::utf8_win1251($product_info['category']) . '"'])['id'];
-      
+        $insert['category_new'] = (new PHPShopOrm($GLOBALS['SysValue']['base']['categories']))->getOne(['id,name'], ['category_wbseller' => '="' . PHPShopString::utf8_win1251($product_info['subjectName']) . '"'])['id'];
+
         $insert['items_new'] = 1;
         $insert['enabled_new'] = 1;
         $insert['price_new'] = $product_info['sizes'][0]['price'];
@@ -130,7 +104,7 @@ class WbSeller {
         $prodict_id = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->insert($insert);
 
         // Создание изображений
-        $this->addProductImage($product_info['mediaFiles'], $prodict_id);
+        $this->addProductImage($product_info['photos'], $prodict_id);
 
         return $prodict_id;
     }
@@ -155,7 +129,10 @@ class WbSeller {
 
 
         if (is_array($mediaFiles)) {
-            foreach ($mediaFiles as $k => $img) {
+            foreach ($mediaFiles as $k => $images) {
+
+                $img = $images['big'];
+
                 if (!empty($img) and ! stristr($img, '.mp4')) {
 
                     $path_parts = pathinfo($img);
@@ -332,23 +309,35 @@ class WbSeller {
     }
 
     /**
-     * Данные товаров из Wb
+     *  Список цен товаров из WB
      */
-    public function getProduct($product_id) {
+    public function getProductPrice($nmID, $limit = 1) {
 
         $params = [
-            'vendorCodes' => $product_id,
+            'offset' => 0,
+            'limit' => (int) $limit,
+            'filterNmID' => (string) $nmID
         ];
 
-        $result = $this->request(self::GET_PRODUCT, $params);
+
+        $result = $this->request(self::GET_PRODUCT_PRICE . '?' . http_build_query($params));
 
         // Журнал
         $log['params'] = $params;
         $log['result'] = $result;
 
-        $this->log($log, null, self::GET_PRODUCT);
+
+        $this->log($log, 0, self::GET_PRODUCT_PRICE);
 
         return $result;
+    }
+
+    /**
+     * Данные товара из Wb
+     */
+    public function getProduct($vendorCode) {
+
+        return $this->getProductList($vendorCode, 1);
     }
 
     /**
@@ -360,13 +349,13 @@ class WbSeller {
             $limit = 50;
 
         $params = [
-            'sort' => [
+            'settings' => [
                 'cursor' => [
                     'limit' => (int) $limit
                 ],
                 'filter' => [
                     "textSearch" => (string) PHPShopString::win_utf8($search),
-                    "withPhoto" => (int) 1
+                    "withPhoto" => -1
                 ],
                 'sort' => [
                     "sortColumn" => "",
@@ -393,10 +382,12 @@ class WbSeller {
      */
     public function getOrderList($date1, $date2, $status = 'all') {
 
-        if ($status == 'new')
-            $method = self::GET_ORDER_NEW;
-        else
+        if ($status == 'new') {
+            $method = $method_name = self::GET_ORDER_NEW;
+        } else {
             $method = self::GET_ORDER_LIST . '?dateFrom=' . PHPShopDate::GetUnixTime($date1, '-', true) . '&dateTo=' . PHPShopDate::GetUnixTime($date2, '-', true) . '&limit=1000&next=0';
+            $method_name = self::GET_ORDER_LIST;
+        }
 
         $result = $this->request($method);
 
@@ -404,7 +395,7 @@ class WbSeller {
         $log['params'] = ['dateFrom' => PHPShopDate::GetUnixTime($date1, '-', true), 'dateTo' => PHPShopDate::GetUnixTime($date2, '-', true)];
         $log['result'] = $result;
 
-        $this->log($log, 0, $method);
+        $this->log($log, 0, $method_name);
 
         return $result;
     }
@@ -413,16 +404,19 @@ class WbSeller {
      * Запись в журнал
      */
     public function log($message, $id, $type) {
-        $PHPShopOrm = new PHPShopOrm('phpshop_modules_wbseller_log');
 
-        $log = array(
-            'message_new' => serialize($message),
-            'order_id_new' => $id,
-            'type_new' => $type,
-            'date_new' => time()
-        );
+        if (!empty($this->log)) {
 
-        $PHPShopOrm->insert($log);
+            $PHPShopOrm = new PHPShopOrm('phpshop_modules_wbseller_log');
+            $log = array(
+                'message_new' => serialize($message),
+                'order_id_new' => $id,
+                'type_new' => $type,
+                'date_new' => time()
+            );
+
+            $PHPShopOrm->insert($log);
+        }
     }
 
     /**
@@ -444,22 +438,6 @@ class WbSeller {
     private function getAttributes($product) {
 
         $category = new PHPShopCategory((int) $product['category']);
-        $category_wbseller = $category->getParam('category_wbseller');
-
-        // Габариты
-        $list[] = [PHPShopString::win_utf8('Ширина упаковки') => (int) $product['width']];
-        $list[] = [PHPShopString::win_utf8('Длина упаковки') => (int) $product['length']];
-        $list[] = [PHPShopString::win_utf8('Высота упаковки') => (int) $product['height']];
-        $list[] = [PHPShopString::win_utf8('Вес товара с упаковкой (г)') => (int) $product['weight']];
-
-        // Каталог
-        $list[] = [PHPShopString::win_utf8('Предмет') => PHPShopString::win_utf8($category_wbseller)];
-
-        // Наименование
-        $list[] = [PHPShopString::win_utf8('Наименование') => PHPShopString::win_utf8($product['name'])];
-
-        // Описание
-        $list[] = [PHPShopString::win_utf8('Описание') => PHPShopString::win_utf8(strip_tags($product['content']))];
 
         $sort = $category->unserializeParam('sort');
         $sortCat = $sortValue = null;
@@ -515,8 +493,13 @@ class WbSeller {
                             }
                         }
 
-                        if (!empty($value['attribute_wbseller']) and ! empty($values))
-                            $list[] = [PHPShopString::win_utf8($value['attribute_wbseller']) => [$values]];
+                        $attribute_wbseller = (int) $value['attribute_wbseller'];
+
+                        if (!empty($attribute_wbseller) and ! empty($values))
+                            $list[] = [
+                                'id' => $attribute_wbseller,
+                                'value' => [$values]
+                            ];
                     }
             }
         }
@@ -582,7 +565,7 @@ class WbSeller {
     public function sendImages($prod) {
 
         $params = [
-            "vendorCode" => (string) $prod['uid'],
+            "nmId" => (int) $prod['export_wb_id'],
             "data" => $this->getImages($prod['id'], $prod['pic_big'])
         ];
 
@@ -600,40 +583,54 @@ class WbSeller {
     /**
      *  Экспорт товаров
      */
-    public function sendProducts($products = [], $params = []) {
+    public function sendProducts($prod = [], $params = []) {
 
-        if (is_array($products)) {
-            foreach ($products as $prod) {
+        if (is_array($prod)) {
 
-                // price columns
-                $price = $prod['price'];
+            // Предмет
+            $category = new PHPShopCategory((int) $prod['category']);
+            $category_wbseller = $category->getParam('category_wbseller_id');
 
-                if (!empty($prod['price_wb'])) {
-                    $price = $prod['price_wb'];
-                } elseif (!empty($prod['price' . (int) $this->price])) {
-                    $price = $prod['price' . (int) $this->price];
-                }
+            // price columns
+            $price = $prod['price'];
 
-                if ($this->fee > 0) {
-                    if ($this->fee_type == 1) {
-                        $price = $price - ($price * $this->fee / 100);
-                    } else {
-                        $price = $price + ($price * $this->fee / 100);
-                    }
-                }
-
-                if (empty($prod['barcode_wb']))
-                    $prod['barcode_wb'] = $prod['uid'];
-
-                $params[] = [[
-                "characteristics" => $this->getAttributes($prod),
-                "vendorCode" => (string) PHPShopString::win_utf8($prod['uid']),
-                "sizes" => [[
-                'price' => (int) $this->price($price, $prod['baseinputvaluta']),
-                'skus' => [$prod['barcode_wb']]
-                    ]],
-                ]];
+            if (!empty($prod['price_wb'])) {
+                $price = $prod['price_wb'];
+            } elseif (!empty($prod['price' . (int) $this->price])) {
+                $price = $prod['price' . (int) $this->price];
             }
+
+            if ($this->fee > 0) {
+                if ($this->fee_type == 1) {
+                    $price = $price - ($price * $this->fee / 100);
+                } else {
+                    $price = $price + ($price * $this->fee / 100);
+                }
+            }
+
+            //if (empty($prod['barcode_wb']))
+                //$prod['barcode_wb'] = $prod['uid'];
+
+            $variants = [[
+            "vendorCode" => (string) PHPShopString::win_utf8($prod['uid']),
+            "title" => (string) PHPShopString::win_utf8($prod['name']),
+            "description" => (string) PHPShopString::win_utf8(strip_tags($prod['content'])),
+            "dimensions" => [
+                "length" => (int) $prod['length'],
+                "width" => (int) $prod['width'],
+                "height" => (int) $prod['height'],
+            ],
+            "characteristics" => $this->getAttributes($prod),
+            "sizes" => [[
+            'price' => (int) $this->price($price, $prod['baseinputvaluta']),
+            'skus' => [$prod['barcode_wb']]
+                ]],
+            ]];
+
+            $params = [[
+            'subjectID' => (int) $category_wbseller,
+            'variants' => $variants
+            ]];
 
             $result = $this->request(self::IMPORT_PRODUCT, $params);
 
@@ -643,7 +640,6 @@ class WbSeller {
             $log['result'] = $result;
 
             $this->log($log, $prod['id'], self::IMPORT_PRODUCT);
-
 
             return $result;
         }
@@ -674,9 +670,9 @@ class WbSeller {
      *  Получение характеристик категории
      */
 
-    public function getTreeAttribute($name) {
+    public function getTreeAttribute($subjectId) {
 
-        $result = $this->request(self::GET_TREE_ATTRIBUTE . PHPShopString::win_utf8($name));
+        $result = $this->request(self::GET_TREE_ATTRIBUTE . $subjectId);
 
 
         // Журнал
@@ -696,7 +692,11 @@ class WbSeller {
      */
     public function request($method, $params = [], $put = false, $debug = false) {
 
-        $api = self::API_URL;
+        if (strstr($method, 'https'))
+            $api = null;
+        else
+            $api = self::API_URL;
+
         $ch = curl_init();
         $header = [
             'Authorization: ' . $this->api_key,

@@ -420,12 +420,16 @@
                         <input type="hidden" value="1" name="user_enter">
                         <button type="submit" class="btn btn-primary">{Войти}</button>
                         <a href="/users/register.html" >{Зарегистрироваться}</a>
-                        
+
                     </div>
 
                     <!-- Yandex ID -->
                     @yandexid@
                     <!-- End Yandex ID -->
+
+                    <!-- VK ID -->
+                    @vkid@
+                    <!-- End VK ID -->
                 </form>
             </div>
         </div>

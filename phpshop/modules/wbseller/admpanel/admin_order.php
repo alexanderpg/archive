@@ -60,19 +60,11 @@ function actionStart() {
             $prod = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['id,uid,name,pic_small'], [$type => '="' . (string) $row['article'] . '"']);
             // Данные по товары из WB
             if (empty($prod)) {
-                $product_info = $WbSeller->getProduct([$row['article']])['data'][0];
-                $prod['pic_small'] = $product_info['mediaFiles'][0];
-                $prod['uid']=PHPShopString::utf8_win1251($row['article']);
+                $product_info = $WbSeller->getProductList($row['skus'][0],1)['cards'][0];
+                $prod['pic_small'] = $product_info['photos'][0]['tm'];
+                $prod['uid']=PHPShopString::utf8_win1251($row['vendorCode']);
+                $prod['name']=PHPShopString::utf8_win1251($product_info['title']);
 
-                // Поиск имени
-                if (is_array($product_info['characteristics']))
-                    foreach ($product_info['characteristics'] as $characteristics) {
-
-                        if (!empty($characteristics[PHPShopString::win_utf8('Наименование')]))
-                            $prod['name'] = PHPShopString::utf8_win1251($characteristics[PHPShopString::win_utf8('Наименование')]);
-
-                    }
-                    
                 $link='https://www.wildberries.ru/catalog/' . $product_info['nmID'] . '/detail.aspx';
             }
             else {

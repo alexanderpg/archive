@@ -137,7 +137,7 @@ $().ready(function () {
     });
 
     // Выбор в поиске категорию
-    $('body').on('click', '.select-search', function (event) {
+    $('body').on('click', '.select-search-ozon', function (event) {
         event.preventDefault();
 
         $('[name="category_ozonseller"]').val($(this).attr('data-name'));

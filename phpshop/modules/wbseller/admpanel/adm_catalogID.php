@@ -18,7 +18,7 @@ function addWbsellerTab($data) {
         $PHPShopGUI->addJSFiles('../modules/wbseller/admpanel/gui/order.gui.js');
 
         $tree_select = '
-        <input data-set="3" name="category_wbseller_new" class="search_wbcategory form-control input-sm" type="search" data-trigger="manual" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true"  data-content="" placeholder="' . __('Найти...') . '" value="' . $data['category_wbseller'] . '">';
+        <input data-set="3" name="category_wbseller_new" class="search_wbcategory form-control input-sm" type="search" data-trigger="manual" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true"  data-content="" placeholder="' . __('Найти...') . '" value="' . $data['category_wbseller'] . '"><input type="hidden" name="category_wbseller_id_new" value="'.$data['category_wbseller_id'].'">';
 
 
         // Размещение
@@ -35,7 +35,7 @@ function addWbsellerTab($data) {
 
         // Характеристики с Wb
         $Tab2 = null;
-        $sort_wb_data = $WbSeller->getTreeAttribute($data['category_wbseller'])['data'];
+        $sort_wb_data = $WbSeller->getTreeAttribute($data['category_wbseller_id'])['data'];
         if (is_array($sort_wb_data)) {
             foreach ($sort_wb_data as $sort_wb_value) {
                 
@@ -56,21 +56,16 @@ function addWbsellerTab($data) {
                 if (is_array($sort_data)) {
                     $sort_select_value[] = array(__('Ничего не выбрано'), 0, $name);
                     foreach ($sort_data as $sort_value) {
-
-                        if ($name == $sort_value['attribute_wbseller'])
+                        
+                        if($sort_value['attribute_wbseller'] == $sort_wb_value['charcID'])
                             $sel = 'selected';
-                        else
-                            $sel = null;
+                        else $sel=null;
 
-                        $sort_select_value[] = array($sort_value['name'], $sort_value['name'], $sel);
+                        $sort_select_value[] = array($sort_value['name'], $sort_value['id'], $sel);
                     }
                 }
                 
-                // Габариты
-                if($name == 'Высота упаковки' or $name == 'Ширина упаковки' or $name == 'Длина упаковки')
-                     $Tab2 .= $PHPShopGUI->setField($name, $PHPShopGUI->setHelp('Будет заполнено автоматически из габаритов товара.'));
-                else 
-                $Tab2 .= $PHPShopGUI->setField($name, $PHPShopGUI->setSelect('attribute_wbseller[' . urlencode($name) . ']', $sort_select_value, '100%'), 1, $help, null, 'control-label', false);
+                $Tab2 .= $PHPShopGUI->setField($name, $PHPShopGUI->setSelect('attribute_wbseller[' . $sort_wb_value['charcID'] . ']', $sort_select_value, '100%'), 1, $help, null, 'control-label', false);
             }
         } else {
             $Tab2 = $PHPShopGUI->setHelp('Выберите размещение в WB для сопоставления характеристик и перегрузите страницу');
@@ -93,10 +88,10 @@ function updateWbseller() {
             if (!empty($v)) {
                 
                 // Очистка старых значений
-                $PHPShopSort->update(['attribute_wbseller_new' => null], ['attribute_wbseller' => '="' . urldecode($k).'"']);
+                $PHPShopSort->update(['attribute_wbseller_new' => null], ['attribute_wbseller' => '="' . (int)$k.'"']);
                 
                 // Новое значение
-                $PHPShopSort->update(['attribute_wbseller_new' => urldecode($k)], ['name' => '="' . $v.'"']);
+                $PHPShopSort->update(['attribute_wbseller_new' => (int)$k], ['id' => '="' .(int) $v.'"']);
             }
         }
     }

@@ -26,8 +26,6 @@ $blank_org_kpp = $PHPShopSystem->getSerilizeParam('bank.org_kpp');
 $blank_org_ur_adres = $PHPShopSystem->getSerilizeParam('bank.org_ur_adres');
 $blank_org_adres = $PHPShopSystem->getSerilizeParam('bank.org_adres');
 
-
-
 $LoadBanc = unserialize($LoadItems['System']['bank']);
 $LoadBanc['org_sig'] = $PHPShopSystem->getSerilizeParam('bank.org_sig');
 $LoadBanc['org_sig_buh'] = $PHPShopSystem->getSerilizeParam('bank.org_sig_buh');
@@ -84,13 +82,19 @@ $order = unserialize($row['orders']);
 $status = unserialize($row['status']);
 $nds = $LoadItems['System']['nds'];
 $dis = $weight = $adr_info = null ;
+$sum=$num=$this_nds_summa=$total_summa_nds=$total_summa_nds_taxe=$total_summa=0;
 if (is_array($order['Cart']['cart']))
     foreach ($order['Cart']['cart'] as $val) {
-        $this_price = ($PHPShopOrder->returnSumma(number_format($val['price'], "2", ".", ""), @$order['Person']['discount']));
+    
+        // Услуга
+        if($val['type'] == 2)
+            continue;
+    
+        $this_price = ($PHPShopOrder->returnSumma(number_format($val['price'], "2", ".", ""), (int)$order['Person']['discount']));
         $this_nds = number_format($this_price * $nds / (100 + $nds), "2", ".", "");
         $this_price_bez_nds = ($this_price - $this_nds) * $val['num'];
         $this_price_c_nds = number_format($this_price * $val['num'], "2", ".", "");
-        @$this_nds_summa+=$this_nds * $val['num'];
+        $this_nds_summa+=$this_nds * $val['num'];
 
         $dis.='<tr class="Таблица113">   
         <td style="text-align:center;width:0.924cm; " class="Таблица1_A34"><p class="P41" style="text-align:center;">' . $n . '</p></td>
@@ -110,11 +114,11 @@ if (is_array($order['Cart']['cart']))
         <td colspan="2" style="text-align:left;width:0.132cm; " class="Таблица1_A34"><p class="P47">' . $this_price_c_nds . '</p></td>
       </tr>';
 
-        @$total_summa_nds+=$this_price_bez_nds;
-        @$total_summa_nds_taxe+=$this_nds_summa;
-        @$total_summa+=$PHPShopOrder->returnSumma(($val['price'] * $val['num']), @$order['Person']['discount']);
+        $total_summa_nds+=$this_price_bez_nds;
+        $total_summa_nds_taxe+=$this_nds_summa;
+        $total_summa+=$PHPShopOrder->returnSumma(($val['price'] * $val['num']), (int)$order['Person']['discount']);
 
-//Определение и суммирование веса
+        //Определение и суммирование веса
         $goodid = $val['id'];
         $goodnum = $val['num'];
         $wsql = 'select weight from ' . $SysValue['base']['table_name2'] . ' where id=\'' . $goodid . '\'';
@@ -127,8 +131,8 @@ if (is_array($order['Cart']['cart']))
         $weight+=$cweight;
 
 
-        @$sum+=$val['price'] * $val['num'];
-        @$num+=$val['num'];
+        $sum+=$val['price'] * $val['num'];
+        $num+=$val['num'];
         $n++;
     }
 //Обнуляем вес товаров, если хотя бы один товар был без веса
@@ -136,7 +140,7 @@ if ($zeroweight) {
     $weight = 0;
 }
 
-$total_summa_nds = number_format($row['sum'], "2", ".", "");
+$total_summa_nds = number_format($sum, "2", ".", "");
 $total_summa = $total_summa_nds;
 
 $PHPShopDelivery = new PHPShopDelivery($order['Person']['dostavka_metod']);
@@ -145,11 +149,11 @@ $deliveryPrice = $PHPShopDelivery->getPrice($sum, $weight);
 
 $summa_nds_dos = number_format($deliveryPrice * $nds / (100 + $nds), "2", ".", "");
 
-$sum = $row['sum'];
+//$sum = $row['sum'];
 
 if ($LoadItems['System']['nds_enabled']) {
     $nds = $LoadItems['System']['nds'];
-    @$nds = number_format($sum * ($nds / (100 + $nds)), "2", ".", "");
+    $nds = number_format($sum * ($nds / (100 + $nds)), "2", ".", "");
 }
 
 

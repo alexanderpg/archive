@@ -3,7 +3,7 @@
 /**
  * Элемент стандартных системных переменных
  * @author PHPShop Software
- * @version 1.8
+ * @version 1.9
  * @package PHPShopElements
  */
 class PHPShopCoreElement extends PHPShopElements {
@@ -26,16 +26,16 @@ class PHPShopCoreElement extends PHPShopElements {
             if (is_array($ip) and in_array(trim($_SERVER['REMOTE_ADDR']), $ip))
                 return;
             else {
-                
+
                 $title = $this->PHPShopSystem->getSerilizeParam('admoption.service_title');
                 $message = $this->PHPShopSystem->getSerilizeParam('admoption.service_content');
 
                 if (empty($title))
                     $title = '503 Service Temporarily Unavailable';
-                
+
                 if (empty($message))
                     $message = 'Website is under construction';
-                
+
 
                 PHPShopParser::set('message', $message);
                 PHPShopParser::set('title', $title);
@@ -328,6 +328,17 @@ class PHPShopCoreElement extends PHPShopElements {
                 $this->set('yandexid', ParseTemplateReturn('users/yandexid.tpl'));
             else
                 $this->set('yandexid', ParseTemplateReturn('phpshop/lib/templates/users/yandexid.tpl', true));
+        }
+
+        // VK ID
+        if ($this->PHPShopSystem->ifSerilizeParam('admoption.vk_id_enabled') and $this->PHPShopSystem->getSerilizeParam('admoption.vk_id_apikey') != "") {
+            $this->set('vk_app', $this->PHPShopSystem->getSerilizeParam('admoption.vk_id'));
+            $this->set('vk_redirect_uri', $_SERVER['SERVER_NAME'] . 'phpshop/ajax/vkid.php');
+
+            if (PHPShopParser::checkFile("users/vkid.tpl"))
+                $this->set('vkid', ParseTemplateReturn('users/vkid.tpl'));
+            else
+                $this->set('vkid', ParseTemplateReturn('phpshop/lib/templates/users/vkid.tpl', true));
         }
     }
 
@@ -996,16 +1007,55 @@ class PHPShopTextElement extends PHPShopElements {
         $where['flag'] = "='1'";
         $where['element'] = "='0'";
 
+        // Мобильный
+        $isMobile = PHPShopString::is_mobile();
+
+        if ($isMobile) {
+            $where['mobile'] = '="1"';
+        } else
+            $where['mobile'] = '="0"';
+
         // Мультибаза
         if (defined("HostID"))
             $where['servers'] = " REGEXP 'i" . HostID . "i'";
         elseif (defined("HostMain"))
             $where['element'] .= ' and (servers ="" or servers REGEXP "i1000i")';
 
-        $data = $this->PHPShopOrm->select(array('*'), $where, array('order' => 'num'), array("limit" => 20));
+        // Каталоги
+        if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
+
+            // Корневой каталог
+            $true_cid = $GLOBALS['PHPShopSeoPro']->getCID();
+
+            // Товар
+            if (empty($true_cid) and $this->PHPShopNav->getPath() == "id") {
+
+                $product_id = $GLOBALS['PHPShopSeoPro']->getID();
+                $PHPShopProduct = new PHPShopProduct((int) $product_id);
+                $true_cid = $PHPShopProduct->getParam('category');
+            }
+            // Вложенный подкаталог
+            else if (empty($true_cid) and $this->PHPShopNav->objNav['truepath'] != '/' and $this->PHPShopNav->notPath(array('page', 'news', 'gbook'))) {
+                $GLOBALS['PHPShopSeoPro']->catArrayToMemory();
+                $true_cid = $GLOBALS['PHPShopSeoPro']->getCID();
+            }
+        } else
+            $true_cid = $this->PHPShopNav->getId();
+
+        $data = $this->PHPShopOrm->select(array('*'), $where, array('order' => 'num'), array("limit" => 100));
         if (is_array($data))
             foreach ($data as $row) {
                 if (empty($row['dir'])) {
+
+                    // Привязка к каталогам
+                    if (!empty($row['dop_cat'])) {
+
+                        if (empty($true_cid)) {
+                            continue;
+                        } elseif (!empty($true_cid) and ! strstr($row['dop_cat'], "#" . $true_cid . "#")) {
+                            continue;
+                        }
+                    }
 
                     // Определяем переменные
                     $this->set('leftMenuName', $row['name']);
@@ -1044,17 +1094,56 @@ class PHPShopTextElement extends PHPShopElements {
         $where['flag'] = "='1'";
         $where['element'] = "='1'";
 
+        // Мобильный
+        $isMobile = PHPShopString::is_mobile();
+
+        if ($isMobile) {
+            $where['mobile'] = '="1"';
+        } else
+            $where['mobile'] = '="0"';
+
         // Мультибаза
         if (defined("HostID"))
             $where['servers'] = " REGEXP 'i" . HostID . "i'";
         elseif (defined("HostMain"))
             $where['element'] .= ' and (servers ="" or servers REGEXP "i1000i")';
 
+        // Каталоги
+        if (!empty($GLOBALS['SysValue']['base']['seourlpro']['seourlpro_system'])) {
+
+            // Корневой каталог
+            $true_cid = $GLOBALS['PHPShopSeoPro']->getCID();
+
+            // Товар
+            if (empty($true_cid) and $this->PHPShopNav->getPath() == "id") {
+
+                $product_id = $GLOBALS['PHPShopSeoPro']->getID();
+                $PHPShopProduct = new PHPShopProduct((int) $product_id);
+                $true_cid = $PHPShopProduct->getParam('category');
+            }
+            // Вложенный подкаталог
+            else if (empty($true_cid) and $this->PHPShopNav->objNav['truepath'] != '/' and $this->PHPShopNav->notPath(array('page', 'news', 'gbook'))) {
+                $GLOBALS['PHPShopSeoPro']->catArrayToMemory();
+                $true_cid = $GLOBALS['PHPShopSeoPro']->getCID();
+            }
+        } else
+            $true_cid = $this->PHPShopNav->getId();
+
         $PHPShopOrm = new PHPShopOrm($this->objBase);
-        $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'num'), array("limit" => 20));
+        $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'num'), array("limit" => 100));
         if (is_array($data))
             foreach ($data as $row) {
                 if (empty($row['dir'])) {
+
+                    // Привязка к каталогам
+                    if (!empty($row['dop_cat'])) {
+
+                        if (empty($true_cid)) {
+                            continue;
+                        } elseif (!empty($true_cid) and ! strstr($row['dop_cat'], "#" . $true_cid . "#")) {
+                            continue;
+                        }
+                    }
 
                     // Определяем переменные
                     $this->set('leftMenuName', $row['name']);
@@ -1846,7 +1935,8 @@ class PHPShopRecaptchaElement extends PHPShopElements {
             if (!empty($secret))
                 $this->secret = $secret;
 
-            $this->check = $_POST['g-recaptcha-response'];
+            if (isset($_POST['g-recaptcha-response']))
+                $this->check = $_POST['g-recaptcha-response'];
         }
         // Hcaptcha
         elseif ($this->PHPShopSystem->ifSerilizeParam('admoption.hcaptcha_enabled')) {
@@ -1864,7 +1954,8 @@ class PHPShopRecaptchaElement extends PHPShopElements {
             else
                 $this->secret = $this->hsecret;
 
-            $this->check = $_POST['h-captcha-response'];
+            if (isset($_POST['h-captcha-response']))
+                $this->check = $_POST['h-captcha-response'];
             $this->api = $this->hapi;
         }
     }
@@ -1994,6 +2085,13 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
+
+
+
+
+
+
 
 
 

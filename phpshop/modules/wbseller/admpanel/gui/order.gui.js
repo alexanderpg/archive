@@ -1,6 +1,6 @@
 $().ready(function () {
 
-    // Поиск пользователя
+    // Поиск категории
     $(".search_wbcategory").on('input', function () {
 
         var words = $(this).val();
@@ -38,17 +38,18 @@ $().ready(function () {
         }
     });
 
-    // Закрыть поиск пользователя
+    // Закрыть поиск категории
     $('body').on('click', '.close', function (event) {
         event.preventDefault();
         $('[data-toggle="popover"]').popover('hide');
     });
 
-    // Выбор в поиске пользователя
-    $('body').on('click', '.select-search', function (event) {
+    // Выбор в поиске категорию
+    $('body').on('click', '.select-search-wb', function (event) {
         event.preventDefault();
 
         $('[name="category_wbseller_new"]').val($(this).attr('data-name'));
+        $('[name="category_wbseller_id_new"]').val($(this).attr('data-id'));
         $('[data-toggle="popover"]').popover('hide');
     });
 

@@ -21,6 +21,21 @@ class Tinkoff
         '18' => 'vat18',
         '20' => 'vat20',
     );
+    
+
+    public function log($message, $order_id, $status, $type)
+    {
+
+        $PHPShopOrm = new PHPShopOrm("phpshop_modules_tinkoff_log");
+        $log = array(
+            'message_new' => serialize($message),
+            'order_id_new' => $order_id,
+            'status_new' => $status,
+            'type_new' => $type,
+            'date_new' => time()
+        );
+        $PHPShopOrm->insert($log);
+    }
 
     public function getPaymentUrl($obj, $value)
     {
@@ -29,6 +44,7 @@ class Tinkoff
         $requestData = array(
             'OrderId' => $obj->ouid,
             'Amount' => $obj->tinkoff_total,
+            'TerminalKey'=>$this->settings['terminal'],
             'DATA' => array(
                 'Email' => $this->customerEmail,
                 'Connection_type' => 'phpshop'
@@ -46,6 +62,8 @@ class Tinkoff
         $tinkoff = new TinkoffMerchantAPI($this->settings['terminal'], $this->settings['secret_key'], $this->settings['gateway']);
         $request = $tinkoff->buildQuery('Init', $requestData);
         $request = json_decode($request);
+        
+        $this->log(['request'=>$requestData,'result'=>$request], $obj->ouid, 'Заказ зарегистрирован', 'Init');
 
         return isset($request->PaymentURL) ? array('url' => $request->PaymentURL) : array('error' => 'Запрос в Тинькофф Банк совершился неудачей');
     }

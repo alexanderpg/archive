@@ -149,7 +149,7 @@ class PHPShopProductElements extends PHPShopElements {
             $multi_dop_cat = null;
 
             // Не выводить скрытые каталоги
-            $where['skin_enabled '] = "!='1'";
+            $where['skin_enabled'] = "!='1'";
 
             if (defined("HostID"))
                 $where['servers'] = " REGEXP 'i" . HostID . "i'";
