@@ -50,6 +50,7 @@ function actionStart() {
     $delim_sort = array('/' => '/', '\\' => '\\', '-' => '-', '&' => '&', ';' => ';', ',' => ',');
     $delim_imgvalue = array(',' => __('Запятая'), 0 => __('Выкл'), ';' => __('Точка с запятой'), '#' => '#', ' ' => __('Пробел'));
     $code_value = array('ansi' => 'ANSI', 'utf' => 'UTF-8');
+    $extension_value = array('csv' => 'CSV', 'xls'=>'XLS', 'xlsx'=>'XLSX','yml' => 'YML');
 
     if (!empty($option['export_key']))
         $key_value = $option['export_key'];
@@ -91,6 +92,7 @@ function actionStart() {
             $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setText($option['export_imgload']), 1, 'Загрузка изображений на сервер по ссылке') .
             $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setText($delim_imgvalue[$option['export_imgdelim']])) .
             $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setText($code_value[$option['export_code']])) .
+            $PHPShopGUI->setField('Тип файла', $PHPShopGUI->setText($extension_value[$option['export_extension']])) .
             $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setText($key_value)) .
             $PHPShopGUI->setField('Проверка уникальности', $PHPShopGUI->setText($option['export_uniq']), 1, 'Исключает дублирование данных при создании');
 

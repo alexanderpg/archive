@@ -1,15 +1,15 @@
 <?php
 
-function alfabank($data) {
+function vtb($data) {
     global $PHPShopGUI,$PHPShopModules;
 
     // Проверка способа оплаты
     $orders = unserialize($data['orders']);
 
-    if($orders['Person']['order_metod']  == 10021){
+    if($orders['Person']['order_metod']  == 10019){
 
         // SQL
-        $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.alfabank.alfabank_log"));
+        $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.vtb.vtb_log"));
 
         // Выборка логов
         $log = $PHPShopOrm->getList(array('*'), array("order_id=" => "'$data[uid]'"), array('order' => 'date DESC'));
@@ -32,31 +32,30 @@ function alfabank($data) {
 
         if (is_array($log))
             foreach ($log as $row) {
-                $PHPShopInterface->setRow(array('name' => $row['type'], 'link' => '?path=modules.dir.alfabank&id=' . $row['id']), PHPShopDate::get($row['date'], true), $row['status']);
+                $PHPShopInterface->setRow(array('name' => $row['type'], 'link' => '?path=modules.dir.vtb&id=' . $row['id']), PHPShopDate::get($row['date'], true), $row['status']);
             }
 
         $Tab1 .= '<hr><table class="table table-hover">'.$PHPShopInterface->getContent().'</table>';
 
-        $PHPShopGUI->addTab(array("Альфабанк", $Tab1, true));
+        $PHPShopGUI->addTab(array("ВТБ", $Tab1, true));
     }
 }
 function actionRefund(){
     global $PHPShopModules, $PHPShopSystem;
 
     // SQL
-    $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.alfabank.alfabank_log"));
+    $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.vtb.vtb_log"));
     $ordersORM = new PHPShopOrm($GLOBALS['SysValue']['base']['orders']);
 
     $orderData = $ordersORM->select(array('*'), array('id=' => intval($_GET['id'])));
 
     // Настройки модуля
     include_once(dirname(__FILE__) . '/../hook/mod_option.hook.php');
-    $PHPShopAlfabankArray = new PHPShopAlfabankArray();
-    $option = $PHPShopAlfabankArray->getArray();
+    $PHPShopVtbArray = new PHPShopVtbArray();
+    $option = $PHPShopVtbArray->getArray();
 
     // Выборка логов
     $log = $PHPShopOrm->select(array('*'), array("order_id=" => "'$orderData[uid]'", 'type' => '="register"'));
-    // Единичная выборка
 
     if(isset($log['id']))
         $log = array(0 => $log);
@@ -80,9 +79,9 @@ function actionRefund(){
 
     // Режим разработки и боевой режим
     if($option["dev_mode"] == 0)
-        $url ='https://pay.alfabank.ru/payment/rest/refund.do';
+        $url ='https://platezh.vtb24.ru/payment/rest/refund.do';
     else
-        $url ='https://web.rbsuat.com/ab/rest/refund.do';
+        $url ='https://vtb.rbsuat.com/payment/rest/refund.do';
 
     $rbsCurl = curl_init();
     curl_setopt_array($rbsCurl, array(
@@ -98,17 +97,17 @@ function actionRefund(){
 
     if($result['errorCode'] == 0){
         // Пишем лог
-        $PHPShopAlfabankArray->log("Возврат денежных средств успешно выполнен", $orderData['uid'], 'Возврат денежных средств выполнен', 'refundTrue');
+        $PHPShopVtbArray->log("Возврат денежных средств успешно выполнен", $orderData['uid'], 'Возврат денежных средств выполнен', 'refundTrue');
     }else{
         // Пишем лог ошибки, меняем статус заказа
-        $PHPShopAlfabankArray->log($result, $orderData['uid'], 'Возврат денежных средств не выполнен', 'refundFalse');
+        $PHPShopVtbArray->log($result, $orderData['uid'], 'Возврат денежных средств не выполнен', 'refundFalse');
         $ordersORM->update(array('statusi' => 1), array('id=' => $orderData['id']));
     }
 }
 
-// Обработка событий
+
 $addHandler = array(
-    'actionStart' => 'alfabank',
+    'actionStart' => 'vtb',
     'actionDelete' => false,
     'actionUpdate' => false
 );

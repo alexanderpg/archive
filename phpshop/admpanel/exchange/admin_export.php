@@ -117,7 +117,8 @@ $key_name = array(
     'moysklad_product_id' => 'МойСклад Id',
     'price_purch' => 'Закупочная цена',
     'files' => 'Файлы',
-    'external_code' => 'Внешний код'
+    'external_code' => 'Внешний код',
+    'barcode' => 'Штрихкод'
 );
 
 if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')

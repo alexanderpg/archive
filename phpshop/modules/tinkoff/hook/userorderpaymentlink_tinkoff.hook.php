@@ -37,7 +37,7 @@ function userorderpaymentlink_tinkoff_hook($obj, $PHPShopOrderFunction) {
 
             $request = $tinkoff->getPaymentUrl($obj, $email);
 
-            $return = PHPShopText::setInput('button', 'send', "Оплатить заказ", $float = "none", 250, "window.location.replace('" . $request['url'] . "')");
+            $return = PHPShopText::setInput('button', 'send', __("Оплатить заказ"), $float = "none", 250, "window.location.replace('" . $request['url'] . "')");
 
         } elseif ($PHPShopOrderFunction->getSerilizeParam('orders.Person.order_metod') == 10032)
             $return = ', Заказ обрабатывается менеджером';

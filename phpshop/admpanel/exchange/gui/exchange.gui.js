@@ -6,8 +6,9 @@ $().ready(function () {
 
     // Блокировка помощника для URL
     $('body').on('click', '#promtUrl', function () {
-        $('#bot').bootstrapToggle('off').bootstrapToggle('disable');
+        //$('#bot').bootstrapToggle('off').bootstrapToggle('disable');
     });
+
 
     // Рассчет скорости 
     $('body').on('change', '#export_imgload', function () {
@@ -512,4 +513,44 @@ $().ready(function () {
                     });
         }
     });
+
+    // Конструктор SQL запроса
+    $('body').on('click', '.query_generation', function () {
+
+        var action = $('#query_action').val();
+        var table = $('#query_table').val();
+        var vars = $('#query_var').val();
+        var condition = $('#query_condition').val();
+        var val = $('#query_val').val();
+        var query = '';
+
+        if (action == 'select')
+            query = action + ' * from ' + table + ' where ';
+        else if (action == 'update')
+            query = action + ' ' + table + ' set ';
+        else if (action == 'delete')
+            query = action + ' from ' + table + ' where ';
+
+        if (val == 'prompt') {
+            $.MessageBox({
+                buttonDone: locale.ok,
+                buttonFail: locale.close,
+                input: true,
+                message: locale.option_title
+            }).done(function (data) {
+                if ($.trim(data)) {
+
+                    if (query != '') {
+                        query += vars + ' ' + condition + " '" + data + "'";
+                        editor.setValue(query);
+                    }
+                }
+            });
+        } else if (query != '') {
+            query += ' `' + vars + '` ' + condition + ' ' + val;
+            editor.setValue(query);
+        }
+    });
+
+
 });

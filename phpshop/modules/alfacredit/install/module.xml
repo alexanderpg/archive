@@ -5,7 +5,7 @@
     <description>Покупка в кредит от Альфа-Банк.</description>
     <category>credit</category>
     <sign>1554817024</sign>
-    <faqlink>http://faq.phpshop.ru/page/alfacredit.html</faqlink>
+    <faqlink>https://docs.phpshop.ru/moduli/kreditovanie/pokupka-v-kredit-ot-alfabank-credit</faqlink>
     <adminmenu>
         <title>Купи Легко</title>
         <capability>true</capability>

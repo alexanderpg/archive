@@ -410,7 +410,7 @@ class CDEKWidget {
     }
 
     // Заказ зарегистрирован или в процессе регистрации.
-    private function isOrderSend($status)
+    public function isOrderSend($status)
     {
         return $status !== self::STATUS_ORDER_PREPARED && $status !== self::STATUS_ORDER_ERROR;
     }

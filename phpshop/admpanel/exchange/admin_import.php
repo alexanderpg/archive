@@ -1,5 +1,8 @@
 <?php
 
+use Shuchkin\SimpleXLSX;
+use Shuchkin\SimpleXLS;
+
 $TitlePage = __("Импорт данных");
 
 // Описания полей
@@ -88,7 +91,9 @@ $key_name = array(
     'moysklad_product_id' => 'МойСклад Id',
     'bonus' => 'Бонус',
     'price_purch' => 'Закупочная цена',
-    'files' => 'Файлы'
+    'files' => 'Файлы',
+    'external_code' => 'Внешний код',
+    'barcode' => 'Штрихкод'
 );
 
 if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
@@ -590,11 +595,11 @@ function csv_update($data) {
             } else
                 $uniq = 0;
 
-            
+
             // Отключение изображений
-            if ($_POST['export_imgload'] == 0){
+            if ($_POST['export_imgload'] == 0) {
                 unset($data_img);
-                $row['pic_big']=$row['pic_small']=null;
+                $row['pic_big'] = $row['pic_small'] = null;
             }
 
 
@@ -622,14 +627,14 @@ function csv_update($data) {
                 // Замена изображений
                 if ($_POST['export_imgfunc'] == 1) {
                     $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
-                    $PHPShopOrmImg->delete(['parent' => '='.intval($row['id'])]);
+                    $PHPShopOrmImg->delete(['parent' => '=' . intval($row['id'])]);
                 }
-                
+
                 // Удаление изображений с заменой
                 if ($_POST['export_imgfunc'] == 2) {
-                    fotoDelete(['parent' => '='.intval($row['id'])]);
+                    fotoDelete(['parent' => '=' . intval($row['id'])]);
                 }
-                
+
                 foreach ($data_img as $k => $img) {
                     if (!empty($img)) {
 
@@ -958,7 +963,7 @@ function actionSave() {
     // Копируем csv от пользователя
     if (!empty($_FILES['file']['name'])) {
         $_FILES['file']['ext'] = PHPShopSecurity::getExt($_FILES['file']['name']);
-        if ($_FILES['file']['ext'] == "csv") {
+        if (in_array($_FILES['file']['ext'], ['csv', 'xml', 'yml', 'xlsx', 'xls'])) {
             if (@move_uploaded_file($_FILES['file']['tmp_name'], "csv/" . PHPShopString::toLatin($_FILES['file']['name']) . '.' . $_FILES['file']['ext'])) {
                 $csv_file_name = PHPShopString::toLatin($_FILES['file']['name']) . '.' . $_FILES['file']['ext'];
                 $csv_file = "csv/" . $csv_file_name;
@@ -1010,10 +1015,181 @@ function actionSave() {
         $csv_file_name = $path_parts['basename'];
     }
 
-
     // Обработка csv
     if (!empty($csv_file)) {
+
         PHPShopObj::loadClass('file');
+
+        // Автоопределение
+        if ($_POST['export_extension'] == 'auto') {
+            $_POST['export_extension'] = PHPShopSecurity::getExt($csv_file);
+        } elseif (empty($_POST['export_extension'])) {
+            $_POST['export_extension'] = 'csv';
+        }
+
+        // YML
+        if ($_POST['export_extension'] == 'yml') {
+
+            if ($xml = simplexml_load_file($csv_file)) {
+                $_POST['export_code'] = 'ansi';
+
+                // Товары
+                if (empty($subpath[2])) {
+
+                    $yml_array[0] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
+
+                    foreach ($xml->shop[0]->offers[0]->offer as $item) {
+
+                        $warehouse = 0;
+                        $parent2 = $parent = '';
+
+                        // Склад
+                        if (isset($item->count[0]))
+                            $warehouse = (int) $item->count[0];
+
+                        // Склад
+                        if (isset($item->amount[0]))
+                            $warehouse = (int) $item->count[0];
+
+                        // Склад
+                        if ((string) $item->attributes()->available == "true" and empty($warehouse))
+                            $warehouse = 1;
+
+                        // Картинки
+                        if (is_array((array) $item->picture))
+                            $images = implode(",", (array) $item->picture);
+                        else
+                            $images = (string) $item->picture;
+
+                        // Старая цена
+                        if (isset($item->oldprice[0]))
+                            $oldprice = (string) $item->oldprice[0];
+
+                        // Габариты
+                        if (isset($item->dimensions[0])) {
+                            $dimensions = explode("/", (string) $item->dimensions[0]);
+                            $length = $dimensions[0];
+                            $width = $dimensions[1];
+                            $height = $dimensions[2];
+                        }
+
+                        // Характеристики
+                        $sort = null;
+                        $i = 0;
+
+                        if (is_array((array) $item->param)) {
+                            while ($i < (count((array) $item->param) - 1)) {
+
+                                $sort_name = PHPShopString::utf8_win1251((string) $item->param[$i]->attributes()->name);
+                                $sort_value = PHPShopString::utf8_win1251((string) $item->param[$i]);
+                                $i++;
+
+                                $sort .= $sort_name . '/' . $sort_value . '#';
+                            }
+                        } else
+                            $sort = (string) $item->param[0];
+
+                        // Бренд
+                        if (isset($item->vendor[0]))
+                            $sort .= 'Бренд/' . (string) $item->vendor[0];
+
+                        // Штрихкод
+                        if (!empty((string) $item->barcode[0]))
+                            $barcode = (string) $item->barcode[0];
+                        else
+                            $barcode = null;
+
+                        // Подтипы
+                        if (!empty((int) $item->attributes()->group_id)) {
+
+                            $parent_enabled = 1;
+                            $sort = null;
+
+                            if (!empty((string) $item->param[0]))
+                                $parent = PHPShopString::utf8_win1251((string) $item->param[0]);
+
+                            if (!empty((string) $item->param[1]))
+                                $parent2 = PHPShopString::utf8_win1251((string) $item->param[1]);
+
+                            // Главный товар
+                            if (!is_array($yml_array[(int) $item->attributes()->group_id])) {
+
+                                // Название
+                                $name = str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251((string) $item->name[0]));
+
+                                $yml_array[(int) $item->attributes()->group_id] = [(int) $item->attributes()->id, $name, PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, 0, (int) $item->attributes()->id, '', $oldprice, $length, $width, $height];
+                            } else {
+
+                                // Список подтипов
+                                $yml_array[(int) $item->attributes()->group_id][13] .= ',' . (int) $item->attributes()->id;
+
+                                // Картинка
+                                $yml_array[(int) $item->attributes()->group_id][3] .= ',' . $images;
+
+                                // Минимальная цена
+                                if ($yml_array[(int) $item->attributes()->group_id][6] > (string) $item->price[0])
+                                    $yml_array[(int) $item->attributes()->group_id][6] = (string) $item->price[0];
+                            }
+                        }
+                        else {
+                            $parent_enabled = 0;
+                            $parent = $parent2 = '';
+                        }
+
+
+                        $yml_array[(int) $item->attributes()->id] = [(int) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
+                    }
+
+
+                    $csv_file = './csv/product.yml.csv';
+                }
+                // Категории
+                else if ($subpath[2] == 'catalog') {
+                    $yml_array[0] = ['Id', 'Наименование', 'Родитель'];
+                    foreach ($xml->shop[0]->categories[0]->category as $item) {
+                        $yml_array[] = [(int) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0]), (int) $item->attributes()->parentId];
+                    }
+                    $csv_file = './csv/category.yml.csv';
+                }
+
+                // Временный файл
+                PHPShopFile::writeCsv($csv_file, $yml_array);
+            }
+        }
+
+        // XLSX
+        else if ($_POST['export_extension'] == 'xlsx') {
+
+            require_once '../lib/simplexlsx/SimpleXLSX.php';
+            $_POST['export_code'] = 'utf';
+
+            if ($xlsx = SimpleXLSX::parse($csv_file)) {
+
+                $csv_file = './csv/product.xlsx.csv';
+
+                // Временный файл
+                PHPShopFile::writeCsv($csv_file, $xlsx->rows());
+            } else {
+                echo SimpleXLSX::parseError();
+            }
+        }
+
+        // XLS
+        else if ($_POST['export_extension'] == 'xls') {
+
+            require_once '../lib/simplexlsx/SimpleXLS.php';
+            $_POST['export_code'] = 'utf';
+
+            if ($xls = SimpleXLS::parse($csv_file)) {
+
+                $csv_file = './csv/product.xls.csv';
+
+                // Временный файл
+                PHPShopFile::writeCsv($csv_file, $xls->rows());
+            } else {
+                echo SimpleXLS::parseError();
+            }
+        }
 
         // Автоматизация
         if (!empty($_POST['bot'])) {
@@ -1198,11 +1374,13 @@ function actionStart() {
         $memory[$_GET['path']]['bot'] = @$_POST['bot'];
         $memory[$_GET['path']]['export_key'] = @$_POST['export_key'];
         $memory[$_GET['path']]['export_imgfunc'] = @$_POST['export_imgfunc'];
+        $memory[$_GET['path']]['export_extension'] = @$_POST['export_extension'];
 
         $export_sortdelim = @$memory[$_GET['path']]['export_sortdelim'];
         $export_sortsdelim = @$memory[$_GET['path']]['export_sortsdelim'];
         $export_imgvalue = @$memory[$_GET['path']]['export_imgdelim'];
         $export_code = $memory[$_GET['path']]['export_code'];
+        $export_extension = $memory[$_GET['path']]['export_extension'];
         $export_key = $memory[$_GET['path']]['export_key'];
         $export_imgfunc = @$memory[$_GET['path']]['export_imgfunc'];
         $export_imgload = $memory[$_GET['path']]['export_imgload'];
@@ -1296,7 +1474,7 @@ function actionStart() {
 
     // Товары
     if (empty($subpath[2])) {
-        $class = false;
+        $class = $yml = false;
         $TitlePage .= ' ' . __('товаров');
         $data['path'] = null;
     }
@@ -1304,18 +1482,19 @@ function actionStart() {
     // Каталоги
     elseif ($subpath[2] == 'catalog') {
         $class = 'hide';
+        $yml = false;
         $TitlePage .= ' ' . __('каталогов');
     }
 
     // Пользователи
     elseif ($subpath[2] == 'user') {
-        $class = 'hide';
+        $class = $yml = 'hide';
         $TitlePage .= ' ' . __('пользователей');
     }
 
     // Пользователи
     elseif ($subpath[2] == 'order') {
-        $class = 'hide';
+        $class = $yml = 'hide';
     }
 
     $PHPShopGUI->setActionPanel($TitlePage . $exchanges_name, false, array('Импорт'));
@@ -1347,25 +1526,32 @@ function actionStart() {
     $code_value[] = array('ANSI', 'ansi', $export_code);
     $code_value[] = array('UTF-8', 'utf', $export_code);
 
+    $code_extension[] = array(__('Автоматический'), 'auto', $export_extension);
+    $code_extension[] = array('CSV', 'csv', $export_extension);
+    $code_extension[] = array('YML', 'yml', $export_extension);
+    $code_extension[] = array('XLSX', 'xlsx', $export_extension);
+    $code_extension[] = array('XLS', 'xls', $export_extension);
+
     $imgfunc_value[] = array(__('Добавить фото к существующим'), 0, $export_imgfunc);
     $imgfunc_value[] = array(__('Заменить фото в базе, без удаления с сервера'), 1, $export_imgfunc);
     $imgfunc_value[] = array(__('Заменить и удалить фото на сервере'), 2, $export_imgfunc);
-    
+
     $imgload_value[] = array(__('Игнорировать'), 0, $export_imgload);
     $imgload_value[] = array(__('Загрузить по внешней ссылке'), 1, $export_imgload);
     $imgload_value[] = array(__('Прописать ссылку в базе'), 2, $export_imgload);
-    
+
     // Закладка 1
-    $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile($_POST['lfile'])) .
+    $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile($_POST['lfile']), 1, 'Поддерживаются файлы csv, xls, xlsx, yml, xml') .
             $PHPShopGUI->setField('Действие', $PHPShopGUI->setSelect('export_action', $action_value, 150, true)) .
             $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 150, true)) .
             $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), false, false, $class) .
             $PHPShopGUI->setField('Разделитель значений характеристик', $PHPShopGUI->setSelect('export_sortsdelim', $delim_sort, 150), false, false, $class) .
             $PHPShopGUI->setField('Обработка изображений', $PHPShopGUI->setCheckbox('export_imgproc', 1, null, @$memory[$_GET['path']]['export_imgproc']), 1, 'Создание изображения для превью и ватермарк', $class) .
             $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setSelect('export_imgload', $imgload_value, 250), 1, 'Загрузить изображения или использовать ссылки', $class) .
-             $PHPShopGUI->setField('Действие для изображений', $PHPShopGUI->setSelect('export_imgfunc', $imgfunc_value, 250), 1, 'Заменить на новые или дополнить изображения', $class) .
+            $PHPShopGUI->setField('Действие для изображений', $PHPShopGUI->setSelect('export_imgfunc', $imgfunc_value, 250), 1, 'Заменить на новые или дополнить изображения', $class) .
             $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения', $class) .
             $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 150)) .
+            $PHPShopGUI->setField('Тип файла', $PHPShopGUI->setSelect('export_extension', $code_extension, 150), 1, null, $yml) .
             $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setSelect('export_key', $key_value, 150, false, false, true), 1, 'Изменение ключа обновления может привести к порче данных', $class) .
             $PHPShopGUI->setField('Проверка уникальности', $PHPShopGUI->setCheckbox('export_uniq', 1, null, @$memory[$_GET['path']]['export_uniq']), 1, 'Исключает дублирование данных при создании', $class);
 

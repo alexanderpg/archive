@@ -3,7 +3,7 @@
 PHPShopObj::loadClass('order');
 
 // SQL
-$PHPShopOrm = new PHPShopOrm("phpshop_modules_alfabank_system");
+$PHPShopOrm = new PHPShopOrm("phpshop_modules_vtb_system");
 
 // Обновление версии модуля
 function actionBaseUpdate() {
@@ -38,22 +38,19 @@ function actionStart() {
     $data = $PHPShopOrm->select();
 
     $Tab2 = $PHPShopGUI->setField('Логин API магазина', $PHPShopGUI->setInputText(false, 'login_new', $data['login'], 300));
-    $Tab2 .= $PHPShopGUI->setField('Пароль магазина', $PHPShopGUI->setInput("password", 'password_new', $data['password'], false, 300));
+    $Tab2 .= $PHPShopGUI->setField('Пароль API магазина', $PHPShopGUI->setInput("password", 'password_new', $data['password'], false, 300));
     
     $api = array(
-        array('pay.alfabank.ru', 'https://pay.alfabank.ru/payment/rest/register.do', $data['api_url']),
-        array('payment.alfabank.ru', 'https://payment.alfabank.ru/payment/rest/register.do', $data['api_url']),
-        array('ecom.alfabank.ru', 'https://ecom.alfabank.ru/api/rest/register.do', $data['dev_mode']),
+        array('platezh.vtb24.ru', 'https://platezh.vtb24.ru/payment/rest/register.do', $data['api_url']),
     );
     
     $dev = array(
         array(__('Ничего не выбрано'), 0, $data['dev_mode']),
-        array('alfa.rbsuat.com', 'https://alfa.rbsuat.com/payment/rest/register.do', $data['dev_mode']),
-        array('tws.egopay.ru', 'https://tws.egopay.ru/api/ab/rest/register.do', $data['dev_mode']),
+        array('vtb.rbsuat.com', 'https://vtb.rbsuat.com/payment/rest/register.do', $data['dev_mode']),
     );
     
     $Tab2.= $PHPShopGUI->setField('URL адрес API', $PHPShopGUI->setSelect('api_url_new', $api, 300));
-    $Tab2 .= $PHPShopGUI->setField('Тестовый URL адрес API', $PHPShopGUI->setSelect('dev_mode_new', $dev, 300),1,"Отправка данных на тестовую среду Альфабанка");
+    $Tab2 .= $PHPShopGUI->setField('Тестовый URL адрес API', $PHPShopGUI->setSelect('dev_mode_new', $dev, 300),1,"Отправка данных на тестовую среду ВТБ");
 
     // Система налогообложения
     $tax_system = array(
@@ -82,13 +79,13 @@ function actionStart() {
     $info = '
         <h4>Настройка модуля</h4>
         <ol>
-<li>Предоставить необходимые документы и заключить договор с <a href="https://pay.alfabank.ru/ecommerce/" target="blank">Альфабанком</a>.</li>
-<li>На закладке настройки ввести предоставленные Альфанком Логин API магазина (*********-api) и Пароль магазина.</li>
-<li>Во время тестирования включить "Режим разработки", данные будут отправляться на тестовую среду Альфабанка.</li>
-<li>Указать сотрудникам Альфабанка URL Callback-уведомлений <code>https://' . $_SERVER['SERVER_NAME'] . '/phpshop/modules/alfabank/payment/check.php</code></li>
+<li>Предоставить необходимые документы и заключить договор с <a href="https://www.vtb.ru/malyj-biznes/acquiring/internet-acquiring/" target="blank">ВТБ</a>.</li>
+<li>На закладке настройки ввести предоставленные ВТБ Логин API магазина (*********-api) и Пароль магазина.</li>
+<li>Во время тестирования включить "Режим разработки", данные будут отправляться на тестовую среду ВТБ.</li>
+<li>Указать сотрудникам ВТБ URL Callback-уведомлений <code>https://' . $_SERVER['SERVER_NAME'] . '/phpshop/modules/vtb/payment/check.php</code></li>
 <li>Для перевода модуля в рабочий режим, выключить "Режим разработки".</a></li>
 </ol>
-<p>После регистрации в Альфабанке вам предоставляются доступы к тестовой среде, в модуле нужно отметить галочку "Режим разработки". После оформления тестового заказа (карты для тестирования можно найти в документации Альфабанка) нужно запросить доступы к рабочей среде Альфабанка, ввести в настройках модуля рабочий логин API и пароль, отключить "Режим разработки". </p>
+<p>После регистрации в ВТБ вам предоставляются доступы к тестовой среде, в модуле нужно отметить галочку "Режим разработки". После оформления тестового заказа (карты для тестирования можно найти в документации ВТБ) нужно запросить доступы к рабочей среде ВТБ, ввести в настройках модуля рабочий логин API и пароль, отключить "Режим разработки". </p>
 ';
 
     // Вывод формы закладки

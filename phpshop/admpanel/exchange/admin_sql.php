@@ -4,7 +4,7 @@ PHPShopObj::loadClass("file");
 
 $TitlePage = __("SQL запрос к базе");
 
-// Описание полей
+// Описание таблиц
 $sqlHelper = array(
     'phpshop_categories' => __('Категории товаров'),
     'phpshop_orders' => __('Заказы пользователей'),
@@ -30,6 +30,96 @@ $sqlHelper = array(
     "phpshop_newsletter" => __('Тексты рассылок'),
     "phpshop_slider" => __('Слайдер на главной странице'),
     "phpshop_slider" => __('Слайдер на главной странице'),
+);
+
+// Описания полей
+$key_name = array(
+    'id' => 'Id',
+    'name' => 'Наименование',
+    'uid' => 'Артикул',
+    'price' => 'Цена 1',
+    'price2' => 'Цена 2',
+    'price3' => 'Цена 3',
+    'price4' => 'Цена 4',
+    'price5' => 'Цена 5',
+    'price_n' => 'Старая цена',
+    'sklad' => 'Под заказ',
+    'newtip' => 'Новинка',
+    'spec' => 'Спецпредложение',
+    'items' => 'Склад',
+    'weight' => 'Вес',
+    'num' => 'Приоритет',
+    'enabled' => 'Вывод',
+    'content' => 'Подробное описание',
+    'description' => 'Краткое описание',
+    'pic_small' => 'Маленькое изображение',
+    'pic_big' => 'Большое изображение',
+    'yml' => 'Яндекс.Маркет',
+    'icon' => 'Иконка',
+    'parent_to' => 'Родитель',
+    'category' => 'Каталог',
+    'title' => 'Заголовок',
+    'login' => 'Логин',
+    'tel' => 'Телефон',
+    'cumulative_discount' => 'Накопительная скидка',
+    'seller' => 'Статус загрузки в 1С',
+    'fio' => 'Ф.И.О',
+    'city' => 'Город',
+    'street' => 'Улица',
+    'odnotip' => 'Сопутствующие товары',
+    'page' => 'Страницы',
+    'parent' => 'Подчиненные товары',
+    'dop_cat' => 'Дополнительные каталоги',
+    'ed_izm' => 'Единица измерения',
+    'baseinputvaluta' => 'Валюта',
+    'vendor_array' => 'Характеристики',
+    'p_enabled' => 'Наличие в Яндекс.Маркет',
+    'parent_enabled' => 'Подтип',
+    'descrip' => 'Meta description',
+    'keywords' => 'Meta keywords',
+    "prod_seo_name" => 'SEO ссылка',
+    'num_row' => 'Товаров в длину',
+    'num_cow' => 'Товаров на странице',
+    'count' => 'Содержит товаров',
+    'cat_seo_name' => 'SEO ссылка каталога',
+    'sum' => 'Сумма',
+    'servers' => 'Витрины',
+    'items1' => 'Склад 2',
+    'items2' => 'Склад 3',
+    'items3' => 'Склад 4',
+    'items4' => 'Склад 5',
+    'data_adres' => 'Адрес',
+    'color' => 'Код цвета',
+    'parent2' => 'Цвет',
+    'rate' => 'Рейтинг',
+    'productday' => 'Товар дня',
+    'hit' => 'Хит',
+    'sendmail' => 'Подписка на рассылку',
+    'statusi' => 'Статус заказа',
+    'country' => 'Страна',
+    'state' => 'Область',
+    'index' => 'Индекс',
+    'house' => 'Дом',
+    'porch' => 'Подъезд',
+    'door_phone' => 'Домофон',
+    'flat' => 'Квартира',
+    'delivtime' => 'Время доставки',
+    'org_name' => 'Организация',
+    'org_inn' => 'ИНН',
+    'org_kpp' => 'КПП',
+    'org_yur_adres' => 'Юридический адрес',
+    'dop_info' => 'Комментарий пользоватея',
+    'tracking' => 'Код отслеживания',
+    'path' => 'Путь каталога',
+    'length' => 'Длина',
+    'width' => 'Ширина',
+    'height' => 'Высота',
+    'moysklad_product_id' => 'МойСклад Id',
+    'bonus' => 'Бонус',
+    'price_purch' => 'Закупочная цена',
+    'files' => 'Файлы',
+    'external_code' => 'Внешний код',
+    'barcode' => 'Штрихкод'
 );
 
 // Функция обновления
@@ -110,7 +200,7 @@ function actionSave() {
                 $error_line .= '[Line ' . $k . '] ';
                 $result_error_tracert .= 'Запрос: ' . $v . '
 Ошибка: ' . mysqli_error($link_db);
-            } 
+            }
         }
 
         // Удаление файла после выполнения
@@ -135,7 +225,7 @@ function actionSave() {
 
 // Стартовый вид
 function actionStart() {
-    global $PHPShopGUI, $TitlePage, $PHPShopModules, $result_message, $result_error_tracert, $PHPShopSystem, $selectModalBody, $sqlHelper;
+    global $PHPShopGUI, $TitlePage, $PHPShopModules, $result_message, $result_error_tracert, $PHPShopSystem, $selectModalBody, $sqlHelper, $key_name;
 
     $PHPShopGUI->action_button['Выполнить'] = array(
         'name' => __('Выполнить'),
@@ -248,9 +338,45 @@ TRUNCATE ' . $GLOBALS['SysValue']['base']['citylist_city'] . ';', '');
     // Модальное окно таблицы описаний перменных
     $selectModalBody = '<table class="table table-striped"><tr><th>' . __('Таблица') . '</th><th>' . __('Описание') . '</th></tr>' . $selectModal . '</table>';
 
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Настройки', $PHPShopGUI->setField('Команда', $PHPShopGUI->setSelect('sql_query', $query_value, 400, true, false, false, false, 1, false, false, 'selectpicker')) .
-            $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile()), 'in', false, true
-    );
+    $Tab1 = $PHPShopGUI->setField('Команда', $PHPShopGUI->setSelect('sql_query', $query_value, 400, true, false, false, false, 1, false, false, 'selectpicker')) .
+            $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile());
+
+    // Конструктор
+    $query_table_value[] = [__('Не выбрано'), '', $_POST['query_table']];
+    $query_table_value[] = [__('Товары'), $GLOBALS['SysValue']['base']['products'], $_POST['query_table']];
+    $query_table_value[] = [__('Каталоги'), $GLOBALS['SysValue']['base']['categories'], $_POST['query_table']];
+    $query_table_value[] = [__('Пользователи'), $GLOBALS['SysValue']['base']['shopusers'], $_POST['query_table']];
+    $query_table_value[] = [__('Заказы'), $GLOBALS['SysValue']['base']['orders'], $_POST['query_table']];
+
+    $query_action_value[] = [__('Не выбрано'), '',$_POST['query_action']];
+    $query_action_value[] = [__('Изменить'), 'update', $_POST['query_action']];
+    $query_action_value[] = [__('Удалить'), 'delete', $_POST['query_action']];
+    $query_action_value[] = [__('Выбрать'), 'select', $_POST['query_action']];
+
+    $query_var_value[] = [__('Не выбрано'), '', ''];
+    foreach ($key_name as $k => $v)
+        $query_var_value[] = [__($v), $k, $_POST['query_var']];
+
+    $query_condition_value[] = [__('Не выбрано'), '', $_POST['query_condition']];
+    $query_condition_value[] = [__('Равно'), '=', $_POST['query_condition']];
+    $query_condition_value[] = [__('Не равно'), '!=', $_POST['query_condition']];
+    $query_condition_value[] = [__('Больше'), '>', $_POST['query_condition']];
+    $query_condition_value[] = [__('Меньше'), '<', $_POST['query_condition']];
+
+    $query_val_value[] = [__('Не выбрано'), '', $_POST['query_val']];
+    $query_val_value[] = ['0', "'0'", $_POST['query_val']];
+    $query_val_value[] = ['1', "'1'", $_POST['query_val']];
+    $query_val_value[] = [__('Пусто'), "''", $_POST['query_val']];
+    $query_val_value[] = [__('Ввести'), "prompt", $_POST['query_val']];
+
+    $Tab2 = $PHPShopGUI->setField('Тип данных', $PHPShopGUI->setSelect('query_table', $query_table_value, 200, true, false, false, false, 1, false, false, 'selectpicker'). $PHPShopGUI->setButton('Сгенерировать','play','query_generation'));
+    $Tab2 .= $PHPShopGUI->setField('Действие', $PHPShopGUI->setSelect('query_action', $query_action_value, 200, true, false, false, false, 1, false, false, 'selectpicker'));
+    $Tab2 .= $PHPShopGUI->setField('Поле', $PHPShopGUI->setSelect('query_var', $query_var_value, 200, true, false, true, false, 1, false, false, 'selectpicker'));
+     $Tab2 .= $PHPShopGUI->setField('Условие', $PHPShopGUI->setSelect('query_condition', $query_condition_value, 200, true, false, false, false, 1, false, false, 'selectpicker'));
+    $Tab2 .= $PHPShopGUI->setField('Значение', $PHPShopGUI->setSelect('query_val', $query_val_value, 200, true, false, false, false, 1, false, false, 'selectpicker'));
+   
+    $PHPShopGUI->tab_return = true;
+    $PHPShopGUI->setTab(array('Настройки', $Tab1, true), array('Конструктор запросов', $Tab2, true));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, false);

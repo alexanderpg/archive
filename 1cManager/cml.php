@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 2.6
+ * @version 2.7
  */
 class CommerceMLLoader {
 
@@ -136,9 +136,6 @@ class CommerceMLLoader {
                     $response = "zip=" . ((intval($this->exchange_zip) == 1) ? 'yes' : 'no');
                     $response .= "\nfile_limit=" . self::parse_size(ini_get("upload_max_filesize"));
 
-                    // Поддержка CML 2.04
-                    //$response .= "\n" . self::sessid_get();
-                    //$response .= "\nversion=2.04";
                     break;
                 case 'file': // Upload files from 1C
                     $filepath = $upload_path . self::$upload1c . $_GET['filename'];
@@ -370,11 +367,19 @@ class CommerceMLLoader {
                 // Свойства
                 foreach ($xml->Классификатор->Свойства[0] as $item) {
 
-                    // Справочник
+                    // Справочник 2.08
                     if (isset($item->ВариантыЗначений)) {
                         foreach ($item->ВариантыЗначений->Справочник as $directory) {
 
                             $directory_array[(string) $directory->ИдЗначения[0]] = (string) $directory->Значение[0];
+                        }
+                    }
+                    // Справочник 2.04
+                    elseif (isset($item->ТипыЗначений)) {
+
+                        foreach ($item->ТипыЗначений[0]->ТипЗначений[0]->ВариантыЗначений[0]->ВариантЗначения as $directory) {
+
+                            $directory_array[(string) $directory->Ид[0]] = (string) $directory->Значение[0];
                         }
                     }
 
@@ -422,7 +427,7 @@ class CommerceMLLoader {
                         foreach ($item->ЗначенияРеквизитов[0]->ЗначениеРеквизита as $req) {
 
                             if ($req->Наименование == 'Полное наименование') {
-                                $description = (string) $req->Значение;
+                                $description = nl2br((string) $req->Значение);
                             }
 
                             if ($req->Наименование == 'Вес') {
@@ -470,6 +475,8 @@ class CommerceMLLoader {
                             // Проверка в справочнике
                             if (isset($directory_array[(string) $req->Значение[0]]))
                                 $req->Значение[0] = $directory_array[(string) $req->Значение[0]];
+                            else if (isset($directory_array[(string) $req->ИдЗначения[0]]))
+                                $req->Значение[0] = $directory_array[(string) $req->ИдЗначения[0]];
 
                             if (!in_array(PHPShopString::utf8_win1251((string) $req->Значение[0]), $sort_ignore))
                                 $properties[] = [$properties_array[(string) $req->Ид[0]], (string) $req->Значение[0]];
@@ -630,15 +637,15 @@ class CommerceMLLoader {
                             else
                                 $sort_ignore[] = $this->exchange_sort_ignore;
                         }
-                        
+
 
                         // Имя подтипа
                         $Наименование = $parent_name = null;
                         if (isset($item->ХарактеристикиТовара)) {
                             foreach ($item->ХарактеристикиТовара->ХарактеристикаТовара as $sorts) {
-                                
+
                                 // Блокировка характеристик
-                                if (in_array(PHPShopString::utf8_win1251((string) $sorts->Наименование), $sort_ignore)){
+                                if (in_array(PHPShopString::utf8_win1251((string) $sorts->Наименование), $sort_ignore)) {
                                     continue;
                                 }
 

@@ -9,8 +9,8 @@ function tab_bonus($id) {
     if (is_array($data)) {
         foreach ($data as $row) {
             if(empty($row['order_id']))
-            $dis .= '<tr><td>' . PHPShopDate::get($row['date']) . '</td><td>' . $row['comment'] . '</td><td class="text-right">' . $row['bonus_operation'] . '</td></tr>';
-            else $dis .= '<tr><td>' . PHPShopDate::get($row['date']) . '</td><td><a href="?path=order&id='.$row['order_id'].'">' . $row['comment'] . '</a></td><td class="text-right">' . $row['bonus_operation'] . '</td></tr>';
+            $dis .= '<tr><td>' . PHPShopDate::get($row['date'],true) . '</td><td>' . $row['comment'] . '</td><td class="text-right">' . $row['bonus_operation'] . '</td></tr>';
+            else $dis .= '<tr><td>' . PHPShopDate::get($row['date'],true) . '</td><td><a href="?path=order&id='.$row['order_id'].'">' . $row['comment'] . '</a></td><td class="text-right">' . $row['bonus_operation'] . '</td></tr>';
         }
 
     }

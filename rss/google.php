@@ -3,7 +3,7 @@
 /**
  * Файл выгрузки для Google Merchant
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopXML
  * @example ?ssl [bool] SSL
  * @example ?getall [bool] Выгрузка всех товаров без учета флага YML
@@ -110,8 +110,10 @@ class PHPShopRSS {
         // Кол-во знаков после запятой в цене
         $this->format = $this->PHPShopSystem->getSerilizeParam('admoption.price_znak');
 
-        // SSL 
+        // SSL
         if (isset($_GET['ssl']))
+            $this->ssl = 'https://';
+        else if (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS']))
             $this->ssl = 'https://';
 
         $this->setHook(__CLASS__, __FUNCTION__);
@@ -164,7 +166,7 @@ class PHPShopRSS {
             return true;
     }
 
-    /**
+     /**
      * Проверка прав каталога режима Multibase
      * @return string
      */
@@ -172,9 +174,6 @@ class PHPShopRSS {
 
         // Мультибаза
         if (defined("HostID") or defined("HostMain")) {
-
-
-            $multi_cat = array();
 
             // Не выводить скрытые каталоги
             $where['skin_enabled '] = "!='1'";
@@ -186,17 +185,17 @@ class PHPShopRSS {
 
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
             $PHPShopOrm->debug = $this->debug;
-            $data = $PHPShopOrm->select(array('id'), $where, false, array('limit' => 1000), __CLASS__, __FUNCTION__);
-            if (is_array($data)) {
-                foreach ($data as $row) {
-                    $multi_cat[] = $row['id'];
+            $this->categories = array_column($PHPShopOrm->getList(['id'], $where, false, ['limit' => 1000], __CLASS__, __FUNCTION__), 'id');
+
+            if (count($this->categories) > 0) {
+                $dop_cats = '';
+                foreach ($this->categories as $category) {
+                    $dop_cats .= ' OR dop_cat LIKE \'%#' . $category . '#%\' ';
                 }
+                $categories_str = implode("','", $this->categories);
+
+                return " (category IN ('$categories_str') " . $dop_cats . " ) and ";
             }
-
-            if (count($multi_cat) > 0)
-                $multi_select = ' category IN (' . @implode(',', $multi_cat) . ') and ';
-
-            return $multi_select;
         }
     }
 

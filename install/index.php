@@ -21,8 +21,8 @@ $ok = '<span class="glyphicon glyphicon-ok text-success pull-right"></span>';
 $error = '<span class="glyphicon glyphicon-remove text-danger pull-right"></span>';
 $alert = 'list-group-item-danger';
 
-// Apache
-if (strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') or strstr($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed')) {
+// Server
+if (stristr($_SERVER['SERVER_SOFTWARE'], 'Apache') or stristr($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') or stristr($_SERVER['SERVER_SOFTWARE'], 'nginx')) {
     $API = $ok;
     $api_style = null;
 } else {
@@ -317,7 +317,7 @@ elseif (!empty($_POST['password'])) {
                     <h3 class="panel-title"><span class="glyphicon glyphicon-signal"></span> Соответствие системным требованиям</h3>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item <?php echo $api_style ?>">Apache или LiteSpeed<?php echo $API ?>
+                    <li class="list-group-item <?php echo $api_style ?>">Веб-сервер <?php echo $API ?>
                     <li class="list-group-item <?php echo $mysql_style ?>">MySQL <?php echo $PHPShopBase->mysql_error . $mysql ?>
                     <li class="list-group-item">PHP<?php echo $php ?>
                     <li class="list-group-item">GD Support для PHP <?php echo $gd_support ?>

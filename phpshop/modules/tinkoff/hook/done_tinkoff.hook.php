@@ -21,7 +21,7 @@ function send_to_order_mod_tinkoff_hook($obj, $value, $rout)
                 if((int) $tinkoff->settings['force_payment'] === 1) {
                     header('Location: ' . $request['url']);
                 } else {
-                    $obj->set('payment_forma', PHPShopText::button('Оплатить через Тинькофф Банк', "window.location.replace('" . $request['url'] . "')", 'paybutton'));
+                    $obj->set('payment_forma', PHPShopText::button(__('Оплатить через Тинькофф Банк'), "window.location.replace('" . $request['url'] . "')", 'paybutton'));
                     $form = ParseTemplateReturn($GLOBALS['SysValue']['templates']['tinkoff']['tinkoff_payment_form'], true);
                 }
             }

@@ -125,7 +125,6 @@ function actionCPRefund(){
 }
 
 // Обработка событий
-$PHPShopGUI->getAction();
 $addHandler = array(
     'actionStart' => 'cloudpayments',
     'actionDelete' => false,

@@ -83,7 +83,7 @@ function actionStart()
         array('Единый сельскохозяйственный налог', 'esn', $data['taxation']),
         array('Патентная СН', 'patent', $data['taxation']),
     );
-    $taxationSelect = $PHPShopGUI->setSelect('taxation_new', $taxation, 300);
+    $taxationSelect = $PHPShopGUI->setSelect('taxation_new', $taxation, 300,true);
     $Tab1 .= $PHPShopGUI->setField('Система налогообложения', $taxationSelect, 1, null, 'tinkoff-taxation' . ($data['enabled_taxation'] ? '' : ' hidden'));
 
     // Доступые статусы заказов

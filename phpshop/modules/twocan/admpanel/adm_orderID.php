@@ -330,17 +330,8 @@ function twocanActionReverse(){
 }
 
 
-// Обработка событий
-$PHPShopGUI->getAction();
-
 $addHandler = array(
     'actionStart' => 'twocan',
     'actionDelete' => false,
     'actionEdit' => false,
 );
-
-// foreach (['check', 'charge', 'refund', 'reverse', 'refundpart'] as $twocanAction) {
-//     if(isset($_POST[$twocanAction]))
-//         $PHPShopGUI->setAction($twocanAction, 'twocanAction'.ucfirst($twocanAction));
-// }
-

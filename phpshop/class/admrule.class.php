@@ -121,7 +121,7 @@ class PHPShopAdminRule {
      */
     function BadUserFormaWindow() {
         echo'
-          <div class="alert alert-danger" id="rules-message" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Внимание!</strong> Недостаточно прав для выполнения. <a href="#" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Вернуться</a> или поменять <a href="?path=users&id=' . $_SESSION['idPHPSHOP'] . '&tab=1" class="btn btn-xs btn-primary">Права <span class="glyphicon glyphicon-arrow-right"></span></a> Администратора.</div>
+          <div class="alert alert-danger" id="rules-message" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span>'. __('<strong>Внимание!</strong> Недостаточно прав для выполнения. <a href="#" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Вернуться</a> или поменять <a href="?path=users&id=' . $_SESSION['idPHPSHOP'] . '&tab=1" class="btn btn-xs btn-primary">Права <span class="glyphicon glyphicon-arrow-right"></span></a> Администратора.').'</div>
 ';
         return true;
     }

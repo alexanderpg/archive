@@ -4,7 +4,7 @@
     <name>Почта России</name>
     <description>Модуль интеграции сайта с Почтой России.</description>
     <category>delivery</category>
-    <faqlink>http://faq.phpshop.ru/page/pochta.html</faqlink>
+    <faqlink>https://docs.phpshop.ru/moduli/dostavka/pochta-rossii</faqlink>
     <sign>1609149114</sign>
     <adminmenu>
         <title>Почта России</title>

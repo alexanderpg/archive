@@ -444,21 +444,7 @@ max-width: 33%;
 .header-account:hover {
     background-color: #f5f5f5;
 }
-.shop-description {
-    text-align: center;
-}
-.shop-description .description-text{
-    max-height: 193px;
-    overflow: hidden;
-    text-align: left;
-    transition: max-height .6s;
-}
-.shop-description .description-text.active {
-    max-height: 999px;
-}
-.shop-description > .feather {
-    font-size: 40px;
-}
+
 .product-block {
     border: 1px solid #e1e7ec;
     margin-top: 4px;
