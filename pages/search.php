@@ -1,6 +1,6 @@
 <?
 // Определяем переменые
-$SysValue['other']['DispShop']=DisSearch(@$words,$cat);
+@$SysValue['other']['DispShop']=DisSearch(@$words,$cat);
 
 
 // Подключаем шаблон 

@@ -2,6 +2,7 @@
 require("../../connect.php");
 @mysql_connect ("$host", "$user_db", "$pass_db")or @die("Невозможно подсоединиться к базе");
 mysql_select_db("$dbase")or @die("Невозможно подсоединиться к базе");
+@mysql_query("SET NAMES 'cp1251'");
 require("../../enter_to_admin.php");
 
 
@@ -167,11 +168,28 @@ $row = mysql_fetch_array(@$result);
 		<td class=tableright>".ReturnSumma($val['price']*$val['num'],0)."</td>
 	</tr>
   ";
+
+//Определение и суммирование веса
+ $goodid=$val['id'];
+ $goodnum=$val['num'];
+ $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
+ $wresult=mysql_query($wsql);
+ $wrow=mysql_fetch_array($wresult);
+ $cweight=$wrow['weight']*$goodnum;
+ if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
+ $weight+=$cweight;
+
+
   @$sum+=$val['price']*$val['num'];
   @$num+=$val['num'];
   $n++;
  }
- $deliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum);
+
+//Обнуляем вес товаров, если хотя бы один товар был без веса
+if ($zeroweight) {$weight=0;}
+
+
+ $deliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum,$weight);
   @$dis.="
   <tr class=tablerow>
 		<td class=tablerow>".$n."</td>
@@ -195,10 +213,18 @@ $row = mysql_fetch_array(@$result);
  $org_name=$order['Person']['org_name'];
  $datas=dataV($datas,"false");
  
- function OplataMetod($tip){
+
+
+function OplataMetod($tip){ 
 if($tip==1) return "Счет в банк";
 if($tip==2) return "Квитанция";
 if($tip==3) return "Наличная оплата";
+if($tip==4) return "CyberPlat";
+if($tip==5) return 'ROBOXchange';
+if($tip==6) return 'WebMoney';
+if($tip==7) return 'Z-Payment';
+if($tip==8) return 'RBS';
+else return "NoN";
 }
 ?>
 <head>

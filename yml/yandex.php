@@ -168,15 +168,6 @@ while (list($key, $value) = each($array))
     return $array[$key];
 }
 
-function Vendor($vendor)// проверка вывода вендора дл€ этого каталога
-{
-global $SysValue;
-$sql="select name from ".$SysValue['base']['table_name4']." where id='$vendor'";
-$result=mysql_query($sql);
-@$row = mysql_fetch_array(@$result);
-$name=$row['name'];
-return $name;
-}
 
 function DispValuta($n)// вывод валют
 {
@@ -206,16 +197,24 @@ return $Valuta;
  
 // ќтрезаем до точки
 function mySubstr($str,$a){
+$len=strlen($str);
+$str = htmlspecialchars(strip_tags($str));
+
+if($len<$a) return $str;
+
 for ($i = 1; $i <= $a; $i++) {
 	if($str{$i} == ".") $T=$i;
 }
-return substr($str, 0, $T+1);
+if($T<1) return substr($str, 0, $a)."...";
+  else return substr($str, 0, $T+1);
 }
+
+$SYSTEM=Systems();
  
 // ¬ывод продуктов
 function  Product()
  {
-global $SysValue;
+global $SysValue,$SYSTEM;
 $sql="select * from ".$SysValue['base']['table_name2']." where enabled='1' and yml='1' order by id";
 $result=mysql_query($sql);
 while ($row = mysql_fetch_array($result))
@@ -227,8 +226,26 @@ while ($row = mysql_fetch_array($result))
 	$price=$row['price'];
 	if($row['p_enabled'] == 1) $p_enabled="true";
 	else $p_enabled="false";
-	$d=mySubstr($row['description'],200);
-	$description=htmlspecialchars(strip_tags($d));
+	$description=mySubstr($row['description'],300);
+
+//получаем исходную цену
+	$baseinputvaluta=$row['baseinputvaluta'];
+	$defvaluta=$SYSTEM['dengi'];
+if ($baseinputvaluta) { //≈сли прислали баз. валюту
+	if ($baseinputvaluta!==$defvaluta) {//≈сли присланна€ валюта отличаетс€ от базовой
+		$sql2="select kurs from ".$SysValue['base']['table_name24']." where id=".$baseinputvaluta;
+		$result2=mysql_query($sql2);
+		$row2 = mysql_fetch_array($result2);
+		$vkurs=$row2['kurs'];
+		$price=$price/$vkurs; //ѕриводим цену в базовую валюту
+		$formatPrice = unserialize($SYSTEM['admoption']);
+		$format=$formatPrice['price_znak'];
+		$price=round($price,$format);
+	}
+} //≈сли прислали баз. валюту
+//получаем исходную цену
+
+
 	$array=array(
 	"id"=>"$id",
 	"category"=>"$category",
@@ -248,7 +265,7 @@ return $Products;
 $CATALOG=Catalog();
 $PODCATALOG=Podcatalog();
 $PRODUCT=Product();
-$SYSTEM=Systems();
+//$SYSTEM=Systems();
 $VALUTA=DispValuta($SYSTEM['dengi']);
 
 $XML=('<?xml version="1.0" encoding="windows-1251"?>

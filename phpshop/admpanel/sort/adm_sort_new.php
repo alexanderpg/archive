@@ -83,6 +83,8 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 <div style="padding:10">
 <input type="checkbox" value="1" name="flag_new"> <span name=txtLang id=txtLang>Подкаталог 3-го уровня</span>&nbsp;&nbsp;&nbsp;
 <input type="checkbox" value="1" name="filtr_new"><span name=txtLang id=txtLang>Фильтр</span>
+<input type="checkbox" value="1" name="goodoption_new"><span name=txtLang id=txtLang>Товарная опция</span>
+<input type="checkbox" value="1" name="optionname_new"><span name=txtLang id=txtLang>Показывать описание опции в корзине</span>
 </div>
 </FIELDSET>
 	</td>
@@ -112,7 +114,8 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 if(isset($editID) and !empty($name_new))// Запись редактирования
 {
 if(CheckedRules($UserStatus["cat_prod"],2) == 1){
-$sql="INSERT INTO ".$SysValue['base']['table_name20']." VALUES ('','$name_new','$flag_new','$num_new','-1','$filtr_new','$description_new')";
+$sql="INSERT INTO ".$SysValue['base']['table_name20']." VALUES ('','$name_new','$flag_new','$num_new','-1','$filtr_new','$description_new','$goodoption_new','$optionname_new')";
+//goodoption='$goodoption_new',
 $result=mysql_query($sql)or @die("".mysql_error()."");
 echo"
 	 <script>

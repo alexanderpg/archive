@@ -154,6 +154,7 @@ while(@$row = mysql_fetch_array(@$result))
 	$pic_small=$row['pic_small'];
 	$pic_big=$row['pic_big'];
 	$description=$row['description'];
+	$baseinputvaluta=$row['baseinputvaluta'];
 	
 	// Если есть новая цена
 	if($priceNew>0){
@@ -192,11 +193,11 @@ $SysValue['other']['productValutaName']= GetValuta();
 if($priceSklad==0){// Если товар на складе
 // Если нет новой цены
 if(empty($priceNew)){
-$SysValue['other']['productPrice']=GetPriceValuta($price);
+$SysValue['other']['productPrice']=GetPriceValuta($price,"",$baseinputvaluta);
 $SysValue['other']['productPriceRub']= "";
 }else{// Если есть новая цена
-$SysValue['other']['productPrice']=GetPriceValuta($price);
-$SysValue['other']['productPriceRub']= "<strike>".GetPriceValuta($priceNew)." ".GetValuta()."</strike>";
+$SysValue['other']['productPrice']=GetPriceValuta($price,"",$baseinputvaluta);
+$SysValue['other']['productPriceRub']= "<strike>".GetPriceValuta($priceNew,"",$baseinputvaluta)." ".GetValuta()."</strike>";
 }}else{ // Товар по заказ
 $SysValue['other']['productPrice']=$SysValue['lang']['sklad_no'];
 $SysValue['other']['productPriceRub']=$SysValue['lang']['sklad_mesage'];

@@ -14,7 +14,7 @@ $row = mysql_fetch_array($result);
 	$uid=$LoadItems['Product'][$id]['uid'];
     $name=$LoadItems['Product'][$id]['name'];
 	$category=$LoadItems['Product'][$id]['category'];
-	$content=$row['content'];
+	$content=stripslashes($row['content']);
 	$odnotip=$LoadItems['Product'][$id]['odnotip'];
 	$vendor=$LoadItems['Product'][$id]['vendor'];
 	$vendor_array=$row['vendor_array'];
@@ -39,9 +39,7 @@ $SysValue['other']['productValutaName']= GetValuta();
 $SysValue['other']['productImg']= $LoadItems['Product'][$id]['pic_big'];
 @$SysValue['other']['vendorDisp']=DispCatSortTable($category,$vendor_array);
 
-// Поддержка Pro
-if($SysValue['pro']['enabled'] == "true")
-$SysValue['other']['productPriceB']=$LoadItems['Pro'][$uid]['price'];
+
 
 if($LoadItems['Product'][$id]['priceSklad']==0){// Если товар на складе
 // Если нет новой цены
@@ -63,6 +61,11 @@ $SysValue['other']['productValutaName']="";
 @$SysValue['other']['productUid']= $id;
 @$SysValue['other']['productCat']= $LoadItems['Podcatalog'][$category]['parent_to'];
 
+// Если цены показывать только после аторизации
+if($admoption['user_price_activate']==1 and !$_SESSION['UsersId']){
+  $SysValue['other']['productPrice']="";
+  $SysValue['other']['productValutaName']="";
+}
 
 // Подключаем шаблон
 @$dis=ParseTemplateReturn($SysValue['templates']['main_product_forma_full']);
@@ -83,8 +86,8 @@ $SysValue['other']['productPageNum']=$p;
 $SysValue['other']['productPageVendor']='0'.$vendor;
 $SysValue['other']['productPodcat']=$category;
 $SysValue['other']['productName']= $name;
-if(empty($LoadItems['System']['logo'])) 
-$SysValue['other']['logo']= "images/shop/phpshop_logo.gif";
+if($LoadItems['System']['logo']=="") 
+$SysValue['other']['logoShop']= "images/shop/phpshop_logo.gif";
  else $SysValue['other']['logoShop']=$LoadItems['System']['logo'];
 $SysValue['other']['descripShop']=$LoadItems['System']['descrip'];
 $SysValue['other']['nameShop']= $LoadItems['System']['name'];

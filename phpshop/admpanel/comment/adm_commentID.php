@@ -54,8 +54,12 @@ DoResize(<? echo $GetSystems['width_icon']?>,630,530);
 	  $content=$row['content'];
 	  $parent_id=$row['parent_id'];
 	  $user_id=$row['user_id'];
+	  
+	  if($row['enabled']==1) $fl="checked";
+	   else $fl="";
+
 	  ?>
-<form name="product_edit"  method=post onsubmit="Save()">
+<form name="product_edit"  method=post>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" id="title">
 <tr bgcolor="#ffffff">
 	<td style="padding:10">
@@ -111,7 +115,7 @@ $sql="select name from ".$SysValue['base']['table_name2']." where id=$parent_id"
 <tr>
 	<td colspan="2">
 	<FIELDSET>
-<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>омментарий</span> </LEGEND>
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>омментарий</span> <input type="checkbox" value="1" name="enabled_new" <?=$fl?>> Цензура пройдена</LEGEND>
 <div style="padding:10">
 <textarea name="otsiv_new" class=s style="width:100%; height:200"><?=$content?></textarea>
 </div>
@@ -141,7 +145,8 @@ $sql="UPDATE ".$SysValue['base']['table_name36']."
 SET
 datas='".GetUnicTime($data_new)."',
 name='$name_new',
-content='$otsiv_new' 
+content='$otsiv_new',
+enabled='$enabled_new' 
 where id='$id'";
 $result=mysql_query($sql)or @die("".mysql_error()."");
 echo"

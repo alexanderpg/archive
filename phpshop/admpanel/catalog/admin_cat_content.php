@@ -16,7 +16,10 @@ require("../language/".$Lang."/language.php");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?=$SysValue['Lang']['System']['charset']?>">
 <LINK href="../css/texts.css" type=text/css rel=stylesheet>
-<script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
+<LINK href="../css/contextmenu.css" type=text/css rel=stylesheet>
+<script language="JavaScript" src="../java/contextmenu.js" type="text/javascript"></script>
+<script type="text/javascript" language="JavaScript1.2" src="../language/<? 
+echo $Lang;?>/language_windows.js"></script>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../java/sorttable.js"></script>
 </head>

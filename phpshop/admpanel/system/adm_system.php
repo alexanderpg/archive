@@ -176,8 +176,18 @@ $row = mysql_fetch_array($result);
 	case(2): $row2="selected"; break;
 	case(3): $row3="selected"; break;
 	}
+	
+	
+	
+	
 	$width_icon =$row['width_icon'];
 	$option=unserialize($row['admoption']);
+	
+	switch($option['sklad_status']){
+	case(1): $sklad_statusl="selected"; break;
+	case(2): $sklad_status2="selected"; break;
+	case(3): $sklad_status3="selected"; break;
+	}
 	
 	if($option['message_enabled']==1) $message_enabled="checked";
 	 else $message_enabled="";
@@ -214,7 +224,12 @@ $row = mysql_fetch_array($result);
 	if($option['seller_enabled']==1) $seller_enabled="checked";
 	if($option['user_mail_activate']==1) $user_mail_activate="checked";
 	if($option['user_skin']==1) $user_skin="checked";
-	
+	if($option['rss_graber_enabled']==1) $rss_graber_enabled="checked";
+	if($option['user_mail_activate_pre']==1) $user_mail_activate_pre="checked";
+	if($option['user_price_activate']==1) $user_price_activate="checked";
+	if($option['user_calendar']==1) $user_calendar="checked";
+	if($option['digital_product_enabled']==1) $digital_product_enabled="checked";
+	if($option['cloud_enabled']==1) $cloud_enabled="checked";
 echo"
 <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"50\" id=\"title\">
 <tr bgcolor=\"#ffffff\">
@@ -318,7 +333,7 @@ tabPane.addTabPage( document.getElementById( \"vetrina\" ) );
 	  </td>
 	  <td align=left>
 	  <input type=text name=width_icon_new size=3 value=\"$width_icon\"> %.
-	   <span style=\"border: 1px;border-style: inset; padding: 3px\">Использовать, если информация не умещается на странице</span>
+	   <span name=txtLang id=txtLang style=\"border: 1px;border-style: inset; padding: 3px\">Использовать, если информация не умещается на странице</span>
 	  </td>
 	</tr>
 	</table>
@@ -420,12 +435,28 @@ tabPane.addTabPage( document.getElementById( \"usage-page\" ) );
 	<table>
 	  <tr>
 	  <td align=right>
-	<span>
+	<span name=txtLang id=txtLang>
 	Минимальная сумма заказа
 	</span>:
 	  </td>
 	  <td align=left>
 	  <input type=text name=cart_minimum_new size=10 value=\"".$option['cart_minimum']."\">
+	  </td>
+	</tr> 
+	 <tr>
+	  <td align=right>
+	<span name=txtLang id=txtLang>
+	Статус товара при нулевом<br>
+	 кол-ве на складе
+	</span>:
+	  </td>
+	  <td align=left>
+	  <select name=sklad_status_new>
+	        <option value=1 $sklad_status1>игнорировать</option>
+			<option value=2 $sklad_status2>убирается с продаж</option>
+			<option value=3 $sklad_status3>нет в наличии</option>
+			
+</select>
 	  </td>
 	</tr> 
 	</table>
@@ -447,7 +478,7 @@ tabPane.addTabPage( document.getElementById( \"message\" ) );
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"message_enabled_new\" $message_enabled>
-	  <span style=\"border: 1px;border-style: inset; padding: 3px\">Может приводить к замедлению работы администрирования</span>
+	  <span name=txtLang id=txtLang style=\"border: 1px;border-style: inset; padding: 3px\">Может приводить к замедлению работы администрирования</span>
 	  </td>
 	</tr>
 	<tr class=adm2>
@@ -492,7 +523,7 @@ tabPane.addTabPage( document.getElementById( \"message\" ) );
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"notice_enabled_new\" $notice_enabled>
-	   <span style=\"border: 1px;border-style: inset; padding: 3px\">Только для авторизованных пользователей</span>
+	   <span name=txtLang id=txtLang style=\"border: 1px;border-style: inset; padding: 3px\">Только для авторизованных пользователей</span>
 	  </td>
 	</tr> 
 	<tr class=adm2>
@@ -540,7 +571,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 <tr class=adm2>
 	  <td align=right>
-	<span name=txtLang id=txtLang>Visa, Mastercard (CyberPlat)</span>
+	<span>Visa, Mastercard (CyberPlat)</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_4_new\" $oplata_4>
@@ -549,7 +580,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 <tr class=adm2>
 	  <td align=right>
-	<span name=txtLang id=txtLang>ROBOXchange</span>
+	<span>ROBOXchange</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_5_new\" $oplata_5>
@@ -558,7 +589,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 	<tr class=adm2>
 	  <td align=right>
-	<span name=txtLang id=txtLang>WebMoney</span>
+	<span>WebMoney</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_6_new\" $oplata_6>
@@ -567,7 +598,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 	<tr class=adm2>
 	  <td align=right>
-	<span name=txtLang id=txtLang>Z-Payment</span>
+	<span>Z-Payment</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_7_new\" $oplata_7>
@@ -576,7 +607,7 @@ tabPane.addTabPage( document.getElementById( \"oplata\" ) );
 	</tr>
 	<tr class=adm2>
 	  <td align=right>
-	<span name=txtLang id=txtLang>Visa, Mastercard (PBC)</span>
+	<span>Visa, Mastercard (PBC)</span>
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"oplata_8_new\" $oplata_8>
@@ -598,17 +629,9 @@ tabPane.addTabPage( document.getElementById( \"regim\" ) );
 	  </td>
 	  <td align=left>
 	  <input type=\"checkbox\" value=\"1\" name=\"editor_enabled_new\" $editor_enabled>
- <span style=\"border: 1px;border-style: inset; padding: 3px\">Включенный редактор влияет на скорость работы</span>
+ <span name=txtLang id=txtLang>* Включенный редактор влияет на скорость работы</span>
 	  </td>
 	</tr>
-<!-- 	<tr>
-	  <td align=right>
-	<span name=txtLang id=txtLang>Режим продавцов</span>:
-	  </td>
-	  <td align=left>
-	  <input type=\"checkbox\" value=\"1\" name=\"seller_enabled_new\" $seller_enabled>
-	  </td>
-	</tr> -->
 	<tr>
 	  <td align=right>
 	<span name=txtLang id=txtLang>Режим Multibase</span>:
@@ -635,6 +658,32 @@ tabPane.addTabPage( document.getElementById( \"regim\" ) );
 	  <input type=text name=\"base_host_new\" size=30 value=\"".$option['base_host']."\">
 	  </td>
 	</tr>
+	<tr>
+	  <td align=right>
+	RSS Graber:
+	  </td>
+	  <td align=left>
+	 <input type=\"checkbox\" value=\"1\" name=\"rss_graber_enabled_new\" $rss_graber_enabled>
+	 * Копирование RSS каналов в новости
+	  </td>
+	</tr>
+		<tr>
+	  <td align=right>
+	Цифровые товары:
+	  </td>
+	  <td align=left>
+	 <input type=\"checkbox\" value=\"1\" name=\"digital_product_enabled_new\" $digital_product_enabled>
+	 * Поддержка продажи цифровых товаров (файлов)
+	  </td>
+	</tr>
+	<tr>
+	<td><span name=txtLang id=txtLang>Календарь новостей</span>:</td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"user_calendar_new\" $user_calendar> * Опция сортировки новостей по датам</td>
+</tr>
+<tr>
+	<td><span name=txtLang id=txtLang>Облако тегов</span>:</td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"cloud_enabled_new\" $cloud_enabled> * Опция сортировки товаров по ключевым тегам</td>
+</tr>
 </table>
 </div>
 <div class=\"tab-page\" id=\"lang\" style=\"height:250px\">
@@ -660,15 +709,23 @@ tabPane.addTabPage( document.getElementById( \"user\" ) );
 <table>
 <tr>
 	<td><span name=txtLang id=txtLang>Активация через e-mail</span>:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"user_mail_activate_new\" $user_mail_activate> </td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"user_mail_activate_new\" $user_mail_activate> * Требуется предварительное подтверждение через e-mail</td>
 </tr>
 <tr>
-	<td><span name=txtLang id=txtLang>Статус после активации</span>:</td>
+	<td>Ручная активация:</td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"user_mail_activate_pre_new\" $user_mail_activate_pre> * Активация администратором в ручном режиме</td>
+</tr>
+<tr>
+	<td>Регистрация для просмора цен:</td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"user_price_activate_new\" $user_price_activate> * Незарегистрированные пользователи не смогут видеть цен</td>
+</tr>
+<tr>
+	<td><span name=txtLang id=txtLang>Статус пользователя <br>после активации</span>:</td>
 	<td>".GetUsersStatus($option['user_status'])." </td>
 </tr>
 <tr>
 	<td><span name=txtLang id=txtLang>Смена дизайна</span>:</td>
-	<td><input type=\"checkbox\" value=\"1\" name=\"user_skin_new\" $user_skin> </td>
+	<td><input type=\"checkbox\" value=\"1\" name=\"user_skin_new\" $user_skin> * Опция смены дизайна на сайте</td>
 </tr>
 </table>
 
@@ -682,7 +739,7 @@ tabPane.addTabPage( document.getElementById( \"img\" ) );
 
 
 	<FIELDSET id=fldLayout>
-	<LEGEND id=lgdLayout><u>А</u>втоматическая нарезка изображений (Ресайзинг): </LEGEND>
+	<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>А</u>втоматическая нарезка изображений (Ресайзинг)</span>: </LEGEND>
 	<div style=\"padding:10\">
 	
 	<table>
@@ -787,6 +844,13 @@ if(CheckedRules($UserStatus["option"],1) == 1){
   }
   
 $option=array(
+"sklad_status"=>$sklad_status_new,
+"cloud_enabled"=>$cloud_enabled_new,
+"digital_product_enabled"=>$digital_product_enabled_new,
+"user_calendar"=>$user_calendar_new,
+"user_price_activate"=>$user_price_activate_new,
+"user_mail_activate_pre"=>$user_mail_activate_pre_new,
+"rss_graber_enabled"=>$rss_graber_enabled_new,
 "img_wm"=>$img_wm,
 "img_w"=>$img_w,
 "img_h"=>$img_h,

@@ -26,6 +26,12 @@ fwrite($handle, $str);
 fclose($handle);
 }
 
+function UpdateNumOrder($uid){
+$all_num=explode("-",$uid);
+$ferst_num=$all_num[0];
+$last_num=$all_num[1];
+return $ferst_num.$last_num;
+}
 
 // Парсируем установочный файл
 $SysValue=parse_ini_file("../../phpshop/inc/config.ini",1);
@@ -63,16 +69,18 @@ else {
 mysql_select_db($SysValue['connect']['dbase'])or 
 @die("".PHPSHOP_error(102,$SysValue['my']['error_tracer'])."");
 
+$new_uid=UpdateNumOrder($id);
+
 // Приверяем сущ. заказа
-$sql="select uid from ".$SysValue['base']['table_name1']." where uid='$id'";
+$sql="select uid from ".$SysValue['base']['table_name1']." where uid='$new_uid'";
 $result=mysql_query($sql);
 $row=mysql_fetch_array($result);
 $uid=$row['uid'];
 
-if($uid == $id){
+if($uid == $new_uid){
 // Записываем платеж в базу
 $sql="INSERT INTO ".$SysValue['base']['table_name33']." VALUES 
-('$id','RBS','$s','".date("U")."')";
+('$new_uid','RBS','$s','".date("U")."')";
 $result=mysql_query($sql);
 WriteLog($MY_LMI_HASH);
 $id_hash=base64_encode(substr(abs(crc32(uniqid($id))),0,2).base64_encode($id).substr(abs(crc32(uniqid($id))),0,5));

@@ -28,7 +28,7 @@ else return 1;
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_interface.js"></script>
 <script>
-DoResize(<? echo $GetSystems['width_icon']?>,645,500);
+DoResize(<? echo $GetSystems['width_icon']?>,500,500);
 </script>
 </head>
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0" onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)">
@@ -113,34 +113,24 @@ tabPane = new WebFXTabPane( document.getElementById( "article-tab" ), true );
 <script type="text/javascript">
 tabPane.addTabPage( document.getElementById( "intro-page" ) );
 </script>
-<table cellpadding="5" cellspacing="0" border="0" align="center" width="100%">
+<table cellpadding="" cellspacing="5" border="0" align="center" width="100%">
 <form name="product_edit" method="post">
 <tr>
-  <td colspan="2">
+  <td colspan="3">
   <FIELDSET>
 <LEGEND><span name=txtLang id=txtLang><u>И</u>мя</span></LEGEND>
 <div style="padding:10">
-<input type="text" name="name_new" value="<?=$name?>" class=full><!-- <br><br>
-<input type="checkbox" value="1" name="name_enabled_new" <?=@$f4?>> Размещять персональную карточку продавца при выводе товара -->
+<input type="text" name="name" value="" class=full>
 </div>
 </FIELDSET>
   </td>
 </tr>
 <tr>
-  <td>
+  <td colspan="3">
   <FIELDSET>
-<LEGEND><u>E</u>-mail</LEGEND>
+<LEGEND><span name=txtLang id=txtLang><u>E</u>-mail</span></LEGEND>
 <div style="padding:10">
-<input type="text" name="mail_new" value="<?=$mail?>" class=full>
-</div>
-</FIELDSET>
-  </td>
-  <td>
-  <FIELDSET>
-<LEGEND><span name=txtLang id=txtLang><u>C</u>татус</span></LEGEND>
-<div style="padding:10">
-<input type="radio" name="enabled_new" value="1" checked><span name=txtLang id=txtLang>Активизировать</span>&nbsp;&nbsp;&nbsp;
-<input type="radio" name="enabled_new" value="0" <?=@$fl2?>><font color="#FF0000"><span name=txtLang id=txtLang>Деактивизировать</span></font>
+<input type="text" name="mail" value="" size="30">  <input type="checkbox" value="1" name="pas_send" id="pas_send" checked> отослать рег. данные на почту
 </div>
 </FIELDSET>
   </td>
@@ -148,18 +138,24 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 <tr>
 	<td colspan="3">
 	<FIELDSET>
-<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>И</u>зменить доступ</span></LEGEND>
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>анные</span></LEGEND>
 <div style="padding:10">
-<table>
+<table >
 <tr>
-	<td>Login</td>
+	<td>Пользователь</td>
 	<td width="10"></td>
-	<td><input type="text" name="login_new" value="<?=$login?>" size="20" onclick="password_new.value=''"></td>
+	<td><input type="text" name="login" id="login" value="" size="20"> ( не менее 4 символов )</td>
 </tr>
 <tr>
-	<td>Password</td>
+	<td>Пароль</td>
 	<td width="10"></td>
-	<td><input type="Password" name="password_new" onclick="this.value=''" size="20" value="<?=substr($password, 0, 10); ?>"></td>
+	<td><input type="Password" name="password" id="pas1" onclick="this.value=''" size="20" value=""> ( не менее 6 символов )</td>
+</tr>
+<tr>
+	<td>Пароль еще раз</td>
+	<td width="10"></td>
+	<td><input type="Password" name="password" id="pas2" size="20" value=""> 
+	<INPUT class=but type=button value="Сгенерировать" style="width:100" onclick="GenPassword('<?="P".substr(md5(date("U")),0,6)?>')"> </td>
 </tr>
 </table>
 
@@ -169,58 +165,12 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 </tr>
 </table>
 </div>
-<!-- begin intro page -->
-<div class="tab-page" id="content" style="height:320px">
-<h2 class="tab"><span name=txtLang id=txtLang>Описание</span></h2>
-
-<script type="text/javascript">
-tabPane.addTabPage( document.getElementById( "content" ) );
-</script>
-<table width="100%">
-
-<tr>
-	<td colspan=3>
-	<FIELDSET id=fldLayout>
-<div style="padding:10">
-<textarea style="width:100%;height:260px" name="EditorContent" id="EditorContent">
-
-</textarea>
-</div>
-</FIELDSET>
-	</td>
-</tr>
-</table>
-</div>
-<!-- 
-<div class="tab-page" id="skin" style="height:320px">
-<h2 class="tab">Дизайн</h2>
-
-<script type="text/javascript">
-tabPane.addTabPage( document.getElementById( "skin" ) );
-</script>
-
-	<table >
-	<tr class=adm2>
-	  <td align=left>
-	  <?=GetSkins($skin)?>
-	  </td>
-	  <td style=\"padding-left:5px\" valign=top>
-	  <FIELDSET >
-	  <LEGEND ><u>С</u>криншот</LEGEND>
-	  <div align="center" style="padding:10px"> <?=GetSkinsIcon($skin)?></div>
-	  </FIELDSET>
-	  <br>
-	  <input type="checkbox" value="1" name="skin_enabled_new" <?=@$f3?>> Использовать дизайн
-	  </td>
-	</tr>
-
-</table>
-</div> -->
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
 	<td align="right" style="padding:10">
-	<input type="submit" name="editID" value="OK" class=but>
+	<input type="button"  value="OK" class=but onclick="TestPas()">
+	<input type="hidden" name="editID" value="1">
 	<input type="reset" name="btnLang" class=but value="Сбросить">
 	<input type="button" name="btnLang" value="Отмена" onClick="return onCancel();" class=but>
 	</td>
@@ -228,13 +178,41 @@ tabPane.addTabPage( document.getElementById( "skin" ) );
 </table>
 </form>
 	  <?
-if(isset($editID) and @$login_new!="")// Запись редактирования
+if(isset($editID) and @$login!="")// Запись редактирования
 {
 if(CheckedRules($UserStatus["users"],2) == 1){
-$def_prava='a:21:{s:5:"gbook";s:5:"1-0-0";s:4:"news";s:5:"1-0-0";s:7:"visitor";s:7:"1-0-0-1";s:5:"users";s:7:"1-0-0-0";s:9:"shopusers";s:5:"1-1-1";s:8:"cat_prod";s:9:"1-0-0-1-0";s:6:"stats1";s:5:"0-0-0";s:5:"rupay";s:5:"0-0-0";s:11:"news_writer";s:5:"0-0-0";s:9:"page_site";s:5:"1-0-0";s:9:"page_menu";s:5:"1-0-0";s:5:"baner";s:5:"1-0-0";s:5:"links";s:5:"1-0-0";s:3:"csv";s:5:"1-0-0";s:5:"opros";s:5:"1-0-0";s:3:"sql";s:5:"0-1-1";s:6:"option";s:3:"0-1";s:8:"discount";s:5:"1-0-0";s:6:"valuta";s:5:"1-0-0";s:8:"delivery";s:5:"1-0-0";s:7:"servers";s:5:"0-0-0";}';
+
+$def_prava='a:23:{s:5:"gbook";s:5:"1-1-1";s:4:"news";s:5:"1-1-1";s:7:"visitor";s:7:"1-1-1-1";s:5:"users";s:7:"1-1-1-1";s:9:"shopusers";s:5:"1-1-1";s:8:"cat_prod";s:11:"1-1-1-1-1-1";s:6:"stats1";s:5:"1-1-1";s:5:"rupay";s:5:"0-0-0";s:11:"news_writer";s:5:"1-1-1";s:9:"page_site";s:5:"1-1-1";s:9:"page_menu";s:5:"1-1-1";s:5:"baner";s:5:"1-1-1";s:5:"links";s:5:"1-1-1";s:3:"csv";s:5:"1-1-1";s:5:"opros";s:5:"1-1-1";s:6:"rating";s:5:"1-1-1";s:3:"sql";s:5:"0-1-1";s:6:"option";s:3:"0-1";s:8:"discount";s:5:"1-1-1";s:6:"valuta";s:5:"1-1-1";s:8:"delivery";s:5:"1-1-1";s:7:"servers";s:5:"1-1-1";s:10:"rsschanels";s:5:"1-1-1";}';
 $sql="INSERT INTO $table_name19
-VALUES ('','$def_prava','$login_new','".base64_encode($password_new)."','$mail_new','$enabled_new','$EditorContent','$skin_new','$skin_enabled_new','$name_new','$name_enabled_new')";
+VALUES ('','$def_prava','$login','".base64_encode($password)."','$mail','1','','','','$name','')";
 $result=mysql_query($sql)or @die("Невозможно изменить запись");
+
+
+//Отправка почты
+if($_POST['pas_send'] == 1){
+
+$codepage  = "windows-1251";              
+$header  = "MIME-Version: 1.0\n";
+$header .= "From:   <no_reply@phpshop.ru>\n";
+$header .= "Content-Type: text/plain; charset=$codepage\n";
+$header .= "X-Mailer: PHP/";
+$zag="PHPShop: данные пользователя для сервера ".$SERVER_NAME;
+$content="
+Доброго времени!
+---------------------------------------------------------
+
+Административная панель доступна по адресу:  http://$SERVER_NAME".$SysValue['dir']['dir']."/phpshop/admpanel/
+или нажатием клавиши F12
+Логин: ".$_POST['login']."
+Пароль: ".$_POST['password']."
+
+---------------------------------------------------------
+Powered & Developed by www.PHPShop.ru
+".$SysValue['license']['product_name'];
+mail($mail,$zag,$content,$header);
+
+}
+
 echo"
 <script>
 DoReloadMainWindow('users');

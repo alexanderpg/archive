@@ -50,8 +50,8 @@ foreach($cart as $j=>$v)
 		<td class=tablerow>".$cart[$j]['name']."</td>
 		<td class=tablerow align=center>шт.&nbsp;</td>
 		<td align=right class=tablerow>".$cart[$j]['num']."</td>
-		<td align=right class=tablerow nowrap>".ReturnSumma($cart[$j]['price'],0)."</td>
-		<td class=tableright>".ReturnSumma($cart[$j]['price']*$cart[$j]['num'],0)."</td>
+		<td align=right class=tablerow nowrap>".ReturnSummaNal($cart[$j]['price'],0)."</td>
+		<td class=tableright>".$price_now."</td>
 	</tr>
   ";
   @$sum+=$price_now;
@@ -133,7 +133,6 @@ H4 {
 	<?
   echo @$dis;
  $my_total=ReturnSumma($sum,$order['Person']['discount']);
- $my_nds=number_format($my_total*$LoadItems['System']['nds']/(100+$LoadItems['System']['nds']),"2",".","");
   ?>
        <tr>
 			<td colspan=5 align=right style="border-top: 1px solid #000000;border-left: 1px solid #000000;">Скидка:</td>

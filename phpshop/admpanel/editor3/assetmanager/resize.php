@@ -505,7 +505,8 @@ $GetSystems=GetSystems();
 <meta http-equiv="MSThemeCompatible" content="Yes">
 <LINK href="../../css/texts.css" type=text/css rel=stylesheet>
 <script language="JavaScript" src="../../java/javaMG.js" type="text/javascript"></script>
-<SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
+<script type="text/javascript" language="JavaScript" 
+  src="/phpshop/lib/JsHttpRequest/JsHttpRequest.js"></script>
 <script> 
 DoResize(<? echo $GetSystems['width_icon']?>,350,200);
 </script>
@@ -594,21 +595,25 @@ mysql_query("INSERT INTO ".$SysValue['base']['table_name35']." VALUES ('','".$_R
 echo "
 <script>
 
+
 function DoUpdateFotoList(xid) {
-var req = new Subsys_JsHttpRequest_Js();
+var req = new JsHttpRequest();
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
-				if (req.responseJS) {
 					window.opener.document.getElementById('fotolist').innerHTML = req.responseJS.interfaces;
-                //self.close();
-				}
+// Стандартную форму обновляем
+window.opener.document.getElementById('pic_small').value='".$mycReturn."/".$img[name]."s.".$ftype."';
+window.opener.document.getElementById('pic_big').value='".$mycReturn."/".$img[name].".".$ftype."';
 			}
 		}
-		req.caching = false;
 		// Подготваливаем объект.
-		req.open('POST', '".$SysValue['dir']['dir']."/phpshop/admpanel/product/action.php?do=update', true);
+		req.open(null, '".$SysValue['dir']['dir']."/phpshop/admpanel/product/action.php?do=update', true);
 		req.send( {  xid: xid } );
 }
+
+
+
+
 
 
 DoUpdateFotoList(".$_REQUEST['id'].");

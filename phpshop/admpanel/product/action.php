@@ -5,10 +5,8 @@ mysql_select_db("$dbase")or @die("Невозможно подсоединиться к базе");
 require("../enter_to_admin.php");
 
 // Подключаем библиотеку поддержки.
-require_once "../../lib/Subsys/JsHttpRequest/Php.php";
-$JsHttpRequest =& new Subsys_JsHttpRequest_Php("windows-1251");
-
-
+require_once "../../lib/JsHttpRequest/JsHttpRequest.php";
+$JsHttpRequest =& new JsHttpRequest("windows-1251");
 
 switch($do){
 

@@ -88,13 +88,13 @@ foreach($Catalog as $value){
 }
 $disp="
 <script type=\"text/javascript\">
-		<!--
+		try{
 		d2 = new dTree('d2');
-		d2.add(0,-1,'<b>Каталог связанных товаров</b>');
+		d2.add(0,'-1','<b>Каталог связанных товаров</b>');
         ".$dis."
 		document.write(d2);
 		d2.openAll()
-		//-->
+		}catch(e){}
 	</script>
 ";
 return $disp;
@@ -124,7 +124,7 @@ window.close();
 
 </head>
 
-<body bottommargin="0" leftmargin="5" topmargin="0" rightmargin="5"">
+<body bottommargin="0" leftmargin="5" topmargin="0" rightmargin="5">
 <div align="center" style="padding:5"><a href="javascript: window.d2.openAll();"><?=$SysValue['Lang']['Category'][5]?></a> | <a href="javascript: window.d2.closeAll();"><?=$SysValue['Lang']['Category'][6]?></a> | <a href="javascript: window.close()"><?=$SysValue['Lang']['Category'][7]?></a></div>
 <table cellpadding="0" cellspacing="0" bgcolor="ffffff" style="border: 2px;border-style: inset;" width="100%" height="350">
 <tr>

@@ -7,3 +7,4 @@ Disallow: /price/
 Disallow: /search/
 Disallow: /opros/
 Disallow: /install/
+Disallow: /pda/

@@ -1,11 +1,6 @@
 <?php
 session_start();
-
-// Подключаем библиотеку поддержки.
-//require_once "./lib/config.php";
 require_once "./lib/Subsys/JsHttpRequest/Php.php";
-// Создаем главный объект библиотеки.
-// Указываем кодировку страницы (обязательно!).
 $JsHttpRequest =& new Subsys_JsHttpRequest_Php("windows-1251");
 
 // Парсируем установочный файл
@@ -48,15 +43,44 @@ if($fp)
 $fstat = fstat($fp);
 fclose($fp);
 $FileDate=dataV($fstat['mtime']);
-$TechPodUntil=dataV($fstat['mtime']+15552000);
 }
 
-//@$mem = @memory_get_usage();
-//$_MEM=round(@$mem/1024,2)." Kb";
-@$_MEM="неизвестно";
+
+// Выбор файла
+function GetFile($dir){
+global $SysValue;
+    if ($dh = opendir($dir)) {
+        while (($file = readdir($dh)) !== false) {
+		$fstat = explode(".",$file);
+		if($fstat[1] == "lic")
+		  return $SysValue['license']['dir'].chr(47).$file;
+        }
+        closedir($dh);
+    }
+}
+
+// Срок действия тех. поддержки
+$GetFile=GetFile("../license/");
+@$License=parse_ini_file("../".$GetFile,1);
+
+$TechPodUntilUnixTime = $License['License']['SupportExpires'];
+if(is_numeric($TechPodUntilUnixTime))
+$TechPodUntil=dataV($TechPodUntilUnixTime);
+  else $TechPodUntil=" - ";
+
+$LicenseUntilUnixTime = $License['License']['Expires'];
+if(is_numeric($LicenseUntilUnixTime))
+$LicenseUntil=dataV($LicenseUntilUnixTime);
+  else  $LicenseUntil=" - ";
 
 
-$Info="PHPShop System Info 1.03
+if (function_exists('memory_get_usage')) {
+$mem = memory_get_usage();
+$_MEM=round($mem/1024,2)." Kb";
+}else @$_MEM="неизвестно";
+
+
+$Info="PHPShop System Info 2.01
 ---------------------------------------------
 
 Версия: ".$SysValue['license']['product_name']."
@@ -65,7 +89,8 @@ $Info="PHPShop System Info 1.03
 Дата изменения: ".$SysValue['cache']['last_modified']."
 Дизайн: ".$DispSystems['skin']."
 GZIP: ".$SysValue['my']['gzip']."; Сжатие: ".$SysValue['my']['gzip_level']."
-Установлено: $FileDate 
+Установлено: ".$FileDate."
+Окончание лицензии: ".$LicenseUntil."
 Окончание поддержки: ".$TechPodUntil."
 GEOIP: ".$SysValue['geoip']['geoip']."; Zone: ".$SysValue['geoip']['geoip_zone']."
 

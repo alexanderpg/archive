@@ -26,6 +26,17 @@ body
    FILTER: alpha(opacity=80);
 }
 
+#lock{
+   background: ButtonFace;
+   DISPLAY: none;
+   position: absolute;
+   visibility: hidden;
+   Z-INDEX: 2; 
+   width: 100%;
+   height: 100%;
+   FILTER: alpha(opacity=50);
+   
+}
 
 #loadmes{
    width:400px;

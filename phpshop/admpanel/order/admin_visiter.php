@@ -19,10 +19,18 @@ $sum=$sum-($sum*$disc/100);
 return number_format($sum,"2",".","");
 }
 
+// Номер заказа
+function UpdateNumOrder($uid){
+$all_num=explode("-",$uid);
+$ferst_num=$all_num[0];
+$last_num=$all_num[1];
+return $ferst_num.$last_num;
+}
 
 // Проверка электронного платежа
 function CheckPayment($id){
 global $SysValue;
+$id=UpdateNumOrder($id);
 $sql="select * from ".$SysValue['base']['table_name33']." where uid=".$id;
 @$result=mysql_query($sql);
 $num = mysql_numrows(@$result);
@@ -58,6 +66,7 @@ while(@$row = mysql_fetch_array(@$result))
 	$id=$row['id'];
     $datas=$row['datas'];
 	$uid=$row['uid'];
+	$user=$row['user'];
 	$order=unserialize($row['orders']);
 	$status=unserialize($row['status']);
 	$statusi=$row['statusi'];
@@ -74,9 +83,9 @@ while(@$row = mysql_fetch_array(@$result))
 	
 	
 	
-	$DeliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$order['Cart']['sum']);
+	$DeliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$order['Cart']['sum'],$order['Cart']['weight']);
 	
-	if($order['Person']['user_id']>0)
+	if($user>0)
 	$UserId="<img src=\"img/icon_user.gif\" alt=\"".$SysValue['Lang']['Order']['5']."\" border=\"0\" align=\"absmiddle\" hspace=\"3\">";
 	else $UserId="<img src=\"img/icon_world.gif\" alt=\"".$SysValue['Lang']['Order']['6']."\" border=\"0\" align=\"absmiddle\" hspace=\"3\">";
 	
@@ -92,26 +101,27 @@ while(@$row = mysql_fetch_array(@$result))
 	
 	
 	@$disp.='
-	<tr valign="top" onmouseover="show_on(\'r'.$id.'\')" id="r'.$id.'" onmouseout="show_out(\'r'.$id.'\')" class=row >
-    <td class=forma valign="middle" align="center" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">'.$uid.'</td>
-	<td class=forma valign="middle" align="center" width="200" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
+	<tr valign="top" id="r'.$id.'" class=row >
+	
+    <td valign="middle" align="center" id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">'.$uid.'</td>
+	<td valign="middle" align="center" width="200" id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
 	'.dataV($datas,"shot").' </td>
-	<td class=forma class=forma onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
+	<td class=forma id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
 	'.$PaymentId.$UserId.$order['Person']['name_person'].'
 	</td>
-	<td class=forma align="center" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
+	<td align="center" id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
 	'.$order['Cart']['num'].'
 	</td>
-	<td class=forma align="center" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
+	<td align="center" id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
 	'.$order['Person']['discount'].'
 	</td>
-	<td class=forma align="center" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
+	<td align="center" id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
 	'.(ReturnSumma($order['Cart']['sum'],$order['Person']['discount'])+$DeliveryPrice).'
 	</td>
-	<td align="center" class=forma onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
+	<td align="center" id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">
 	'.$status['time'].'
 	</td>
-	<td class=forma align="center" bgcolor="'.$bg.'" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">'.$status_name.'
+	<td  align="center" bgcolor="'.$bg.'" id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'&pole1='.$pole1.'&pole2='.$pole2.'\',650,500)">'.$status_name.'
 	</td>
 	<td class=forma style="padding:1px" align="center">
 	<input type=checkbox name="c'.$id.'" value="'.$id.'">
@@ -123,6 +133,8 @@ while(@$row = mysql_fetch_array(@$result))
 if($i>30)$razmer="height:600;";
 $_Return=('
 <div align="left" id="interfacesWin" name="interfacesWin"  style="width:100%;'.@$razmer.';overflow:auto"> 
+
+
 <form name="form_flag">
 <table width="100%"  cellpadding="0" cellspacing="0" style="border: 1px;
 	border-style: inset;">
@@ -131,7 +143,7 @@ $_Return=('
 
 <table cellpadding="0" cellspacing="1" width="100%" border="0" bgcolor="#808080">
 <tr>
-	<td width="100" id="pane" align="center"><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>№ Заказа</span></td>
+	<td width="100" id="pane" align="center"><img  src="icon/blank.gif"  width="1" height="1" border="0" onLoad="starter(\'visiter\');" align="left"><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>№ Заказа</span></td>
 	<td id="pane" width="100" align="center"><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Поступление</span></td>
 	<td width="300" id="pane" align="center"><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Покупатель</span></td>
 <td width="100" id="pane" align="center"><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Кол-во</span></td>
@@ -144,6 +156,17 @@ $_Return=('
 '.@$disp.'
 </table>
 </form>
+</div>
+
+ '.'
+<div class=cMenu id=cMenuNws> 
+	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews36>Удалить из базы</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews37>Изменить статус</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews38>Создать новый</A></TD></TR>		
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews45>Выгрузить в 1С:Предприятие</A></TD></TR>			
+	</TABLE>
 </div>
 
  ');

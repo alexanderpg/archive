@@ -107,7 +107,7 @@ return @$disp;
 <tr>
 	<td colspan="2">
 	<FIELDSET>
-<LEGEND><span name=txtLang id=txtLang><u>О</u>пиписание</span></LEGEND>
+<LEGEND><span name=txtLang id=txtLang><u>О</u>писание</span></LEGEND>
 <div style="padding:10">
 <textarea class=full name=description_new style="height:40px"><?=$description?></textarea>
 </div>

@@ -23,15 +23,26 @@ return substr($str, 0, $T+1);
 
 
 // Вывод доставки
-function GetDeliveryPrice($deliveryID,$sum){
+function GetDeliveryPrice($deliveryID,$sum,$weight=0){
 global $SysValue;
 $sql="select * from ".$SysValue['base']['table_name30']." where id='$deliveryID'";
 $result=mysql_query($sql);
 $row = mysql_fetch_array($result);
 
-if($row['price_null_enabled'] == 1 and $sum>=$row['price_null'])
-  return 0;
-  else return $row['price'];
+if($row['price_null_enabled'] == 1 and $sum>=$row['price_null']) {
+	return 0;
+} else {
+	if ($row['taxa']>0) {
+		$addweight=$weight-500;
+		if ($addweight<0) {$addweight=0;}
+		$addweight=ceil($addweight/500)*$row['taxa'];
+		$endprice=$row['price']+$addweight;
+		return $at.$endprice;
+	} else {
+		return $row['price'];
+	}
+}
+
 }
 
 // Вывод доставки
@@ -52,8 +63,8 @@ $Months = array("01"=>"января","02"=>"февраля","03"=>"марта",
 $curDateM = date("m",$nowtime); 
 if($flag=="true")
 $t=date("d",$nowtime)." ".$Months[$curDateM]." ".date("Y",$nowtime)."г.".date("H:s ",$nowtime); 
-elseif($flag=="shot") $t=date("d",$nowtime).".".$curDateM.". ".date("Y",$nowtime)."г. ".date("H:s ",$nowtime); 
-elseif($flag=="update") $t=date("d",$nowtime).".".$curDateM.".".date("y",$nowtime); 
+elseif($flag=="shot") $t=date("d",$nowtime).".".$curDateM.".".date("Y",$nowtime)."г. ".date("H:s ",$nowtime); 
+elseif($flag=="update") $t=date("d",$nowtime)."-".$curDateM."-".date("Y",$nowtime); 
 else $t=date("d",$nowtime)." ".$Months[$curDateM]." ".date("Y",$nowtime)."г."; 
 return $t;
 }
@@ -107,6 +118,13 @@ function TotalClean($str,$flag)// чистка
 	  }
 }
 
+// Чистим
+function CleanStr($str){
+	  $str=str_replace("/","|",$str);
+	  $str=str_replace("\"","*",$str);
+	  $str=str_replace("'","*",$str);
+	  return htmlspecialchars(stripslashes($str));
+}
 
 function GetSystems()// вывод настроек
 {

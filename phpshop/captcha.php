@@ -1,9 +1,9 @@
 <?
 session_start();
-putenv('GDFONTPATH=' . realpath('.'));
 header("Content-type: image/png");
 $font="./lib/font/norobot_font.ttf";
-$text=substr(md5(session_id()),0,5);
+$text=substr(md5(rand(0, 100)),0,5);
+session_register('text');
 $im=imagecreate(180, 56);
 $w=imagecolorallocate($im, 255, 255, 255);
 $b=imagecolorallocate($im, 90, 90, 90);

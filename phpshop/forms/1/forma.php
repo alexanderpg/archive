@@ -1,6 +1,10 @@
 <?
 session_start();
 
+//Счет в банк заказ
+
+
+
 // Парсируем установочный файл
 $SysValue=parse_ini_file("./../../inc/config.ini",1);
   while(list($section,$array)=each($SysValue))
@@ -42,19 +46,19 @@ $pathTemplate=$SysValue['dir']['templates'].chr(47).$_SESSION['skin'];
 
 
 if(isset($tip) and isset($orderId) and isset($datas)){
-$orderId=TotalClean($orderId,1);
+$orderId=TotalClean($orderId,5);
 $UsersId=TotalClean($_SESSION['UsersId'],1);
 
 if(@$tip==2)
-$sql="select * from ".$SysValue['base']['table_name1']." where id=$orderId and datas=".$datas;
+$sql="select * from ".$SysValue['base']['table_name1']." where id='$orderId' and datas=".$datas;
 
 if(@$tip==1 and isset($_SESSION['UsersId']))
-$sql="select * from ".$SysValue['base']['table_name1']." where id=$orderId and user=$UsersId";
+$sql="select * from ".$SysValue['base']['table_name1']." where id='$orderId' and user=$UsersId";
 $n=1;
 @$result=mysql_query($sql) or die($sql);
 $row = mysql_fetch_array(@$result);
-$num=mysql_num_rows(@$result);
-if($num==0) exit("Неавторизованный пользователь!");
+$n=mysql_num_rows(@$result);
+if($n==0) exit("Неавторизованный пользователь!");
     $id=$row['id'];
     $datas=$row['datas'];
 	$ouid=$row['uid'];
@@ -73,11 +77,28 @@ if($num==0) exit("Неавторизованный пользователь!");
 		".ReturnSummaBeznal($val['price']*$val['num'],$order['Person']['discount'])."</td>
 	</tr>
   ";
+
+//Определение и суммирование веса
+ $goodid=$val['id'];
+ $goodnum=$val['num'];
+ $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
+ $wresult=mysql_query($wsql);
+ $wrow=mysql_fetch_array($wresult);
+ $cweight=$wrow['weight']*$goodnum;
+ if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
+ $weight+=$cweight;
+
+
   @$sum+=$val['price']*$val['num'];
   @$num+=$val['num'];
   $n++;
  }
- $deliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum);
+
+//Обнуляем вес товаров, если хотя бы один товар был без веса
+if ($zeroweight) {$weight=0;}
+
+
+ $deliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum,$weight);
   @$dis.="
   <tr class=tablerow>
 		<td class=tablerow>".$n."</td>
@@ -120,10 +141,26 @@ for ($i=0,$n=1; $i<count($cid); $i++,$n++)
   ";
    @$sum+=$cart[$j]['price']*$cart[$j]['num'];
    @$num+=$cart[$j]['num'];
+
+//Определение и суммирование веса
+ $goodid=$cart[$j]['id'];
+ $goodnum=$cart[$j]['num'];
+ $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
+ $wresult=mysql_query($wsql);
+ $wrow=mysql_fetch_array($wresult);
+ $cweight=$wrow['weight']*$goodnum;
+ if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
+ $weight+=$cweight;
+
    
   }
+  $num++;
+
+//Обнуляем вес товаров, если хотя бы один товар был без веса
+if ($zeroweight) {$weight=0;}
+
   
-  $deliveryPrice=GetDeliveryPrice($_GET['delivery'],$sum);
+  $deliveryPrice=GetDeliveryPrice($_GET['delivery'],$sum,$weight);
   
    @$dis.="
   <tr class=tablerow>
@@ -273,7 +310,7 @@ window.resizeTo(650, 600);
 	<?}?>
 	<tr><td colspan=6 style="border: 0px; border-top: 1px solid #000000;">&nbsp;</td></tr>
 </table>
-<p><b>Всего наименований <?=$num?>, на сумму <?=(ReturnSummaBeznal($sum,$order['Person']['discount'])+$deliveryPrice)." ".GetValutaOrder()?>
+<p><b>Всего наименований <?=$n?>, на сумму <?=(ReturnSummaBeznal($sum,$order['Person']['discount'])+$deliveryPrice)." ".GetValutaOrder()?>
 <br />
 <?
 $iw=new inwords;  

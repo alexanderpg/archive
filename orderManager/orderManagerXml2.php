@@ -8,6 +8,10 @@ mysql_select_db($SysValue['connect']['dbase']);
 @mysql_query("SET NAMES 'cp1251'");
 
 
+// Проверка пользователя
+require("lib/user.lib.php");
+
+
 // Преобразовываем дату
 function dataV($nowtime){
 $Months = array("01"=>"января","02"=>"февраля","03"=>"марта", 
@@ -15,66 +19,11 @@ $Months = array("01"=>"января","02"=>"февраля","03"=>"марта",
  "08"=>"августа","09"=>"сентября",  "10"=>"октября",
  "11"=>"ноября","12"=>"декабря");
 $curDateM = date("m",$nowtime); 
-$t=date("d",$nowtime)." ".$Months[$curDateM]." ".date("Y",$nowtime)."г."; 
+$t=date("d",$nowtime)."-".$curDateM."-".date("y",$nowtime)." ".date("H:s ",$nowtime); 
 return $t;
 }
 
-$data=('
-<orderdb><order>
-	      <data>12-10-05</data>
-		  <uid>80253</uid>
-		  <id>91</id>
-		  <name>L</name>
-		  <mail>mail@phpshop.ru</mail>
-		  <tel>52852</tel>
-		  <adres>rtretrtrt</adres>
-		  <place>Moscow</place>
-		  <metod>3</metod>
-		  <status>Выполняется1</status>
-		  <summa>7638.00</summa>
-		  <kurs>28.5</kurs>
- </order>
-</orderdb>
-');
 
-
-
-// класс проверки пользователя
-class UserChek {
-      var $logPHPSHOP;
-	  var $pasPHPSHOP;
-	  var $idPHPSHOP;
-	  var $statusPHPSHOP;
-	  var $mailPHPSHOP;
-	  var $OkFlag=0;
-	  
-	  function ChekBase(){
-	  $sql="select * from phpshop_users where enabled='1'";
-      $result=mysql_query($sql);
-      while ($row = mysql_fetch_array($result)){
-      if($this->logPHPSHOP==$row['login']){
-	    if($this->pasPHPSHOP==$row['password']){
-           $this->OkFlag=1;
-		   $this->idPHPSHOP=$row['id'];
-	       $this->statusPHPSHOP=$row['status'];
-	       $this->mailPHPSHOP=$row['mail'];
-		   }
-      }}}
-	  
-	  function BadUser(){
-	  if($this->OkFlag == 0)
-	  exit;
-	  }
-	  
-	  function UserChek($logPHPSHOP,$pasPHPSHOP){
-	  $this->logPHPSHOP=$logPHPSHOP;
-	  $this->pasPHPSHOP=$pasPHPSHOP;
-	  $this->ChekBase();
-	  $this->BadUser();
-	  }
-}
-
-$UserChek = new UserChek($log,$pas);
 
 function GetUnicTime($data){
 $array=explode("-",$data);
@@ -192,6 +141,7 @@ $order['Person']['dos_do']=MyStripSlashes($_POST['dos_do']);
 $order['Person']['tel_code']=MyStripSlashes($_POST['tel_code']);
 $order['Person']['tel_name']=MyStripSlashes($_POST['tel_name']);
 $order['Person']['org_name']=MyStripSlashes($_POST['org_name']);
+$order['Person']['order_metod']=MyStripSlashes($_POST['metod_id']);
 
 $sql="UPDATE ".$SysValue['base']['table_name1']."
 SET 
@@ -263,6 +213,7 @@ $array=array(
     "cart"=>$order['Cart'],
 	"order"=>$order['Person'],
 	"time"=>$time,
+	"datas"=>$datas,
 	"dos_ot"=>Clean($status['dos_ot']),
 	"dos_do"=>Clean($status['dos_do']),
 	"manager"=>Clean($status['maneger']),
@@ -297,6 +248,11 @@ return $pic_big;
 }
 
 
+function ReturnSumma($sum,$disc){
+$sum=$sum-($sum*$disc/100);
+return number_format($sum,"2",".","");
+}
+
 switch ($command){
 case ("loadListOrder"):
 error_reporting(0);
@@ -309,6 +265,7 @@ $XML='<?xml version="1.0" encoding="windows-1251"?>
 foreach ($OrdersArray as $val){
 $XML.='<order>
 	      <data>'.dataV($val['order']['data']).'</data>
+		  <datas>'.$val['order']['data'].'</datas>
 		  <uid>'.$val['order']['ouid'].'</uid>
 		  <id>'.$val['id'].'</id>
 		  <name>'.Clean($val['order']['name_person']).'</name>
@@ -320,7 +277,7 @@ $XML.='<order>
 		  <status>'.$GetOrderStatusArray[$val['statusi']]['name'].'</status>
 		  <color>'.$GetOrderStatusArray[$val['statusi']]['color'].'</color>
 		  <time>'.$val['time'].'</time>
-		  <summa>'.$val['cart']['sum'].'</summa>
+		  <summa>'.ReturnSumma($val['cart']['sum'],$val['order']['discount']).'</summa>
 		  <num>'.$val['cart']['num'].'</num>
 		  <kurs>'.$val['cart']['kurs'].'</kurs>';
 $XML.='</order>
@@ -335,7 +292,8 @@ case("loadNumNew"):
 $sql="select id from ".$SysValue['base']['table_name1']." where statusi=0";
 $result=mysql_query($sql);
 $num=mysql_numrows($result);
-echo $num;
+if($num==0) echo "";
+  else echo $num;
 break;
 
 // Данные по заказу
@@ -356,6 +314,7 @@ foreach ($GetOrderStatusArray as $status)
 
 $XML.='<order>
 	      <data>'.dataV($OrdersReturn['order']['data']).'</data>
+          <datas>'.$OrdersReturn['datas'].'</datas>
 		  <uid>'.$OrdersReturn['order']['ouid'].'</uid>
 		  <name>'.Clean($OrdersReturn['order']['name_person']).'</name>
 		  <mail>'.Clean($OrdersReturn['order']['mail']).'</mail>
@@ -369,6 +328,7 @@ $XML.='<order>
 		  <place>'.GetDelivery($OrdersReturn['order']['dostavka_metod'],"city").'</place>
 		  <place_price>'.GetDelivery($OrdersReturn['order']['dostavka_metod'],"price").'</place_price>
 		  <metod>'.OplataMetod($OrdersReturn['order']['order_metod']).'</metod>
+		  <metod_id>'.$OrdersReturn['order']['order_metod'].'</metod_id>
 		  <org_name>'.Clean($OrdersReturn['order']['org_name']).'</org_name>
 		  <statusi>'.$OrdersReturn['statusi'].'</statusi>
 		  <time>'.$OrdersReturn['time'].'</time>
@@ -389,7 +349,7 @@ foreach ($OrdersReturn['cart']['cart'] as $vals)
 	<art>#'.$vals['uid'].'</art>
 	<p_name>'.$vals['name'].'</p_name>
 	<pic>'.ReturnPic($vals['id']).'</pic>
-	<price>'.$vals['price'].'</price>
+	<price>'.ReturnSumma($vals['price'],$OrdersReturn['order']['discount']).'</price>
 	<num>'.$vals['num'].'</num>
  </product>
  ';

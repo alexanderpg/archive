@@ -13,8 +13,6 @@ if($SysValue['nav']['nav']=="CID"){
   }
        elseif($SysValue['nav']['nav']=="UID")
           $SysValue['other']['DispShop']=DispPodrobno($SysValue['nav']['id']);
-             /*elseif($SysValue['nav']['nav']=="SIDI")
-               $SysValue['other']['DispShop']=DispSellerInfo($SysValue['nav']['id']);*/
 			       else include("pages/error.php");
 				   
 

@@ -22,8 +22,11 @@ $sql="select uid from ".$SysValue['base']['table_name1']." order by uid desc LIM
 $result=mysql_query($sql);
 $row=mysql_fetch_array($result);
 $last=$row['uid'];
-$order_num = $last + 1;
-$order_num_pre=substr(abs(crc32(uniqid($order_num))),0,3);
+$all_num=explode("-",$last);
+$ferst_num=$all_num[0];
+if($ferst_num<100) $ferst_num=100;
+$order_num = $ferst_num + 1;
+$order_num=$order_num."-".substr(abs(crc32(uniqid($sid))),0,2);
 $datas=date("U");
 $sql="INSERT INTO ".$SysValue['base']['table_name1']."
    VALUES ('','$datas','".$order_num."','".serialize($order)."','','$user','','0')";
@@ -31,11 +34,7 @@ $result=mysql_query($sql);
 return $order_num;
 }
 
-function CleanStr($str){
-	  $str=str_replace("/","|",$str);
-	  $str=str_replace("\"","*",$str);
-	  return htmlspecialchars(stripslashes($str));
-	  }
+
 
 function GetUsersStatus($n){
 global $SysValue;
@@ -213,7 +212,7 @@ $cart=$CART['cart'];
 $kurs=$CART['kurs'];
 @$num=0;
 @$sum=0;
-$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum);
+$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum,$CART['cart']['weight']);
  $disCart.="
 <tr class=row3 onclick=\"miniWin('adm_order_deliveryID.php?deliveryId=".GetDelivery($PERSON['dostavka_metod'],"id")."&orderId=".$id."',400,270,event)\" onmouseover=\"show_on('r".$n."')\" id=\"r".$n."\" onmouseout=\"show_out('r".$n."')\">
   <td style=\"padding:3\">$n</td>

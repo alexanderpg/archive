@@ -5,3 +5,7 @@ message2="Внимание!\nДанная операция может привести к потере базы.\nВы действите
 function DoCheckLang(file,enabled){
 return true;
 }
+
+function GetNumName(file){
+return true;
+}

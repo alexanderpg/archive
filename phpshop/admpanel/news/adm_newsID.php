@@ -226,7 +226,8 @@ SET
 datas='$data_new',
 zag='$zag_new',
 kratko='".addslashes($EditorContent)."',
-podrob='".addslashes($EditorContent2)."'
+podrob='".addslashes($EditorContent2)."',
+datau='".date("U")."' 
 where id='$id'";
 $result=mysql_query($sql)or @die("Невозможно изменить запись");
 echo"

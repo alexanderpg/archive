@@ -7,9 +7,10 @@ $sBaseVirtual0=$SysValue['dir']['dir']."/UserFiles/Image";
 $sBase0=$DOCUMENT_ROOT.$SysValue['dir']['dir']."/UserFiles/Image";
 $sName0="Image";
 
-$sBaseVirtual1="/UserFiles/Image2";
-$sBase1=$DOCUMENT_ROOT."/UserFiles/Image2";
-$sName1="Image2";
+$sBaseVirtual1=$SysValue['dir']['dir']."/UserFiles/Files";
+$sBase1=$DOCUMENT_ROOT.$SysValue['dir']['dir']."/UserFiles/Files";
+$sName1="Files";
+
 
 $sBaseVirtual2="";
 $sBase2="";

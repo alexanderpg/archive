@@ -11,6 +11,11 @@ $SysValue=parse_ini_file("../phpshop/inc/config.ini",1);
 <META name="ROBOTS" content="NONE">
 <LINK href="<?=$SysValue['dir']['dir']?>/phpshop/admpanel/css/texts.css" type=text/css rel=stylesheet>
 <style>
+BODY, li, a, div {
+	FONT-SIZE: 12px;
+	COLOR: #000000;
+	FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif;
+}
 .ok{
 color: green;
 font-weight: bold;
@@ -19,8 +24,28 @@ font-weight: bold;
 color: red;
 font-weight: bold;
 }
+a{
+	COLOR: #0066cc;
+}
+a:hover{
+	COLOR: CC6600;
+}
 </style>
 <script>
+
+// PhpGoToAdmin v2.1	
+function getKey(e){
+
+	if (e == null) { // ie
+		key = event.keyCode;
+	} else { // mozilla
+		key = e.which;
+	}
+	if(key=='123') window.open('../phpshop/admpanel/');
+}
+
+
+
 function Warning(){
 return alert("Внимание!\nНе забудте поменять префиксы баз данных в установочном файле config.ini");
 }
@@ -31,7 +56,7 @@ window.close();
 }
 
 function Readonlys(){
-return alert("Внимание!\nДанные редактирируются только в файле config.ini");
+return alert("Внимание!\nДанные редактирируются только в файле /phpshop/inc/config.ini");
 }
 
 function ChekRegLic(){
@@ -52,14 +77,51 @@ if(s1 == 1){
 	 }
          else document.regForma.submit();
 }
+
+function GenPassword(a){
+document.getElementById("pas1").value=a;
+document.getElementById("pas2").value=a;
+alert("Сгенерирован пароль: " +a);
+}
+
+function TestPas(){
+var pas1=document.getElementById("pas1").value;
+var pas2=document.getElementById("pas2").value;
+var login=document.getElementById("login").value;
+var mail=document.getElementById("mail").value;
+var mes_zag="Внимание, обнаружены ошибки при заполнении формы:\n";
+var mes="";
+var pattern=/\w+@\w+/;
+if(pas1.length <6 || pas2.length < 6) 
+mes+="-> Пароль должен содержать не менее 6 символов\n";
+if(pas1 != pas2)
+mes+="-> Пароли должны совпадать\n";
+if(login.length <4)
+mes+="-> Логин должен содержать не менее 4 символов\n";
+if(pattern.test(mail)==false) mes+="-> Не правильно указано поле 'E-mail'\n";
+if(mes != "") alert(mes_zag+mes);
+else document.install.submit();
+}
+
+// Копировать в буфер
+function copyToClipboard(){
+try{
+document.getElementById('adm_option').select();
+var CopiedTxt=document.selection.createRange();
+CopiedTxt.execCommand("Copy");
+alert("Данные скопированы в буфер обмена.");
+}catch(e){alert("Функция копирования доступна только для браузера IE");}
+}
+
 </script>
 </head>
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0">
+
 <table cellpadding="0" cellspacing="0" width="100%" height="50" id="title">
 <tr bgcolor="#ffffff">
 	<td style="padding:10">
 	<b>Установка интернет-магазина <?= $SysValue['license']['product_name']?></b><br>
-	&nbsp;&nbsp;&nbsp;Настройка интернет-магазина (версия 2.0.1)
+	&nbsp;&nbsp;&nbsp;Настройка интернет-магазина (версия 2.2.1)
 	</td>
 	<td align="right">
 	<img src="<?=$SysValue['dir']['dir']?>/phpshop/admpanel/img/i_server_info_med[1].gif" border="0" hspace="10">
@@ -80,7 +142,7 @@ $dir="./";
         while (($file = readdir($dh)) !== false) {
 		$fstat = explode(".",$file);
 		if($fstat[1] == "sql")
-		 @$disp.="<option value='".$file."'>$file</option>";
+		 @$disp=$file;
         }
         closedir($dh);
     }
@@ -96,18 +158,35 @@ if(@$install == 3){
 mysql_select_db($SysValue['connect']['dbase']);
 @mysql_query("SET NAMES 'cp1251'");
 
-// Удаление старой базы
-if(@$updateBase == 1){
-$sql="select * from ".$SysValue['base']['table_name19']." where enabled=1";
-$result=mysql_query($sql);
-$pas=base64_encode($password);
-while (@$row = mysql_fetch_array(@$result)){
-	if(($row['login']==$user) and ($row['password']==$pas))
-	  {
-      foreach($SysValue['base'] as $k=>$v) 
-      $result=mysql_query("DROP TABLE IF EXISTS ".$v);
-      }
-}}
+
+//Отправка почты
+if($_POST['pas_send'] == 1 and !empty($_POST['pas_send'])){
+
+$codepage  = "windows-1251";              
+$header  = "MIME-Version: 1.0\n";
+$header .= "From:   <no_reply@phpshop.ru>\n";
+$header .= "Content-Type: text/plain; charset=$codepage\n";
+$header .= "X-Mailer: PHP/";
+$zag="PHPShop: данные установки на сервер ".$SERVER_NAME;
+$content="
+Доброго времени!
+---------------------------------------------------------
+
+".$SysValue['license']['product_name']." упешно установлен на сервер ".$SERVER_NAME."
+
+Административная панель доступна по адресу:  http://$SERVER_NAME".$SysValue['dir']['dir']."/phpshop/admpanel/
+или нажатием клавиши F12
+Логин: ".$_POST['user']."
+Пароль: ".$_POST['password']."
+
+---------------------------------------------------------
+Powered & Developed by www.PHPShop.ru
+".$SysValue['license']['product_name'];
+mail($mail,$zag,$content,$header);
+
+}
+
+
 
 //$fileBase=GetFile();
 @$fp = fopen($fileBase, "r");
@@ -119,15 +198,38 @@ while (@$row = mysql_fetch_array(@$result)){
   $fstat = fstat($fp);
   $CsvContent=fread($fp,$fstat['size']);
   $CsvContent=eregi_replace("phpshop_",$prefix,$CsvContent);
+  $CsvContent=eregi_replace("support@phpshop.ru",$_POST['mail'],$CsvContent);
   fclose($fp);
   }
-$IdsArray2=split(";",$CsvContent);
+$IdsArray2=split(";\n",$CsvContent);
 array_pop($IdsArray2);
 while (list($key, $val) = each($IdsArray2))
 $result=mysql_query($val);
-$result=mysql_query("INSERT INTO ".$prefix."users VALUES ('', 0x613a32303a7b733a353a2267626f6f6b223b733a353a22312d312d31223b733a343a226e657773223b733a353a22312d312d31223b733a373a2276697369746f72223b733a373a22312d312d312d30223b733a353a227573657273223b733a373a22312d312d312d31223b733a393a2273686f707573657273223b733a353a22312d312d31223b733a383a226361745f70726f64223b733a373a22312d312d312d31223b733a363a22737461747331223b733a353a22312d312d31223b733a353a227275706179223b733a353a22312d302d30223b733a31313a226e6577735f777269746572223b733a353a22312d312d31223b733a393a22706167655f73697465223b733a353a22312d312d31223b733a393a22706167655f6d656e75223b733a353a22312d312d31223b733a353a2262616e6572223b733a353a22312d312d31223b733a353a226c696e6b73223b733a353a22312d312d31223b733a333a22637376223b733a353a22312d312d31223b733a353a226f70726f73223b733a353a22312d312d31223b733a333a2273716c223b733a353a22302d312d31223b733a363a226f7074696f6e223b733a333a22302d31223b733a383a22646973636f756e74223b733a353a22312d312d31223b733a363a2276616c757461223b733a353a22312d312d31223b733a383a2264656c6976657279223b733a353a22312d312d31223b7d, '".$user."', '".base64_encode($password)."', '".$mail."', '1', '', 'blue', '1', '', '1');");
+$result=mysql_query("INSERT INTO ".$prefix."users VALUES ('', 0x613a32333a7b733a353a2267626f6f6b223b733a353a22312d312d31223b733a343a226e657773223b733a353a22312d312d31223b733a373a2276697369746f72223b733a373a22312d312d312d31223b733a353a227573657273223b733a373a22312d312d312d31223b733a393a2273686f707573657273223b733a353a22312d312d31223b733a383a226361745f70726f64223b733a31313a22312d312d312d312d312d31223b733a363a22737461747331223b733a353a22312d312d31223b733a353a227275706179223b733a353a22302d302d30223b733a31313a226e6577735f777269746572223b733a353a22312d312d31223b733a393a22706167655f73697465223b733a353a22312d312d31223b733a393a22706167655f6d656e75223b733a353a22312d312d31223b733a353a2262616e6572223b733a353a22312d312d31223b733a353a226c696e6b73223b733a353a22312d312d31223b733a333a22637376223b733a353a22312d312d31223b733a353a226f70726f73223b733a353a22312d312d31223b733a363a22726174696e67223b733a353a22312d312d31223b733a333a2273716c223b733a353a22302d312d31223b733a363a226f7074696f6e223b733a333a22302d31223b733a383a22646973636f756e74223b733a353a22312d312d31223b733a363a2276616c757461223b733a353a22312d312d31223b733a383a2264656c6976657279223b733a353a22312d312d31223b733a373a2273657276657273223b733a353a22312d312d31223b733a31303a227273736368616e656c73223b733a353a22312d312d31223b7d, '".$user."', '".base64_encode($password)."', '".$mail."', '1', '', '', '1', '', '1');");
 if(@$result){
-$disp= "<h4>Базы установлены полностью. Магазин готов к запуску</h4>";
+$copy="
+Данные доступа к PHPShop
+------------------------
+Административная панель доступна по адресу: http://$SERVER_NAME".$SysValue['dir']['dir']."/phpshop/admpanel/ или нажатием клавиши F12
+Логин: ".$_POST['user']."
+Пароль: ".$_POST['password']."
+";
+$disp= "<h4>Базы установлены полностью. Магазин готов к запуску.</h4>
+<FIELDSET id=fldLayout>
+<DIV style=\"margin:10px;padding: 10px;background-color: #FFFFFF;\" >
+Административная панель доступна по адресу:  <a href=\"http://$SERVER_NAME".$SysValue['dir']['dir']."/phpshop/admpanel/\" target=\"_blank\">http://$SERVER_NAME".$SysValue['dir']['dir']."/phpshop/admpanel/</a><br>
+или нажатием клавиши F12<br><br>
+Логин: <strong>".$_POST['user']."</strong><br>
+Пароль: <strong>".$_POST['password']."</strong><br><br>
+<textarea id=\"adm_option\" style=\"width: 0px; height: 1px\">$copy</textarea>
+<INPUT  type=button value=\"Скопировать в буфер обмена\" onclick=\"copyToClipboard()\"> 
+</DIV>
+</FIELDSET>
+<script>
+document.onkeydown = getKey; 
+</script>
+
+";
 $d="";
 }
 else {
@@ -150,7 +252,7 @@ $d="disabled";
 </FIELDSET>
 </TD>
 </TR></FORM></TBODY></TABLE></TD></TR></TBODY></TABLE>
-<table cellpadding="0" cellspacing="0" width="100%" height="50" style="margin-top:321">
+<table cellpadding="0" cellspacing="0" width="100%" height="50" style="margin-top:170">
 <tr>
    <td><hr></td>
 </tr>
@@ -193,17 +295,9 @@ elseif(@$install==2){
 	<td align="right">Префикс:</td>
 	<td align="left"><input type="text" style="width:300" name="prefix" value="phpshop_" onchange="Warning()"></td>
 </tr>
-<tr>
-	<td align="right">Образ базы:</td>
-	<td align="left">
-	
-	<select name="fileBase">
-		<? echo GetFile()?>	
-</select> (файл с префиксом _3 для MySQL версий 3.2* и 4.0*) 
-	</td>
-</tr>
 </table>
 <br>
+<input type="hidden" name="fileBase" value="<?= GetFile()?>">
 </FIELDSET>
 <br>
 <FIELDSET>
@@ -212,22 +306,28 @@ elseif(@$install==2){
 <table cellSpacing=1 cellPadding=5  border=0 width="100%">
 <tr>
 	<td align="right" width="100">Пользователь</td>
-	<td align="left"><input type="text" style="width:300" value="demo" name="user"></td>
+	<td align="left"><input type="text" id="login" style="width:150" value="root" name="user"> ( не менее 4 символов )</td>
 </tr>
 <tr>
 	<td align="right">E-mail:</td>
-	<td align="left"><input type="text" style="width:300" name="mail" value=""></td>
+	<td align="left"><input type="text" style="width:150" name="mail" id="mail" value=""> <input type="checkbox" value="1" name="pas_send" id="pas_send" checked> отослать рег. данные на почту</td>
 </tr>
 <tr>
 	<td align="right">Пароль:</td>
-	<td align="left"><input type="text" style="width:300" name="password" value="demo"></td>
+	<td align="left"><input type="password" id="pas1" style="width:150" name="password" value=""> ( не менее 6 символов )</td>
+</tr>
+<tr>
+	<td align="right">Пароль еще раз:</td>
+	<td align="left"><input type="password" id="pas2" style="width:150" value="">
+	
+	<INPUT class=but type=button value="Сгенерировать" style="width:100" onclick="GenPassword('<?="P".substr(md5(date("U")),0,6)?>')"> 
+	 </td>
 </tr>
 </table>
 <br>
 </FIELDSET>
 
 </div>
-<div style="padding-left:5px"><input type="checkbox" value="1" name="updateBase"> Предварительно удалить старую базу. Используются <b>логин</b> и <b>пароль</b> из формы авторизации.</div>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" style="margin-top:5">
 <tr>
    <td><hr></td>
@@ -236,7 +336,7 @@ elseif(@$install==2){
 	<td align="right" style="padding:10">
 <INPUT class=but type=button value="&laquo; Назад" onclick="history.back(1)"> 
 <INPUT class=but type=button value="Отмена" onclick="window.close()"> 
-<INPUT class=but type="Submit" value="Далее &raquo;"> 
+<INPUT class=but type="button" value="Далее &raquo;" onclick="TestPas()"> 
 <input type="hidden" name="install" value="3">
 	</td>
 </tr>
@@ -415,8 +515,8 @@ if($GD['FreeType Linkage'] == "with freetype")
 <script>
 function LoadTest(i){
 document.getElementById("line"+i).style.visibility = 'visible';
-if(i != 8) setTimeout("LoadTest("+(i+1)+")",500);}
-setTimeout("LoadTest(1)",500);
+if(i != 8) setTimeout("LoadTest("+(i+1)+")",300);}
+setTimeout("LoadTest(1)",300);
 </script>
 <?}?>
 

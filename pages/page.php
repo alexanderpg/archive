@@ -10,10 +10,16 @@ if($SysValue['nav']['nav']=="CID"){
 
   // Проверка вложенности
   $podcatalog_id = array_keys($LoadItems['CatalogPageKeys'],$SysValue['nav']['id']);
+  
+  // Если только 1 страница, редирект на нее
+  $GetPageNum = GetPageNumFromCategory($SysValue['nav']['id']);
+ 
   if(count($podcatalog_id)>0)
      $SysValue['other']['DispShop']=DispCatalogPageTree($SysValue['nav']['id']);
-    else $SysValue['other']['DispShop']=DispListPage($SysValue['nav']['id']);
- 
+     elseif($GetPageNum == "FALSE")
+	   $SysValue['other']['DispShop']=DispListPage($SysValue['nav']['id']);
+	   elseif($GetPageNum != "FALSE") $SysValue['other']['DispShop']=DispContentPage($GetPageNum,$flag=1);
+	 
   }
     else{
 	  $SysValue['other']['DispShop']=DispContentPage($SysValue['nav']['name']);

@@ -33,7 +33,15 @@ function gzcompressfile($source,$level=false){
      else return $dest; 
    } 
 
-
+// Чистим теги
+function CleanOut($str){
+$array=array("&quot;","&nbsp;","&amp;","
+",";");
+$str=strip_tags($str, '<p><b><strong><br>');
+foreach($array as $val) $str=str_replace($val,"",$str);
+return $str;
+}
+   
 
 if(CheckedRules($UserStatus["csv"],1) == 1){
 
@@ -49,8 +57,8 @@ while($row = mysql_fetch_array($result))
     $id=$row['id'];
     $name=str_replace(";","|",trim($row['name']));
 	$category=$row['category'];
-	$content= str_replace(";","|",$row['content']);
-	$description=str_replace(";","|",$row['description']);
+	$content= CleanOut($row['content']);
+	$description=CleanOut($row['description']);
 	$price=$row['price'];
     $price2=trim($row['price2']);
 	$price3=trim($row['price3']);
@@ -64,7 +72,7 @@ while($row = mysql_fetch_array($result))
 	$num=$row['num'];
 	$items=trim($row['items']);
 	$weight=trim($row['weight']);
-	@$csv.="$id;$name;$description;$pic_small;$content;$pic_big;$price;$price2;$price3;$price4;$price5;$weight;$uid;$category;$vendor_array\n";
+	@$csv.="$id;$name;$description;$pic_small;$content;$pic_big;$items;$price;$price2;$price3;$price4;$price5;$weight;$uid;$category;$vendor_array\n";
 	}
   $file="base_".date("d_m_y_His").".csv";
   @$fp = fopen("../csv/".$file, "w+");

@@ -2,6 +2,7 @@
 function Vivod_baner()// выводит банеры
 {
 global $SysValue,$system,$SERVER_NAME,$IDbaner,$REQUEST_URI;
+$IDbaner=TotalClean($IDbaner,5);
 if(isset($IDbaner))
 {
 $sql="select * from ".$SysValue['base']['table_name15']." where flag='1' and id!='$IDbaner' order by RAND() LIMIT 0, 1";

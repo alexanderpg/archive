@@ -56,9 +56,15 @@ while ($row = mysql_fetch_array($result))
 	$fl="<img src=\"img/icon-duplicate-acl.gif\" alt=\"Фильтр\">";
 	}else{
 	$fl="";}
+	
+	if($row['goodoption']==1){
+	$gl="<img src=\"img/icon-duplicate-banner.gif\" alt=\"Опция\">";
+	}else{
+	$gl="";}
+	
 	@$display.="
 	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row onclick=\"miniWin('sort/adm_sortID.php?id=$id',500,500)\" title=\"".$description."\">
-    <td align=\"center\" class=\"forma\">$fl</td>
+    <td align=\"center\" class=\"forma\">$fl $gl</td>
 	<td class=\"forma\">
 	$name
 	</td>
@@ -75,7 +81,7 @@ if($i>25)$razmer="height:600;";
 	<td valign=\"top\" >
 <table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\">
 <tr>
-    <td width=\"7%\" id=pane>+/-</td>
+    <td width=\"10%\" id=pane>+/-</td>
 	<td width=\"90%\" id=pane><span name=txtLang id=txtLang>Наименование</span></td>
 </tr>
 	".$display."

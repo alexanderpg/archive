@@ -28,6 +28,13 @@ $info=$row['info'];
 <script language="JavaScript" src="../java/javaMG.js" type="text/javascript"></script>
 <script>
 
+// Стандартную форму обновляем
+function UpdateMainForma(img,img_s){
+window.opener.document.getElementById('pic_small').value=img_s;
+window.opener.document.getElementById('pic_big').value=img;
+self.close();
+}
+
 
 // Удаление из галереи
 function DoUpdateNumFotoList(xid,num,info) {
@@ -119,6 +126,9 @@ echo '
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
+    <td align="left" style="padding-left: 10px">
+	<input type=button class=but value="Основной вид" style="width: 130px"  onClick=" UpdateMainForma(\''.$name.'\',\''.$s_name.'\');">
+	</td>
 	<td align="right" style="padding:10">
 <input type=button value="ОК" class=but onClick="UpdateNum('.$id.');">
 <input type="button" class=but value="Удалить" onClick="PromptThisDelete('.$id.',\''.$name.'\');return false;">

@@ -18,7 +18,7 @@ include("settings.php");
 
 /*** Permission ***/
 $bReadOnly0=false;
-$bReadOnly1=true;
+$bReadOnly1=false;
 $bReadOnly2=false;
 $bReadOnly3=false;
 /*** /Permission ***/

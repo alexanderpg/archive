@@ -28,7 +28,7 @@ $result=mysql_query($sql);
 $num=mysql_numrows($result);
 if($num>0){
 $array=explode(".",$row['datas']);
-$updateU=mktime(12, 0, 0, $array[1], $array[0], $array[2]);
+@$updateU=mktime(12, 0, 0, $array[1], $array[0], $array[2]);
 @$updateDate=gmdate("D, d M Y H:i:s",@$updateU);
 $arrayS=array($row['datas'],$updateDate." GMT");
 return $arrayS;

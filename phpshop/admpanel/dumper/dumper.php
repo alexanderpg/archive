@@ -45,8 +45,7 @@ define('GS', 0);
 
 // ƒальше ничего редактировать не нужно
 
-$is_safe_mode = ini_get('safe_mode') == '1' ? 1 : 0;
-if (!$is_safe_mode) set_time_limit(TIME_LIMIT);
+
 
 header("Expires: Tue, 1 Jul 2003 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -66,11 +65,19 @@ require("../connect.php");
 mysql_select_db("$dbase")or @die("Ќевозможно подсоединитьс€ к базе");
 require("../enter_to_admin.php");
 
+
+
 // языки
 $GetSystems=GetSystems();
 $option=unserialize($GetSystems['admoption']);
 $Lang=$option['lang'];
 require("../language/".$Lang."/language.php");
+
+
+if($SysValue['my']['time_limit_enabled']=="true"){
+$is_safe_mode = ini_get('safe_mode') == '1' ? 1 : 0;
+if (!$is_safe_mode) set_time_limit(TIME_LIMIT);
+}
 
 define('Lang', $Lang);
 

@@ -22,11 +22,11 @@ $orderID=htmlspecialchars($orderID);
 $sql="select * from $table_name1 where id='$orderID'";
 $result=mysql_query($sql);
 $num=0;
-$csv1="Начало личных данных;;;;;;;;;\n";
-$csv2="Начало заказанных товаров;;;;;;;;;\n";
+$csv1="Начало личных данных;;;;;;;;;;\n";
+$csv2="Начало заказанных товаров;;;;;;;;;;\n";
 $row = mysql_fetch_array($result);
     $id=$row['id'];
-    $datas=dataV($row['datas']);
+    $datas=$row['datas'];
 	$uid=$row['uid'];
 	$order=unserialize($row['orders']);
 	$status=unserialize($row['status']);
@@ -42,14 +42,15 @@ $row = mysql_fetch_array($result);
 	$discount=$order['Person']['discount'];
 	if($discount>0) $discountStr="- скидка $discount%";
 	else $discountStr="";
-	$csv1.="$uid;$datas;$mail;$name $discountStr;$conpany;$tel;$oplata;$sum;$discount;\n";
+	$csv1.="$uid;$datas;$mail;$name $discountStr;$conpany;$tel;$oplata;$sum;$discount;$inn;\n";
 
+  if(is_array($order['Cart']['cart']))
   foreach($order['Cart']['cart'] as $val){
   $id=$val['id'];
   $uid=$val['uid'];
   $num=$val['num'];
   $sum=ReturnSumma($val['price']*$num,$order['Person']['discount']);
-  $csv2.="$id;$uid;$num;$sum;;;;;;\n";
+  $csv2.="$id;$uid;$num;$sum;;;;;;;\n";
   }
 
   $csv=$csv1.$csv2;

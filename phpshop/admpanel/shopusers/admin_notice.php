@@ -43,18 +43,18 @@ while ($row = mysql_fetch_array($result))
 	if(($row['enabled'])=="1"){$checked="<img src=img/icon-activate.gif  width=\"16\" height=\"16\" alt=\"Уведомлены\">";}else{$checked="<img src=img/icon-deactivate.gif  width=\"16\" height=\"16\" alt=\"Ожидание\">";};
 	
 	@$display.="
-	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row>
-    <td align=center class=forma onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">$checked</td>
-	<td class=forma onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
+	<tr id=\"r".$id."\" class=row>
+    <td align=center id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">$checked</td>
+	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
 	".dataV($datas_start,"update")." - ".dataV($datas,"update")."
 	</td>
-	<td class=forma onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
+	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
 	".GetInfoUsers($user_id)."
 	</td>
-	<td class=forma onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
+	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
 	$product_id
 	</td>
-    <td class=forma onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
+    <td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('./product/adm_productID.php?productID=$product_id',700,630)\">
 	".GetproductInfo($product_id)."
 	</td>
 	<td class=forma align=center>
@@ -74,7 +74,7 @@ if($i>20)$razmer="height:600;";
 	<td valign=\"top\">
 <table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\">
 <tr>
-    <td width=\"50\" id=pane align=center><span name=txtLang id=txtLang>Статус</span></td>
+    <td width=\"50\" id=pane align=center><img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('notice');\" align=left><span name=txtLang id=txtLang>Статус</span></td>
 	<td id=pane align=center><span name=txtLang id=txtLang>Актуальность</span></td>
 	<td id=pane align=center><span name=txtLang id=txtLang>Пользователь</span></td>
     <td width=\"50\" id=pane align=center><span name=txtLang id=txtLang>ID</span></td>
@@ -90,6 +90,16 @@ if($i>20)$razmer="height:600;";
 	</td>
 </tr>
     </table>
-	";
+	".'
+<div class=cMenu id=cMenuNws> 
+	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews25>Разослать уведомления</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews26>Удалить из базы</A></TD></TR>	
+	</TABLE>
+</div>
+
+';
+
 }
 ?>

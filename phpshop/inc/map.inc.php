@@ -161,6 +161,8 @@ while($row = mysql_fetch_array($result))
 <p>".ReturnMapSelect()." <strong><a href=\"/links/\">Ссылки</a></strong></p>
 ";
 
+
+
 // Определяем переменые
 $SysValue['other']['catalog']= $SysValue['lang']['catalog'];
 //@$SysValue['other']['catalogCat']= $LoadItems['Product'][$id]['category'];

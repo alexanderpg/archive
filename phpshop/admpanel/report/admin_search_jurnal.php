@@ -42,21 +42,21 @@ while ($row = mysql_fetch_array($result))
 	}else{
 	$fl="";}
 	@$display.="
-	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row>
-   <td class=forma>$fl</td>
-	<td class=forma>
+	<tr id=\"r".$id."\" class=row>
+   <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >$fl</td>
+	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >
 	<a href=\"".$SysValue['dir']['dir']."/search/?words=$name&cat=$cat&set=$set\" title=\"Перейти по ссылке:\n/search/?words=$name&cat=$cat&set=$set\" target=\"_blank\">$name</a>
 	</td>
-	<td class=forma>
+	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >
 	".dataV($datas,"shot")."
 	</td>
-	<td class=forma>
+	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >
 	$num
 	</td>
-	<td class=forma>
+	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >
 	".GetCatName($cat)."
 	</td>
-	<td class=forma>
+	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >
 	$dir
 	</td>
 	<td class=forma>
@@ -68,7 +68,10 @@ while ($row = mysql_fetch_array($result))
 	}
 if($i>20)$razmer="height:600;";
 	$_Return="
-<div id=interfacesWin name=interfacesWin align=\"left\" style=\"width:100%;".@$razmer.";overflow:auto\"> 
+
+	<div id=interfacesWin name=interfacesWin align=\"left\" style=\"width:100%;".@$razmer.";overflow:auto\" > 
+
+
 <form name=\"form_flag\">
 <table width=\"100%\"  cellpadding=\"0\" cellspacing=\"0\" style=\"border: 1px;
 	border-style: inset;\">
@@ -76,7 +79,7 @@ if($i>20)$razmer="height:600;";
 	<td valign=\"top\">
 <table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" class=\"sortable\" id=\"sort\">
 <tr>
-    <td width=\"25\" id=pane align=center>&plusmn;</td>
+    <td width=\"25\" id=pane align=center><img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('search_jurnal');\" align=left>&plusmn;</td>
 	<td width=\"25%\" id=pane align=center><span name=txtLang id=txtLang>Запрос</span></td>
     <td width=\"15%\" id=pane align=center><span name=txtLang id=txtLang>Дата</span></td>
 	<td width=\"10%\" id=pane align=center><span name=txtLang id=txtLang>Найдено</span></td>
@@ -88,12 +91,22 @@ if($i>20)$razmer="height:600;";
 	".$display."
 
     </table>
+
+	
 	</td>
 </tr>
     </table>
 	</form>
 </div>
-	";
+
+".'
+	<div class=cMenu id=cMenuNws> 
+	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews15>Добавить в поисковую базу</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews16>Удалить из журнала</A></TD></TR>	
+	</TABLE>
+</div>';
 return $_Return;
 }
 ?>

@@ -16,7 +16,7 @@ elseif($tip == 2) $Shablon=ReturnData("","where id=".$n,$flag.'_shablon');
 
 if($tip !=1){
 $cat=$LoadItems['Catalog'][$n]['parent_to'];
-$Catalog=$LoadItems['Catalog'][$cat]['name'];
+@$Catalog=$LoadItems['Catalog'][$cat]['name'];
 $Podcatalog=$LoadItems['Catalog'][$n]['name'];
 $Title=$LoadItems['System'][$flag];
 
@@ -148,6 +148,14 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
 	 }
 	 break;
 	 
+	 
+	 case("gbook"):
+	 $title="Отзывы - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $metas="Отзывы ".$LoadItems['System']['descrip'];
+     $keywords=$LoadItems['System']['keywords'];
+	 break;
+	 
+	 
 	 case("news"):
 	 if($SysValue['nav']['nav']=="ID"){
 	 $nameSTR=Vivod_page_meta(8,"where id='".$SysValue['nav']['id']."'","zag","kratko");
@@ -163,21 +171,28 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
      }
 	 break;
 
-	 case("gbook"):
-	 $nameSTR=Vivod_page_meta(7,"where otvet!='' order by id desc LIMIT 0, 5","tema","otsiv");
-	 $title=$nameSTR[0]." Вопросы и ответы - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
-	 $metas=$nameSTR[0]." Вопросы и ответы ".$LoadItems['System']['descrip'];
-     $keywords=$LoadItems['System']['keywords'];
-	 break;
 	 
 	 case("search"):
-	 $title="Поиск по сайту - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $title="Поиск по сайту - ".$LoadItems['System']['name'];
      $metas="Поиск по сайту - ".$LoadItems['System']['descrip'];
 	 $keywords="Поиск по сайту ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
      break;
 	 
+	 case("pricemail"):
+	 $title="Пожаловаться на цену - ".$LoadItems['System']['name'];
+     $metas="Пожаловаться на цену - ".$LoadItems['System']['descrip'];
+	 $keywords="Пожаловаться на цену ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
+     break;
+	 
+	 
+	  case("forma"):
+	 $title="Форма связи - ".$LoadItems['System']['name'];
+     $metas="Форма связи - ".$LoadItems['System']['descrip'];
+	 $keywords="Форма связи ".$LoadItems['System']['title'].", ".$LoadItems['System']['keywords'];
+     break;
+	 
 	 case("price"):
-	 $title="Прайс-лист - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $title="Прайс-лист - ".$LoadItems['System']['name'];
      $metas="Прайс-лист - ".$LoadItems['System']['descrip'];
 	 $keywords=$LoadItems['System']['keywords'];
      break;
@@ -195,19 +210,19 @@ $keywords_enabled=$LoadItems['Catalog'][$SysValue['nav']['id']]['keywords_enable
      break;
 	 
 	 case("clients"):
-	 $title="On-line проверка состояния заказа - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $title="On-line проверка состояния заказа - ".$LoadItems['System']['name'];
 	 $metas="On-line проверка состояния заказа - ".$LoadItems['System']['descrip'];
 	 $keywords="On-line проверка состояния заказа, ".$LoadItems['System']['keywords'];
      break;
 	 
 	  case("users"):
-	 $title="Личный кабинет - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $title="Личный кабинет - ".$LoadItems['System']['name'];
 	 $metas="Личный кабинет - ".$LoadItems['System']['descrip'];
 	 $keywords="On-line проверка состояния заказа, ".$LoadItems['System']['keywords'];
      break;
 	 
 	 case("opros"):
-	 $title="Опросы - ".$LoadItems['System']['title']." ".$LoadItems['System']['name'];
+	 $title="Опросы - ".$LoadItems['System']['name'];
 	 $metas="Опросы - ".$LoadItems['System']['descrip'];
 	 $keywords="Опросы, ".$LoadItems['System']['keywords'];
      break;

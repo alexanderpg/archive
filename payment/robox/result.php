@@ -25,6 +25,12 @@ fwrite($handle, $str);
 fclose($handle);
 }
 
+function UpdateNumOrder($uid){
+$last_num = substr($uid, -2);
+$total=strlen($uid);
+$ferst_num = substr($uid,0,($total-2));
+return $ferst_num."-".$last_num;
+}
 
 // Парсируем установочный файл
 $SysValue=parse_ini_file("../../phpshop/inc/config.ini",1);
@@ -57,16 +63,19 @@ else {
 mysql_select_db($SysValue['connect']['dbase'])or 
 @die("".PHPSHOP_error(102,$SysValue['my']['error_tracer'])."");
 
+$new_uid=UpdateNumOrder($inv_id);
+
 // Приверяем сущ. заказа
-$sql="select uid from ".$SysValue['base']['table_name1']." where uid='$inv_id'";
+$sql="select uid from ".$SysValue['base']['table_name1']." where uid='$new_uid'";
 $result=mysql_query($sql);
 $row=mysql_fetch_array($result);
 $uid=$row['uid'];
 
-if($uid == $inv_id){
+
+if($uid == $new_uid){
 // Записываем платеж в базу
 $sql="INSERT INTO ".$SysValue['base']['table_name33']." VALUES 
-('$inv_id','ROBOXchange Cash Register','$out_summ','".date("U")."')";
+('$new_uid','ROBOXchange Cash Register','$out_summ','".date("U")."')";
 $result=mysql_query($sql);
 WriteLog($out_summ,$inv_id,$crc);
 // print OK signature

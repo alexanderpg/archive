@@ -16,6 +16,7 @@ $JsHttpRequest =& new Subsys_JsHttpRequest_Php("windows-1251");
 $q = $_REQUEST['q'];
 $xid = $_REQUEST['xid'];
 $_num = $_REQUEST['num'];
+$addname = $_REQUEST['addname'];
 
 // Подключаем корзину
 //session_register('cart');
@@ -46,31 +47,50 @@ $LoadItems=CacheReturnBase("cart");
 
 function Chek($stroka)// проверка вводимых цифр
 {
-if (!ereg ("([0-9])", $stroka)) 
- {
- $stroka="0";
- }
+if (!ereg ("([0-9])", $stroka)) {$stroka="0";}
 return abs($stroka);
 }
 
 function Chek2($stroka)// проверка вводимых цифр
 {
-if (!ereg ("([0-9])", $stroka)) 
- {
- $stroka="0";
- }
+if (!ereg ("([0-9])", $stroka)) {$stroka="0";}
 return number_format(abs($stroka),"2",".","");
 }
+
+
+function CleanStr($str){
+	  $str=str_replace("/","",$str);
+	  $str=str_replace("\"","",$str);
+	  $str=str_replace("'","",$str);
+	  return $str;
+}
+
+$xid=Chek($xid);
+
 
 $sql="select * from ".$SysValue['base']['table_name2']." where id=$xid";
 $result=mysql_query($sql);
 @$row = mysql_fetch_array(@$result);
-$name=$row['name'];
+$name=CleanStr($row['name']);
+$name.=" ".$addname;
 $price=$row['price'];
+$baseinputvaluta=$row['baseinputvaluta'];
+$defvaluta=$LoadItems['System']['dengi'];
+
+//получаем исходную цену
+if ($baseinputvaluta) { //Если прислали баз. валюту
+	if ($baseinputvaluta!==$defvaluta) {//Если присланная валюта отличается от базовой
+		$vkurs=$LoadItems['Valuta'][$baseinputvaluta]['kurs'];
+		$price=$price/$vkurs; //Приводим цену в базовую валюту
+	}
+} //Если прислали баз. валюту
+//получаем исходную цену
 $price=($price+(($price*$LoadItems['System']['percent'])/100));
 $uid=$row['uid'];
 $id=$row['id'];
 $user=$row['user'];
+
+
 
 // Выборка из базы нужной колонки цены
 	if(session_is_registered('UsersStatus')){
@@ -78,10 +98,33 @@ $user=$row['user'];
 	  if($GetUsersStatusPrice>1){
 	   $pole="price".$GetUsersStatusPrice;
 	   $pricePersona=$row[$pole];
+
+	//получаем исходную цену
+	if ($baseinputvaluta) { //Если прислали баз. валюту
+		if ($baseinputvaluta!==$defvaluta) {//Если присланная валюта отличается от базовой
+			$vkurs=$LoadItems['Valuta'][$baseinputvaluta]['kurs'];
+			$pricePersona=$pricePersona/$vkurs; //Приводим цену в базовую валюту
+		}
+	} //Если прислали баз. валюту
+	//получаем исходную цену
+
+
+
+
 	   if(!empty($pricePersona)) 
 	     $price=($pricePersona+(($pricePersona*$LoadItems['System']['percent'])/100));
 	   }
 	}
+
+
+//Принимаем что товар добавляется другой
+$same=0;
+if (isset($cart[$xid])) {
+	if ($cart[$xid]['name']!==$name) { //Если такой товар есть и у него было другое имя, сказать что характеристики обновлены!
+		$same=1;
+	}
+}
+
 
 $num=@$cart[$xid]['num']+$_num;
 $cart_new=array(
@@ -115,9 +158,12 @@ return @$num;
 }
 
 function ReturnSumma($sum){ // Поправки по курсу
+global $LoadItems;
+$formatPrice = unserialize($LoadItems['System']['admoption']);
+$format=$formatPrice['price_znak'];
 $kurs=GetKursOrder();
 $sum*=$kurs;
-return number_format($sum,"2",".","");
+return number_format($sum,$format,"."," ");
 }
 
 function GetKursOrder(){ // Курс
@@ -133,17 +179,17 @@ return  $LoadItems['Valuta'][$valuta]['kurs'];
 function ReturnSum($cart)
 {
 while (list($key, $value) = @each($cart)) @$sum+=$cart[$key]['price']*$cart[$key]['num'];
-@$sum=number_format($sum,"2",".","");
 $sum=ReturnSumma($sum);
 return @$sum;
 }
 
-function ReturnSum_R($cart)
-{
-global $LoadItems;
-while (list($key, $value) = @each($cart)) @$sum+=$cart[$key]['price']*$cart[$key]['num']*$LoadItems['System']['kurs'];
-@$sum=number_format($sum,"2",".","");
-return @$sum;
+function GetValuta(){ // Валюта
+global $LoadItems,$_SESSION;
+
+if(isset($_SESSION['valuta'])) $valuta=$_SESSION['valuta'];
+  else $valuta=$LoadItems['System']['dengi'];
+
+return  $LoadItems['Valuta'][$valuta]['code'];
 }
 
 // Формируем результат прямо в виде PHP-массива!
@@ -151,7 +197,7 @@ $_RESULT = array(
   "q"     => $q,
   "md5"   => md5($q),
   "num"   => ReturnNum($cart),
-  "sum" => ReturnSum($cart),
-  "sum_r" => ReturnSum_R($cart)
+  "sum" => ReturnSum($cart)." ".GetValuta(),
+  "same" => $same
 ); 
 ?>

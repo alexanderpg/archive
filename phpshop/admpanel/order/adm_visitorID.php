@@ -84,15 +84,42 @@ return $t;
 }
 
 function OplataMetod($tip,$datas){ 
-if($tip==1) return "Счет в банк";
-if($tip==2) return "Квитанция";
-if($tip==3) return "Наличная";
-if($tip==4) return "CyberPlat";
-if($tip==5) return '<a href="javascript:DoReloadMainWindow(\'order_payment\',\''.$datas.'\',\''.date("d-m-Y",$datas).'\');" title="Проверить платеж">ROBOXchange</a>';
-if($tip==6) return '<a href="javascript:DoReloadMainWindow(\'order_payment\',\''.date("d-m-Y",$datas).'\');" title="Проверить платеж">WebMoney</a>';
-if($tip==7) return '<a href="javascript:DoReloadMainWindow(\'order_payment\',\''.date("d-m-Y",$datas).'\');" title="Проверить платеж">Z-Payment</a>';
-if($tip==8) return '<a href="javascript:DoReloadMainWindow(\'order_payment\',\''.date("d-m-Y",$datas).'\');" title="Проверить платеж">RBS</a>';
-else return "NoN";
+global $GetSystems;
+
+if($tip == 1) $s1="selected";
+if($tip == 2) $s2="selected";
+if($tip == 3) $s3="selected";
+if($tip == 4) $s4="selected";
+if($tip == 5) $s5="selected";
+if($tip == 6) $s6="selected";
+if($tip == 7) $s7="selected";
+if($tip == 8) $s8="selected";
+
+if($tip>3) $test_p='
+<input type="button" value="Платежи" onclick="DoReloadMainWindow(\'order_payment\',\''.$datas.'\',\''.date("d-m-Y",$datas).'\');">';
+
+$option=unserialize($GetSystems['admoption']);
+@$dis.='<option value="3" '.$s3.'>Наличная оплата</option>';
+@$dis.='<option value="2" '.$s2.'>Сбербанк</option>';
+@$dis.='<option value="1" '.$s1.'>Счет в банк</option>';
+@$dis.='<option value="4" '.$s4.'>CyberPlat</option>';
+@$dis.='<option value="5" '.$s5.'>ROBOXchange</option>';
+@$dis.='<option value="6" '.$s6.'>WebMoney</option>';
+@$dis.='<option value="7"  '.$s7.'>Z-Payment</option>';
+@$dis.='<option value="8" '.$s8.'>RBS</option>';
+$disp='
+<table>
+<tr>
+	<td>
+	<select name="order_metod_new">
+'.@$dis.'
+</select>
+	</td>
+	<td>'.$test_p.'</td>
+</tr>
+</table>';
+
+return $disp;
 }
 
 
@@ -134,8 +161,24 @@ $n=1;
 $n++;
 @$num+=$val['num'];
 @$sum+=$val['price']*$val['num'];
+//Определение и суммирование веса
+ $goodid=$val['id'];
+ $goodnum=$val['num'];
+ $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
+ $wresult=mysql_query($wsql);
+ $wrow=mysql_fetch_array($wresult);
+ $cweight=$wrow['weight']*$goodnum;
+ if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
+ $weight+=$cweight;
+
+
 }
-$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum);
+
+//Обнуляем вес товаров, если хотя бы один товар был без веса
+if ($zeroweight) {$weight=0;}
+
+
+$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum,$weight);
  $disCart.="
 <tr class=row3 onclick=\"miniWin('adm_order_deliveryID.php?deliveryId=".GetDelivery($PERSON['dostavka_metod'],"id")."&orderId=".$id."',400,270,event)\" onmouseover=\"show_on('r".$n."')\" id=\"r".$n."\" onmouseout=\"show_out('r".$n."')\">
   <td style=\"padding:3\">$n</td>
@@ -200,6 +243,7 @@ $row = mysql_fetch_array($result);
     $id=$row['id'];
     $datas=$row['datas'];
 	$uid=$row['uid'];
+	$user=$row['user'];
 	$order=unserialize($row['orders']);
 	$status=unserialize($row['status']);
 	$statusi=$row['statusi'];
@@ -275,15 +319,18 @@ tabPane.addTabPage( document.getElementById( \"intro-page\" ) );
 	<td valign=\"top\">
 	<table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" >
 <tr>
-	<td id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Покупатель</span></td>
-	<td id=pane align=center colspan=3><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Адрес доставка</span></td>
+	<td id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Адрес доставка</span></td>
+	<td id=pane align=center colspan=3><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Покупатель</span></td>
 </tr>
 <tr bgcolor=\"ffffff\">
   <td>
-   <input type=\"text\" name=\"name_person\" style=\"width: 100%; height: 50;\" value=\"".$order['Person']['name_person']."\">
+  
+  
+  <textarea name=\"adr_name\" style=\"width: 100%; height: 50;\">".$order['Person']['adr_name']."</textarea>
+
   </td>
   <td colspan=3>
-  <textarea name=\"adr_name\" style=\"width: 100%; height: 30;\">".$order['Person']['adr_name']."</textarea><br>
+  <textarea name=\"name_person\" style=\"width: 100%; height: 35;\">".$order['Person']['name_person']."</textarea><br>
 &nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>Время доставки от</span> <input type=\"text\" name=dos_ot style=\"width: 50px;\" value=\"".$order['Person']['dos_ot']."\"> 
 &nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>до</span> <input type=\"text\" name=dos_do style=\"width: 50px;\" value=\"".$order['Person']['dos_do']."\">
 </td>
@@ -297,7 +344,7 @@ tabPane.addTabPage( document.getElementById( \"intro-page\" ) );
   <td>
   <input type=\"text\" name=tel_code style=\"width: 50px;\" value=\"".$order['Person']['tel_code']."\"><input type=\"text\" name=tel_name style=\"width: 100px;\" value=\"".$order['Person']['tel_name']."\">
 </td>
-  <td style=\"padding:3\">".OplataMetod($order['Person']['order_metod'],$datas)."</td>
+  <td style=\"padding:3\" width=200>".OplataMetod($order['Person']['order_metod'],$datas)."</td>
   <td>
   <textarea name=\"org_name\" style=\"width: 100%; height: 30;\">".$order['Person']['org_name']."</textarea></td>
 </tr>
@@ -320,9 +367,13 @@ tabPane.addTabPage( document.getElementById( \"intro-page\" ) );
 	<div style=\"padding:5\" align=\"center\">
 	
 	";
-	if($order['Person']['user_id']>0)
-echo"<button style=\"width: 14em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('../shopusers/adm_userID.php?id=".$order['Person']['user_id']."',500,360)\"> <img src=\"../img/icon_user.gif\"  border=\"0\" align=\"absmiddle\" hspace=\"5\">
+	if($user>0)
+echo"<button style=\"width: 14em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('../shopusers/adm_userID.php?id=".$order['Person']['user_id']."',500,580)\"> <img src=\"../img/icon_user.gif\"  border=\"0\" align=\"absmiddle\" hspace=\"5\">
 <span name=txtLang id=txtLang>Пользователь</span></button>";
+   else echo"<button style=\"width: 14em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('../shopusers/adm_users_new.php?visitorID=".$id."',500,580)\"> <img src=\"../img/icon_user.gif\"  border=\"0\" align=\"absmiddle\" hspace=\"5\">
+<span name=txtLang id=txtLang>Авторизовать</span></button>";
+
+
 echo"
 
   <button style=\"width: 14em; height: 2.2em; margin-left:5\"  onclick=\"DoPrint('forms/forma.html?orderID=".$id."')\">
@@ -447,6 +498,28 @@ if(isset($productSAVE))
 {
 if(CheckedRules($UserStatus["visitor"],1) == 1){
 
+
+$cart2=$order['Cart']['cart'];
+foreach(@$cart2 as $val){
+
+//Определение и суммирование веса
+ $goodid=$val['id'];
+ $goodnum=$val['num'];
+ $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
+ $wresult=mysql_query($wsql);
+ $wrow=mysql_fetch_array($wresult);
+ $cweight=$wrow['weight']*$goodnum;
+ if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
+ $weight+=$cweight;
+
+
+}
+
+//Обнуляем вес товаров, если хотя бы один товар был без веса
+if ($zeroweight) {$weight=0;}
+
+
+$order['Person']['order_metod'] = $_POST['order_metod_new'];
 $order['Person']['name_person']=MyStripSlashes($_POST['name_person']);
 $order['Person']['adr_name']=MyStripSlashes($_POST['adr_name']);
 $order['Person']['dos_ot']=MyStripSlashes($_POST['dos_ot']);
@@ -454,6 +527,7 @@ $order['Person']['dos_do']=MyStripSlashes($_POST['dos_do']);
 $order['Person']['tel_code']=MyStripSlashes($_POST['tel_code']);
 $order['Person']['tel_name']=MyStripSlashes($_POST['tel_name']);
 $order['Person']['org_name']=MyStripSlashes($_POST['org_name']);
+$order['Cart']['weight']=$weight;
 
 $Status=array(
 "maneger"=>$maneger_new,
@@ -483,7 +557,6 @@ $Status=array(
          items='$items_update' 
          where id='".$val['id']."'";
 		 $result=mysql_query($sql)or @die("".mysql_error()."");
-		 //exit("Склад:".$sklad." / В заказе:".$val['num']);
 		 }
 	 }
  echo '

@@ -9,6 +9,7 @@ $GetSystems=GetSystems();
 $option=unserialize($GetSystems['admoption']);
 $Lang=$option['lang'];
 require("../language/".$Lang."/language.php");
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -63,7 +64,7 @@ foreach ($IdsArray as $v)
 $result=mysql_query($v);
 if(@$result) $disp= "
 > <b>MySQL</b>: $sql_area<br><br>
-> <b>MySQL: inquiry is executed.</b>";
+> <b>MySQL: запрос выполнен.</b>";
 else $disp="
 > <b>MySQL</b>: ".mysql_error()."";
 echo ('
@@ -93,12 +94,24 @@ echo ('
 }
 else{
 
-while (list($val) = each($SysValue['base']))
+
+
+while (list($val) = each($SysValue['base'])){
+
+    if($SysValue['base'][$val] != "phpshop_system")
+	   if($SysValue['base'][$val]!="phpshop_users")
+@$bases2.="TRUNCATE ".$SysValue['base'][$val].";
+";
+
+
 @$bases.=$SysValue['base'][$val].", ";
+}
 
 $bases=substr($bases,0,strlen($bases)-2);
-$bases2=ereg_replace(",phpshop_system","",$bases);
-$bases2=ereg_replace(",phpshop_users","",$bases2);
+
+
+
+
 ?>
 <TABLE cellSpacing=1 cellPadding=5 width="100%" align=center border=0>
 <FORM method="post" name="sql_forma" id="sql_forma">
@@ -111,14 +124,13 @@ $bases2=ereg_replace(",phpshop_users","",$bases2);
 <tr>
 	<td><select name="sql_query" onchange="SelectQuerySql(this.value)">
 			<option value="" SELECTED id=txtLang>Выбрать команду SQL</option>
-			<!-- <option value="TRUNCATE $bases2">Выгрузить базу</option> -->
 			<option value="OPTIMIZE TABLE <?=$bases?>" id=txtLang>Оптимизировать базу</option>
 			<option value="REPAIR TABLE <?=$bases?>" id=txtLang>Починить базу</option>
 			<option value="DELETE FROM <?=$table_name?> WHERE ID=" id=txtLang>Удалить каталог</option>
             <option value="DELETE FROM <?=$table_name12?> WHERE ID=" id=txtLang>Удалить страницу</option>
-			<option value="TRUNCATE <?=$bases2?>" id=txtLang>Очистить базу</option>
+			<option value="<?=$bases2?>" id=txtLang>Очистить базу</option>
 			<option value="DROP DATABASE <?=$bases?>" id=txtLang>Уничтожить базу</option>
-</select></td>
+</select> * Выберете "Очистить базу" для удаления тестовой базы.</td>
 </tr>
 </table>
 
@@ -136,6 +148,7 @@ $bases2=ereg_replace(",phpshop_users","",$bases2);
 <INPUT class=but onclick="SqlSend()" type=button value=OK> <INPUT class=but type=reset value=Сброс name="btnLang"> 
 <input type="hidden" name="sql_go" value="ok">
 	<input type=submit value=Отмена class=but onClick="return onCancel();" name="btnLang">
+	
 	</td>
 </tr>
 </table>

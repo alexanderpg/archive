@@ -1,17 +1,27 @@
 <?
 
+
+$sql="select * from ".$SysValue['base']['table_name2']." where (id=".$SysValue['nav']['id'].")";
+$result=mysql_query($sql);
+@$SysValue['sql']['num']++;
+@$row = mysql_fetch_array($result);
+
+$baseinputvaluta=$row['baseinputvaluta'];
+
 // Определяем переменные
-$SysValue['other']['productNameLat']=NameToLatin($LoadItems['Product'][$SysValue['nav']['id']]['name']);
+$SysValue['other']['productNameLat']=$LoadItems['Product'][$SysValue['nav']['id']]['name'];
 $SysValue['other']['productUid']=$SysValue['nav']['id'];
 $SysValue['other']['productName']= $LoadItems['Product'][$SysValue['nav']['id']]['name'];
-$SysValue['other']['productPrice']=GetPriceValuta($LoadItems['Product'][$SysValue['nav']['id']]['price']);
+
+$SysValue['other']['productPrice']=GetPriceValuta($LoadItems['Product'][$SysValue['nav']['id']]['price'],"",$baseinputvaluta);
+//$SysValue['other']['productPrice']=GetPriceValuta($LoadItems['Product'][$SysValue['nav']['id']]['price']);
 
 if(empty($LoadItems['Product'][$SysValue['nav']['id']]['pic_small']))
 $LoadItems['Product'][$id]['pic_small']="images/shop/no_photo.gif";
 $SysValue['other']['productImg']= $LoadItems['Product'][$SysValue['nav']['id']]['pic_small'];
 
 
-if($send_price_link and $mail and $name_person and $link_to_page and $_POST['key']==substr(md5(session_id()),0,5)){
+if(@$send_price_link and $mail and $name_person and $link_to_page and $_POST['key']==$_SESSION['text']){
 
 $codepage  = "windows-1251";              
 $header  = "MIME-Version: 1.0\n";
@@ -40,7 +50,7 @@ E-mail: ".@$mail."
 Наименование: ".$LoadItems['Product'][$SysValue['nav']['id']]['name']."
 Артикул: ".$LoadItems['Product'][$SysValue['nav']['id']]['uid']."
 ID: ".$SysValue['nav']['id']."
-Прямая ссылка:  ".$SERVER_NAME."/shop/UID_".$SysValue['nav']['id']."_".$SysValue['other']['productNameLat'].".html
+Прямая ссылка:  ".$SERVER_NAME."/shop/UID_".$SysValue['nav']['id'].".html
 Дата/время: ".date("d-m-y H:i a")."
 IP:".$REMOTE_ADDR."
 ---------------------------------------------------------
@@ -49,7 +59,7 @@ IP:".$REMOTE_ADDR."
 Powered & Developed by www.PHPShop.ru
 ".$SysValue['license']['product_name'];
 mail($LoadItems['System']['adminmail2'],$zag, $content, $header);
-header("Location: /shop/UID_".$SysValue['nav']['id']."_".$SysValue['other']['productNameLat'].".html");
+header("Location: /shop/UID_".$SysValue['nav']['id'].".html");
  }
 else{
 

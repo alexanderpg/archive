@@ -99,14 +99,29 @@ if(@$send_to_order and @$mail and @$name_person and @$tel_name and @$adr_name)
 if(is_array(@$cart))
 foreach($cart as $j=>$i)
   {
-  @$disCart.=$cart[$j]['name']." (".$cart[$j]['num']." шт. * ".ReturnSummaNal($cart[$j]['price'],0).") -- ".ReturnSummaNal($cart[$j]['price']*$cart[$j]['num'],0)." ".GetValutaOrder()."
+  @$disCart.=$cart[$j]['uid']."  ".$cart[$j]['name']." (".$cart[$j]['num']." шт. * ".ReturnSummaNal($cart[$j]['price'],0).") -- ".ReturnSummaNal($cart[$j]['price']*$cart[$j]['num'],0)." ".GetValutaOrder()."
 ";
   @$sum+=$cart[$j]['price']*$cart[$j]['num'];
   @$num+=$cart[$j]['num'];
+
+//Определение и суммирование веса
+ $goodid=$cart[$j]['id'];
+ $goodnum=$cart[$j]['num'];
+ $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
+ $wresult=mysql_query($wsql);
+ $wrow=mysql_fetch_array($wresult);
+ $cweight=$wrow['weight']*$goodnum;
+ if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
+ $weight+=$cweight;
   }
+
+//Обнуляем вес товаров, если хотя бы один товар был без веса
+if ($zeroweight) {$weight=0;}
+
+
  @$sum=number_format($sum,"2",".","");
  $ChekDiscount=ChekDiscount($sum);
- $GetDeliveryPrice=GetDeliveryPrice($_POST['d'],$sum);
+ $GetDeliveryPrice=GetDeliveryPrice($_POST['d'],$sum,$weight);
 @$disCart.="
 -------------------------------------------------------
 Итого -- ".ReturnSummaNal($sum,0)." ".GetValutaOrder()."
@@ -119,13 +134,21 @@ $content="Доброго времени!
 --------------------------------------------------------
 Спасибо за покупку в нашем интернет-магазине '".$LoadItems['System']['name']."'
 Наши менеджеры свяжутся с вами по координатам, 
-оставленными в форме заказа.
+оставленным в форме заказа.
 
 
 Подробности заказа № ".@$ouid." от ".date("d-m-y")."
 --------------------------------------------------------
-Контактное лицо: ".@$name_person."
+Контактное лицо: ".@$name_person;
+
+if($org_name!=""){
+$content.="
 Компания: ".@$org_name."
+ИНН: ".@$org_inn."
+КПП: ".@$org_kpp;
+}
+
+$content.="
 Телефон: ".$tel_code."-".@$tel_name."
 Адрес и доп. инф: ".@$adr_name."
 Желаемое время доставки: ".$dos_ot." - ".$dos_do."
@@ -139,14 +162,14 @@ E-mail: ".@$mail."
 if(!isset($_SESSION['UsersId']))
 $content.="
 
-Вы всегда можете проверить статус заказа, распечатать платежные 
-документы он-лайн через 'Мой заказ' или по ссылке http://".$SERVER_NAME.$SysValue['dir']['dir']."/clients/?mail=".@$mail."&order=".@$ouid."
+Вы всегда можете проверить статус заказа, загрузить файлы, распечатать платежные 
+документы он-лайн по ссылке http://".$SERVER_NAME.$SysValue['dir']['dir']."/clients/?mail=".@$mail."&order=".@$ouid."
 E-mail: ".@$mail."
 № Заказа: ".@$ouid."";
 else
 $content.="
 
-Вы всегда можете проверить статус заказа, распечатать платежные 
+Вы всегда можете проверить статус заказа, загрузить файлы, распечатать платежные 
 документы он-лайн через 'Личный кабинет' или по ссылке http://".$SERVER_NAME.$SysValue['dir']['dir']."/users/";
 
 $content.="
@@ -178,8 +201,16 @@ $zag=$LoadItems['System']['name']." - Ваш заказ ".@$ouid."/".date("d-m-y")." усп
 
 Подробности заказа № ".@$ouid."/".date("d-m-y")."
 ---------------------------------------------------------
-Контактное лицо: ".@$name_person."
+Контактное лицо: ".@$name_person;
+
+if($org_name!=""){
+$content_adm.="
 Компания: ".@$org_name."
+ИНН: ".@$org_inn."
+КПП: ".@$org_kpp;
+}
+
+$content_adm.="
 Телефон: ".@$tel_code."-".@$tel_name."
 Адрес и доп. инф: ".@$adr_name."
 Желаемое время доставки: ".$dos_ot." - ".$dos_do."
@@ -241,12 +272,10 @@ $Status=array(
 "time"=>""
 );
 
-// Продавцы
-foreach($_SESSION['cart'] as $v)
-@$seller.="i".$v['user']."i";
+
 
  $sql="INSERT INTO ".$SysValue['base']['table_name1']."
-   VALUES ('','$datas','$ouid','$Content','".serialize($Status)."','".$_SESSION['UsersId']."','".@$seller."','0')";
+   VALUES ('','$datas','$ouid','$Content','".serialize($Status)."','".$_SESSION['UsersId']."','','0')";
    $result=mysql_query($sql);
 //session_unregister('cart');
 

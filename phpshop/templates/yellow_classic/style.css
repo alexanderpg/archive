@@ -15,6 +15,31 @@ body{
 	line-height: 13px;
    color:black;
 }
+
+a.activ_catalog{
+	background: #183464;
+	color: white;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	text-decoration: none;
+}
+#comparewindow{
+   position:absolute;
+   left:10px;
+   top:0;
+   visibility:hidden; 
+   width: 250px; 
+   height: 68px;
+   Z-INDEX: 2;
+   BACKGROUND: #C0D2EC;
+   padding:10px;
+   border: solid;
+   border-width: 1px; 
+   border-color:#4D88C8;
+   FILTER: revealTrans  (duration=1,transition=4);
+}
 img.imgOff {
 	border-color: #97989C;
 	border-style: solid;
@@ -22,7 +47,7 @@ img.imgOff {
 }
 
 img.imgOn {
-	border-color: #A12622;
+	border-color: #B9C2D0;
 	border-style: solid;
 	border-width: 1px;
 }
@@ -480,4 +505,85 @@ input.but{
    border-width: 1px;
    background-color: #FFE600;
    color:#4B4B4B;
+}
+/*Стили кнопок табов*/
+
+
+.dynamic-tab-pane-control.tab-pane {
+	position:	relative;
+	width:		100%;
+}
+
+.dynamic-tab-pane-control .tab-row .tab {
+	font-family:	Verdana, Helvetica, Arial;
+	font-size:		12px;
+	cursor:			Default;
+	display:		inline;
+	margin:			1px -5px 1px 5px;
+	float:			left;
+	padding:		3px 6px 3px 6px;
+	background:		#EDF5F8;
+	border:			1px solid;
+	border-color:	#AED3DC;
+	border-left:	0;
+	border-bottom:	0;
+	border-top:		0;
+	
+	cursor:			hand;
+	cursor:			pointer;
+	
+	z-index:		1;
+	position:		relative;
+	top:			0;
+}
+
+.dynamic-tab-pane-control .tab-row .tab.selected {
+	border:			1px solid #AED3DC;
+	border-bottom:	0;
+	z-index:		3;
+	padding:		2px 6px 5px 6px;
+	margin:			1px -6px -2px 0px;
+	top:			-2px;
+	background:		white;
+}
+
+.dynamic-tab-pane-control .tab-row .tab a {
+	font-family:		Verdana, Helvetica, Arial;
+	font-size:			12px;
+	color:				#2E9BC2;
+	text-decoration:	none;
+	cursor:			hand;
+	cursor:			pointer;	
+}
+
+.dynamic-tab-pane-control .tab-row .hover a {
+	color:	#2E9BC2;
+}
+
+.dynamic-tab-pane-control .tab-row .tab.selected a {
+	font-weight: bolder;
+}
+
+.dynamic-tab-pane-control .tab-page {
+	clear:			both;
+	border:			1px solid #AED3DC;
+	background:		White;
+	z-index:		2;
+	position:		relative;
+	top:			-2px;
+	color:			#696969;
+	font-size:		11px;
+	padding:		10px;
+}
+
+.dynamic-tab-pane-control .tab-row {
+	z-index:		1;
+	white-space:	nowrap;
+	background:		#EDF5F8;
+	height:			1.85em;
+	width:			100%;
+}
+
+.tab-page a{
+	color: #AE8895;
 }

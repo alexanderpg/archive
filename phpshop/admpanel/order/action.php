@@ -38,16 +38,31 @@ $n=1;
 $n++;
 @$num+=$val['num'];
 @$sum+=$val['price']*$val['num'];
+//Определение и суммирование веса
+ $goodid=$val['id'];
+ $goodnum=$val['num'];
+ $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
+ $wresult=mysql_query($wsql);
+ $wrow=mysql_fetch_array($wresult);
+ $cweight=$wrow['weight']*$goodnum;
+ if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
+ $weight+=$cweight;
+
+
 }
-$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum);
+
+//Обнуляем вес товаров, если хотя бы один товар был без веса
+if ($zeroweight) {$weight=0;}
+
+
+$GetDeliveryPrice=GetDeliveryPrice($PERSON['dostavka_metod'],$sum,$weight);
  $disCart.="
 <tr class=row3 onclick=\"miniWin('adm_order_deliveryID.php?deliveryId=".GetDelivery($PERSON['dostavka_metod'],"id")."&orderId=".$_REQUEST['uid']."',400,270,event)\" onmouseover=\"show_on('r".$n."')\" id=\"r".$n."\" onmouseout=\"show_out('r".$n."')\">
   <td style=\"padding:3\">$n</td>
   <td style=\"padding:3\"></td>
   <td style=\"padding:3\">Доставка - ".GetDelivery($PERSON['dostavka_metod'],"city")."</td>
   <td style=\"padding:3\">1</td>
-   <td style=\"padding:3\">".GetDeliveryPrice($PERSON['dostavka_metod'],$sum)
-."</td>
+   <td style=\"padding:3\">".GetDeliveryPrice($PERSON['dostavka_metod'],$sum,$weight)."</td>
   
 </tr>
 ";
@@ -77,15 +92,16 @@ return $disCart;
 }
 
 
+
 function GetProductInfo($productID){
 global $table_name2;
-$sql="select * from $table_name2 where id='$productID'";
+$sql="select * from $table_name2 where id=$productID";
 $result=mysql_query($sql);
 $row = mysql_fetch_array($result);
 $num=mysql_num_rows($result);
 $cart=array(
 "id"=>$productID,
-"name"=>$row['name'],
+"name"=>CleanStr($row['name']),
 "price"=>$row['price'],
 "priceBox"=>$row['priceBox'],
 "numBox"=>$row['numBox'],

@@ -18,6 +18,7 @@ $dir="./";
 return "base.sql";
 }
 
+
 // Глобалсы
 if(ini_get('register_globals') == 1) $register_globals="............<img src=\"rewritemodtest/icon-activate.gif\" border=0 align=absmiddle> <b class='ok'>Ok</b>";
   else $register_globals="............<img src=\"rewritemodtest/errormessage.gif\"  border=0 align=absmiddle> <b class='error'>Error</b>";
@@ -98,6 +99,7 @@ pre.{
 }
 td.{
 	COLOR: #000000;
+	FONT-SIZE: 12px;
 }
 a{
 	COLOR: #0066cc;
@@ -122,20 +124,22 @@ window.open(url,"_blank","left=300,top=100,width="+w+",height="+h+",location=0,m
 </script>
 </head>
 <body>
-<h1><?= $SysValue['license']['product_name']?></h1>
+<h1>Установка <?= $SysValue['license']['product_name']?></h1>
 <table width="100%">
 <tr>
     <td width="150" bgcolor="D4E3F7" valign="top" style="padding:10">
 	<b style="color:#1054AF">Оглавление</b><br><br>
-<FONT face=wingdings>1</FONT> <a href="#id1">Требования</a><br>
-<FONT face=wingdings>1</FONT> <a href="#id2">Установка Denwer</a><br>
-<FONT face=wingdings>1</FONT> <a href="#id3">Установка</a><br>
-<FONT face=wingdings>1</FONT> <a href="#id4">Лицензия</a><br>
-<FONT face=wingdings>1</FONT> <a href="#error">Коды ошибок</a><br>
-<FONT face=wingdings>1</FONT> <a href="#id5">Шаблонизатор</a><br>
-<FONT face=wingdings>1</FONT> <a href="#id7">Переменные</a><br>
-<FONT face=wingdings>1</FONT> <a href="#id8">API</a><br>
-<FONT face=wingdings>1</FONT> <a href="#id9">Благодарности</a><br>
+<a href="#id1">Требования</a><br>
+<a href="#id2">Установка Denwer</a><br>
+<a href="#id3">Установка</a><br>
+<a href="#id11">Обновление</a><br>
+<a href="#id4">Лицензия</a><br>
+<a href="#error">Коды ошибок</a><br>
+<a href="#id5">Шаблонизатор</a><br>
+<a href="#id7">Переменные</a><br>
+<a href="#id8">API подключение внешнего модуля</a><br>
+<a href="#id12">Файл .htaccess</a><br>
+<a href="#id9">Благодарности</a><br>
 
 	</td>
 	<td width="10"></td>
@@ -161,7 +165,7 @@ window.open(url,"_blank","left=300,top=100,width="+w+",height="+h+",location=0,m
 
 <p>
 <a name="id2"></a>
-<h4>2. Установки на локальный сервер Denwer</h4> 
+<h4>2. Установки на локальный сервер Denwer (только для Windows)</h4> 
 <ol>
 <li>Установить <a href="http://www.phpshop.ru/loads/ThLHDegJUj/Denwer.exe" target="_blank">
 Denwer 
@@ -173,7 +177,7 @@ Denwer
 </p>
 <p>
 <a name="id3"></a>
-<h4>3. Установка и обновление для всех серверов</h4>
+<h4>3. Установка для всех серверов</h4>
 <ol>
 <li>Создайте новую базу MySQL на своем сервере.
 <li>
@@ -189,32 +193,43 @@ dbase="Enterprise";           # имя вашей базы
 </li>
 <li>
 <a name="id3_2"></a>
-Воспользуйтесь встроенным <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="javascript:miniWin('install.php',550,570)">инсталлятором</a> для установки базы или загрузите образ базы <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="<?=GetFile()?>"><?=GetFile()?></a> через интерфейс <b>phpMyAdmin</b> (ставится отдельно).<br><br>
+Воспользуйтесь встроенным <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="javascript:miniWin('install.php',550,570)">инсталлятором</a> для установки базы.<br><br>
 </li>
-<li>Установите опцию CMOD 777 (UNIX сервера) для папок (существование папок определяется версией ПО):
+<li>Установите опцию CMOD 777 (UNIX сервера) для папок (в ftp-менеджере выбрать нужную папку, нажать правой клавишей мышки, выбрать опцию доступ/права/CMOD/ и выставить значение 777):
 <br><br>
 <ol >
+<li class=red>license (для генерации временной лицензии Trial)
 <li class=red>UserFiles/Image
 <li class=red>files/price
 <li class=red>phpshop/admpanel/csv
 <li class=red>phpshop/admpanel/dumper/backup
-<li class=red>phpshop/admpanel/dumper/backup/dumper.cfg.php  (CMOD 766)
 </ol>
 <br><br>
-<li>Для входа в <a href="../phpshop/admpanel/">административную панель</a> нажмите F12.<br> 
-При установке пользователь и пароль по умолчанию <strong>root</strong>.<br>
-Внимание, настоятельно рекомендуется сменить начальный пароль.<br>
-После смены пароля требуется перезапуск браузера.
+<li>Для входа в <a href="../phpshop/admpanel/">административную панель</a> нажмите клавишу  <strong>F12</strong>.<br> 
+При установке пользователь и пароль задается в ручном режиме. По желанию, регистрационные данные отсылаются на e-mail. После смены пароля требуется перезапуск браузера.
 <br><br>
-<?
-if(file_exists("./update/install.php")) echo ('
-<li>Обновление выполняется по инструкции файла <a href="Update.txt">Update.txt</a> или через встроенный <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="javascript:miniWin(\'update/install.php\',550,550)">инсталлятор обновлений</a>
-')?>
+</ol>
+<a name="id11"></a>
+<h4>4. Обновление</h4>
+Обновление выполняется по инструкции:
+<br><br>
+<ol >
+<li>Создайте копию текущей базы данных через утилиту "Резервные копи базы": База -> Резервные копи базы (Backup)
+<li>Создаем папку /old/ загружаем туда все файлы из корневой директории www
+<li>Загружаем в очищенную директорию www новые файлы из архива новой версии
+<li>Из старого файла config.ini берем параметры подключения к базе данных (первые 5 строк) и вставляем в новый конфиг (/phpshop/inc/config.ini)
+<li>Запускаем <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="javascript:miniWin('update/install.php',550,550)">апдейтер баз данных</a> (ваш_сайт/install/update/), выбираем текущую версию, если ее там нет, то обновлять базу не нужно. Стираем папку /install/
+<li>Из папки /old/ копируем папку /UserFiles со старыми картинками в обновленный скрипт в тоже место
+<li>По необходимости копируем старый шаблон /phpshop/templates/, но с учетом что в нем могли быть внесены изменения для новой версии (сравнить с оригиналом)
+</ol>
+<br><br>
+<li>Для миграции (перехода) со скрипта ShopScript запустите <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="./migration/" target="_blank">программу  миграции ShopScript -&gt; PHPShop</a>. Товарная база, страницы, новости будут сохранены для версии PHPShop.
+
 </ol>
 </p>
 <p>
 <a name="id4"></a>
-<h4>4. Лицензия</h4>
+<h4>5. Лицензия</h4>
 <ol>
 <li> <b>Лицензионное соглашение</b><br><br>
 <textarea style="width:100%;height:300">
@@ -254,7 +269,7 @@ if(file_exists("./update/install.php")) echo ('
 </ol>
 </p>
 <a name="error"></a>
-<p><h4>5. Коды ошибок</h4>
+<p><h4>6. Коды ошибок</h4>
 <ol>
 <li><b>101 Ошибка подключения к базе</b><br><br>
 <ul>
@@ -278,65 +293,76 @@ dbase="Enterprise";           # имя базы
 <ul>
 <li>Не включена опция Register Globals ON 
 <li>Проверьте существования папки с выбранным шаблоном: <strong>phpshop/templates/имя_шаблона</strong>.
-<li>Через панель администрирования (<b>опция "Система"</b>) выберете существующий шаблон.
+<li>Через <img src="../phpshop/admpanel/img/icon-setup.gif" alt=""  border="0" align="absmiddle" hspace="5"><a href="../phpshop/admpanel/" target="_blank">панель администрирования</a> (<b>опция "Система"</b>) выберете существующий шаблон.
 <li>Имя шаблона должно совпадать с именем папки (см. выше)
 </ul><br>
 <li><b>105 Ошибка существования файла install.php</b><br><br>
 <ul>
-<li>В целях безопасности удалите файл <b>install/install.php</b> и папку <strong>/install/update</strong>
-<li>Для отключения этой проверки измените значение переменной check_install="false"; в установочном файле config.ini (см. выше)
+<li>В целях безопасности удалите папку <b>/install</b>
+<li>Для отключения этой проверки измените значение переменной check_install="false"; в установочном файле config.ini (см. выше) (не рекомендуется)
 </ul>
 </ol>
 <a name="id5"></a>
-<p><h4>6. Шаблонизатор</h4>
+<p><h4>7. Шаблонизатор</h4>
 Папка с шаблонами расположена по адресу: <strong>phpshop/templates/имя_шаблона/</strong><br>
-Имя текущего шаблона можно узнать по нажатию клавиши F9 клавиатуры или в разделе смены шаблонов административной части.
+Имя текущего шаблона можно узнать по нажатию клавиши F9 клавиатуры или в разделе смены шаблонов административной части. Файлы выполнены на языке HTML. В файлах шаблонов действует логика: @перемнная@ заменяется на результат вывода функции и подставляется в файл. Список основных перемнных расположен <a href="#id7">ниже</a>.
 <pre style="padding:10">
-index="main/index.tpl";                                    # Первая страница
-shop="main/shop.tpl";                                      # Список страница
-menu_search="main/menu_search.tpl";                        # Шаблон поиска
-main_product_forma="product/main_product_forma.tpl";       # Шаблон форма продукта
-product_page_list="product/product_page_list.tpl";         # Шаблон список продуктов 
-product_page_full="product/product_page_full.tpl";         # Шаблон список  подробно
-main_product_forma_full="product/main_product_forma_full.tpl"; # Шаблон форма продукта подробно
-search_page_list="serach/search_page_list.tpl";            # Шаблон список поиска продуктов
-news_page_list="news/news_page_list.tpl";                  # Шаблон список новостей
-news_page_full="news/news_page_full.tpl";                  # Шаблон список новотсей весь
-main_news_forma="news/main_news_forma.tpl";                # Шаблон новостей
-main_news_forma_full="news/main_news_forma_full.tpl";      # Шаблон новостей полный 
-gbook_page_list="gbook/gbook_page_list.tpl";               # Шаблон списка отзывов     
-main_gbook_forma="gbook/main_gbook_forma.tpl";             # Шаблон отзывов     
-left_menu="main/left_menu.tpl";                            # Шаблон левого меню    
-search_page_list="search/search_page_list.tpl";            # Шаблон список карты каталогов
-map_page_list="map/map_page_list.tpl";                     # Шаблон список карты сайта
-main_search_forma="search/main_search_forma.tpl";          # Шаблон поиска 
-main_search_forma_2="search/main_search_forma_2.tpl";          # Шаблон поиска 
-links_page_list="links/links_page_list.tpl";               # Шаблон список ссылок
-main_links_forma="links/main_links_forma.tpl";             # Шаблон формы ссылки
-product_page_full="product/product_page_full.tpl";         # Шаблон список  подробно
-main_spec_forma="product/main_spec_forma.tpl";             # Шаблон форма спецпредложения
-main_spec_forma_icon="product/main_spec_forma_icon.tpl";   # Шаблон форма спецпредложения
-main_odnotip_forma_icon="product/main_odnotip_forma_icon.tpl";  # Шаблон форма однотипы
-gbook_forma_otsiv="gbook/gbook_forma_otsiv.tpl";           # Шаблон форма заполнения отзыва
-page_page_list="page/page_page_list.tpl";                  # Шаблон список генератьра страниц
-main_order_forma="order/main_order_forma.tpl";           # Шаблон формы для оформления покупки
-main_order_list="order/main_order_list.tpl";            # Шаблон списка для оформления покупки
-main_price_forma="price/main_price_forma.tpl";            # Шаблон форма прайса
-price_page_list="price/price_page_list.tpl";                # Шаблон списка прайса  
-main_price_forma_tip="price/main_price_forma_tip.tpl";      # Шаблон форма прайса заглавие
-main_product_odnotip_list="product/main_product_odnotip_list.tpl"; # Шаблон для обнотипных 
-error_page_forma="error/error_page_forma.tpl";                        # Форма ошибки навигации
-order_forma_mesage="order/order_forma_mesage.tpl";         # Шаблон формы сообщения для заказа
-order_forma_mesage_main="order/order_forma_mesage_main.tpl"; # Шаблон формы сообщения для заказа
-news_forma_mesage="news/news_forma_mesage.tpl";       # Шаблон формы сообщения для новостей
-news_forma_mesage_main="news/news_forma_mesage_main.tpl"; # Шаблон формы сообщения для новостей
-news_main_mini="news/news_main_mini.tpl";             # Шаблон ооледние новости
-baner_list_forma="banner/baner_list_forma.tpl"               # Шаблон банерной сети
-catalog_forma="catalog/catalog_forma.tpl"               # Шаблон каталога
-podcatalog_forma="catalog/podcatalog_forma.tpl"               # Шаблон подкаталога
+main/index.tpl - Первая страница <strong>(основная правка)</strong>
+main/shop.tpl -  Все остальные страницы <strong>(основная правка)</strong>
+main/left_menu.tpl -  Шаблон левого текстового блока    
+main/right_menu.tpl -  Шаблон правого текстового блока
+<br><br>
+product/main_product_forma.tpl - Шаблон форма продукта
+product/product_page_list.tpl -  Шаблон страницы краткого описания продуктов 
+product/product_page_full.tpl -  Шаблон подробного описания продуктов
+product/main_product_forma_full.tpl - Шаблон форма продукта подробно
+product/product_page_full.tpl -  Шаблон подробного вывода страницы продукта
+product/main_spec_forma.tpl -  Шаблон форма спецпредложения на главной странице
+product/main_spec_forma_icon.tpl - Шаблон форма спецпредложения товаров списком (кратко)
+product/main_odnotip_forma_icon.tpl -  Шаблон форма однотипных товаров
+product/main_product_odnotip_list.tpl - Шаблон для однотипных товаров
+<br><br>
+serach/search_page_list.tpl -  Шаблон список поиска продуктов
+search/main_search_forma_2.tpl -  Шаблон форма вывода товаров в поиске
+<br><br>
+news/news_page_list.tpl -  Шаблон страница новостей кратко
+news/news_page_full.tpl - Шаблон страница новотсей подробно
+news/main_news_forma.tpl -  Шаблон формы новостей кратко
+news/main_news_forma_full.tpl - Шаблон формы новостей подробно
+<br><br>
+gbook/gbook_page_list.tpl - Шаблон списка отзывов     
+gbook/main_gbook_forma.tpl - Шаблон формы отзывов  
+gbook/gbook_forma_otsiv.tpl - Шаблон форма заполнения отзыва   
+<br><br>
+map/map_page_list.tpl -  Шаблон список карты сайта
+<br><br>
+links/links_page_list.tpl -  Шаблон список ссылок
+links/main_links_forma.tpl -  Шаблон формы ссылки
+<br><br>
+page/page_page_list.tpl -  Шаблон формы вывода страниц
+<br><br>
+order/main_order_forma.tpl - Шаблон формы для оформления покупки
+order/main_order_list.tpl - Шаблон списка для оформления покупки (страница)
+<br><br>
+price/main_price_forma.tpl -  Шаблон форма прайса
+price/price_page_list.tpl -  Шаблон страницы прайса  
+price/main_price_forma_tip.tpl - Шаблон форма прайса заглавие
+<br><br>
+error/error_page_forma.tpl -  Форма 404 ошибки
+<br><br>
+order/order_forma_mesage.tpl - Шаблон формы сообщения для заказа
+order/order_forma_mesage_main.tpl -  Шаблон формы сообщения для заказа
+<br><br>
+news/news_main_mini.tpl -  Шаблон последние новости кратко
+<br><br>
+banner/baner_list_forma.tpl -  Шаблон банерной сети
+<br><br>
+catalog/catalog_forma.tpl -  Шаблон каталога
+catalog/podcatalog_forma.tpl -  Шаблон подкаталога
 </pre>
 <a name="id7"></a>
-<p><h4>7. Переменные шаблонизатора</h4>
+<p><h4>8. Переменные шаблонизатора</h4>
+Папка с шаблонами расположена по адресу: phpshop/templates/имя_шаблона/
 <ol>
 <li><b>Главная и остальные страницы (имя_шаблона/main)</b><br><br>
 
@@ -350,24 +376,56 @@ podcatalog_forma="catalog/podcatalog_forma.tpl"               # Шаблон подкатало
 <li>@pageDomen@ - копирайт на домен
 <li>@pageCss@ - путь к стилям шаблона
 <li>@leftCatal@ - вывод меню левой навигации
-<li>@leftMenu@ - вывод блока левой информации
-<li>@mainContentTitle@ - заголовок текстовой области на главную страницу (пр-р: Добро пожаловать)
-<li>@mainContent@ - содержимое текстовой области на главной странице (данная страница должна иметь ссылку=<b>index</b>)
+<li>@leftMenu@ - вывод блока левой текстовой информации
+<li>@rightMenu@ - вывод блока правой текстовой информации
+<li>@mainContentTitle@ - заголовок текстовой области на главную страницу
+<li>@mainContent@ - содержимое текстовой области на главной странице 
 <li>@DispShop@ - вывод соответсвующих страниц (контента новостей, страниц, отзывов.)
 <li>@miniNews@ - вывод последних новостей
 <li>@banersDisp@ - вывод банерной сети
 <li>@pageReg@ - копирайт
-<li>@timeAll@ - кол-во времени отклика базы
+<li>@usersDisp@ - вывод формы аторизации
+<li>@name@ - вывод имени сайта
+<li>@descrip@ - вывод описания сайта
+<li>@serverName@ - вывод имени сервера
+<li>@num@ - вывод кол-во товаров в корзине
+<li>@sum@ - вывод суммы заказа
+<li>@productValutaName@ -  вывод имени валюты в корзине
+<li>@valutaDisp@ - вывод имени валюты для смены
+<li>@topMenu@ - главное навигационное меню
+<li>@specMain@ - вывод спецпредложений
+<li>@pageCatal@ - вывод каталога статей (страниц)
+<li>@oprosDisp@ - вывод опросов
+<li>@skinSelect@ - выбор смены дизайна
+<li>@specMainIcon@ - вывод новинок каталога в колонку
+<li>@telNum@ - имя телефона компании
+<li>@leftMenuName@ - заглавие текстового блока
+<li>@leftMenuContent@ - содержание текстового блока
+<li>@topMenuLink@ - ссылка на страницу главного меню
+<li>@topMenuName@ - имя страницы главного меню 
+<li>@calendar@ - вывод календаря новостей
 </ul><br>
 <li><b>Страницы (имя_шаблона/page)</b><br><br>
 <ul>
 <li>@pageTitle@ - заглавие страницы
 <li>@pageContent@ - контент страницы
+<li>@pageNav@ - вывод навигации по страницам, появляется если вставить в тело тег "HR"
+<li>@pageName@ - имя страницы
+<li>@catName@ - имя каталога статей
+<li>@podcatalogName@ - имя подкаталога статей
 </ul><br>
 <li><b>Каталог (имя_шаблона/catalog)</b><br><br>
 <ul>
 <li>@catalogName@ - заглавие каталога
 <li>@catalogPodcatalog@ - заглавие сраниц, ссылающяяся на этот каталог
+<li>@catalogUid@ - ID каталога
+<li>@catalogd@ - ID каталога
+<li>@catalogCat@ - имя родителя каталога
+<li>@parentName@ - имя родителя каталога
+<li>@catalogList@ - вывод списка подкаталогов
+<li>@podcatalogName@ - имя подкаталога
+<li>@podcatalogContent@ - описание подкатлога
+<li>@thisCatSort@ - вывод фильтров каталога
 </ul><br>
 <li><b>Товары (имя_шаблона/product)</b><br><br>
 <ul>
@@ -377,8 +435,7 @@ podcatalog_forma="catalog/podcatalog_forma.tpl"               # Шаблон подкатало
 <li>@productArt@ - артикул товара
 <li>@productDes@ - описание товара
 <li>@productPrice@ - стоимость товара в валюте
-<li>@productPriceRub@ - стоимость товара в рублях
-<li>@priceNew@ - новая стоимость товара (старая перечеркивается)
+<li>@productPriceRub@ - старая стоимость товара
 <li>@productId@ - идентификатор подкаталога товара
 <li>@productCat@ (@productCatnav@) - идентификатор каталога для товара
 <li>@productPageThis@ - текущяя страница
@@ -398,6 +455,20 @@ podcatalog_forma="catalog/podcatalog_forma.tpl"               # Шаблон подкатало
 <li>@productImg@ - парсированая картинка
 <li>@productOdnotipList@ - однотипные товары (HTML)
 <li>@productOdnotip@ - Язык: товары для совместной продажи
+<li>@vendorDispTitle@ - строка вывода справки к фильтрам
+<li>@vendorDisp@ - вывод фильтров
+<li>@vendorSelectDisp@ - вывод фильтров
+<li>@productFotoList@ - вывод галереи изображений к товару
+<li>@ComStart@ - начало комментариев
+<li>@ComEnd@ - конец комментариев
+<li>@productValutaName@ - вывод текущей валюты
+<li>@productSklad@ - вывод кол-ва на складе
+<li>@productNotice@ - Язык: уведомить
+<li>@productParentList@ - вывод формы прайса подчиненных товаров
+<li>@pagetemaDisp@ - вывод тематических статей
+<li>@optionsDisp@ - вывод добавочных опции для товара в корзину
+<li>@productFiles@ - вывод прикрепленных файлов товара
+<li>@ratingfull@ - вывод рейтинга товара
 </ul><br>
 <li><b>Банерная сеть(имя_шаблона/baner)</b><br><br>
 <ul>
@@ -456,9 +527,10 @@ podcatalog_forma="catalog/podcatalog_forma.tpl"               # Шаблон подкатало
 <li>@productSite@ - название сайта
 <li>@productName@ - заглавие найденной страницы
 <li>@productDes@ - краткое описание страницы
+<li>@searchPageSort@ - вывод сортировки категорий
 </ol>
 <a name="id8"></a>
-<p><h4>8. API подключение внешнего модуля</h4>
+<p><h4>9. API подключение внешнего модуля</h4>
 Для автоматического включения внешнего модуля служит опция [autoload] установочного файла ( далее конфигуратора config.ini)<br><br>
 Пример подключения внешнего модуля обмена ссылками <b>Linkexchanger 0.7</b>:
 <ol>
@@ -479,11 +551,51 @@ $SysValue['other']['DispShop']=Linkexchanger();
 
 // Подключаем шаблон 
 @ParseTemplate($SysValue['templates']['shop']);
+
 </pre>
 </ul>
+</ol>
+<strong>Полезные статьи по PHPShop:</strong><br>
+<ol>
+<li><a href="http://www.phpshop.ru/gbook/" target="_blank">Частые вопросы по PHPShop</a>
+<li><a href="http://www.phpshopcms.ru/page/page16.html" target="_blank">Подключение PHP логики</a>
+<li><a href="http://www.phpshopcms.ru/page/page15.html" target="_blank">Подключение HTML файлов</a>
+<li><a href="http://www.phpshopcms.ru/page/sape.html" target="_blank">Подключение SAPE логики </a>
+<li><a href="http://help.phpshop.ru" target="_blank">База знаний PHPShop (требуется регистрация)</a>
+</ol>
+
+</p>
+<a name="id12"></a>
+<p><h4>10. Файл .htaccess</h4>
+Файл .htaccess содержит закомментированные команды:
+<pre>
+#Action php-script /cgi-bin/php
+#AddHandler php-script .php
+#php_flag register_globals on
+#php_flag display_errors on
+#php_flag log_errors on
+#php_flag error_reporting 0
+#php_value memory_limit 100M
+#php_flag memory_limit 100M
+#php_flag session.use_trans_sid off
+</pre>
+Для активации уберите знак #(решетка) перед командой. 
+Описание команд:
+<ol>
+<li>
+Action php-script /cgi-bin/php<br>
+AddHandler php-script .php - если используется CGI сборка PHP для включения Zend Optimizer (<a href="http://masterhost.ru" target="_blank">Masterhost</a> и др.)
+<li>php_flag register_globals on - включение опции Globals ON
+<li>php_flag display_errors on - включение режима показа ошибок (опционально)
+<li>php_flag log_errors on - включение режима ведения лога ошибок (опционально)
+<li>php_flag error_reporting 0 - режим скрытия ошибок
+<li>php_value memory_limit 100M <br>
+php_flag memory_limit 100M - выделение  100М памяти под выполнение скриптов (опционально)
+<li>php_flag session.use_trans_sid off - отключения вывода "хвоста" в ссылках<br> (?PHPSESSID=6cg365fg56565bv65v5365)
+
 </ol></p>
 <a name="id9"></a>
-<p><h4>9. Благодарности</h4>
+<p><h4>11. Благодарности</h4>
 <ol>
 <li><b>Дмитрию Котерову</b> за его проект <a href="http://www.denwer.ru">Denwer.ru</a>, и написанные им книги и статьи по PHP.<br>
 <li><b>МаЗаю</b> за помощь в разработке проекта.

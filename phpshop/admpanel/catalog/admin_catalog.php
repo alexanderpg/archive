@@ -3,6 +3,7 @@ function Catalog()
 {
 global $table_name,$PHP_SELF,$categoryID,$systems,$pid;
 return "
+
 <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
 <tr>
 	<td id=pane align=center width=\"295\"><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5 ><span name=txtLang id=txtLang>Каталоги</span></td>
@@ -12,7 +13,7 @@ return "
 </tr>
 
 <tr valign=\"top\">
-	<td ><iframe id=interfacesWin2  src=\"catalog/tree.php\" width=\"300\"  height=\"550\"  scrolling=\"Auto\" name=\"frame1\"></iframe>
+	<td id=\"catalog_products\"><iframe id=interfacesWin2  src=\"catalog/tree.php\" width=\"300\"  height=\"550\"  scrolling=\"Auto\" name=\"frame1\"></iframe>
 
 <div align=\"center\" style=\"padding:5\">
 <table cellpadding=\"0\" cellspacing=\"0\">
@@ -86,9 +87,9 @@ return $num;
 
 function СategoryID($categoryID)// выборка каталогов и вывод в правое поле
 {
-global $table_name2,$pid,$_SESSION,$UserStatus;
+global $SysValue,$table_name2,$pid,$_SESSION,$UserStatus;
 if($categoryID=="all") $sql="select * from $table_name2 order by datas desc";
-else $sql="select * from $table_name2 where category='$categoryID' order by datas desc";
+else $sql="select * from $table_name2 where category='$categoryID' order by num desc";
 $result=mysql_query($sql);
 $num=0;
 while(@$row = mysql_fetch_array($result))
@@ -107,19 +108,49 @@ while(@$row = mysql_fetch_array($result))
     if(($row['sklad'])=="1") $checked.="&nbsp;&nbsp;<img name=imgLang src=../icon/cart_error.gif   alt=\"Уведомление, под заказ\">";
     if($parent_enabled==1) $checked.="&nbsp;&nbsp;<img name=imgLang src=../icon/plugin.gif   alt=\"Подтип товара\">";
 	$uid=$row['uid'];
+
+	$baseinputvaluta=$row['baseinputvaluta'];
+
+	$vsql="select dengi from ".$SysValue['base']['table_name3'];
+	$vresult=mysql_query($vsql);
+	$vrow = mysql_fetch_array($vresult);
+	$defaultvaluta=$vrow['dengi'];
+
+	if ($defaultvaluta==$baseinputvaluta) {$baseinputvaluta='';}
+
+
+	//Если захочется выводить валюту всегда раскоментить блок ниже и закоментить if выше)
+/*
+	if (!$baseinputvaluta) {
+		$vsql="select dengi from ".$SysValue['base']['table_name3'];
+		$vresult=mysql_query($vsql);
+		$vrow = mysql_fetch_array($vresult);
+		$baseinputvaluta=$vrow['dengi'];
+
+	}
+*/
+	if ($baseinputvaluta) {
+		$sqlv="select * from ".$SysValue['base']['table_name24']." WHERE id=\"".$baseinputvaluta."\"";
+		$resultv=mysql_query($sqlv);
+		$vrow = mysql_fetch_array($resultv);
+		$viso=' '.$vrow['code'];
+	} else {
+		$viso='';
+	}
+
 	@$dis.="
-	<tr class=row3 onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\">
-	  <td align=center  onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\" align=\"left\">
+	<tr class=row3 id=\"r".$id."\">
+	  <td align=center   align=\"left\"  id=Nws class=Nws  onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\">
 	  $checked
 	  </td>
-	  <td width=\"55\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\" align=\"center\">
+	  <td width=\"55\"  align=\"center\"  id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\">
 	  $id
 	  </td>
-	  <td width=\"500\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
-	  &nbsp;$name
+	  <td width=\"500\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
+	  &nbsp;$name  
 	  </td>
-	  <td width=\"100\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
-	  &nbsp;".($price*1)."
+	  <td width=\"100\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
+	  &nbsp;".($price*1).$viso."
 	  </td>
 	  <td align=center>
 	  <input type=\"checkbox\" value=\"".$id."\">
@@ -129,68 +160,11 @@ while(@$row = mysql_fetch_array($result))
 	$num++;
 	}
 $disp="
-<form name=\"form_flag\">
+
 <table cellpadding=0 bgcolor=808080 border=0 cellspacing=1 width=100% class=\"sortable\" id=\"sort\">
-<tr valign=\"top\">
-	<td width=\"150\" id=pane align=center><span name=txtLang id=txtLang>Вывод</span></td>
-    <td width=\"55\" id=pane align=center>ID</td>
-	<td width=\"500\" id=pane align=center><span name=txtLang id=txtLang>Наименование</span></td>
-    <td width=\"100\" id=pane align=center><span name=txtLang id=txtLang>Цена</span></td>
-	<td width=\"25\" id=pane align=center>&plusmn;</td>
-</tr>
-
-".@$dis."
-<input type=\"hidden\" value=\"$pid\" id=\"catal\" name=\"catal\">
-</table>
-</form>
-";
-return $disp;
-}
-
-
-function СategorySearch($words) //поиск
-{
-global $table_name2,$pid;
-$sql="select * from $table_name2 where name LIKE '%$words%' or id='$words' or uid='$words' order by num";
-$result=mysql_query($sql);
-$num=0;
-while(@$row = mysql_fetch_array($result))
-    {
-    $id=$row['id'];
-    $name=$row['name'];
-	$price=$row['price'];
-	if(($row['enabled'])=="1"){$checked="<img src=../img/icon-activate.gif  alt=\"В наличии\">";}else{$checked="<img src=../img/icon-deactivate.gif   alt=\"Отсутствует\">";};
-    if(($row['spec'])=="1"){$checked.="&nbsp;&nbsp;<img src=../img/icon-duplicate-acl.gif  alt=\"Спецпредложение\">";}
-    if(($row['yml'])=="1"){$checked.="&nbsp;&nbsp;<img src=../img/icon-duplicate-banner.gif   alt=\"YML прайс\">";}
-    if(($row['newtip'])=="1") $checked.="&nbsp;&nbsp;<img src=../img/icon-move-banner.gif   alt=\"Новинка\">";
-	$uid=$row['uid'];
-	@$dis.="
-	<tr class=row3 bgcolor=ffffff id=\"c".$id."\"\>
-	  <td align=center width=\"93\" onclick=\"ClickID('".$id."')\" align=\"left\">
-<A id='ID$id'></A>
-	  $checked
-	  </td>
-	  <td width=\"55\" onclick=\"ClickID('$id')\" align=\"center\">
-	  $id
-	  </td>
-	  <td width=\"540\" onclick=\"ClickID('$id')\"> 
-	  &nbsp;$name
-	  </td>
-	  <td width=\"100\" onclick=\"ClickID('$id')\"> 
-	  &nbsp;$price
-	  </td>
-	  <td >
-	  <input type=\"checkbox\" value=\"".$id."\">
-	  </td>
-	</tr>
-	";
-	$num++;
-	}
-$disp="
-<table cellpadding=0 bgcolor=808080 border=0 cellspacing=1 width=100%>
 <form name=\"form_flag\">
 <tr valign=\"top\">
-	<td width=\"100\" id=pane align=center><span name=txtLang  id=txtLang>Вывод</span></td>
+	<td width=\"100\" id=pane align=center><img  src=\"../icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('product');\"><span name=txtLang  id=txtLang>Вывод</span></td>
     <td width=\"55\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>ID</td>
 	<td width=\"540\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>Наименование</td>
     <td width=\"100\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>Цена</td>
@@ -201,7 +175,167 @@ $disp="
 </form>
 
 </table>
-";
+<input type=\"hidden\" value=\"$pid\" id=\"catal\" name=\"catal\">
+".'
+<div class=cMenu id=cMenuNws> 
+	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
+
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews14>Перенести в каталог</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews9>Сделать копию</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews23>Связать со статьями</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews24>Связать с характеристикой</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews8>Экспорт в Excel (1C)</A></TD></TR>	
+	</TABLE>
+
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Новинки</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A  name="tarurl" id=nameNews10>Добавить в новинки</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews11>Убрать из новинок</A></TD></TR>	
+	</TABLE>
+	
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Спецпредложение</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews2>Добавить в спецпредложение</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews3>Убрать из спецпредложения</A></TD></TR>	
+	</TABLE>
+	
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Вывод</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews27>Нет в наличии</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews28>Есть в наличии</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews4>Отключить вывод</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews5>Включить вывод</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews1>Удалить из базы</A></TD></TR>	
+	</TABLE>
+
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>YML Яндекс Маркет</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews6>Убрать из YML прайса</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews7>Добавить в YML прайс</A></TD></TR>	
+	</TABLE>
+</div>
+
+';
+return $disp;
+}
+
+
+function СategorySearch($words) //поиск
+{
+global $table_name,$table_name2,$pid;
+$sql="select * from $table_name2 where name LIKE '%$words%' or id='$words' or uid='$words' order by num";
+$result=mysql_query($sql);
+$num=0;
+while(@$row = mysql_fetch_array($result))
+    {
+    $id=$row['id'];
+    $name=$row['name'];
+	$price=$row['price'];
+
+	$scategory=$row['category'];
+	$low=0;
+	/*
+	while ($scategory!=="0") {
+		$sqlcat="select parent_to,secure_groups from $table_name where id=$scategory";
+		$resultcat=mysql_query($sqlcat);
+		$rowcat = mysql_fetch_array($resultcat);
+		$secure_groups=$rowcat['secure_groups'];
+		$scategory=$rowcat['parent_to'];
+		if (strlen($secure_groups)) {
+			$ider=trim($_SESSION['idPHPSHOP']);
+			$string='i'.$ider.'-1i';
+			if (strpos($secure_groups,$string) ===false) {
+				    $low=1; break;
+			}
+		}
+	}
+	if ($low) {continue;}
+*/
+
+	if(($row['enabled'])=="1"){$checked="<img src=../img/icon-activate.gif  alt=\"В наличии\">";}else{$checked="<img src=../img/icon-deactivate.gif   alt=\"Отсутствует\">";};
+    if(($row['spec'])=="1"){$checked.="&nbsp;&nbsp;<img src=../img/icon-duplicate-acl.gif  alt=\"Спецпредложение\">";}
+    if(($row['yml'])=="1"){$checked.="&nbsp;&nbsp;<img src=../img/icon-duplicate-banner.gif   alt=\"YML прайс\">";}
+    if(($row['newtip'])=="1") $checked.="&nbsp;&nbsp;<img src=../img/icon-move-banner.gif   alt=\"Новинка\">";
+	$uid=$row['uid'];
+	@$dis.="
+	<tr class=row3 bgcolor=ffffff   id=\"r".$id."\" >
+	  <td align=center width=\"93\"  align=\"left\"  id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\">
+<A id='ID$id'></A>
+	  $checked
+	  </td>
+	  <td width=\"55\"  align=\"center\"  id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\">
+	  $id
+	  </td>
+	  <td width=\"540\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
+	  &nbsp;$name
+	  </td>
+	  <td width=\"100\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
+	  &nbsp;$price
+	  </td>
+	  <td >
+	  <input type=\"checkbox\" value=\"".$id."\">
+	  </td>
+	</tr>
+	";
+	$num++;
+	}
+$disp="
+<table cellpadding=0 bgcolor=808080 border=0 cellspacing=1 width=100% class=\"sortable\" id=\"sort\">
+<form name=\"form_flag\">
+<tr valign=\"top\">
+	<td width=\"100\" id=pane align=center><img  src=\"../icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('product');\"><span name=txtLang  id=txtLang>Вывод</span></td>
+    <td width=\"55\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>ID</td>
+	<td width=\"540\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>Наименование</td>
+    <td width=\"100\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>Цена</td>
+	<td width=\"25\" id=pane align=center>&plusmn;</td>
+</tr>
+".@$dis."
+
+</form>
+
+</table>
+".'
+<div class=cMenu id=cMenuNws> 
+	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
+
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews14>Перенести в каталог</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews9>Сделать копию</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews23>Связать со статьями</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews24>Связать с характеристикой</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews8>Экспорт в Excel (1C)</A></TD></TR>	
+	</TABLE>
+
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Новинки</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A  name="tarurl" id=nameNews10>Добавить в новинки</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews11>Убрать из новинок</A></TD></TR>	
+	</TABLE>
+	
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Спецпредложение</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews2>Добавить в спецпредложение</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews3>Убрать из спецпредложения</A></TD></TR>	
+	</TABLE>
+	
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Вывод</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews27>Нет в наличии</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews28>Есть в наличии</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews4>Отключить вывод</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews5>Включить вывод</A></TD></TR>	
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews1>Удалить из базы</A></TD></TR>	
+	</TABLE>
+
+	<TABLE style="width:260px;" border="0" cellspacing="0" cellpadding="0">
+	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>YML Яндекс Маркет</B></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews6>Убрать из YML прайса</A></TD></TR>
+	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews7>Добавить в YML прайс</A></TD></TR>	
+	</TABLE>
+</div>
+
+';
 return $disp;
 }
 ?>

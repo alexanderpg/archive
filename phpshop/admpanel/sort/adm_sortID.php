@@ -72,6 +72,8 @@ return @$disp;
 	  $description=$row['description'];
 	  if($row['flag'] == 1) $flag="checked";
 	  if($row['filtr'] == 1) $filtr="checked";
+	  if($row['goodoption'] == 1) {$goodoption="checked";}else{$goodoption="";}
+	  if($row['optionname'] == 1) {$optionname="checked";}else{$optionname="";}
 	  ?>
 <form name="product_edit"  method=post>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" id="title">
@@ -114,6 +116,8 @@ return @$disp;
 <div style="padding:10">
 <input type="checkbox" value="1" name="flag_new" <?=$flag?>> <span name=txtLang id=txtLang>Подкаталог 3-го уровня</span>&nbsp;&nbsp;&nbsp;
 <input type="checkbox" value="1" name="filtr_new" <?=$filtr?>><span name=txtLang id=txtLang>Фильтр</span>
+<input type="checkbox" value="1" name="goodoption_new" <?=$goodoption?>><span name=txtLang id=txtLang>Товарная опция</span>
+<input type="checkbox" value="1" name="optionname_new" <?=$optionname?>><span name=txtLang id=txtLang>Показывать описание опции в корзине</span>
 </div>
 </FIELDSET>
 	</td>
@@ -178,6 +182,8 @@ name='$name_new',
 flag='$flag_new',
 num='$num_new',
 filtr='$filtr_new',
+goodoption='$goodoption_new',
+optionname='$optionname_new',
 description='$description_new' 
 where id='$id'";
 $result=mysql_query($sql)or @die("".mysql_error()."");
