@@ -1,16 +1,11 @@
 <?
 
 // Парсируем установочный файл
-if(@parse_ini_file("../../phpshop/inc/config.ini",1))
-$SysValue=parse_ini_file("../../phpshop/inc/config.ini",1);
- elseif(@parse_ini_file("../../../phpshop/inc/config.ini",1))
-    $SysValue=parse_ini_file("../../../phpshop/inc/config.ini",1);
-	  elseif(@parse_ini_file("../../../../phpshop/inc/config.ini",1))
-	      $SysValue=parse_ini_file("../../../../phpshop/inc/config.ini",1);
-	     else $SysValue=@parse_ini_file("../../../../../phpshop/inc/config.ini",1);
-		 
+$SysValue = parse_ini_file(dirname(__FILE__) . "/../../phpshop/inc/config.ini",1);
+
 $RegTo = $SysValue['license']['regto'];
 $ProductName=$SysValue['license']['product_name'];
+$ProductNameVersion=$SysValue['license']['product_name']." (сборка ".$SysValue['upload']['version'].")";
 
 
 // Вывод валюты в выборе для загрузки товаров
@@ -200,6 +195,9 @@ $row = mysql_fetch_array($result);
 return $row['code'];
 }
 
+
+
+
 function GetIsoValutaOrder(){
 global $SysValue;
 $sql="select code from ".$SysValue['base']['table_name24']." where 
@@ -308,6 +306,5 @@ $table_name32=$SysValue['base']['table_name32'];
 
 
 // Обновление
-define("PATH",$SysValue['update']['path']."update2.php?from=".@$SERVER_NAME);
 define("TIME_LIMIT", 600);
 ?>

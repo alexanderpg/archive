@@ -407,22 +407,28 @@ echo ('
 <tr>
     <td align=left >
 	
-	<FIELDSET id=fldLayout >
+	<table cellpadding="0" cellspacing="0" width="100%">
+<tr>
+   <td align=left >
+<FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Р</u>екомендуемые товары для совместной продажи</span>:</LEGEND>
 <div style="padding:10">
-<textarea class=full name=odnotip_new style="height:50px">'.$odnotip.'</textarea>
-<table width="570">
-<tr>
-	<td><img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <span name=txtLang id=txtLang>Введите идентификаторы (ID) товаров через запятую</span> (100,101).</td>
-	
-</tr>
-</table>
-
-
-
+	<textarea class=full  name=odnotip_new style="height:40px">'.$odnotip.'</textarea>
+	<img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <span name=txtLang id=txtLang>Введите ID товаров в формате 1,2,3</span>
 </div>
 </FIELDSET>
-
+	</td>
+	<td style="padding-left:5px" valign="top" width="300">
+	<FIELDSET id=fldLayout >
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>ополнительные  каталоги</span>:</LEGEND>
+<div style="padding:10">
+<textarea class=full  name="dop_cat_new" style="height:40px"></textarea>
+<img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> Введите ID каталогов в формате #1#2#3#
+</div>
+</FIELDSET>
+   </td>
+</tr>
+</table>
 	</td>
 </tr>
 <tr>
@@ -1067,11 +1073,12 @@ while($row = mysql_fetch_array($result))
 	   $baseinputvaluta=$row['baseinputvaluta'];
 
 	   $ed_izm=$row['ed_izm'];
+	   $dop_cat=$row['dop_cat'];
 
 	   
 	   $Newid=GetLastId($table_name2,"id");
 	   if($pic_small != "") AddFotoGalUpdate($productID,$Newid);
-	   
+	   $dop_cat=$row['dop_cat'];
 	   
 	   
 	echo ('
@@ -1230,21 +1237,28 @@ echo ('
 <tr>
     <td align=left >
 	
-	<FIELDSET id=fldLayout >
+	<table cellpadding="0" cellspacing="0" width="100%">
+<tr>
+   <td align=left >
+<FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Р</u>екомендуемые товары для совместной продажи</span>:</LEGEND>
 <div style="padding:10">
-<textarea class=full name=odnotip_new style="height:50px">'.$odnotip.'</textarea>
-<table width="570">
-<tr>
-	<td><img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <span name=txtLang id=txtLang>Введите идентификаторы (ID) товаров через запятую</span> (100,101).</td><td align="right"></td>
-</tr>
-</table>
-
-
-
+	<textarea class=full  name=odnotip_new style="height:40px">'.$odnotip.'</textarea>
+	<img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <span name=txtLang id=txtLang>Введите ID товаров в формате 1,2,3</span>
 </div>
 </FIELDSET>
-
+	</td>
+	<td style="padding-left:5px" valign="top" width="300">
+	<FIELDSET id=fldLayout >
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>ополнительные  каталоги</span>:</LEGEND>
+<div style="padding:10">
+<textarea class=full  name="dop_cat_new" style="height:40px">'.$dop_cat.'</textarea>
+<img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> Введите ID каталогов в формате #1#2#3#
+</div>
+</FIELDSET>
+   </td>
+</tr>
+</table>
 	</td>
 </tr>
 <tr>
@@ -1276,6 +1290,8 @@ echo ('
 </FIELDSET>
 </div>
 	</td>
+
+
 
 </tr>
 </table>
@@ -1678,7 +1694,7 @@ $yml_bid_array_new=array(
 
 
 $sql="INSERT INTO $table_name2
-VALUES ('$productID','$category_new','".CleanStr(trim($name_new))."','".addslashes($EditorContent)."','".addslashes($EditorContent2)."','$priceOne','$priceBox','$numBox','1','$enabled_new','$uid_new','$spec_new','$odnotip_new','$vendor','".serialize($vendor_new)."','$yml_new','$num_new','','$title_new','$title_enabled_new','".date("U")."','$page','".$_SESSION['idPHPSHOP']."','$descrip_new','$descrip_enabled_new','$title_shablon_new','$descrip_shablon_new','$keywords_new','$keywords_enabled_new','$keywords_shablon_new','$pic_small_new','$pic_big_new','".serialize($yml_bid_array_new)."','$parent_enabled_new','$parent_new','$items_new','$weight_new','$price2','$price3','$price4','$price5','".serialize($filenum)."','$baseinputvaluta_new','$edizm_new')";
+VALUES ('$productID','$category_new','".CleanStr(trim($name_new))."','".addslashes($EditorContent)."','".addslashes($EditorContent2)."','$priceOne','$priceBox','$numBox','1','$enabled_new','$uid_new','$spec_new','$odnotip_new','$vendor','".serialize($vendor_new)."','$yml_new','$num_new','','$title_new','$title_enabled_new','".date("U")."','$page','".$_SESSION['idPHPSHOP']."','$descrip_new','$descrip_enabled_new','$title_shablon_new','$descrip_shablon_new','$keywords_new','$keywords_enabled_new','$keywords_shablon_new','$pic_small_new','$pic_big_new','".serialize($yml_bid_array_new)."','$parent_enabled_new','$parent_new','$items_new','$weight_new','$price2','$price3','$price4','$price5','".serialize($filenum)."','$baseinputvaluta_new','$edizm_new','$dop_cat_new')";
 $result=mysql_query($sql) or die("".mysql_error()."");
 
 if($reload=="true")

@@ -95,6 +95,7 @@ stm_aix("p11i1","p1i0",[0,"Выгрузка прайс-листа Excel","","",-1,-1,0,"javascript
 stm_aix("p11i2","p1i1",[]);
 stm_aix("p11i3","p1i0",[0,"Загрузка базы  Excel","","",-1,-1,0,"javascript:DoReload('csv_base')","_self","","","page_excel.gif","page_excel.gif"]);
 stm_aix("p11i4","p11i3",[0,"Выгрузка базы Excel","","",-1,-1,0,"javascript:miniWin('export/adm_csv.php?DO=base',300,220)"]);
+stm_aix("p11i4","p11i3",[0,"Загрузка большой базы Exel (Cron)","","",-1,-1,0,"javascript:miniWin('export/adm_bigcsv.php',600,600)"]);
 stm_aix("p11i5","p1i1",[]);
 stm_aix("p11i6","p1i0",[0,"SQL запрос к базе","","",-1,-1,0,"javascript:miniWin('sql/adm_sql.php',500,430)","_self","","","database_key.gif","database_key.gif"]);
 stm_aix("p11i7","p1i0",[0,"SQL загрузка файла","","",-1,-1,0,"javascript:miniWin('sql/adm_sql_file.php',500,430)","_self","","","database_connect.gif","database_connect.gif"]);
@@ -102,6 +103,13 @@ stm_aix("p11i8","p11i7",[0,"Резервные копии базы (Backup)","","",-1,-1,0,"javasc
 stm_aix("p11i9","p1i1",[]);
 stm_aix("p11i10","p1i0",[0,"1С:Предприятие","","",-1,-1,0,"javascript:DoReload('csv1c')","_self","","","1c_icon.gif","1c_icon.gif"]);
 stm_ep();
+
+stm_aix("p0i7","p0i0",[0,"Обновления"],80,20);
+stm_bpx("p13","p1",[]);
+stm_aix("p13i0","p1i0",[0,"Проверить наличие обновления","","",-1,-1,0,"javascript:ChekUpdate('true')","_self","","","wand.gif","wand.gif"]);
+stm_aix("p13i0","p1i0",[0,"Выполнить откат обновления","","",-1,-1,0,"javascript:miniWin('upload/adm_backup.php',600,430)","_self","","","wand.gif","wand.gif"]);
+stm_ep();
+
 stm_aix("p0i7","p0i0",[0,"Справка"],60,20);
 stm_bpx("p12","p1",[]);
 stm_aix("p12i0","p1i0",[0,"Техническая Поддержка","","",-1,-1,0,"http://help.phpshop.ru/","_blank","","","icon_info.gif","icon_info.gif"]);
@@ -113,7 +121,6 @@ stm_aix("p12i2","p1i0",[0,"Настройка Internet Explorer","","",-1,-1,0,"javascrip
 stm_aix("p12i3","p1i1",[]);
 stm_aix("p12i4","p1i0",[0,"Установить Order Agent Windows","","",-1,-1,0,"http://www.phpshop.ru/loads/downloadexe.php","_blank","","","plugin.gif","plugin.gif"]);
 stm_aix("p12i4","p1i0",[0,"Установить обработчик 1С:Предприятие","","",-1,-1,0,"http://www.phpshop.ru/docs/1c.html","_blank","","","1c_icon.gif","1c_icon.gif"]);
-stm_aix("p12i5","p12i4",[0,"Проверить наличие обновления","","",-1,-1,0,"javascript:ChekUpdate('true')","_self","","","wand.gif","wand.gif"]);
 stm_aix("p12i6","p1i0",[0,"О программе","","",-1,-1,0,"javascript:miniWin('window/adm_about.php',650,500)","_self","","","image.gif","image.gif"]);
 stm_aix("p12i7","p1i1",[]);
 stm_aix("p12i8","p1i0",[0,"Выход","","",-1,-1,0,"javascript:window.close()","_self","","","door.gif","door.gif"]);

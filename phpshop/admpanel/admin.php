@@ -34,11 +34,15 @@ $num=explode(" ",$SysValue['license']['product_name']);
 $product_num =  str_replace(".","",trim($num[1]));
 
 
+
 // Срок действия тех. поддержки
 $GetFile=GetFile("../../license/");
 @$License=parse_ini_file("../../".$GetFile,1);
-define("EXPIRES",$License['License']['SupportExpires']);
 
+
+if($License['License']['SupportExpires']!="No")
+ define("EXPIRES",$License['License']['SupportExpires']);
+ else define("EXPIRES",0);
 
 $GetSystems=GetSystems();
 $option=unserialize($GetSystems['admoption']);
@@ -90,17 +94,33 @@ $byte2=true;
 return $out; 
 }
 
+
 // Проверяем update
 if($option['update_enabled'] == 1) $ChekUpdate="ChekUpdate('false');";
+
+define("PATH",$SysValue['update']['path']."update3.php?from=".$SERVER_NAME."&version=".$SysValue['upload']['version']."&support=".$License['License']['SupportExpires']);
+
 if($License['License']['RegisteredTo']!="Trial NoName"  and !getenv("COMSPEC"))
 if(@$db=readDatabase(PATH,"update")){
-
 foreach ($db as $k=>$v){
-         if (detect_utf($db[$k]['content'])) $db[$k]['content']=utf8_win($db[$k]['content']);
-     if($db[$k]['num'] > $product_num)
-     $UpadateContent.="Обновление ".$db[$k]['num']." - ".$db[$k]['name']."".$db[$k]['content'];
-         }
+     if($db[$k]['num'] == $SysValue['upload']['version'] and !empty($db[$k]['name'])){
+        $support_status = $db[$k]['status'];
+     	@$UpdateContent.="Новая версия: ".$SysValue['license']['product_name']." ".$db[$k]['name'];
+     	if ($db[$k]['upload_type'] == 'script') {  
+     		$upload_type = "script";
+			$new_version = $db[$k]['name'];
+     		$ftp_host = $db[$k]['ftp_host'];
+     		$ftp_login = $db[$k]['ftp_login'];
+     		$ftp_password = $db[$k]['ftp_password'];
+     		$ftp_folder = $db[$k]['os']."/".$db[$k]['num'];
+     	}
+     }
+	 }
 }
+
+
+
+
 
 
 // Opera 9 Fix
@@ -140,25 +160,45 @@ echo $Lang;?>/language_interface.js"></script>
 
 // Проверка обновлений
 function ChekUpdate(flag){
-var update="<?=$UpadateContent;?>";
-var version="<?=$ProductName;?>";
+	
+// Параметры для модуля автоматического обновления файлов
+var auto_upload_flag = "<?php echo $upload_type?>";
+var ftp_pars = "<?php echo "?ftp_host=$ftp_host&ftp_folder=$ftp_folder&ftp_login=$ftp_login&ftp_password=$ftp_password&new_version=$new_version"?>";
+// конец
+var update_message="<?=$UpdateContent;?>";
+var version="<?=$SysValue['upload']['version'];?>";
 var path ="<?=PATH?>";
-var soft = "<?=$SysValue['license']['product_name']?>";
+var soft = "<?=$ProductName." ".$SysValue['upload']['version']?>";
 var pathD="./update/update.php";
 var expir="<?=EXPIRES?>";
-var expirUntil = "<?=dataV(EXPIRES,"update"); ?>";
+var expirUntil = "<?=dataV(EXPIRES,'update'); ?>";
 var cookieValue=GetCookie('update');
-if(update !=''){
-window.status="Внимание!\nДоступно обновление для "+version;
+var support_status = "<?=$support_status?>";
+
+
+if(support_status == "active"){
+window.status="Внимание, доступно обновление платформы!";
   if(!cookieValue | flag=="true")
-    if(confirm("Внимание!\nДоступно обновление для "+version+"\n\n"+update+"\n\nЗагрузить обновление с сервера разработчика?")){
-     if(expir > <?=date("U")?>){window.open("./update/update.php");}
-	   else {alert("Период технической поддержки закончился "+expirUntil)}
-   SetCookie('update', 2, 5);
+    if(confirm("Доступно обновление!\n\nТекущая версия: "+soft+"\n"+update_message+"\n\nУстановить обновление?")){
+
+        if(support_status != 'passive'){
+
+        	if (auto_upload_flag == "script")
+     		miniWin('upload/adm_upload.php'+ftp_pars,600,470);
+            else {
+                 if(confirm("Ошибка авторизации на сервере PHPShop. Лицензия не обнаружена в базе. Перейти на оформление покупки?"))
+                	window.open("http://www.phpshop.ru/order/");
+
+                 }
+        }
+         else {
+         if(confirm("Период технической поддержки закончился "+expirUntil+" г.\n\nКупить продление технической поддержки и получать новые обновления бесплатно в течение 1 года?")) 	window.open("http://www.phpshop.ru/docs/techpod.html");
+
+         }
     }
     else SetCookie('update', 2, 5);
 } 
-else if( flag=="true") alert("Для "+soft+" обновления отсутствуют.");
+else if( flag=="true") alert("Для "+soft+" обновление отсутствует.");
 }
 
 
@@ -186,7 +226,7 @@ if(document.getElementById("CSCHint"))document.getElementById("CSCHint").style.v
 
 </script>
 </head>
-<body id="mybody" style="background: threedface; color: windowtext;" topmargin="0" rightmargin="3" leftmargin="3" <?=$onload?>  oncontextmenu="return false;" onresize="ResizeWin('prders')" onhelp="initSlide(0);loadhelp();return false;">
+<body id="mybody" style="background: threedface; color: windowtext;" topmargin="0" rightmargin="3" leftmargin="3" <?=$onload?> oncontextmenu="return false;"  onresize="ResizeWin('prders')" onhelp="initSlide(0);loadhelp();return false;">
 <span id="cartwindow" style="position:absolute;left:10px;top:0;visibility:hidden; width: 250px; height: 68px;Z-INDEX: 3;BACKGROUND: #C0D2EC;padding:10px;border: solid;border-width: 1px; border-color:#4D88C8;FILTER: revealTrans  (duration=1,transition=4);" > 
 <table width="100%" height="100%">
 <tr>
@@ -289,7 +329,7 @@ $Lang;?>/menu.js"></script>
     <td align="right" id="phpshop">
 	<a href="http://www.phpshop.ru" target="_blank" class="phpshop" title="Все права защищены
 © www.PHPShop.ru">
-	<?= $ProductName?></a>
+	<?= $ProductNameVersion?></a>
 	</td>
     
 </tr>
@@ -380,7 +420,10 @@ $Lang;?>/menu.js"></script>
     <td id="but99"  class="butoff"><img name="iconLang" src="icon/question_frame.png" alt="Быстрая справка" width="16" height="16" border="0" onmouseover="ButOn(99)" onmouseout="ButOff(99)" onclick="initSlide(0);loadhelp();"></td>
 <td width="3"></td>
 <?}?>
-    
+<? if ($support_status=="active" and $option['update_enabled'] == 1) {?>
+    <td id="but100"  class="butoff"><img name="iconLang" src="icon/update.gif" alt="Доступно обновление" title="Доступно обновление" width="16" height="16" border="0" onmouseover="ButOn(100)" onmouseout="ButOff(100)" onclick="ChekUpdate('true');"></td>
+<td width="3"></td>
+<?}?> 
 </tr>
 </table>
 	</td>

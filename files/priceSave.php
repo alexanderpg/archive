@@ -54,7 +54,7 @@ $format=$formatPrice['price_znak'];
 
 
 if(@$catId == "ALL") $str="";
- elseif(is_numeric(@$catId)) $str=" and category='$catId'";
+ elseif(is_numeric(@$catId)) $str=" and (category='$catId' or dop_cat LIKE '%#$catId#%')";
 
 $sql="select * from ".$SysValue['base']['table_name2']." where enabled='1'".@$str;
 $result=mysql_query($sql);
@@ -116,16 +116,16 @@ if($admoption['user_price_activate']==1 and !$_SESSION['UsersId']){
   // Пишес  GZIP
   if(@$gzip == "true"){
   gzcompressfile($sorce);
-  header('Content-Type: application/force-download'); 
-  header('Content-Disposition: attachment; filename="'.$file.'"'); 
-  //header("Location: price/".$file.".bz2");
-  readfile("price/".$file.".bz2"); 
+  //header('Content-Type: application/force-download'); 
+  //header('Content-Disposition: attachment; filename="'.$file.'"'); 
+  header("Location: price/".$file.".bz2");
+  //readfile("price/".$file.".bz2"); 
   }
   else {
-  header('Content-Type: application/force-download'); 
-  header('Content-Disposition: attachment; filename="'.$file.'"'); 
-  //header("Location: ".$sorce);
-  header('Content-Length: '.filesize($sorce));
-  readfile($sorce); 
+  //header('Content-Type: application/force-download'); 
+  //header('Content-Disposition: attachment; filename="'.$file.'"'); 
+  header("Location: ".$sorce);
+  //header('Content-Length: '.filesize($sorce));
+  //readfile($sorce); 
   }
 ?>
