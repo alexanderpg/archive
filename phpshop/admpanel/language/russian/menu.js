@@ -86,6 +86,7 @@ stm_aix("p10i5","p1i0",[0,"Доставка","","",-1,-1,0,"javascript:DoReload('deliver
 stm_aix("p10i6","p1i0",[0,"Клоны магазина","","",-1,-1,0,"javascript:DoReload('servers')","_self","","","server_connect.gif","server_connect.gif"]);
 stm_aix("p10i7","p1i0",[0,"Документооборот","","",-1,-1,0,"javascript:miniWin('system/adm_system_docsstyle.php',500,500)","_self","","","report.gif","report.gif"]);
 stm_aix("p10i8","p1i0",[0,"RSS каналы","","",-1,-1,0,"javascript:DoReload('rssgraber_chanels')","_self","","","rss.gif","rss.gif"]);
+stm_aix("p10i7","p1i0",[0,"Фотогалерея","","",-1,-1,0,"javascript:miniWin('system/adm_system_watermark.php',500,640)","_self","","","photo_album.gif","photo_album.gif"]);
 stm_ep();
 stm_aix("p0i6","p0i0",[0,"База"],40,20);
 stm_bpx("p11","p1",[]);
@@ -104,7 +105,9 @@ stm_ep();
 stm_aix("p0i7","p0i0",[0,"Справка"],60,20);
 stm_bpx("p12","p1",[]);
 stm_aix("p12i0","p1i0",[0,"Техническая Поддержка","","",-1,-1,0,"http://help.phpshop.ru/","_blank","","","icon_info.gif","icon_info.gif"]);
-stm_aix("p12i0","p1i0",[0,"Учебник","","",-1,-1,0,"http://phpshop.ru/loads/downloadhelp.php","_blank","","","book.gif","book.gif"]);
+stm_aix("p12i0","p1i0",[0,"Справка по разделу","","",-1,-1,0,"javascript:initSlide(0);loadhelp();","_self","","","question_frame.png","question_frame.png"]);
+stm_aix("p12i0","p1i0",[0,"Учебник","","",-1,-1,0,"http://phpshop.ru/help/","_blank","","","book.gif","book.gif"]);
+
 stm_aix("p12i1","p1i0",[0,"Новости","","",-1,-1,0,"http://www.phpshop.ru/news/","_blank","","","book_next.gif","book_next.gif"]);
 stm_aix("p12i2","p1i0",[0,"Настройка Internet Explorer","","",-1,-1,0,"javascript:ChekOptionDefault()","_self","","","computer_key.gif","computer_key.gif"]);
 stm_aix("p12i3","p1i1",[]);

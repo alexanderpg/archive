@@ -25,22 +25,22 @@ while ($row = mysql_fetch_array($result))
 	@$display.='
 	<tr onmouseover="show_on(\'r'.$id.'\')" id="r'.$id.'" onmouseout="show_out(\'r'.$id.'\')" class=row >
 	
-    <td align=center id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')">
+    <td align=center id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'rssgraber/adm_chanelsID.php?id='.$id.'\',400,480)">
     '.$checked.'
     </td>
-    <td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')">
+    <td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'rssgraber/adm_chanelsID.php?id='.$id.'\',400,480)">
 	'.$link.'
 	</td>
-	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')">
+	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'rssgraber/adm_chanelsID.php?id='.$id.'\',400,480)">
 	'.$day_num.'
 	</td>
-	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')">
+	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'rssgraber/adm_chanelsID.php?id='.$id.'\',400,480)">
 	'.$news_num.'
 	</td>
-	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')">
+	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'rssgraber/adm_chanelsID.php?id='.$id.'\',400,480)">
 	'.$start_date.'
 	</td>
-	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')">
+	<td id=Nws class=Nws onmouseover="show_on(\'r'.$id.'\')" onmouseout="show_out(\'r'.$id.'\')" onclick="miniWin(\'rssgraber/adm_chanelsID.php?id='.$id.'\',400,480)">
 	'.$end_date.'
 	</td>
 	<td class=forma style=\"padding:1px\" align=\"center\">

@@ -8,3 +8,8 @@ Disallow: /search/
 Disallow: /opros/
 Disallow: /install/
 Disallow: /pda/
+Disallow: /compare/
+
+User-agent: Yandex
+Disallow:
+Clean-param: from&v&f&s

@@ -49,15 +49,17 @@ if(!empty($row[$pole])) return $row[$pole];
 function Sorts()
  {
 global $SysValue;
-$sql="select id,name from ".$SysValue['base']['table_name21'];
+$sql="select * from ".$SysValue['base']['table_name21'];
 $result=mysql_query($sql) or  die("".PHPSHOP_error(102,$SysValue['my']['error_tracer'])."");
 $Sorts='';
 while ($row = mysql_fetch_array($result))
     {
 	$id=$row['id'];
 	$name=$row['name'];
+	$page=$row['page'];
 	$array=array(
 	"id"=>$id,
+	"page"=>$page,
 	"name"=>$name
 	);
 	$Sorts[$id]=$array;
@@ -81,11 +83,13 @@ while (@$row = mysql_fetch_array(@$result))
 	$filtr=$row['filtr'];
 	$flag=$row['flag'];
 	$goodoption=$row['goodoption'];
+	$page=$row['page'];
 	$array=array(
 	"id"=>$id,
 	"name"=>$name,
 	"category"=>$category,
 	"filtr"=>$filtr,
+	"page"=>$page,
 	"flag"=>$flag,
 	"goodoption"=>$goodoption
 	);
@@ -202,7 +206,7 @@ global $SysValue,$LoadItems,$_SESSION;
 if($str != "none"){
 
 $System=DispSystems();
-$sql="select id,uid,name,category,price,price_n,sklad,odnotip,vendor,title_enabled,datas,page,user,descrip_enabled,keywords_enabled,pic_small,pic_big,parent,price2,price3,price4,price5  from ".$SysValue['base']['table_name2'].$str;
+$sql="select id,uid,name,category,price,price_n,sklad,odnotip,vendor,title_enabled,datas,page,user,descrip_enabled,keywords_enabled,pic_small,pic_big,parent,baseinputvaluta  from ".$SysValue['base']['table_name2'].$str;
 $result=mysql_query($sql);
 while (@$row = mysql_fetch_array($result))
     {
@@ -250,7 +254,7 @@ while (@$row = mysql_fetch_array($result))
 	$odnotip=explode(",",$row['odnotip']);
 	$parent=explode(",",$row['parent']);
 	$vendor=$row['vendor'];
-	
+	$baseinputvaluta=$row['baseinputvaluta'];	
 	
 	$array=array(
 	"category"=>$category,
@@ -270,6 +274,7 @@ while (@$row = mysql_fetch_array($result))
 	"keywords_enabled"=>$keywords_enabled,
 	"datas"=>$datas,
 	"page"=>$page,
+	"baseinputvaluta"=>$baseinputvaluta,
 	"user"=>$user
 	);
 	$Products[$id]=$array;

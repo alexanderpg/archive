@@ -21,7 +21,7 @@ $LoadItems['Product'][$id]['pic_small']="images/shop/no_photo.gif";
 $SysValue['other']['productImg']= $LoadItems['Product'][$SysValue['nav']['id']]['pic_small'];
 
 
-if(@$send_price_link and $mail and $name_person and $link_to_page and $_POST['key']==$_SESSION['text']){
+if(!empty($_SESSION['text']) and @$send_price_link and $mail and $name_person and $link_to_page and $_POST['key']==$_SESSION['text']){
 
 $codepage  = "windows-1251";              
 $header  = "MIME-Version: 1.0\n";

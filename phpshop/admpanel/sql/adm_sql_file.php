@@ -132,8 +132,8 @@ $bases2=ereg_replace("phpshop_system","",$bases);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50">
 <tr>
-    <td style="padding:10">
-	<input type="button" value="Выполнить SQL команду" onclick="miniWin('adm_sql.php','500','430');window.close()" class=but style="width:150" name="btnLang">
+  <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('sql_file')">Справка</BUTTON></BUTTON>
 	</td>
 	<td align="right" style="padding:10">
 <INPUT class=but onclick="SqlSend2()" type=button value=OK> 

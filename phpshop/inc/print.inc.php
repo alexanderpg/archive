@@ -5,7 +5,7 @@ global $SysValue,$LoadItems,$SERVER_NAME;
 $n=TotalClean($n,1);
 $cat=TotalClean($cat,1);
 $i=0;
-$sql="select id,content,odnotip,vendor_array,page from ".$SysValue['base']['table_name2']." where id=$n and enabled='1'";
+$sql="select * from ".$SysValue['base']['table_name2']." where id=$n and enabled='1'";
 $result=mysql_query($sql);
 @$SysValue['sql']['num']++;
 $row = mysql_fetch_array($result);
@@ -18,6 +18,7 @@ $row = mysql_fetch_array($result);
 	$odnotip=$LoadItems['Product'][$id]['odnotip'];
 	$vendor=$LoadItems['Product'][$id]['vendor'];
 	$vendor_array=$row['vendor_array'];
+	$baseinputvaluta=$row['baseinputvaluta'];	
 
 // Режим Multibase
 $admoption=unserialize($LoadItems['System']['admoption']);
@@ -44,10 +45,9 @@ $SysValue['other']['productImg']= $LoadItems['Product'][$id]['pic_big'];
 if($LoadItems['Product'][$id]['priceSklad']==0){// Если товар на складе
 // Если нет новой цены
 if(empty($LoadItems['Product'][$id]['priceNew'])){
-$SysValue['other']['productPrice']=GetPriceValuta($LoadItems['Product'][$id]['price']);
-$SysValue['other']['productPriceRub']= $LoadItems['Product'][$id]['price_rub'];
+$SysValue['other']['productPrice']=GetPriceValuta($LoadItems['Product'][$id]['price'],"",$baseinputvaluta);
 }else{// Если есть новая цена
-$SysValue['other']['productPrice']=GetPriceValuta($LoadItems['Product'][$id]['price']);
+$SysValue['other']['productPrice']=GetPriceValuta($LoadItems['Product'][$id]['price'],"",$baseinputvaluta);
 $SysValue['other']['productPriceRub']= "<strike>".GetPriceValuta($LoadItems['Product'][$id]['priceNew'])." ".GetValuta()."</strike>";
 }}else{ // Товар по заказ
 $SysValue['other']['productPrice']=$SysValue['lang']['sklad_no'];

@@ -12,6 +12,33 @@ $SysValue=parse_ini_file("../../phpshop/inc/config.ini",1);
 $RegTo = $SysValue['license']['regto'];
 $ProductName=$SysValue['license']['product_name'];
 
+
+// Вывод валюты в выборе для загрузки товаров
+function ChoiceValuta(){
+global $SysValue;
+$sql="select * from ".$SysValue['base']['table_name24']." WHERE enabled='1' order by num";
+$result=mysql_query($sql);
+while ($row = mysql_fetch_array($result))
+    {
+	$vid=$row['id'];
+	$vname=$row['name'];
+	$vcode=$row['code'];
+	$viso=$row['iso'];
+	$vkurs=$row['kurs'];
+	$venabled=$row['enabled'];
+	if($vkurs == 1) $selected="selected"; else $selected="";
+    @$dis.="<option value=".$vid." $selected>".$viso."</option>";
+}
+$disp='
+<select id="tip_16">
+'.$dis.'
+</select>';
+return $disp;
+}
+
+
+
+
 // Отрезаем до точки
 function mySubstr($str,$a){
 $T=$a;

@@ -82,6 +82,7 @@ return @$Status;
 }
 
 
+
 // Вывод заказов
 function GetUsersOrdersList($n,$tip){
 global $SysValue,$_GET;
@@ -133,7 +134,7 @@ while(@$row = mysql_fetch_array(@$result))
 	'.$order['Person']['discount'].'
 	</td>
 	<td id=allspecwhite>
-	'.($SummaOrder+$order['Cart']['dostavka']).' '.GetValutaOrder().'
+	'.($SummaOrder+GetDeliveryPrice($order['Person']['dostavka_metod'],$SummaOrder,$order['Cart']['weight'])).' '.GetValutaOrder().'
 	</td>
 	<td  bgcolor="'.$bg.'">
 	'.$status_name.'
@@ -274,17 +275,19 @@ $row = mysql_fetch_array(@$result);
 @$sum+=$val['price']*$val['num'];
 }
 
-
-
+// Доставка
+$GetDeliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum,$order['Cart']['weight']);
 
 // Итоговая сумма
-$TotalSumOrder = (ReturnSummaNal($sum,$order['Person']['discount'])+$order['Cart']['dostavka']);
+$TotalSumOrder = ReturnSummaNal($sum,$order['Person']['discount'])+$GetDeliveryPrice;
+
+
 
 $disCart.="
 <tr>
   <td id=allspecwhite>Доставка -  ".GetDeliveryBase($order['Person']['dostavka_metod'],"city")."</td>
   <td id=allspecwhite>1</td>
-  <td id=allspecwhite>".$order['Cart']['dostavka']." 
+  <td id=allspecwhite>".$GetDeliveryPrice." 
  ".GetValutaOrder()."</td>
 </tr>
 <tr>

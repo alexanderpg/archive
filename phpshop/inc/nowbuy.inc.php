@@ -30,8 +30,8 @@ while ($f=mysql_fetch_array($res)) {
 
 		$querygood='SELECT id FROM '.$SysValue['base']['table_name2'].' WHERE id='.$gid;
         @$SysValue['sql']['num']++;
-		$resgood = mysql_query($querygood);
-		$rowsgood=mysql_num_rows($resgood);
+		@$resgood = mysql_query(@$querygood);
+		@$rowsgood=mysql_num_rows(@$resgood);
 
 
 		if ($rowsgood) {

@@ -56,7 +56,14 @@ switch($p){
 	 <table cellspacing="0" cellpadding="0"  >
  
 <tr>
-    <td><input type="text" style="width:80" name="pole1" value="'.@$var1.'" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+    <td><td>
+<input type="text" style="width:80" value="';
+	if(!$var1) $interface.= date("d-m-Y");
+	else $interface.= @$var1;
+	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+
+</td>
+	<td>
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="';
@@ -73,7 +80,7 @@ switch($p){
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-    <td id="but2" class="butoff" align="left"><img src="icon/page_new.gif" name="imgLang" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'gbook/adm_gbook_new.php\',630,630)"></td>
+    <td id="but2" class="butoff" align="left"><img src="icon/page_new.gif" name="imgLang" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'gbook/adm_gbook_new.php\',630,580)"></td>
 </tr>
 </table>
 
@@ -115,11 +122,18 @@ switch($p){
 	   $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td>
+<td style="padding-left:10px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<td><input type="text" style="width:80" name="pole1" value="'.@$var1.'">
+	<td>
+<input type="text" style="width:80" value="';
+	if(!$var1) $interface.= date("d-m-Y");
+	else $interface.= @$var1;
+	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+
+</td>
+	<td>
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="';
@@ -171,7 +185,7 @@ switch($p){
 	   $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td>
+<td style="padding-left:10px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -398,9 +412,8 @@ switch($p){
  неверной их загрузки.</span></td>
 </tr>
 </table>
-<div align="right" style="padding:10">';
-if($SysValue['pro']['enabled'] == "true")
-@$interface.='
+<div align="right" style="padding:10">
+<BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON>
 <BUTTON style="width: 15em; height: 2.2em; margin-left:5"  onclick="miniWin(\'./1c/seamply_base_1c.csv\',500,370)">
 <img src="./img/action_save.gif" width="16" height="16" border="0" align="absmiddle" hspace="3">
 <span name=txtLang id=txtLang>Скачать пример файла</span>
@@ -459,6 +472,7 @@ if($SysValue['pro']['enabled'] == "true")
 <input type="checkbox" value="1" id="tip_14" checked> <span name=txtLang id=txtLang>Категория&nbsp;&nbsp;</span>
 <input type="checkbox" value="1" id="tip_15" checked> <span name=txtLang id=txtLang>Характеристики&nbsp;&nbsp;</span>
 <input type="checkbox" value="1" id="tip_12" checked disabled> <span name=txtLang id=txtLang>Вес&nbsp;&nbsp;</span>
+Валюта: '.ChoiceValuta().' 
 </div>
 </div>
 </FIELDSET>
@@ -488,6 +502,7 @@ if($SysValue['pro']['enabled'] == "true")
 </tr>
 </table>
 <div align="right" style="padding:10">
+<BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON>
 <BUTTON style="width: 15em; height: 2.2em; margin-left:5"  onclick="miniWin(\'./export/seamply_base.csv\',500,370)">
 <img src="./img/action_save.gif" width="16" height="16" border="0" align="absmiddle" hspace="3">
 <span name=txtLang id=txtLang>Скачать пример файла</span>
@@ -547,10 +562,15 @@ if($SysValue['pro']['enabled'] == "true")
     <td></td>
 	<td valign="top"><h4><span name=txtLang id=txtLang>Внимание</span>!</h4>
 <span name=txtLang id=txtLang>Внимательно проверяйте предварительно загруженные данные во избежания
- неверной загрузки данных</span>.</td>
+ неверной загрузки данных</span>.
+ <div align="right">
+<BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON>
+</div>
+ </td>
 </tr>
 </table>
 </TD></TR></TABLE>
+
 
    ');
       else $interface = $UserChek->BadUserForma();
@@ -652,12 +672,19 @@ if($SysValue['pro']['enabled'] == "true")
 <td><form name="calendar">
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-  <td width="5"></td>
-	<td align="left">
+  <td width="10"></td>
+	<td align="left" >
 	 <table cellspacing="0" cellpadding="0"  >
  
 <tr>
-    <td><input type="text" style="width:80" name="pole1" value="'.@$var1.'" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+    <td><td>
+<input type="text" style="width:80" value="';
+	if(!$var1) $interface.= date("d-m-Y");
+	else $interface.= @$var1;
+	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+
+</td>
+	<td>
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="';
@@ -710,7 +737,7 @@ if($SysValue['pro']['enabled'] == "true")
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td>
+<td style="padding-left:10px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -763,7 +790,7 @@ if($SysValue['pro']['enabled'] == "true")
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td>
+<td style="padding-left:5px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -812,7 +839,7 @@ if($SysValue['pro']['enabled'] == "true")
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td>
+<td style="padding-left:10px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -862,12 +889,7 @@ if($SysValue['pro']['enabled'] == "true")
 	  else $interface = $UserChek->BadUserForma();
       break;
 	  
-	  // Отзывы
-      case("gbook"):
-	  require("../gbook/admin_gbook.php");
-	  if(CheckedRules($UserStatus[$p],0) == 1) $interface.=Gbook();
-	  else  $interface = $UserChek->BadUserForma();
-      break;
+	  
 	  
 	  
 	  // Администраторы
@@ -882,15 +904,15 @@ if($SysValue['pro']['enabled'] == "true")
 $interface=('
 <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td>
+<td style="padding-left:10px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-	<td align="left">	
+	<td align="left" >	
 	
 	<table cellpadding="0" cellspacing="0">
 <tr>
-	<td>
+	<td >
 	
 
 	<input type=text name="words" id="words" size=50 class=s onMouseMove="show(\'[ '.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help'][5].'\')" onMouseOut="hide()" onfocus="hide()">
@@ -1100,14 +1122,21 @@ $interface=('
 	 case("orders"):
 	 $a_button=3;
 	 //${"list_".$var4.""}="SELECTED";
-	 $interface='
+	 	 $interface='
 <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;" height="10">
 <tr>
-<td>
+<td style="padding-left:10px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<td><input type="text" style="width:80" name="pole1" value="'.@$var1.'" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+	<td>
+<input type="text" style="width:80" value="';
+	if(!$var1) $interface.= date("d-m-Y");
+	else $interface.= @$var1;
+	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+
+</td>
+	<td>
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="';
@@ -1162,90 +1191,7 @@ $interface=('
    <td>
    <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-	<td>
-   	<img name="iconLang" src="icon/plugin.gif" width="16" height="16" border="0"  align="absmiddle" hspace="1">
-<a href="javascript:LoadAgent()" class="blue" title="Контроль и редактирование заказов на рабочем столе Windows" id="txtLoadExe">Загрузить Order Agent Windows</a>
-   </td>
-	<td align="right">
-	<select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.document.form_flag,1000)">
-			<option SELECTED id=txtLang value=0>С отмеченными</option>
-			<option value="36" id=txtLang>Удалить из базы</option>
-			<option value="37" id=txtLang>Изменить статус</option>
-			<option value="38" id=txtLang>Создать новый</option>
-   </select>
-
-	</td>
-	  
-</td>
-</tr>
-</table>
-   </td>
-</tr>
-</table>
-
-	 ';	 $interface='
-<table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;" height="10">
-<tr>
-<td>
-<form method="post" name=calendar>
-<table cellpadding="0" cellspacing="0">
-<tr>
-	<td><input type="text" style="width:80" name="pole1" value="'.@$var1.'" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
-	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
-	</td>
-	<td><input type="text" style="width:80" value="';
-	if(!$var2) $interface.= date("d-m-Y");
-	else $interface.= @$var2;
-	$interface.='" name="pole2" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_2'].'\')" onMouseOut="hide()" onfocus="hide()">
-	</td>
-	<td><IMG onclick="popUpCalendar(this, calendar.pole2, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
-	</td>
-	<td>
-	<input type=button id=btnShow value="Показать" class=but3 onclick="DoReload(\'orders\',calendar.pole1.value, calendar.pole2.value)">
-	</td>
-	<td width="10"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-   <td width="10"></td>
-	<td>
-	<table cellspacing="0" cellpadding="0" >
-<tr>
-    <td>
-	<input type=text name="order_serach" size=50 class=s onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_3'].'\')" onMouseOut="hide()" onfocus="hide()" value="'.$var3.'">
-	<input type=button value=Поиск class=but3 id=btnSearch  onclick="DoReload(\'orders\',calendar.pole1.value,calendar.pole2.value,document.getElementById(\'order_serach\').value)">
-	</td>
-</tr>
-</table>
-	</td>
-	<td width="10"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-   <td width="10"></td>
-   <td>
-   <span name=txtLang id=txtLang>Статус</span>: '.GetOrderStatusApi($var4).'
-   <input type=button id=btnStatus value="Показать" class=but3 onclick="DoReload(\'orders\',calendar.pole1.value, calendar.pole2.value,\'\',list.value)">
-   </td>
-    <td width="10"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-    <td width="3"></td>
-	    <td id="but30"  class="butoff"><img name="imgLang" src="icon/coins.gif" title="Электронные платежи" width="16" height="16" border="0" onmouseover="ButOn(30)" onmouseout="ButOff(30)" onclick="DoReload(\'order_payment\')"></td>
-    <td width="3"></td>
-	
-</tr>
-</table>
-</form>
-</td>
-</td>
-</tr>
-</table>
-<table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
-<tr>
-	
-   <td>
-   <table cellpadding="0" cellspacing="0" width="100%">
-<tr>
-	<td>
+	<td style="padding-left:10px">
    	<img name="iconLang" src="icon/plugin.gif" width="16" height="16" border="0"  align="absmiddle" hspace="1">
 <a href="javascript:LoadAgent()" class="blue" title="Контроль и редактирование заказов в  Windows" id="txtLoadExe">Установить Order Agent Windows</a>
 
