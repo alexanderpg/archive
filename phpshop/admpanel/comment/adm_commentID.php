@@ -105,7 +105,7 @@ $sql="select name from ".$SysValue['base']['table_name2']." where id=$parent_id"
       $result=mysql_query($sql);
 	  $row = mysql_fetch_array($result);
 	  echo '
-	  <img src="../img/icon-setup.gif"  border="0" align="absmiddle" hspace="5"><a href="http://'.$SERVER_NAME.'/info/UID_'.$parent_id.'.html"  target="_blank" title="Переход">'.$row['name'].'</a>
+	  <img src="../img/icon-setup.gif"  border="0" align="absmiddle" hspace="5"><a href="http://'.$SERVER_NAME.'/shop/UID_'.$parent_id.'.html"  target="_blank" title="Переход">'.$row['name'].'</a>
 	  ';
 ?>
 </div>

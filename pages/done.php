@@ -62,16 +62,17 @@ window.document.getElementById('num').innerHTML='0';
 window.document.getElementById('sum').innerHTML='0';
 }
 </script>";
-     else    @$disp.="
+     else {
+	 @$disp.="
 <script language=\"JavaScript1.2\">
 if(window.document.getElementById('num')){
 window.document.getElementById('num').innerHTML='0';
 window.document.getElementById('sum').innerHTML='0';
 }
 </script>";
+     session_unregister('cart');
+     }
 	 
-	 
-   //session_unregister('cart');
    }
    // Квитанция Сбербанка
    elseif(@$_POST['mail'] and @$_POST['name_person'

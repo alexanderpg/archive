@@ -1,7 +1,14 @@
 //***************************************************//
-// PHPShop JavaScript 2.1                            //
+// PHPShop JavaScript 3                              //
 // Copyright © www.phpshop.ru. Все права защищены.   //
 //***************************************************//
+
+// Настройка подтипов товара
+function ShowPodtipOption(v){
+var obj=document.getElementById('podtip_list');
+if(v==1) obj.style.visibility="hidden";
+ else obj.style.visibility="visible";
+}
 
 
 // Управление панелью
@@ -273,15 +280,10 @@ if(confirm("Удалить все изображения к товару из галереи?\nПри отказе изображения
 self.close();
 }
 
-function LoadDesktop(F){
-if(confirm("Установить Order Desktop на ваш компьютер?\nДля установки потребуется внести изменения в реестр, на предложение подтведить выполнения операции наммите Да. Для активации следует вызвать Настройку Экрана и нажать клавишу Ок.\nOrder Desktop работает только в Windows XP!")){
- window.open("./desktop/?F="+F);
- }
-}
 
 function LoadAgent(){
 if(confirm("Загрузить Order Agent Windows на ваш компьютер?"))
- window.open("http://www.phpshop.ru/loads/downloadexe.php");
+ window.open("http://www.phpshop.ru/loads/ThLHDegJUj/setup.exe");
 }
 
 // Резиновый экран
@@ -291,7 +293,7 @@ if(document.getElementById("interfacesWin") || document.getElementById("interfac
 
 
 // Если заказы
-if(page=="orders") clientW=clientW-200;
+//if(page=="orders") clientW=clientW-200;
 
 
 // Если новое окно
@@ -665,6 +667,36 @@ name="start";
     req.send( {  name: name } );
 }
 
+// Панель настроек загрузки 1с
+function Option1c(tip){
+d = document;
+if(tip == 0){
+  d.getElementById('pole_1c_option').style.display="none";
+  d.getElementById('1c_tree_check').value=1;
+  }
+  else{
+      d.getElementById('pole_1c_option').style.display="block";
+	  d.getElementById('1c_tree_check').value=0;
+	  }
+}
+
+
+// Если загружается список каталогов
+function UpdateFileNameBase1C(name){
+pattern=/tree/;
+if(pattern.test(name)==true){
+  document.getElementById('filenametree').checked = true;
+  d.getElementById('1c_tree_check').value=1;
+  document.getElementById('pole_1c_option').style.display="none";
+  }
+  else {
+       document.getElementById('filenamebase').checked = true;
+	   d.getElementById('1c_tree_check').value=0;
+	   document.getElementById('pole_1c_option').style.display="block";
+	   }
+}
+
+
 // Загрузка базы из 1C 
 function DoLoadBase1C(value,page,name) {
 var tip=new Array();
@@ -683,6 +715,8 @@ if(page == "predload"){
   if(d.getElementById('tip_10').checked == true) tip[10] = 1;
   if(d.getElementById('tip_11').checked == true) tip[11] = 1;
   if(d.getElementById('tip_12').checked == true) tip[12] = 1;
+  if(d.getElementById('tip_14').checked == true) tip[14] = 1;
+  if(d.getElementById('tip_15').checked == true) tip[15] = 1;
  }
  
 if(page == "load"){
@@ -698,6 +732,8 @@ tip[9] = d.getElementById('tip_9').value;
 tip[10] = d.getElementById('tip_10').value;
 tip[11] = d.getElementById('tip_11').value;
 tip[12] = d.getElementById('tip_12').value;
+tip[14] = d.getElementById('tip_14').value;
+tip[15] = d.getElementById('tip_15').value;
 }
 
 preloader(1);
@@ -709,7 +745,12 @@ preloader(1);
         }
     }
 	
-    req.open(null, '1c/admin_csv.php', true);
+	// Если загрузка каталогов
+	if(d.getElementById('1c_tree_check').value == 1)
+    req.open(null, '1c/admin_tree_csv.php', true);
+	  else req.open(null, '1c/admin_csv.php', true);
+	
+	
     req.send( { 'file': value, tip: tip, page: page, name: name } );
 }
 
@@ -735,6 +776,7 @@ if(page == "predload"){
   if(d.getElementById('tip_13').checked == true) tip[13] = 1;
   if(d.getElementById('tip_14').checked == true) tip[14] = 1;
   if(d.getElementById('tip_15').checked == true) tip[15] = 1;
+  if(d.getElementById('tip_17').checked == true) tip[17] = 1;
   tip[16] = d.getElementById('tip_16').value;
  }
  
@@ -755,6 +797,7 @@ tip[13] = d.getElementById('tip_13').value;
 tip[14] = d.getElementById('tip_14').value;
 tip[15] = d.getElementById('tip_15').value;
 tip[16] = d.getElementById('tip_16').value;
+tip[17] = d.getElementById('tip_17').value;
 }
 preloader(1);
     var req = new JsHttpRequest();
@@ -769,6 +812,9 @@ preloader(1);
     req.open(null, 'export/admin_csv_base.php', true);
     req.send( { 'file': value, tip: tip, name: name, page: page } );
 }
+
+
+
 
 
 // Загрузка прайса
@@ -860,13 +906,13 @@ function CalcSort(){
 if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
 miniWin('./product/adm_calc_sort.php?id='+catal,500,600);
-}else alert("Выберете подкаталог для редактирования");
+}else alert("Выберите подкаталог для редактирования");
 }
 
 
 // Копировать в буфер
 function copyToClipboard(){
-document.getElementById('encoded_text').select();
+document.getElementById('upload_log').select();
 var CopiedTxt=document.selection.createRange();
 CopiedTxt.execCommand("Copy");
 alert("Данные скопированы в буфер обмена.");
@@ -1094,7 +1140,7 @@ if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
 if(catal!="ALL")
 miniWin('shopusers/adm_messages_new.php?UID='+catal,500,370);
-}else alert("Выберете пользователя для создания сообщения");
+}else alert("Выберите пользователя для создания сообщения");
 
 }
 
@@ -1102,7 +1148,7 @@ function DeleteUMessages(){
 if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
 miniWin('./window/adm_window.php?do=42&ids='+catal,300,300)
-}else alert("Выберете пользователя для УДАЛЕНИЯ всех сообщений");
+}else alert("Выберите пользователя для УДАЛЕНИЯ всех сообщений");
 
 }
 
@@ -1113,7 +1159,7 @@ if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
 if(catal != 1000 && catal != 2000)
 miniWin('page/adm_catalogID.php?catalogID='+catal,500,370);
-}else alert("Выберете подкаталог для редактирования");
+}else alert("Выберите подкаталог для редактирования");
 
 }
 
@@ -1121,7 +1167,7 @@ function EditCatalogDelivery(){
 if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
 miniWin('delivery/adm_catalogID.php?id='+catal,500,370);
-}else alert("Выберете подкаталог для редактирования");
+}else alert("Выберите подкаталог для редактирования");
 
 }
 
@@ -1135,12 +1181,12 @@ if(window.frame2.document.getElementById("catal"))
   var catal=window.frame2.document.getElementById("catal").value;
   if(catal != 1000001 && catal != 1000002)
   miniWin('catalog/adm_catalogID.php?catalogID='+catal,650,630);
-  }else alert("Выберете каталог для редактирования");
+  }else alert("Выберите каталог для редактирования");
  }
  else EditCatalogPage();
  
 }catch(e){
-         alert("Выберете каталог для редактирования");
+         alert("Выберите каталог для редактирования");
 		 DoReload('cat_prod');
 		 }
 }
@@ -1234,9 +1280,7 @@ obj2.value = 1;
 }
 
 function DoWithSelect(tip,obj,num){
-if (document.location.href.indexOf(".php?")==-1) {var dots="";} else {var dots=".";} //Багообразное условие проверки откуда стартует скрипт
-// Если передается объект
-//if(num) num = num.length
+if (document.location.href.indexOf(".php?")==-1) {var dots="";} else {var dots=".";} 
 
 try{
 if(tip!=0){
@@ -1273,7 +1317,7 @@ else if(IDS.length>0) miniWin(dots+'./window/adm_window.php?do='+tip+'&ids='+IDS
   
        
 }
-}catch(e){alert("Выберете категорию для выполнения операций...");};
+}catch(e){alert("Выберите категорию для выполнения операций...");};
 
 try{
 document.getElementById('actionSelect').value=0;

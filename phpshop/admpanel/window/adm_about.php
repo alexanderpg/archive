@@ -36,7 +36,11 @@ if(is_numeric($TechPodUntilUnixTime))
 $TechPodUntil=dataV($TechPodUntilUnixTime);
   else $TechPodUntil=" - ";
 
-
+$DomenLocked=$License['License']['DomenLocked'];
+if(empty($DomenLocked))
+  $DomenLocked=$SERVER_NAME;
+  
+  
 $LicenseUntilUnixTime = $License['License']['Expires'];
 if(is_numeric($LicenseUntilUnixTime))
 $LicenseUntil=dataV($LicenseUntilUnixTime);
@@ -90,59 +94,17 @@ DoResize(<? echo $GetSystems['width_icon']?>,670,530);
 
 <TABLE cellSpacing=0 cellPadding=0 width="100%">
 <TR>
-<TD vAlign=top >
-<table width="100%" cellpadding="0" cellspacing="1" height="100%">
+<TD vAlign=top  width="200">
+<table width="100%" cellpadding="5" cellspacing="1" height="100%">
 <tr>
-	<td id=pane align=center><img src="../img/arrow_d.gif" alt="" width="7" height="7" border="0" hspace="5"><span name=txtLang id=txtLang>Модуль</span></td>
-	<td id=pane align=center><img src="../img/arrow_d.gif" alt="" width="7" height="7" border="0" hspace="5"><span name=txtLang id=txtLang>Версия</span></td>
+	<td id=pane align=center><img src="../img/arrow_d.gif" alt="" width="7" height="7" border="0" hspace="5"><span name=txtLang id=txtLang>Название</span></td>
+    	<td id=pane align=center><img src="../img/arrow_d.gif" alt="" width="7" height="7" border="0" hspace="5"><span name=txtLang id=txtLang>Версия</span></td>
 </tr>
 <tr bgcolor="#ffffff">
-	<td>AdminPanel</td>
-	<td>2.1.9</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Engen</td>
-	<td>2.1.9</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Parser</td>
-	<td>2.1.6</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Baner</td>
-	<td>2.1.3</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Order</td>
-	<td>2.1.9</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Links</td>
-	<td>2.0.5</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Map</td>
-	<td>2.1.3</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Search</td>
-	<td>2.1.9</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Catalog</td>
-	<td>2.1.9</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Cache</td>
-	<td>2.1.8</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>News</td>
-	<td>2.1.9</td>
-</tr>
-<tr bgcolor="#ffffff">
-	<td>Display</td>
-	<td>2.1.9</td>
+	<td><?=$ProductName;?></td>
+	<td>
+	<?=$SysValue['upload']['version'];?>
+	</td>
 </tr>
 <tr>
 	<td id=pane align=center><img src="../img/arrow_d.gif" alt="" width="7" height="7" border="0" hspace="5"><span name=txtLang id=txtLang>Поддержка</span></td>
@@ -165,15 +127,19 @@ DoResize(<? echo $GetSystems['width_icon']?>,670,530);
 	</td>
 </tr>
 </table>
+
 <div align="center" style="padding:10">
 <a href="http://www.phpshop.ru/docs/techpod.html" target="_blank" style="color:blue" title="Перейти на сайт разработчика для подробной информации"><span name=txtLang id=txtLang>Пролонгация технической поддержки</span></a>
+</div>
+<div align="center" style="padding:10">
+<input type="button" value="Проверить лицензию" onclick="window.open('http://www.phpshop.ru/chek/?name=<?=$DomenLocked?>')">
 </div>
 </td>
 	<td valign="top">
 <table cellSpacing=0 cellPadding=0 width="100%">
 <tr>
    <td id=pane align=center>
-   <img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Лицензионное соглашение</span>:
+   <img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5><span name=txtLang id=txtLang>Лицензионное соглашение</span>
    </td>
 </tr>
 <tr>
@@ -266,11 +232,9 @@ DoResize(<? echo $GetSystems['width_icon']?>,670,530);
 <p><strong>Контактная информация компании ООО "Нетрик"</strong><br>
 Адрес сайта: <a href="http://www.phpshop.ru" target="_blank">www.phpshop.ru</a> <br>
 Учебник: <a href="http://www.phpshop.ru/help/" target="_blank">www.phpshop.ru/help/</a> <br>
-E-mail отдела продаж: <a href="mailto:market@phpshop.ru">market@phpshop.ru</a><br>
-Телефон отдела продаж: +7 (495) 510 84 24 <br>
+E-mail отдела продаж: <a href="mailto:sales@phpshop.ru">sales@phpshop.ru</a><br>
+Телефон отдела продаж: +7 (495) 989-11-15 <br>
 Раздел техподдержки на сайте: <a href="http://www.help.phpshop.ru" target="_blank">help.phpshop.ru</a> <br>
-Телефон отдела разработок: +7 495 505 06 41<br>
-Телефон администрации: +7 495 700 64 70<br>
 E-mail администрации: <a href="mailto:mail@phpshop.ru">mail@phpshop.ru</a></p>
 </span></div>
 <br>
