@@ -40,6 +40,7 @@ $row = mysql_fetch_array(@$result);
 	$order=unserialize($row['orders']);
 	$status=unserialize($row['status']);
 
+ if(is_array($order['Cart']['cart']))
  foreach($order['Cart']['cart'] as $val){
  @$dis.="
   <tr class=tablerow>

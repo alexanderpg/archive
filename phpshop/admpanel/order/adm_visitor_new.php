@@ -495,6 +495,9 @@ tabPane.addTabPage( document.getElementById( \"cart\" ) );
 
 <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"50\" >
 <tr>
+    <td align=\"left\" style=\"padding:10\">
+    <BUTTON class=\"help\" onclick=\"helpWinParent('ordersID')\">Справка</BUTTON>
+	</td>
 	<td align=\"right\" style=\"padding:10\" >
     <input type=submit id=btnOk  value=ОК class=but name=productSAVE>
 	<input type=\"button\"  id=btnRemove class=but value=\"Удалить\" onClick=\"PromptThis();\">
@@ -540,6 +543,14 @@ $order['Person']['tel_code']=MyStripSlashes($_POST['tel_code']);
 $order['Person']['tel_name']=MyStripSlashes($_POST['tel_name']);
 $order['Person']['org_name']=MyStripSlashes($_POST['org_name']);
 $order['Person']['order_metod']=$_POST['order_metod_new'];
+
+
+foreach($order['Cart']['cart'] as $val)
+      @$num+=$val['num'];
+	  
+	  
+$order['Cart']['num']=$num;
+
 
 $Status=array(
 "maneger"=>$maneger_new,

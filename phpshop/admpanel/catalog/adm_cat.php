@@ -92,7 +92,7 @@ $dis="
 <script type=\"text/javascript\">
 		<!--
 		d2 = new dTree('d2');
-		d2.add(0,-1,'<b>".$SysValue['Lang']['Category'][1]."</b>');
+		d2.add(0,-1,'<b>".$SysValue['Lang']['Category'][1]."</b>','Корень');
 		
         ".$dis."
 		d2.add(1000003,0,'".$SysValue['Lang']['Category'][14]."','".DispName(1000003,$SysValue['Lang']['Category'][14])."','','','../img/imgfolder.gif','');

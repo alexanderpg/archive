@@ -105,7 +105,7 @@ switch($pole){
 	 
 	 case(2):
      foreach($_WORDS as $w)
-	 @$sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid = '$w' or id = '$w') and ";
+	 @$sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid REGEXP '$w' or id = '$w') and ";
 	 break;
 }}
 else{
@@ -117,12 +117,12 @@ switch($pole){
      
 	 case(1):
      foreach($_WORDS as $w)
-@$sort.="(name REGEXP '$w' or uid = '$w' or id = '$w') or ";
+@$sort.="(name REGEXP '$w' or uid REGEXP '$w' or id = '$w') or ";
 	 break;
 	 
 	 case(2):
 	 foreach($_WORDS as $w)
-	 @$sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid = '$w' or id = '$w') or ";
+	 @$sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid REGEXP '$w' or id = '$w') or ";
 	 break;
 }}
 
@@ -140,8 +140,8 @@ if($p=="all") {
 else while($q<$p)
   {
   if($set==1)
-  $sql="select * from ".$SysValue['base']['table_name2']." where $string  $sort id!=0 $prewords and enabled='1' $sortV GROUP BY name LIMIT $num_ot, $num_row";
-  else $sql="select * from ".$SysValue['base']['table_name2']." where  $string $sort id=0 $prewords and enabled='1' $sortV GROUP BY name LIMIT $num_ot, $num_row";
+  $sql="select * from ".$SysValue['base']['table_name2']." where enabled='1' and $string  $sort id!=0 $prewords $sortV GROUP BY name LIMIT $num_ot, $num_row";
+  else $sql="select * from ".$SysValue['base']['table_name2']." where enabled='1' and $string $sort id=0 $prewords $sortV GROUP BY name LIMIT $num_ot, $num_row";
   $q++;
   $num_ot=$num_ot+$num_row;
   }
@@ -196,7 +196,7 @@ switch($pole){
 	 
 	 case(2):
      foreach($_WORDS as $w)
-	 @$sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid = '$w' or id = '$w') and ";
+	 @$sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid REGEXP '$w' or id = '$w') and ";
 	 break;
 }}
 else{
@@ -213,7 +213,7 @@ switch($pole){
 	 
 	 case(2):
 	 foreach($_WORDS as $w)
-	 $sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid = '$w' or id = '$w') or ";
+	 $sort.="(name REGEXP '$w' or content REGEXP '$w' or description REGEXP '$w' or keywords REGEXP '$w' or uid REGEXP '$w' or id = '$w') or ";
 	 break;
 }}
 
@@ -307,6 +307,7 @@ while($row = mysql_fetch_array($result))
 	$user=$row['user'];
 	$pic_small=$row['pic_small'];
 	$pic_big=$row['pic_big'];
+	$items=$row['items'];
 	
 	$baseinputvaluta=$row['baseinputvaluta'];	
 	
@@ -329,6 +330,13 @@ if($admoption['user_price_activate']==1 and !$_SESSION['UsersId']){
     $SysValue['other']['productPrice']="";
 	$SysValue['other']['productValutaName']="";
 }
+
+
+// Показывать состояние склада
+if($admoption['sklad_enabled'] == 1 and $items>0)
+$SysValue['other']['productSklad']= $SysValue['lang']['product_on_sklad']." ".$items." ".$SysValue['lang']['product_on_sklad_i'];
+ else $SysValue['other']['productSklad']="";
+
 
 // Вывод опций для корзины
 $DispCatOptionsTest=DispCatOptionsTest($category);
@@ -353,12 +361,13 @@ $SysValue['other']['ComEndNotice']="-->";
 	
 // Если нет новой цены
 if(empty($priceNew)){
-$SysValue['other']['productPrice']=GetPriceValuta($price,"",$baseinputvaluta);
+$SysValue['other']['productPrice']=GetPriceValuta(ReturnTruePriceUser($id,$price),"",$baseinputvaluta);
 $SysValue['other']['productPriceRub']= "";
 }else{// Если есть новая цена
-$SysValue['other']['productPrice']=GetPriceValuta($price,"",$baseinputvaluta);
+$SysValue['other']['productPrice']=GetPriceValuta(ReturnTruePriceUser($id,$price),"",$baseinputvaluta);
 $SysValue['other']['productPriceRub']= "<strike>".GetPriceValuta($priceNew,"",$baseinputvaluta)." ".GetValuta()."</strike>";
 }}else{ // Товар по заказ
+$SysValue['other']['productPrice']=GetPriceValuta(ReturnTruePriceUser($id,$price),"",$baseinputvaluta);
 $SysValue['other']['productPriceRub']=$SysValue['lang']['sklad_mesage'];
 $SysValue['other']['ComStartNotice']="";
 $SysValue['other']['ComEndNotice']="";
@@ -372,7 +381,7 @@ $SysValue['other']['productNotice']=$SysValue['lang']['product_notice'];
 	$sklad = 1;
 	
 	$uid=$row['uid'];
-	$description=$row['description'];
+	$description=stripslashes($row['description']);
 	
 	
 // Режим Multibase
@@ -438,6 +447,8 @@ $SysValue['other']['searchPageNav']=SearchNav($words,$cat);
 $SysValue['other']['searchPageCategory']=DispCategory($cat);
 $SysValue['other']['searchPageSort']=DispCatSort($cat);
 
+if(empty($disp)) $SysValue['other']['productPageDis']="<p style=\"padding:10px\"><h3>Ничего не найдено</h3></p>";
+
 
 // Подключаем шаблон
 $disp=ParseTemplateReturn($SysValue['templates']['search_page_list']);
@@ -453,7 +464,6 @@ if($pole==1) $SysValue['other']['searchSetC']="checked";
 elseif($pole==2) $SysValue['other']['searchSetD']="checked";
    else $SysValue['other']['searchSetC']="checked";
 	
-	$dis="Ничего не найдено".$words;
 	$SysValue['other']['searchPageCategory']=DispCategory($cat);
 	// Подключаем шаблон
     $disp=ParseTemplateReturn($SysValue['templates']['search_page_list']);

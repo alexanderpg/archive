@@ -234,6 +234,7 @@ height: 2.2em;
 font-size: 8pt;
 margin-top:0;
 }
+
 button.option{
 background-image: url(../icon/page_edit.gif);
 background-repeat: no-repeat;
@@ -243,7 +244,13 @@ font-size: 8pt;
 margin-top:0;
 padding-left:15px;
 cursor: pointer;
-
+}
+button.help{
+background-image: url(../icon/btn_help[1].gif);
+background-repeat: no-repeat;
+padding-left:15px;
+margin-top:5;
+cursor: pointer;
 }
 .tip1{
 filter:alpha(opacity=50);
