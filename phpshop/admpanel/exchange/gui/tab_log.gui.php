@@ -21,7 +21,7 @@ function tab_log() {
             else {
                 $status = __("Выполнен");
                 $info = unserialize($row['info']);
-                $text = __('Обработано ') . $info[0] . (' строк') . '. ' . $info[1] . ' ' . $info[2] . __(' записей');
+                $text = __('Обработано ') . $info[0] . __(' строк') . '. ' . $info[1] . ' ' . $info[2] . __(' записей');
             }
 
             $PHPShopInterface->setRow(array('name' => $date, 'link' => '?path=exchange.import&id=' . $row['id']), array('name' => pathinfo($row['file'])['basename']), $status, array('name' => $text, 'align' => 'right'));

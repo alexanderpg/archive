@@ -709,7 +709,16 @@ function actionInsert() {
         $PHPShopProduct = new PHPShopProduct($_POST['parent']);
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
         $parent_array = @explode(",", $PHPShopProduct->getParam('parent'));
-        $parent_array_true[] = $action;
+
+        // Режим артикулов
+        if ($PHPShopSystem->getSerilizeParam("1c_option.update_option") == 1) {
+            $PHPShopOrm->update(array('uid_new' => 'parent-'.$action), array('id' => '=' . intval($action)));
+            $parent_array_true[] = 'parent-'.$action;
+        } 
+        // Режим ID
+        else
+            $parent_array_true[] = $action;
+
         if (is_array($parent_array))
             foreach ($parent_array as $v)
                 if (!empty($v))

@@ -25,7 +25,7 @@ function actionStart() {
             else {
                 $status = __("Выполнен");
                 $info = unserialize($row['info']);
-                $text = __('Обработано ') . $info[0] . (' строк') . '. ' . $info[1] . ' ' . $info[2] . __(' записей');
+                $text = __('Обработано ') . $info[0] . __(' строк') . '. ' . $info[1] . ' ' . $info[2] . __(' записей');
             }
 
 

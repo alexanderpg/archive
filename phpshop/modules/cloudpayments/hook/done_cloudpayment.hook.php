@@ -1,7 +1,6 @@
 <?php
 
-function send_to_order_mod_cloudpayment_hook($obj, $value, $rout)
-{
+function send_to_order_mod_cloudpayment_hook($obj, $value, $rout) {
     global $PHPShopSystem;
 
     if ($rout == 'MIDDLE' and $value['order_metod'] == 10014) {
@@ -34,20 +33,21 @@ function send_to_order_mod_cloudpayment_hook($obj, $value, $rout)
             foreach ($aCart as $key => $arItem) {
 
                 // Скидка
-                if($obj->discount > 0 && empty($arItem['promo_price']))
-                    $price = $arItem['price']  - ($arItem['price']  * $obj->discount  / 100);
-                else $price = $arItem['price'];
+                if ($obj->discount > 0 && empty($arItem['promo_price']))
+                    $price = $arItem['price'] - ($arItem['price'] * $obj->discount / 100);
+                else
+                    $price = $arItem['price'];
 
                 $amount = floatval($price) * floatval($arItem['num']);
 
                 $aItem[] = array(
-                    "label"    => PHPShopString::win_utf8($arItem['name']),
-                    "price"    => floatval($price),
+                    "label" => PHPShopString::win_utf8($arItem['name']),
+                    "price" => floatval($price),
                     "quantity" => $arItem['num'],
-                    "amount"   => $amount,
-                    "vat"      => $tax,
-                    "method"   => 1,
-                    "object"   => 1
+                    "amount" => $amount,
+                    "vat" => $tax,
+                    "method" => 1,
+                    "object" => 1
                 );
             }
 
@@ -69,8 +69,8 @@ function send_to_order_mod_cloudpayment_hook($obj, $value, $rout)
                     "quantity" => 1,
                     "amount" => $delivery_price,
                     "vat" => intval($tax_delivery),
-                    "method"   => 1,
-                    "object"   => 4
+                    "method" => 1,
+                    "object" => 4
                 );
             }
 
@@ -84,7 +84,11 @@ function send_to_order_mod_cloudpayment_hook($obj, $value, $rout)
                         "phone" => $_POST["tel_new"]
                     )
                 )
-                )
+                ),
+                "cmsData" => [
+                    "cmsName" => "PHPShop",
+                    "cmsModule" => "phpshop-1.1"
+                ]
             );
 
             $json = json_encode($kassa_array);
@@ -95,14 +99,14 @@ function send_to_order_mod_cloudpayment_hook($obj, $value, $rout)
             this.pay = function () {
 
         var widget = new cp.CloudPayments();
-        widget.charge({ 
-            publicId: "' . $option["publicId"] . '",  
-            description: "' . $option["description"] . '", 
-            amount: ' . $out_summ . ', 
-            currency: "' . $currency . '", 
-            invoiceId: "' . $inv_id . '", 
-            accountId: "' . $_POST["mail"] . '", 
-            data: ' . $json . ' 
+        widget.charge({
+            publicId: "' . $option["publicId"] . '",
+            description: "' . $option["description"] . '",
+            amount: ' . $out_summ . ',
+            currency: "' . $currency . '",
+            invoiceId: "' . $inv_id . '",
+            accountId: "' . $_POST["mail"] . '",
+            data: ' . $json . '
         },
         function (options) { // success
              location="http://' . $_SERVER['HTTP_HOST'] . '/success/?result=success&inv_id=' . $mrh_ouid[0] . $mrh_ouid[1] . '";
@@ -110,12 +114,12 @@ function send_to_order_mod_cloudpayment_hook($obj, $value, $rout)
         function (reason, options) { // fail
             location="http://' . $_SERVER['HTTP_HOST'] . '/success/?result=fail";
         });
-        };    
+        };
         </script>
 
         <button id="pay" class="btn btn-primary">' . $option["title"] . '</button>
         <script type="text/javascript">
-    
+
         $("#pay").click(function(event){
             event.preventDefault();
             pay();
@@ -135,7 +139,7 @@ function send_to_order_mod_cloudpayment_hook($obj, $value, $rout)
 }
 
 $addHandler = array
-(
+    (
     'send_to_order' => 'send_to_order_mod_cloudpayment_hook'
 );
 ?>

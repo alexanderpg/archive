@@ -38,17 +38,16 @@ class CDEKWidget {
      * @param int $paymentStatus
      * @return array
      */
-    public function getProducts($cart = array(), $discount = 0, $paymentStatus = 0)
-    {
+    public function getProducts($cart = array(), $discount = 0, $paymentStatus = 0) {
         $products = array();
         $cartWeight = 0;
         foreach ($cart as $product) {
-            if($discount > 0 && empty($product['promo_price']))
-                $price = $product['price']  - ($product['price']  * $discount  / 100);
+            if ($discount > 0 && empty($product['promo_price']))
+                $price = $product['price'] - ($product['price'] * $discount / 100);
             else
                 $price = $product['price'];
 
-            if(empty($product['weight']))
+            if (empty($product['weight']))
                 $weight = $this->option['weight'];
             else
                 $weight = round($product['weight']);
@@ -63,26 +62,25 @@ class CDEKWidget {
                 'weight' => $weight,
                 'amount' => $product['num']
             );
-           $cartWeight += $weight;
+            $cartWeight += $weight;
         }
 
         return array('items' => $products, 'weight' => $cartWeight);
     }
 
-    public function getCart($cart)
-    {
+    public function getCart($cart) {
         $list = [];
         foreach ($cart as $cartItem) {
-            for($i = 1; $i <= $cartItem['num']; $i++) {
-                
-                if(empty($cartItem['parent']))
-                    $cartItem['parent']=null;
-                
+            for ($i = 1; $i <= $cartItem['num']; $i++) {
+
+                if (empty($cartItem['parent']))
+                    $cartItem['parent'] = null;
+
                 $list[] = [
                     'length' => $this->getDimension('length', $cartItem['id'], $cartItem['parent']),
-                    'width'  => $this->getDimension('width', $cartItem['id'], $cartItem['parent']),
+                    'width' => $this->getDimension('width', $cartItem['id'], $cartItem['parent']),
                     'height' => $this->getDimension('height', $cartItem['id'], $cartItem['parent']),
-                    'weight' => (!empty((float)$cartItem['weight']) ? (float)$cartItem['weight'] / 1000 : (float)$this->option['weight'] / 1000),
+                    'weight' => (!empty((float) $cartItem['weight']) ? (float) $cartItem['weight'] / 1000 : (float) $this->option['weight'] / 1000),
                 ];
             }
         }
@@ -103,59 +101,57 @@ class CDEKWidget {
         $id = explode("-", $order_id);
 
         $log = array(
-            'message_new'     => serialize($message),
-            'order_id_new'    => $id[0],
-            'status_new'      => $status,
-            'type_new'        => $type,
-            'date_new'        => time(),
+            'message_new' => serialize($message),
+            'order_id_new' => $id[0],
+            'status_new' => $status,
+            'type_new' => $type,
+            'date_new' => time(),
             'status_code_new' => $status_code
         );
 
         $PHPShopOrm->insert($log);
     }
 
-    public function send($order)
-    {
+    public function send($order) {
         $cdek_data = unserialize($order['cdek_order_data']);
         $cart = unserialize($order['orders']);
 
-        if($this->isOrderSend($cdek_data['status'])) {
+        if ($this->option['paid'] == 1)
+            $order['paid'] == 1;
+
+        if ($this->isOrderSend($cdek_data['status'])) {
             return;
         }
 
         $this->orderId = $order['id'];
 
-        if(!is_array($cdek_data)) {
+        if (!is_array($cdek_data)) {
             $this->log(
-                array('error' => __('Не выбран адрес доставки в виджете СДЭК')),
-                $this->orderId,
-                __('Ошибка передачи заказа'),
-                __('Передача заказа службе доставки СДЭК'),
-                'error'
+                    array('error' => __('Не выбран адрес доставки в виджете СДЭК')), $this->orderId, __('Ошибка передачи заказа'), __('Передача заказа службе доставки СДЭК'), 'error'
             );
         }
 
-        if($cdek_data['type'] === 'courier') {
+        if ($cdek_data['type'] === 'courier') {
             /*
-            $address = PHPShopString::win_utf8($order['street']);
-            if(!empty($order['house'])) {
-                $address .= ', ' . PHPShopString::win_utf8($order['house']);
-            }
-            if(!empty($order['flat'])) {
-                $address .= ', ' . PHPShopString::win_utf8($order['flat']);
-            }*/
+              $address = PHPShopString::win_utf8($order['street']);
+              if(!empty($order['house'])) {
+              $address .= ', ' . PHPShopString::win_utf8($order['house']);
+              }
+              if(!empty($order['flat'])) {
+              $address .= ', ' . PHPShopString::win_utf8($order['flat']);
+              } */
             $status = unserialize($order['status']);
             $address = PHPShopString::win_utf8($status['maneger']);
         }
 
-        if(empty($order['fio']))
+        if (empty($order['fio']))
             $name = $cart['Person']['name_person'];
         else
             $name = $order['fio'];
-        
+
         $name = PHPShopString::win_utf8($name);
-        if(empty($name))
-            $name=PHPShopString::toLatin($name);
+        if (empty($name))
+            $name = PHPShopString::toLatin($name);
 
         $products = $this->getProducts($cart['Cart']['cart'], $cart['Person']['discount'], (int) $order['paid']);
 
@@ -168,47 +164,42 @@ class CDEKWidget {
                 'value' => (int) $order['paid'] === 1 ? 0 : $cart['Cart']['dostavka']
             ],
             'recipient' => [
-                'name'   => $name,
-                'email'  => $cart['Person']['mail'],
+                'name' => $name,
+                'email' => $cart['Person']['mail'],
                 'phones' => [
                     ['number' => str_replace(['(', ')', ' ', '+', '-', '&#43;'], '', $order['tel'])]
                 ]
             ],
             'from_location' => [
                 'country_code' => 'RU',
-                'code'         => $this->option['city_from_code'],
-                'postal_code'  => $this->option['index_from'],
-
+                'code' => $this->option['city_from_code'],
+                'postal_code' => $this->option['index_from'],
             ],
             'packages' => [
                 [
                     'number' => $order['uid'],
                     'weight' => $products['weight'],
-                    'items'  => $products['items'],
+                    'items' => $products['items'],
                     'length' => $this->getMaxDimension($cart['Cart']['cart'], 'length'),
-                    'width'  => $this->getMaxDimension($cart['Cart']['cart'], 'width'),
+                    'width' => $this->getMaxDimension($cart['Cart']['cart'], 'width'),
                     'height' => $this->getMaxDimension($cart['Cart']['cart'], 'height')
                 ]
             ]
         ];
 
-        if($cdek_data['type'] !== 'pvz') {
+        if ($cdek_data['type'] !== 'pvz') {
             $parameters['to_location'] = [
-                'code'         => $cdek_data['city_id'],
+                'code' => $cdek_data['city_id'],
                 'country_code' => 'RU',
-                'address'      => $address
+                'address' => $address
             ];
         }
 
         $result = $this->request($this->orderUrl, $parameters);
 
-        if(!isset($result['entity']['uuid'])) {
+        if (!isset($result['entity']['uuid'])) {
             $this->log(
-                array('response' => $result, 'parameters' => $parameters),
-                $this->orderId,
-                __('Ошибка передачи заказа'),
-                __('Передача заказа службе доставки СДЭК'),
-                'error'
+                    array('response' => $result, 'parameters' => $parameters), $this->orderId, __('Ошибка передачи заказа'), __('Передача заказа службе доставки СДЭК'), 'error'
             );
         } else {
             $orm = new PHPShopOrm('phpshop_orders');
@@ -218,11 +209,7 @@ class CDEKWidget {
             $orm->update(array('cdek_order_data_new' => serialize($cdek_data)), array('id' => "='" . $this->orderId . "'"));
 
             $this->log(
-                array('response' => $result, 'parameters' => $parameters),
-                $this->orderId,
-                __('Успешная передача заказа'),
-                __('Передача заказа службе доставки СДЭК'),
-                'success'
+                    array('response' => $result, 'parameters' => $parameters), $this->orderId, __('Успешная передача заказа'), __('Передача заказа службе доставки СДЭК'), 'success'
             );
         }
     }
@@ -231,8 +218,7 @@ class CDEKWidget {
      * @param array $request
      * @throws Exception
      */
-    public function changeAddress($request)
-    {
+    public function changeAddress($request) {
         $orm = new PHPShopOrm('phpshop_orders');
         $order = $this->getOrderById($request['orderId']);
 
@@ -241,37 +227,42 @@ class CDEKWidget {
         $sum = $cart['Cart']['sum'] + $cart['Cart']['dostavka'];
 
         $cdekOrderData = serialize(array(
-            'type'           => $request['type'],
-            'city_id'        => $request['city'],
-            'delivery_info'  => PHPShopString::utf8_win1251($request['info']),
-            'cdek_pvz_id'    => $request['pvz'],
-            'tariff'         => $request['tariff'],
-            'status'         => CDEKWidget::STATUS_ORDER_PREPARED,
-            'status_text'    => __('Ожидает отправки в СДЭК')
+            'type' => $request['type'],
+            'city_id' => $request['city'],
+            'delivery_info' => PHPShopString::utf8_win1251($request['info']),
+            'cdek_pvz_id' => $request['pvz'],
+            'tariff' => $request['tariff'],
+            'status' => CDEKWidget::STATUS_ORDER_PREPARED,
+            'status_text' => __('Ожидает отправки в СДЭК')
         ));
 
-        $orm->update(['cdek_order_data_new' => $cdekOrderData, 'orders_new' => serialize($cart), 'sum_new' => $sum], ['id' => "='" . $order['id'] . "'"]);
+        $status = unserialize($order['status']);
+        $status['maneger'] = PHPShopString::utf8_win1251($request['info']);
+
+        $orm->update(['cdek_order_data_new' => $cdekOrderData, 'orders_new' => serialize($cart), 'status_new' => serialize($status), 'sum_new' => $sum], ['id' => "='" . $order['id'] . "'"]);
     }
 
-    public function buildInfoTable($order)
-    {
+    public function buildInfoTable($order) {
         global $PHPShopGUI, $PHPShopSystem;
 
         $disabledPayment = '';
         $cdek = unserialize($order['cdek_order_data']);
 
-        if(!is_array($cdek)) {
+        if ($this->option['paid'] == 1)
+            $order['paid'] == 1;
+
+        if (!is_array($cdek)) {
             // Изменили способ доставки на СДЭК.
             $template = dirname(__DIR__) . '/templates/order_error.tpl';
         } else {
             $isSend = $this->isOrderSend($cdek['status']);
             $isClosed = $this->isOrderClosed($cdek['status']);
-            if($isSend) {
+            if ($isSend) {
                 PHPShopParser::set('cdek_hide_actions', 'display: none;');
                 $disabledPayment = 'disabled="disabled"';
             }
 
-            if($isClosed || empty($cdek['uuid'])) {
+            if ($isClosed || empty($cdek['uuid'])) {
                 PHPShopParser::set('cdek_statuses_hidden', 'display: none;');
             } else {
                 $statuses = $this->getOrderStatuses($cdek['uuid']);
@@ -287,8 +278,8 @@ class CDEKWidget {
             PHPShopParser::set('cdek_payment_status', $PHPShopGUI->setCheckbox("payment_status", 1, __("Заказ оплачен"), $order['paid'], $disabledPayment));
             PHPShopParser::set('cdek_delivery_info', $cdek['delivery_info']);
 
-            if(is_array($cdek['errors'])) {
-                PHPShopParser::set('cdek_errors', '<tr><td>'.__('Ошибка').'</td><td>' . implode('<br>', $cdek['errors']) . '</td></tr>');
+            if (is_array($cdek['errors'])) {
+                PHPShopParser::set('cdek_errors', '<tr><td>' . __('Ошибка') . '</td><td>' . implode('<br>', $cdek['errors']) . '</td></tr>');
             } else {
                 PHPShopParser::set('cdek_errors', '');
             }
@@ -320,7 +311,7 @@ class CDEKWidget {
         PHPShopParser::set('russia_only', (int) $this->option['russia_only']);
         PHPShopParser::set('cdek_scripts', '<script type="text/javascript" src="../modules/cdekwidget/js/widjet.min.js" charset="utf-8"/></script><script type="text/javascript" src="../modules/cdekwidget/js/cdekwidget.js" /></script>');
 
-        PHPShopParser::set('cdek_popup', ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true) , true);
+        PHPShopParser::set('cdek_popup', ParseTemplateReturn(dirname(__DIR__) . '/templates/template.tpl', true), true);
 
         return ParseTemplateReturn($template, true);
     }
@@ -329,12 +320,11 @@ class CDEKWidget {
      * @param $orderId
      * @throws Exception
      */
-    public function getOrderById($orderId)
-    {
+    public function getOrderById($orderId) {
         $orm = new PHPShopOrm('phpshop_orders');
 
         $order = $orm->getOne(array('*'), array('id' => "='" . (int) $orderId . "'"));
-        if(!$order) {
+        if (!$order) {
             throw new \Exception('Заказ не найден');
         }
 
@@ -344,39 +334,37 @@ class CDEKWidget {
     /**
      * @param $order
      */
-    public function checkTracking($order)
-    {
+    public function checkTracking($order) {
         $cdek = unserialize($order['cdek_order_data']);
 
-        if(empty($cdek['uuid'])) {
+        if (empty($cdek['uuid'])) {
             return;
         }
 
         $status = $this->request($this->orderUrl, array($cdek['uuid']), false);
 
-        if(isset($status['entity']['cdek_number'])) {
+        if (isset($status['entity']['cdek_number'])) {
             $orm = new PHPShopOrm('phpshop_orders');
             $orm->update(array('tracking_new' => $status['entity']['cdek_number']), array('id' => "='" . $order['id'] . "'"));
         }
     }
 
-    public function updateOrderStatus($order)
-    {
+    public function updateOrderStatus($order) {
         $cdek = unserialize($order['cdek_order_data']);
 
         $isClosed = $this->isOrderClosed($cdek['status']);
 
-        if(empty($cdek['uuid']) || $isClosed) {
+        if (empty($cdek['uuid']) || $isClosed) {
             return $order;
         }
 
         $statuses = $this->getOrderStatuses($cdek['uuid']);
 
         $currentStatus = array_pop($statuses);
-        if(isset($currentStatus['name'])) {
+        if (isset($currentStatus['name'])) {
             $currentStatus['name'] = PHPShopString::utf8_win1251($currentStatus['name']);
 
-            if($currentStatus['code'] === 'INVALID') {
+            if ($currentStatus['code'] === 'INVALID') {
                 $cdek['status'] = self::STATUS_ORDER_ERROR;
                 $cdek['errors'] = $this->getOrderErrors($cdek['uuid']);
             }
@@ -391,18 +379,16 @@ class CDEKWidget {
         return $order;
     }
 
-    public function getOrderStatuses($uuid)
-    {
+    public function getOrderStatuses($uuid) {
         $status = $this->request($this->orderUrl, array($uuid), false);
 
         return $status['entity']['statuses'];
     }
 
-    private function getOrderErrors($uuid)
-    {
+    private function getOrderErrors($uuid) {
         $order = $this->request($this->orderUrl, array($uuid), false);
 
-        if(is_array($order['requests'][0]['errors'])) {
+        if (is_array($order['requests'][0]['errors'])) {
             $errors = array();
             foreach ($order['requests'][0]['errors'] as $error) {
                 $errors[] = PHPShopString::utf8_win1251($error['message']);
@@ -413,14 +399,12 @@ class CDEKWidget {
     }
 
     // Заказ зарегистрирован или в процессе регистрации.
-    public function isOrderSend($status)
-    {
+    public function isOrderSend($status) {
         return $status !== self::STATUS_ORDER_PREPARED && $status !== self::STATUS_ORDER_ERROR;
     }
 
     // Заказ "закрыт" если доставлен или отменен. В этих статусах не запрашиваем больше статус в СДЭК.
-    private function isOrderClosed($status)
-    {
+    private function isOrderClosed($status) {
         return $status === self::STATUS_ORDER_DELIVERED || $status === self::STATUS_ORDER_CANCELED;
     }
 
@@ -430,9 +414,8 @@ class CDEKWidget {
      * @param bool $post
      * @return array
      */
-    private function request($method, $params = array(), $post = true)
-    {
-        if(empty($this->token)) {
+    private function request($method, $params = array(), $post = true) {
+        if (empty($this->token)) {
             $this->getToken();
         }
 
@@ -443,7 +426,7 @@ class CDEKWidget {
             'Authorization: Bearer ' . $this->token,
             'Content-Type: application/json'
         );
-        if($post) {
+        if ($post) {
             $headers[2] = 'Content-Length: ' . strlen(json_encode($params));
             curl_setopt($ch, CURLOPT_URL, $domain . $method);
         } else {
@@ -454,7 +437,7 @@ class CDEKWidget {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        if($post) {
+        if ($post) {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
         }
@@ -465,9 +448,8 @@ class CDEKWidget {
         return json_decode($result, true);
     }
 
-    private function getToken()
-    {
-        if($this->isTest) {
+    private function getToken() {
+        if ($this->isTest) {
             $domain = $this->testDomain;
             $account = self::TEST_ACCOUNT;
             $password = self::TEST_PASSWORD;
@@ -495,17 +477,16 @@ class CDEKWidget {
         $this->token = $token['access_token'];
     }
 
-    private function getDimension($field, $productId, $parent = null)
-    {
+    private function getDimension($field, $productId, $parent = null) {
         $product = new PHPShopProduct((int) $productId);
 
-        if(!empty($product->getParam($field))) {
+        if (!empty($product->getParam($field))) {
             return $product->getParam($field);
         }
 
-        if(is_null($parent) === false) {
+        if (is_null($parent) === false) {
             $product = new PHPShopProduct((int) $parent);
-            if(!empty($product->getParam($field))) {
+            if (!empty($product->getParam($field))) {
                 return $product->getParam($field);
             }
         }
@@ -513,16 +494,16 @@ class CDEKWidget {
         return $this->option[$field];
     }
 
-    private function getMaxDimension($cart, $side)
-    {
+    private function getMaxDimension($cart, $side) {
         $maxDimension = 0;
         foreach ($cart as $cartItem) {
             $productDimension = $this->getDimension($side, $cartItem['id'], $cartItem['parent']);
-            if($productDimension > $maxDimension) {
+            if ($productDimension > $maxDimension) {
                 $maxDimension = $productDimension;
             }
         }
 
         return $maxDimension;
     }
+
 }

@@ -38,11 +38,19 @@ function actionStart() {
     // Выборка
     $data = $PHPShopOrm->select();
     
+    
+    
     $Tab1 = $PHPShopGUI->setField('Ссылка на оплату', $PHPShopGUI->setInputText(false, 'title_new', $data['title'], 300));
     $Tab1 .= $PHPShopGUI->setField('ShopID', $PHPShopGUI->setInputText(false, 'shop_id_new', $data['shop_id'], 300));
     $Tab1 .= $PHPShopGUI->setField('Секретный ключ', $PHPShopGUI->setInputText(false, 'api_key_new', $data['api_key'], 300));
     $Tab1 .= $PHPShopGUI->setField('Оплата при статусе', $PHPShopGUI->setSelect('status_new', YandexKassa::getOrderStatuses($data['status']) , 300));
-    $Tab1 .= $PHPShopGUI->setField('Описание оплаты', $PHPShopGUI->setTextarea('title_end_new', $data['title_end'], true, 300));
+    
+    
+    $payment_mode_value[] = array('Полная предоплата', 1, $data['payment_mode']);
+    $payment_mode_value[] = array('Полный расчет', 2, $data['payment_mode']);
+    
+    $Tab1 .= $PHPShopGUI->setField('Способ расчета', $PHPShopGUI->setSelect('payment_mode_new', $payment_mode_value , 300, true));
+    $Tab1 .= $PHPShopGUI->setField('Описание оплаты', $PHPShopGUI->setTextarea('title_end_new', $data['title_end'], true, 300,200));
 
     // Форма регистрации
     $Tab3 = $PHPShopGUI->setPay(false, false, $data['version'], true);

@@ -3,7 +3,7 @@
 /**
  * Обработчик товаров
  * @author PHPShop Software
- * @version 2.5
+ * @version 2.6
  * @package PHPShopShopCore
  */
 class PHPShopShop extends PHPShopShopCore {
@@ -563,7 +563,7 @@ class PHPShopShop extends PHPShopShopCore {
 
         // Цена главного товара
         if (is_array($Product) and ! empty($row['price']) and empty($row['priceSklad']) and ( !empty($row['items']) or ( empty($row['items']) and $sklad_status == 1))) {
-            
+
             // Главный товар в списке подтипов
             if ($this->add_main_product_to_parent)
                 $this->select_value[] = array($row['name'] . " -  (" . $this->price($row) . "  " . $this->currency . ')', $row['id'], $row['items'], $row);
@@ -1146,9 +1146,11 @@ function CID_Category($mode = false) {
 
     $this->set('catalogContent', Parser($this->PHPShopCategory->getContent()));
     $this->set('catalogName', $this->category_name);
-    $this->set('catalogList', $disp);
     $this->set('thisCat', $this->PHPShopNav->getId());
 
+    // Иконки подкаталогов
+    if ($this->PHPShopCategory->getValue('vid') == 0)
+        $this->set('catalogList', $disp);
 
     // Данные родительской категории для meta
     $cat = $this->PHPShopCategory->getValue('parent_to');

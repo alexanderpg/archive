@@ -47,7 +47,7 @@ function pochtaInit(type) {
 
 function pochtaCallback(result) {
 
-    var message = 'Почта России, отделение №: ' + result.indexTo + ', ' + result.deliveryDescription.description;
+    var message = locale.pochta.pickup+': ' + result.indexTo + ', ' + result.deliveryDescription.description;
     $('#deliveryInfo').html(message);
     $('input[name="pochta_delivery_info"]').val(message);
 

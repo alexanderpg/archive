@@ -25,11 +25,12 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_pochta_system` (
     `vsd` enum('0','1') DEFAULT '0',
     `widget_id` int(11) DEFAULT null,
     `courier_widget_id` int(11) DEFAULT null,
-    `version` varchar(64) DEFAULT '1.2',
+    `paid` enum('0','1') DEFAULT '0',
+    `version` varchar(64) DEFAULT '1.0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_pochta_system` VALUES (1, '', '', '', 0, '30.0', 0, 0, 'ORDINARY', 'PARCEL_CLASS_1', 'S', '', '100', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', null, null, '1.2');
+INSERT INTO `phpshop_modules_pochta_system` VALUES (1, '', '', '', 0, '30.0', 0, 0, 'ORDINARY', 'PARCEL_CLASS_1', 'S', '', '100', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', null, null,'0','1.2');
 
 DROP TABLE IF EXISTS `phpshop_modules_pochta_log`;
 CREATE TABLE IF NOT EXISTS `phpshop_modules_pochta_log` (

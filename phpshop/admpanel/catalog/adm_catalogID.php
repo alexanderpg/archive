@@ -200,7 +200,7 @@ function actionStart() {
     $Tab_info .= $PHPShopGUI->setField("Товарная сетка в каталоге", $PHPShopGUI->setSelect('num_row_new', $num_row_adm_value, 50), 1, 'Товаров в длину 
 	  для каталогов по умолчанию. Сетки 5 и 6 поддерживаются не всеми шаблонами');
 
-    $vid = $PHPShopGUI->setCheckbox('vid_new', 1, 'Не выводить внутренние подкаталоги в меню', $data['vid']) . '<br>';
+    $vid = $PHPShopGUI->setCheckbox('vid_new', 1, 'Не выводить внутренние подкаталоги в навигации', $data['vid']) . '<br>';
     $vid .= $PHPShopGUI->setCheckbox('skin_enabled_new', 1, 'Скрыть каталог', $data['skin_enabled']) . '<br>';
     $vid .= $PHPShopGUI->setCheckbox('menu_new', 1, 'Главное меню', $data['menu']) . '<br>';
     $vid .= $PHPShopGUI->setCheckbox('tile_new', 1, 'Плитка на главной', $data['tile']) . '<br>';

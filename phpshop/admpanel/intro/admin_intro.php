@@ -125,7 +125,7 @@ function actionStart() {
                 mailNotice('support', $until_day);
                 $_SESSION['update'] = 3;
                 $search_jurnal = __('До конца месяца, для вас действует льготное продление техподдержки: при оплате полугода, вы получаете целый год техподдержки.');
-                $search_jurnal_title = __('Техническая поддержка заканчивается через') . ' <span class="label label-warning">' . abs(round($until_day)) . '  ' . __('дн.') . '</span><a class="pull-right btn btn-xs btn-default" href="https://www.phpshop.ru/order/" target="_blank"><span class="glyphicon glyphicon-ruble"></span> ' . __('Купить') . '</a>';
+                $search_jurnal_title = __('Техническая поддержка заканчивается через') . ' <span class="label label-warning">' . abs(round($until_day)) . '  ' . __('дн.') . '</span><a class="pull-right btn btn-xs btn-default" href="https://www.phpshop.ru/order/?from=' . $_SERVER['SERVER_NAME'].'" target="_blank"><span class="glyphicon glyphicon-ruble"></span> ' . __('Купить') . '</a>';
                 $search_jurnal_class = 'panel-success';
                 $search_jairnal_icon = 'exclamation-sign';
             }

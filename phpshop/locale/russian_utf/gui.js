@@ -97,7 +97,7 @@ var locale = {
 		pickup_code: "Код выбранного ПВЗ",
 		city: "город",
 		pickup_address: "адрес выбранного ПВЗ",
-		pickup_phone_number: "телефон выбранного ПВЗ",
+		pickup_phone: "телефон выбранного ПВЗ",
 		pickup: "ПВЗ",
 	}
 };

@@ -96,7 +96,7 @@ function template_parent($obj, $dataArray, $rout) {
                     if (empty($row['ed_izm']))
                         $row['ed_izm'] = $obj->lang('product_on_sklad_i');
 
-                    $size_color_array[$value[3]['id']] = array('id' => $row['id'], 'size' => $row['parent'], 'price' => $row['price'], 'color' => array($row['parent2']), 'image' => $row['pic_small'], 'price_n' => $row['price_n'], 'items' => $row['items'], 'ed_izm' => $row['ed_izm']);
+                    $size_color_array[$value[3]['id']] = array('id' => $row['id'], 'size' => $row['parent'], 'price' => $row['price'], 'color' => array($row['parent2']), 'image' => $row['pic_big'], 'price_n' => $row['price_n'], 'items' => $row['items'], 'ed_izm' => $row['ed_izm']);
 
                     if (!empty($value[3]['color']))
                         $color_array[$value[3]['parent2']] = $value[3]['color'];

@@ -171,7 +171,7 @@ function actionStart() {
     $Tab_info .= $PHPShopGUI->setField("Товарная сетка в каталоге", $num_row_area, 1, 'Сетки 5 и 6 поддерживаются не всеми шаблонами');
 
     // Вывод
-    $vid = $PHPShopGUI->setCheckbox('vid_new', 1, 'Не выводить внутренние подкаталоги в меню', $data['vid']) . '<br>';
+    $vid = $PHPShopGUI->setCheckbox('vid_new', 1, 'Не выводить внутренние подкаталоги в навигации', $data['vid']) . '<br>';
     $vid .= $PHPShopGUI->setCheckbox('skin_enabled_new', 1, 'Скрыть каталог', $data['skin_enabled']) . '<br>';
     $vid .= $PHPShopGUI->setCheckbox('menu_new', 1, 'Главное меню', $data['menu']) . '<br>';
     $Tab_info .= $PHPShopGUI->setField("Опции вывода", $vid) . '<br>';

@@ -65,36 +65,42 @@ function actionStart() {
         $status = __("Выпонен");
         $info = unserialize($data['info']);
         
+        
+
         $text = __('Обработано ') . $info[0] . (' строк') . '.<br><a href="' . $info[3] . '" target="_blank">' . $info[1] . ' ' . $info[2] . __(' записей') . '</a>';
     }
-    
+
     $path_name=[
         'exchange.import.catalog' => __('Каталоги'),
         'exchange.import' => __('Товары'),
         'exchange.import.user' => __('Пользователи'),
         'exchange.import.order' => __('Заказы'),
     ];
+    
+    if(!empty($info[3]))
+    $path_parts = pathinfo($info[3]);
+    $result_file = './csv/'.$path_parts['basename'];
 
     // Закладка 1
     $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setText($PHPShopGUI->setLink($data['file'], pathinfo($data['file'])['basename']))) .
             $PHPShopGUI->setField("Тип данных",$PHPShopGUI->setText($path_name[$option['path']], false, false,  false)).
-            $PHPShopGUI->setField("Настройка", $PHPShopGUI->setText('<a href="?path='.$option['path'].'&exchanges=' . $data_exchanges['id'] . '">' . $data_exchanges['name'] . '</a>'), false, false, $class) .
+            $PHPShopGUI->setField("Настройка", $PHPShopGUI->setText('<a href="?path='.$option['path'].'&exchanges=' . $data_exchanges['id'] . '">' . $data_exchanges['name'] . '</a>',false, false, false), false, false, $class) .
             $PHPShopGUI->setField("Обработано строк", $PHPShopGUI->setText($info[0]), false, false, $class) .
-            $PHPShopGUI->setField($info[1] . ' записей', $PHPShopGUI->setText($info[2]), false, false, $class) .
+            $PHPShopGUI->setField($info[1] . ' '.__('записей'), $PHPShopGUI->setText($info[2]), false, false, $class,'control-label', false) .
             $PHPShopGUI->setField('Загружено изображений', $PHPShopGUI->setText((int) $info[4]), false, false, $class) .
-            $PHPShopGUI->setField('Отчет', $PHPShopGUI->setText('<a href="' . $info[3] . '" target="_blank">CSV</a>'), false, false, $class) .
-            $PHPShopGUI->setField('Действие', $PHPShopGUI->setText($action_value[$option['export_action']])) .
-            $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setText($delim_value[$option['export_delim']])) .
-            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setText($delim_sortvalue[$option['export_sortdelim']])) .
-            $PHPShopGUI->setField('Разделитель значений характеристик', $PHPShopGUI->setText($delim_sort[$option['export_sortsdelim']])) .
-            $PHPShopGUI->setField('Полный путь для изображений', $PHPShopGUI->setText($option['export_imgpath']), 1, 'Добавляет к изображениям папку /UserFiles/Image/') .
-            $PHPShopGUI->setField('Обработка изображений', $PHPShopGUI->setText($option['export_imgproc']), 1, 'Создание тумбнейла и ватермарка') .
-            $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setText($option['export_imgload']), 1, 'Загрузка изображений на сервер по ссылке') .
-            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setText($delim_imgvalue[$option['export_imgdelim']])) .
+            $PHPShopGUI->setField('Отчет', $PHPShopGUI->setText('<a href="' . $result_file . '" target="_blank">CSV</a>'), false, false, $class) .
+            $PHPShopGUI->setField('Действие', $PHPShopGUI->setText($action_value[$option['export_action']],false, false, false)) .
+            $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setText($delim_value[$option['export_delim']],false, false, false)) .
+            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setText($delim_sortvalue[$option['export_sortdelim']],false, false, false)) .
+            $PHPShopGUI->setField('Разделитель значений характеристик', $PHPShopGUI->setText($delim_sort[$option['export_sortsdelim']],false, false, false)) .
+            $PHPShopGUI->setField('Полный путь для изображений', $PHPShopGUI->setText($option['export_imgpath'],false, false, false), 1, 'Добавляет к изображениям папку /UserFiles/Image/') .
+            $PHPShopGUI->setField('Обработка изображений', $PHPShopGUI->setText($option['export_imgproc'],false, false, false), 1, 'Создание тумбнейла и ватермарка') .
+            $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setText($option['export_imgload'],false, false, false), 1, 'Загрузка изображений на сервер по ссылке') .
+            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setText($delim_imgvalue[$option['export_imgdelim']],false, false, false)) .
             $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setText($code_value[$option['export_code']])) .
             $PHPShopGUI->setField('Тип файла', $PHPShopGUI->setText($extension_value[$option['export_extension']])) .
             $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setText($key_value)) .
-            $PHPShopGUI->setField('Проверка уникальности', $PHPShopGUI->setText($option['export_uniq']), 1, 'Исключает дублирование данных при создании');
+            $PHPShopGUI->setField('Проверка уникальности', $PHPShopGUI->setText($option['export_uniq'],false, false, false), 1, 'Исключает дублирование данных при создании');
 
     $Tab1 = $PHPShopGUI->setCollapse('Настройки', $Tab1);
 
@@ -102,7 +108,7 @@ function actionStart() {
     foreach ($option['select_action'] as $k => $p) {
         if (empty($p))
             $p = '-';
-        $Tab2 .= $PHPShopGUI->setField('Колонка ' . $name_col[$k], $PHPShopGUI->setText(__($p)));
+        $Tab2 .= $PHPShopGUI->setField('Колонка ' . $name_col[$k], $PHPShopGUI->setText($p));
     }
 
     $Tab2 = $PHPShopGUI->setCollapse('Сопоставление полей', $Tab2);

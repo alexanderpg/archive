@@ -12,8 +12,8 @@ function boxberrywidgetStart() {
 
 function boxberryWidget(result) {
 
-    var info = 'Код выбранного ПВЗ: ' + result.id + ', город ' + result.name + ', адрес выбранного ПВЗ ' + result.address + ', телефон выбранного ПВЗ ' + result.phone;
-
+    var info = locale.cdek.pickup_code +': ' + result.id + ', '+locale.cdek.city +' ' + result.name + ', '+locale.cdek.pickup_address+' ' + result.address + ', '+locale.cdek.pickup_phone+' ' + result.phone;
+    
     var boxberry_sum = Number(result.price);
     if ($("#d").data('free') === 1) {
         boxberry_sum = 0;
@@ -38,7 +38,7 @@ function boxberryWidget(result) {
 
 
     $('input[name="city_new"]').val(result.name);
-    $('#deliveryInfo').html('ПВЗ: ' + result.address);
+    $('#deliveryInfo').html(locale.cdek.pickup_address +': ' + result.address);
     $("#makeyourchoise").val('DONE');
 }
 

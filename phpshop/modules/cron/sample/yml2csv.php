@@ -3,7 +3,7 @@
 /**
  * Парсинг YML файла в CSV
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopParser
  */
 
@@ -35,7 +35,7 @@ $start_time = $time[1] + $time[0];
 $xml = simplexml_load_file($file);
 
 // Товары
-$yml_array[] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
+$yml_array[0] = ["Артикул", "Наименование", "Краткое описание", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
 
 foreach ($xml->shop[0]->offers[0]->offer as $item) {
 
@@ -99,7 +99,7 @@ foreach ($xml->shop[0]->offers[0]->offer as $item) {
         $barcode = null;
 
     // Подтипы
-    if (!empty((int) $item->attributes()->group_id)) {
+    if (!empty((string) $item->attributes()->group_id)) {
 
         $parent_enabled = 1;
         $sort = null;
@@ -111,23 +111,23 @@ foreach ($xml->shop[0]->offers[0]->offer as $item) {
             $parent2 = PHPShopString::utf8_win1251((string) $item->param[1]);
 
         // Главный товар
-        if (!is_array($yml_array[(int) $item->attributes()->group_id])) {
+        if (!is_array($yml_array[(string) $item->attributes()->group_id])) {
 
             // Название
-            $name = str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251((string) $item->name[0]));
+            $name = ucfirst(trim(str_replace([$parent, $parent2], ['', ''], PHPShopString::utf8_win1251((string) $item->name[0]))));
 
-            $yml_array[(int) $item->attributes()->group_id] = [(int) $item->attributes()->id, $name, PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, 0, (int) $item->attributes()->id, '', $oldprice, $length, $width, $height];
+            $yml_array[(string) $item->attributes()->group_id] = [(string) $item->attributes()->group_id, $name, PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $sort, $barcode, 0, (string) $item->attributes()->id, '', $oldprice, $length, $width, $height];
         } else {
 
             // Список подтипов
-            $yml_array[(int) $item->attributes()->group_id][13] .= ',' . (int) $item->attributes()->id;
+            $yml_array[(string) $item->attributes()->group_id][13] .= ',' . (string) $item->attributes()->id;
 
             // Картинка
-            $yml_array[(int) $item->attributes()->group_id][3] .= ',' . $images;
+            $yml_array[(string) $item->attributes()->group_id][3] .= ',' . $images;
 
             // Минимальная цена
-            if ($yml_array[(int) $item->attributes()->group_id][6] > (string) $item->price[0])
-                $yml_array[(int) $item->attributes()->group_id][6] = (string) $item->price[0];
+            if ($yml_array[(string) $item->attributes()->group_id][6] > (string) $item->price[0])
+                $yml_array[(string) $item->attributes()->group_id][6] = (string) $item->price[0];
         }
     }
     else {
@@ -136,16 +136,17 @@ foreach ($xml->shop[0]->offers[0]->offer as $item) {
     }
 
 
-    $yml_array[] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
+    $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (int) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
 }
 
 // Сохранение
 $csv_file_prod = $_classPath.'admpanel/csv/'.$postfix.'product.yml.csv';
 PHPShopFile::writeCsv($csv_file_prod, $yml_array);
+unset($yml_array);
 
-$yml_array[] = ['Id', 'Наименование', 'Родитель'];
+$yml_array[0] = ['Id', 'Наименование', 'Родитель'];
 foreach ($xml->shop[0]->categories[0]->category as $item) {
-    $yml_array[] = [(int) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0]), (int) $item->attributes()->parentId];
+    $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0]), (string) $item->attributes()->parentId];
 }
 
 // Сохранение

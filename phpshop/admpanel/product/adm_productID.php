@@ -528,11 +528,15 @@ function actionUpdate() {
         $_POST['vendor_array_new'] = serialize($_POST['vendor_array_new']);
 
         // Статьи
-        if (isset($_POST['editID'])) {
-            if (is_array($_POST['page_new']))
-                $_POST['page_new'] = array_pop($_POST['page_new']);
+        if (is_array($_POST['page_new'])) {
+
+            if (empty($_POST['saveID']))
+                array_pop($_POST['page_new']);
+            
+            $_POST['page_new'] = implode(",", $_POST['page_new']);
         } else
-            $_POST['page_new'] = @implode(',', $_POST['page_new']);
+            $_POST['page_new'] = '';
+
 
         // Файлы
         if (isset($_POST['editID'])) {

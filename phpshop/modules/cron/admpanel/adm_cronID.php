@@ -58,7 +58,8 @@ function actionStart() {
     $work[] = array('Курсы валют для Украины', 'phpshop/modules/cron/sample/currencyua.php');
     $work[] = array('Снятие с продаж товаров', 'phpshop/modules/cron/sample/product.php');
     $work[] = array('Разновалютый поиск', 'phpshop/modules/cron/sample/pricesearch.php');
-    $work[] = array('Кеширование фильтра', 'phpshop/modules/cron/sample/filter.php');
+    $work[] = array('Кеширование фильтра быстрое', 'phpshop/modules/cron/sample/filter.php');
+    $work[] = array('Кеширование фильтра полное', 'phpshop/modules/cron/sample/filterpro.php');
 
     // Учет модуля SiteMap
     if (!empty($GLOBALS['SysValue']['base']['sitemap']['sitemap_system'])) {

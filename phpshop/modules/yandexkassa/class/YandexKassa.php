@@ -27,6 +27,10 @@ class YandexKassa {
         $ndsEnabled = $this->PHPShopSystem->getParam('nds_enabled');
         $nds = $this->PHPShopSystem->getParam('nds');
         $this->tax = $this->setTax(empty($ndsEnabled) ? 2 : $nds);
+        
+        if($this->options['payment_mode'] == 1)
+            $this->payment_mode = 'full_prepayment';
+        else $this->payment_mode = 'full_payment';
     }
 
     
@@ -63,7 +67,7 @@ class YandexKassa {
                 ),
                 'vat_code' => $tax,
                 'payment_subject' => 'commodity',
-                'payment_mode' => 'full_prepayment',
+                'payment_mode' => $this->payment_mode,
             );
 
             $total = number_format($total + (int) $product['num'] * $price, 2, '.', '');
@@ -94,7 +98,7 @@ class YandexKassa {
             ),
             'vat_code' => $this->taxDelivery,
             'payment_subject' => 'service',
-            'payment_mode' => 'full_prepayment',
+            'payment_mode' => $this->payment_mode,
         );
     }
 

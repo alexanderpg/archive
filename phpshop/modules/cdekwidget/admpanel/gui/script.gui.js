@@ -1,18 +1,19 @@
 function cdekvalidate(evt) {
     var theEvent = evt || window.event;
     var key = theEvent.keyCode || theEvent.which;
-    key = String.fromCharCode( key );
+    key = String.fromCharCode(key);
     var regex = /[0-9]|\./;
-    if( !regex.test(key) ) {
+    if (!regex.test(key)) {
         theEvent.returnValue = false;
-        if(theEvent.preventDefault) theEvent.preventDefault();
+        if (theEvent.preventDefault)
+            theEvent.preventDefault();
     }
 }
 
 function cdekAdminWidgetOnChoose(result)
 {
     $.ajax({
-        mimeType: 'text/html; charset='+locale.charset,
+        mimeType: 'text/html; charset=' + locale.charset,
         url: '/phpshop/modules/cdekwidget/ajax/ajax.php',
         type: 'post',
         data: {
@@ -27,9 +28,9 @@ function cdekAdminWidgetOnChoose(result)
         },
         dataType: "json",
         async: false,
-        success: function(json) {
-            if(json['success']) {
-                if(Number($.getUrlVar('tab')) !== 4) {
+        success: function (json) {
+            if (json['success']) {
+                if (Number($.getUrlVar('tab')) !== 4) {
                     window.location.href += '&tab=4';
                 } else {
                     location.reload();
@@ -42,7 +43,7 @@ function cdekAdminWidgetOnChoose(result)
 }
 
 $(document).ready(function () {
-    if(Number($.getUrlVar('tab')) === 4) {
+    if (Number($.getUrlVar('tab')) === 4) {
         $('a[href="#tabs-4"]').tab('show');
     }
 
@@ -75,19 +76,15 @@ $(document).ready(function () {
 
     $('.cdek-send').on('click', function () {
         $.ajax({
-            mimeType: 'text/html; charset='+locale.charset,
+            mimeType: 'text/html; charset=' + locale.charset,
             url: '/phpshop/modules/cdekwidget/ajax/ajax.php',
             type: 'post',
             data: {operation: 'send', orderId: $('input[name="cdek_order_id"]').val()},
             dataType: "json",
             async: false,
-            success: function(json) {
-                if(json['success']) {
-                    if(Number($.getUrlVar('tab')) !== 4) {
-                        window.location.href += '&tab=4';
-                    } else {
-                        location.reload();
-                    }
+            success: function (json) {
+                if (json['success']) {
+                    location.reload();
                 } else {
                     console.log(json['error'])
                 }
@@ -99,25 +96,23 @@ $(document).ready(function () {
     // Изменение статуса оплаты
     $('#payment_status').on('change', function () {
         var paymentStatus = 0;
-        if($(this).prop('checked') === true) {
+        if ($(this).prop('checked') === true) {
             paymentStatus = 1;
         }
         $.ajax({
-            mimeType: 'text/html; charset='+locale.charset,
+            mimeType: 'text/html; charset=' + locale.charset,
             url: '/phpshop/modules/cdekwidget/ajax/ajax.php',
             type: 'post',
             data: {operation: 'paymentStatus', value: paymentStatus, orderId: $('input[name="cdek_order_id"]').val()},
             dataType: "json",
             async: false,
-            success: function(json) {
-                if(json['success']) {
-                    if(Number($.getUrlVar('tab')) !== 4) {
-                        window.location.href += '&tab=4';
-                    } else {
-                        location.reload();
-                    }
+            success: function (json) {
+                if (json['success']) {
+
+                    location.reload();
+
                 } else {
-                    console.log(json['error'])
+                    console.log(json['error']);
                 }
             }
 

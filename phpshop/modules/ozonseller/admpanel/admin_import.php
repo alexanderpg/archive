@@ -77,7 +77,7 @@ function actionStart() {
         'imported' => '<span class="text-mutted">' . __('Загружен') . '</span>',
         'wait' => '<span class="text-success">' . __('Готов к загрузке') . '</span>',
     ];
-
+    
     if (is_array($data))
         foreach ($data as $row) {
         
@@ -87,7 +87,7 @@ function actionStart() {
             if (!empty($row['primary_image']))
                 $icon = '<img src="' . $row['primary_image'] . '" onerror="this.onerror = null;this.src = \'./images/no_photo.gif\'" class="media-object">';
             else
-               $icon=mull;
+               $icon=null;
 
             // Артикул
             if (!empty($row['offer_id']))

@@ -46,7 +46,7 @@ function actionStart() {
 
     $PHPShopGUI->field_col = 4;
 
-    $product_info = $OzonSeller->getProductAttribures($_GET['id'])['result'][0];
+    $product_info = $OzonSeller->getProductAttribures([$_GET['id']])['result'][0];
 
     if (!empty($product_info['id']))
         $PHPShopGUI->action_button['Загрузить товар'] = array(

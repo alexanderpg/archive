@@ -98,7 +98,8 @@ $key_name = array(
     'color' => 'Цвет',
     'length' => 'Длина',
     'price_purch' => 'Закупочная цена',
-    'hit' => 'Хит'
+    'hit' => 'Хит',
+    'external_code' => 'Внешний код'
 );
 
 $key_placeholder = array(
@@ -108,7 +109,7 @@ $key_placeholder = array(
 );
 
 // Стоп лист
-$key_stop = array('id', 'password', 'wishlist', 'datas', 'data_adres', 'sort', 'yml_bid_array', 'vendor', 'status', 'user', 'title_enabled', 'descrip_enabled', 'title_shablon', 'descrip_shablon', 'title_shablon', 'keywords_enabled', 'keywords_shablon', 'parent2');
+$key_stop = array('id', 'password', 'wishlist', 'datas', 'data_adres', 'sort', 'yml_bid_array', 'vendor', 'status', 'user', 'title_enabled', 'descrip_enabled', 'title_shablon', 'descrip_shablon', 'title_shablon', 'keywords_enabled', 'keywords_shablon', 'parent2','type','prod_seo_name_old');
 
 // Настраиваемые поля
 if (!empty($GLOBALS['SysValue']['base']['productoption']['productoption_system'])) {

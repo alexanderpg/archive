@@ -288,7 +288,7 @@
         <!-- End Slick Carousel -->
 
     </div>
-      <div class="w-lg-100 border-top space-2 mx-lg-auto @php __hide('productlist_list'); php@">
+      <div class="w-lg-100 border-top space-2 mx-lg-auto @php __hide('productsimilar_list'); php@">
         <div class="mb-3 mb-sm-5">
             <h4>@productsimilar_title@</h4> 
         </div>

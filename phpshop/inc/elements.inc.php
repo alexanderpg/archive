@@ -3,7 +3,7 @@
 /**
  * Элемент стандартных системных переменных
  * @author PHPShop Software
- * @version 2.0
+ * @version 2.1
  * @package PHPShopElements
  */
 class PHPShopCoreElement extends PHPShopElements {
@@ -102,7 +102,6 @@ class PHPShopCoreElement extends PHPShopElements {
             if (is_array($showcaseData)) {
 
                 if (!empty($showcaseData['currency'])) {
-
                     $_SESSION['valuta'] = $showcaseData['currency'];
                     $lang = $showcaseData['lang'];
                 }
@@ -116,10 +115,9 @@ class PHPShopCoreElement extends PHPShopElements {
                 if (!empty($showcaseData['shop_type']))
                     $this->PHPShopSystem->setParam("shop_type", $showcaseData['shop_type']);
 
-                if (!empty($showcaseData['company_id'])) {
+                if (!empty($showcaseData['company_id'])) 
                     $this->PHPShopSystem->setCompany($showcaseData['company_id']);
-                }
-
+                
                 if (!empty($showcaseData['name']))
                     $this->PHPShopSystem->setParam('name', $showcaseData['name']);
 
@@ -174,7 +172,7 @@ class PHPShopCoreElement extends PHPShopElements {
                         $this->PHPShopSystem->setSerilizeParam('admoption.google_id', $admoption['google_id']);
 
                     if (isset($admoption['fee']))
-                        $this->PHPShopSystem->setParam('percent ', (int) $admoption['fee']);
+                        $this->PHPShopSystem->setParam('percent', (int) $admoption['fee']);
 
                     if (!empty($admoption['org_adres']))
                         $this->PHPShopSystem->setSerilizeParam('bank.org_adres', $admoption['org_adres']);
@@ -1029,10 +1027,10 @@ class PHPShopTextElement extends PHPShopElements {
 
             // Товар
             if (empty($true_cid) and $this->PHPShopNav->getPath() == "id") {
-
                 $product_id = $GLOBALS['PHPShopSeoPro']->getID();
                 $PHPShopProduct = new PHPShopProduct((int) $product_id);
                 $true_cid = $PHPShopProduct->getParam('category');
+                PHPShopParser::set('productName',$PHPShopProduct->getParam('name'));
             }
             // Вложенный подкаталог
             else if (empty($true_cid) and $this->PHPShopNav->objNav['truepath'] != '/' and $this->PHPShopNav->notPath(array('page', 'news', 'gbook'))) {
@@ -1120,6 +1118,7 @@ class PHPShopTextElement extends PHPShopElements {
                 $product_id = $GLOBALS['PHPShopSeoPro']->getID();
                 $PHPShopProduct = new PHPShopProduct((int) $product_id);
                 $true_cid = $PHPShopProduct->getParam('category');
+                PHPShopParser::set('productName',$PHPShopProduct->getParam('name'));
             }
             // Вложенный подкаталог
             else if (empty($true_cid) and $this->PHPShopNav->objNav['truepath'] != '/' and $this->PHPShopNav->notPath(array('page', 'news', 'gbook'))) {
@@ -1766,6 +1765,9 @@ class PHPShopBannerElement extends PHPShopElements {
 
                     // Привязка к каталогам
                     if (!empty($true_cid) and ! empty($row['dop_cat']) and ! strstr($row['dop_cat'], "#" . $true_cid . "#")) {
+                        continue;
+                    }
+                    elseif(!empty($row['dop_cat']) and empty($true_cid)){
                         continue;
                     }
 

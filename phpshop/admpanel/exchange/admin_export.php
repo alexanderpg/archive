@@ -121,9 +121,8 @@ $key_name = array(
     'barcode' => 'Штрихкод'
 );
 
-if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
-    unset($key_name);
-
+//if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+// unset($key_name);
 // Стоп лист
 $key_stop = array('password', 'wishlist', 'sort', 'yml_bid_array', 'vendor', 'vid', 'name_rambler', 'skin', 'skin_enabled', 'secure_groups', 'icon_description', 'title_enabled', 'title_shablon', 'descrip_shablon', 'descrip_enabled', 'productsgroup_check', 'productsgroup_product', 'keywords_enabled', 'keywords_shablon', 'rate_count');
 
@@ -437,7 +436,7 @@ function actionSave() {
         PHPShopObj::loadClass("valuta");
         PHPShopObj::loadClass("promotions");
         PHPShopObj::loadClass('rssgoogle');
-        
+
         $PHPShopRssGoogle = new PHPShopRssGoogle();
         $PHPShopRssGoogle->where = $val;
 
@@ -631,10 +630,20 @@ function actionSave() {
     }
 
     // Кодировка
-    if ($_POST['export_code'] == 'utf' and $_POST['export_format'] == 'csv')
-        $content = PHPShopString::win_utf8($csv_title . $csv);
-    else
-        $content = $csv_title . $csv;
+    if ($_POST['export_code'] == 'utf' and $_POST['export_format'] == 'csv') {
+
+        if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+            $content = PHPShopString::win_utf8($csv_title, true) . $csv;
+        else
+            $content = PHPShopString::win_utf8($csv_title . $csv);
+    }
+    else {
+
+        if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+            $content = $csv_title . PHPShopString::utf8_win1251($csv, true);
+        else
+            $content = $csv_title . $csv;
+    }
 
     $result = PHPShopFile::write($sorce, $content);
 
@@ -698,6 +707,11 @@ function actionStart() {
         }
     } else {
 
+        if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+            $export_code = 'utf';
+        else
+            $export_code = 'ansi';
+
         $export_limit = '0,10000';
     }
 
@@ -728,9 +742,9 @@ function actionStart() {
                 $name = $key;
 
             if (@in_array($key, $key_base))
-                $sel_left .= '<option value="' . $key . '" selected class="">' . ucfirst($name) . '</option>';
+                $sel_left .= '<option value="' . $key . '" selected class="">' . __(ucfirst($name)) . '</option>';
             elseif (!in_array($key, $key_stop))
-                $sel_right .= '<option value="' . $key . '" class="">' . ucfirst($name) . '</option>';
+                $sel_right .= '<option value="' . $key . '" class="">' . __(ucfirst($name)) . '</option>';
         }
 
 
@@ -818,13 +832,13 @@ function actionStart() {
     $code_value[] = array('UTF-8', 'utf', $export_code);
 
     $format_value[] = array('Excel (CSV)', 'csv', $export_format);
-    
 
-    if (empty($subpath[2])){
+
+    if (empty($subpath[2])) {
         $format_value[] = array('Яндекс (YML)', 'yml', $export_format);
         $format_value[] = array('Google (RSS)', 'rss', $export_format);
     }
-    
+
     $format_value[] = array('1C (CML)', 'cml', $export_format);
 
     $Tab1 = $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 150)) .
@@ -879,7 +893,7 @@ function actionStart() {
 
     $sidebarleft[] = array('title' => 'Тип данных', 'content' => $PHPShopGUI->loadLib('tab_menu', false, './exchange/'));
 
-    if (empty($hideCatalog) and $select_action_path=='product')
+    if (empty($hideCatalog) and $select_action_path == 'product')
         $sidebarleft[] = array('title' => 'Прайс-лист', 'content' => $PHPShopGUI->loadLib('tab_menu_xml', false, './exchange/'));
 
     if (!empty($select_path))

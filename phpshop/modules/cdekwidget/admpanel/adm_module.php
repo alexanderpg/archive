@@ -23,6 +23,10 @@ function actionUpdate() {
     // Настройки витрины
     $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);
     
+        if (!isset($_POST['paid_new'])) {
+        $_POST['paid_new'] = '0';
+    }
+    
     // Доставки
     if (isset($_POST['delivery_id_new'])) {
         if (is_array($_POST['delivery_id_new'])) {
@@ -107,6 +111,7 @@ function actionStart() {
     $Tab1.= $PHPShopGUI->setField('Город на карте по умолчанию', $PHPShopGUI->setInputText(false, 'default_city_new', $data['default_city'], 300));
     $Tab1.= $PHPShopGUI->setField('Добавить наценку', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="0.1" min="0" value="' . $data['fee'] . '" name="fee_new" style="width:300px;">');
     $Tab1.= $PHPShopGUI->setField('Тип наценки', $PHPShopGUI->setSelect('fee_type_new', array(array('%', 1, $data['fee_type']), array('Руб.', 2, $data['fee_type'])), 300, true, false, $search = false, false, $size = 1));
+    $Tab1 .= $PHPShopGUI->setField('Статус оплаты', $PHPShopGUI->setCheckbox('paid_new', 1, 'Заказ оплачен', $data["paid"]));
     
     $Tab1= $PHPShopGUI->setCollapse('Настройки',$Tab1);
     $Tab1.= $PHPShopGUI->setCollapse('Вес и габариты по умолчанию',

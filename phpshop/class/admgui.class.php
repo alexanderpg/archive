@@ -224,6 +224,7 @@ class PHPShopGUI {
      * Сообщение
      * @param string $text текст сообщения
      * @param string $type оформление [succes | danger]
+     * @param bool $locale локализация
      * @param string $width размер
      * @param string $dismiss закрытие
      */

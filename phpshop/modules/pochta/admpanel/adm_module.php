@@ -55,7 +55,10 @@ function actionUpdate() {
     if(!isset($_POST['vsd_new'])) {
         $_POST['vsd_new'] = '0';
     }
-
+    if(!isset($_POST['paid_new'])) {
+        $_POST['paid_new'] = '0';
+    }
+    
     $action = $PHPShopOrm->update($_POST);
 
     header('Location: ?path=modules&id=' . $_GET['id']);
@@ -78,7 +81,7 @@ function actionStart() {
 
     $Tab1 = $PHPShopGUI->setField('Токен авторизации приложения', $PHPShopGUI->setInputText(false, 'token_new', $data['token'], 300));
     $Tab1.= $PHPShopGUI->setField('Логин пользователя', $PHPShopGUI->setInputText(false, 'login_new', $data['login'], 300));
-    $Tab1.= $PHPShopGUI->setField('Пароль пользователя', $PHPShopGUI->setInput('password', 'password_new', $data['password'], false, 300));
+    $Tab1.= $PHPShopGUI->setField('Пароль пользователя', $PHPShopGUI->setInputText(false, 'password_new', $data['password'], 300));
     $Tab1.= $PHPShopGUI->setField('ID виджета', $PHPShopGUI->setInputText(false, 'widget_id_new', $data['widget_id'], 300));
     $Tab1.= $PHPShopGUI->setField('ID виджета курьерской доставки', $PHPShopGUI->setInputText(false, 'courier_widget_id_new', $data['courier_widget_id'], 300));
     $Tab1.= $PHPShopGUI->setField('Статус для отправки', $PHPShopGUI->setSelect('status_new', Settings::getStatusesVariants($data['status']), 300));
@@ -100,7 +103,8 @@ function actionStart() {
         $PHPShopGUI->setField('Электронное уведомление', $PHPShopGUI->setCheckbox('electronic_notice_new', 1, 'Услуга электронное уведомление', $data["electronic_notice"])) .
         $PHPShopGUI->setField('Заказное уведомление', $PHPShopGUI->setCheckbox('order_of_notice_new', 1, 'Услуга заказное уведомление', $data["order_of_notice"])) .
         $PHPShopGUI->setField('Простое уведомление', $PHPShopGUI->setCheckbox('simple_notice_new', 1, 'Услуга простое уведомление', $data["simple_notice"])) .
-        $PHPShopGUI->setField('Сопроводительные документы', $PHPShopGUI->setCheckbox('vsd_new', 1, 'Возврат сопроводительных документов', $data["vsd"]))
+        $PHPShopGUI->setField('Сопроводительные документы', $PHPShopGUI->setCheckbox('vsd_new', 1, 'Возврат сопроводительных документов', $data["vsd"])).
+        $PHPShopGUI->setField('Статус оплаты', $PHPShopGUI->setCheckbox('paid_new', 1, 'Заказ оплачен', $data["paid"]))
     );
 
     $info = '<h4>Получение токена авторизации</h4>

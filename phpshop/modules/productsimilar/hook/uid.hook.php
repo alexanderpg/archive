@@ -30,7 +30,7 @@ class PHPShopProductSimilarElement extends PHPShopProductElements {
         if (is_array($vendor_array)) {
 
             $PHPShopOrmSort = new PHPShopOrm($GLOBALS['SysValue']['base']['sort_categories']);
-            $PHPShopOrmSort->debug=false;
+            $PHPShopOrmSort->debug = false;
 
             foreach ($vendor_array as $k => $v) {
                 $data_sort = $PHPShopOrmSort->getOne(['id'], ['id' => '=' . (int) $k, 'productsimilar_enabled' => "='1'"]);
@@ -39,10 +39,11 @@ class PHPShopProductSimilarElement extends PHPShopProductElements {
                     $sort .= " vendor REGEXP 'i" . $hash . "i' and";
                 }
             }
-            
-            if(!empty($sort))
-            $sort = substr($sort, 0, strlen($sort) - 3);
-            else return true;
+
+            if (!empty($sort))
+                $sort = substr($sort, 0, strlen($sort) - 3);
+            else
+                return true;
 
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
             $PHPShopOrm->debug = false;
@@ -52,9 +53,22 @@ class PHPShopProductSimilarElement extends PHPShopProductElements {
             if (is_array($data)) {
 
                 foreach ($data as $row) {
-                    
+
                     if (empty($row['pic_small']) or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $row['pic_small']))
                         continue;
+
+
+                    // Спецпредложения
+                    if ($row['spec'])
+                        $this->set('productsimilar_product_specIcon', ParseTemplateReturn('product/specIcon.tpl'));
+                    else
+                        $this->set('productsimilar_product_specIcon', '');
+
+                    // Новинки
+                    if ($row['newtip'])
+                        $this->set('productsimilar_product_newtipIcon', ParseTemplateReturn('product/newtipIcon.tpl'));
+                    else
+                        $this->set('productsimilar_product_newtipIcon', '');
 
 
                     // Промоакции
@@ -69,8 +83,8 @@ class PHPShopProductSimilarElement extends PHPShopProductElements {
                     $this->set('productsimilar_product_name', $row['name']);
                     $this->set('productsimilar_product_pic_small', $row['pic_small']);
                     $this->set('productsimilar_product_pic_big', $row['pic_big']);
-                    
-                    
+
+
                     $this->set('productsimilar_product_price', number_format($this->price($row, false, false), $this->format, '.', ' '));
                     $this->set('productsimilar_product_price_old', $this->price($row, true, false));
 

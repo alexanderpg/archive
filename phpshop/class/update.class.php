@@ -468,7 +468,7 @@ class PHPShopUpdate {
     }
 
     function log($text, $class = 'success', $icon = 'ok') {
-        $this->_log .= '<div class="alert alert-' . $class . '" role="alert"><span class="glyphicon glyphicon-' . $icon . '-sign"></span> ' . $text . '</div>';
+        $this->_log .= '<div class="alert alert-' . $class . '" role="alert"><span class="glyphicon glyphicon-' . $icon . '-sign"></span> ' . __($text) . '</div>';
     }
 
     function fulllog($text) {

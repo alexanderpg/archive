@@ -3,7 +3,8 @@
 function addProductIDProductservices($data) {
     global $PHPShopGUI;
 
-    $Tab = $PHPShopGUI->setTextarea('productservices_products_new', $data['productservices_products'], false, false, false,
+    $Tab = $PHPShopGUI->setField('—кидка', $PHPShopGUI->setInputText(null, 'productservices_discount_new', $data['productservices_discount'], 100,'%'));
+    $Tab .= $PHPShopGUI->setTextarea('productservices_products_new', $data['productservices_products'], false, false, false,
         __('”кажите ID товаров или воспользуйтесь') .
         ' <a href="#" data-target="#productservices_products_new"  class="btn btn-sm btn-default tag-search"><span class="glyphicon glyphicon-search"></span> ' . __('поиском товаров') . '</a>');
 

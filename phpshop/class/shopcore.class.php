@@ -3,7 +3,7 @@
 /**
  * Родительский класс ядра вывода товаров
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopClass
  */
 class PHPShopShopCore extends PHPShopCore {
@@ -420,19 +420,19 @@ class PHPShopShopCore extends PHPShopCore {
             $sort .= 's=' . $_GET['s'] . '&';
         if (!empty($_GET['f']) and is_numeric($_GET['f']))
             $sort .= 'f=' . $_GET['f'] . '&';
-        
+
         // Склады
         if (!empty($_GET['w']) and is_numeric($_GET['w']))
-             $sort .= 'w=' . $_GET['w'] . '&';
+            $sort .= 'w=' . $_GET['w'] . '&';
 
         $sort = substr($sort, 0, strlen($sort) - 1);
 
         // Всего страниц
         $this->PHPShopOrm->comment = __CLASS__ . '.' . __FUNCTION__;
         $result = $this->PHPShopOrm->query("select COUNT('id') as count, (price_n - price) as discount from " . $this->objBase . ' where ' . $SQL);
-        
-        if($result)
-        $row = mysqli_fetch_array($result);
+
+        if ($result)
+            $row = mysqli_fetch_array($result);
         $this->num_page = $row['count'];
 
         $i = 1;
@@ -608,18 +608,22 @@ class PHPShopShopCore extends PHPShopCore {
                 return false;
             }
 
-            // Добавочные каталоги
-            if (count($dop_cat_array_true) > 0) {
+            if (is_array($dop_cat_array_true)) {
 
-                // Категория
-                $this->category = $dop_cat_array_true[0];
-                $this->PHPShopCategory = new PHPShopCategory($this->category);
-                $this->category_name = $this->PHPShopCategory->getName();
+                // Добавочные каталоги
+                if (count($dop_cat_array_true) > 0) {
 
-                if (count($this->multi_cat) == 0)
+                    // Категория
+                    $this->category = $dop_cat_array_true[0];
+                    $this->PHPShopCategory = new PHPShopCategory($this->category);
+                    $this->category_name = $this->PHPShopCategory->getName();
+
+                    if (count($this->multi_cat) == 0)
+                        return true;
+                } else if (!in_array($category, $this->multi_cat))
                     return true;
-            } else if (!in_array($category, $this->multi_cat))
-                return true;
+            }
+            else return false;
         }
     }
 
@@ -1083,7 +1087,7 @@ function product_grid($dataArray, $cell = 2, $template = false) {
             $this->set('productUid', $row['id']);
 
             $this->set('previewSorts', $this->getPreviewSorts($dataArray, $row));
-            
+
             $this->set('productLink', $row['link']);
 
             // Подключение функции вывода средней оценки товара из отзывов пользователей

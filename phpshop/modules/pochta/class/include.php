@@ -1,4 +1,7 @@
 <?php
+if (!defined("OBJENABLED")) {
+    exit();
+}
 
 PHPShopObj::loadClass("order");
 PHPShopObj::loadClass('delivery');

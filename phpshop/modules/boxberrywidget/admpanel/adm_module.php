@@ -25,8 +25,12 @@ function actionUpdate() {
     // Настройки витрины
     $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);
 
+    if (!isset($_POST['paid_new'])) {
+        $_POST['paid_new'] = '0';
+    }
+
     $Boxberry = new BoxberryWidget();
-    if(!empty($_POST['token_new'])) {
+    if (!empty($_POST['token_new'])) {
         $request = $Boxberry->requestGet(BoxberryWidget::GET_API_KEY_METHOD, array());
         $_POST['api_key_new'] = $request['key'];
     }
@@ -81,9 +85,9 @@ function actionStart() {
     $PHPShopGUI->addJSFiles('../modules/boxberrywidget/admpanel/gui/boxberrywidget.gui.js');
 
     if (empty($data['pvz_id']))
-        $buttonText = 'Выбрать ПВЗ';
+        $buttonText = 'Выбрать';
     else
-        $buttonText = 'Изменить ПВЗ';
+        $buttonText = 'Изменить';
 
     // Доступые статусы заказов
     $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
@@ -136,18 +140,19 @@ function actionStart() {
     );
 
     $Tab1 = $PHPShopGUI->setField('API token', $PHPShopGUI->setInputText(false, 'token_new', $data['token'], 300));
-    $Tab1.= $PHPShopGUI->setField('URL адрес API', $PHPShopGUI->setSelect('api_url_new', $api, 300));
-    $Tab1.= $PHPShopGUI->setField('ID пункта поступления ЗП', $PHPShopGUI->setInputText(false, 'pvz_id_new', $data['pvz_id'], 300, '<a id="link-activate-ddelivery" onclick="getPVZ()" href="#">' . __($buttonText) . '</a>'));
-    $Tab1.= $PHPShopGUI->setField('Статус для отправки', $PHPShopGUI->setSelect('status_new', $status, 300));
-    $Tab1.= $PHPShopGUI->setField('Доставка самовывоз из ПВЗ', $PHPShopGUI->setSelect('delivery_id_new[]', $delivery_value, 300, null, false, $search = false, false, $size = 1, $multiple = true));
-    $Tab1.= $PHPShopGUI->setField('Курьерская доставка', $PHPShopGUI->setSelect('express_delivery_id_new[]', $express_delivery_value, 300, null, false, $search = false, false, $size = 1, $multiple = true));
-    $Tab1.= $PHPShopGUI->setField('Город на карте по умолчанию', $PHPShopGUI->setInputText(false, 'city_new', $data['city'], 300));
-    $Tab1.= $PHPShopGUI->setField('Добавить наценку', '<input class="form-control input-sm " type="number" step="0.1" min="0" value="' . $data['fee'] . '" name="fee_new" style="width:300px;">');
-    $Tab1.= $PHPShopGUI->setField('Тип наценки', $PHPShopGUI->setSelect('fee_type_new', array(array('%', 1, $data['fee_type']), array('Руб.', 2, $data['fee_type'])), 300, null, false, $search = false, false, $size = 1));
-    
-    $Tab1 = $PHPShopGUI->setCollapse('Настройки',$Tab1);
+    $Tab1 .= $PHPShopGUI->setField('URL адрес API', $PHPShopGUI->setSelect('api_url_new', $api, 300));
+    $Tab1 .= $PHPShopGUI->setField('ID пункта поступления ЗП', $PHPShopGUI->setInputText(false, 'pvz_id_new', $data['pvz_id'], 300, '<a id="link-activate-ddelivery" onclick="getPVZ()" href="#">' . __($buttonText) . '</a>'));
+    $Tab1 .= $PHPShopGUI->setField('Статус для отправки', $PHPShopGUI->setSelect('status_new', $status, 300));
+    $Tab1 .= $PHPShopGUI->setField('Доставка самовывоз из ПВЗ', $PHPShopGUI->setSelect('delivery_id_new[]', $delivery_value, 300, null, false, $search = false, false, $size = 1, $multiple = true));
+    $Tab1 .= $PHPShopGUI->setField('Курьерская доставка', $PHPShopGUI->setSelect('express_delivery_id_new[]', $express_delivery_value, 300, null, false, $search = false, false, $size = 1, $multiple = true));
+    $Tab1 .= $PHPShopGUI->setField('Город на карте по умолчанию', $PHPShopGUI->setInputText(false, 'city_new', $data['city'], 300));
+    $Tab1 .= $PHPShopGUI->setField('Добавить наценку', '<input class="form-control input-sm " type="number" step="0.1" min="0" value="' . $data['fee'] . '" name="fee_new" style="width:300px;">');
+    $Tab1 .= $PHPShopGUI->setField('Тип наценки', $PHPShopGUI->setSelect('fee_type_new', array(array('%', 1, $data['fee_type']), array('Руб.', 2, $data['fee_type'])), 300, null, false, $search = false, false, $size = 1));
+    $Tab1 .= $PHPShopGUI->setField('Статус оплаты', $PHPShopGUI->setCheckbox('paid_new', 1, 'Заказ оплачен', $data["paid"]));
 
-    $Tab1.= $PHPShopGUI->setCollapse('Вес и габариты по умолчанию', $PHPShopGUI->setField('Вес, гр.', $PHPShopGUI->setInputText('', 'weight_new', $data['weight'], 300)) .
+    $Tab1 = $PHPShopGUI->setCollapse('Настройки', $Tab1);
+
+    $Tab1 .= $PHPShopGUI->setCollapse('Вес и габариты по умолчанию', $PHPShopGUI->setField('Вес, гр.', $PHPShopGUI->setInputText('', 'weight_new', $data['weight'], 300)) .
             $PHPShopGUI->setField('Ширина, см.', $PHPShopGUI->setInputText('', 'width_new', $data['width'], 300)) .
             $PHPShopGUI->setField('Высота, см.', $PHPShopGUI->setInputText('', 'height_new', $data['height'], 300)) .
             $PHPShopGUI->setField('Длина, см.', $PHPShopGUI->setInputText('', 'depth_new', $data['depth'], 300))
@@ -186,11 +191,10 @@ function actionStart() {
     $Tab4 = $PHPShopGUI->setPay($serial = false, false, $data['version'], true);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Основное", $Tab1, true,false,true), array("Инструкция", $Tab2), array("О Модуле", $Tab4));
+    $PHPShopGUI->setTab(array("Основное", $Tab1, true, false, true), array("Инструкция", $Tab2), array("О Модуле", $Tab4));
 
     // Вывод кнопок сохранить и выход в футер
-    $ContentFooter =
-            $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
+    $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);

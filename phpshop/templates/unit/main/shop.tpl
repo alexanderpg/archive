@@ -376,7 +376,7 @@
                 </div>
             </div>
         </section>
-         <section class="specMain @php __hide('productlist_list'); php@ @hideSite@">
+         <section class="specMain @php __hide('productsimilar_list'); php@ @hideSite@">
             <div class="container">
                 <div>
                     <div class="product-head page-header not-center">
