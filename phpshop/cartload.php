@@ -89,6 +89,7 @@ $price=($price+(($price*$LoadItems['System']['percent'])/100));
 $uid=$row['uid'];
 $id=$row['id'];
 $user=$row['user'];
+$weight=$row['weight'];
 
 
 
@@ -133,6 +134,7 @@ $cart_new=array(
 "price"=>$price,
 "uid"=>"$uid",
 "num"=>"$num",
+"weight"=>$weight,
 "user"=>$user
 	);
 $cart[$xid]=$cart_new;
@@ -197,7 +199,7 @@ $_RESULT = array(
   "q"     => $q,
   "md5"   => md5($q),
   "num"   => ReturnNum($cart),
-  "sum" => ReturnSum($cart)." ".GetValuta(),
+  "sum" => ReturnSum($cart),
   "same" => $same
 ); 
 ?>

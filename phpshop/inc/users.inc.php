@@ -149,7 +149,7 @@ function UserAddData(){
 global $SysValue,$_POST,$_SESSION,$LoadItems;
 $admoption=unserialize($LoadItems['System']['admoption']);
 $flag="";
-if($_POST['key']!=$_SESSION['text']){
+if(!empty($_SESSION['text']) and $_POST['key']!=$_SESSION['text']){
 $flag="<li>Некорректный ключ";
 return $flag;
 }

@@ -117,7 +117,7 @@ global $SysValue;
 
 $categoryID=$PID;
 echo '
-<input type=text id="myName"  style="width: 520" value="'.Disp_cat($categoryID).'">
+<input type=text id="myName"  style="width: 500" value="'.Disp_cat($categoryID).'">
 <input type="hidden" value="'.$categoryID.'" name="NPID" id="myCat">
 <BUTTON style="width: 3em; height: 2.2em; margin-left:5"  onclick="miniWinFull(\'adm_cat.php?category='.$categoryID.'\',300,400,300,200)"><img src="../img/icon-move-banner.gif"  width="16" height="16" border="0"></BUTTON>';
 	?>
@@ -164,6 +164,9 @@ echo '
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('delivery')">Справка</BUTTON></BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 <input type="hidden" name="id" value="<?=$id?>" >
 	<input type="submit" name="editID" value="OK" class=but>

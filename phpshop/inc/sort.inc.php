@@ -26,6 +26,7 @@ while (@$row = mysql_fetch_array($result))
 	$name=$row['name'];
 	$category=$row['category'];
 	$clean="false";
+	$page=$row['page'];
 	
   if($categoryControl!=$category and $categorySort == "true")
   @$dis.= '
@@ -46,12 +47,17 @@ foreach($vendor_array[$id] as $p){
 	   @$srt_value="-   ";
 	   $clean="true";
 	   }
-	  else @$srt_value.=$LoadItems['Sort'][$p]['name'].$zpt;
+	  else {
+	       if(empty($LoadItems['Sort'][$p]['page'])) 
+             @$srt_value.=$LoadItems['Sort'][$p]['name'].$zpt;
+			   else @$srt_value.= '<a href="/page/'.$LoadItems['Sort'][$p]['page'].'.html">'.$LoadItems['Sort'][$p]['name'].'</a>'.$zpt;
+		   }
 	 }
 	 
 if( $count> 1){
 $leng=strlen($srt_value);
-$srt_value = substr($srt_value,0,$leng-2);
+if(empty($LoadItems['Sort'][$p]['page'])) @$srt_value= substr($srt_value,0,$leng-2);
+  else @$srt_value= '<a href="/page/'.$LoadItems['Sort'][$p]['page'].'.html">'.substr($srt_value,0,$leng-2).'</a>';
 }
 
 if( $count == 0  ) $clean="true";
@@ -60,7 +66,10 @@ if( $count == 0  ) $clean="true";
 if( $clean!="true"){
 @$dis.= '
 <tr>
-  <td class="sort_name_bg">'.$name.':</td>
+  <td class="sort_name_bg">';
+  if(empty($page)) @$dis.=$name;
+   else @$dis.='<a href="/page/'.$page.'.html">'.$name.'</a>';
+  $dis.= ':</td>
   <td>'.$srt_value.'</td>
 </tr>
 ';}
@@ -210,7 +219,10 @@ while($row = mysql_fetch_array($result))
     {
     $id=$row['id'];
     $name=$row['name'];
-    @$dis.="<a href='/selection/?v[$n]=$id'>$name</a><br>";
+	// ¬ывод на выборку товаров
+    //@$dis.="<a href='/selection/?v[$n]=$id'>$name</a><br>";
+	// ¬ывод на описание бренда с сылкой на категории с товарами сортировки
+	@$dis.="<a href='/selectioncat/?v[$n]=$id'>$name</a><br>";
 	}
 //$SysValue['sort'][]=$n;
 @$SysValue['sql']['num']++;

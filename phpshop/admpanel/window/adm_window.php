@@ -242,7 +242,7 @@ while (@$row = mysql_fetch_array($result))
 @$n++;
 }
 }
-$h=$h+(30*$n);
+$h=$h+(55*$n);
 return @$disp;
 }
 //Êîíåö ÔÓÍÊÖÈÉ

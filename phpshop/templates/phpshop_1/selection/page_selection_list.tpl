@@ -1,17 +1,17 @@
 <div id="bg_catalog_1">Поиск по производителям</div>
 <div id="bglist"></div>
 <div id=allspec><a href="/" class="link">Главная</a> <img src="images/shop/arr2.gif" alt="" width="16" height="16" border="0" align="absmiddle"> Поиск по производителям</div>
-<div align="left" style="padding-left:15px;padding-top:0px">
 
-</div>
-<table width="100%" cellpadding="0" cellspacing="0">
+
+
+<table width="98%" cellpadding="0" cellspacing="0">
 <tr>
 	
 	<td width="100%" bgcolor="#FAFAFA" id=allspec >
 
 <table width="100%" cellpadding="0" cellspacing="0" >
 <tr>
-	<td style="padding-left:10;padding-top:5px">
+	<td style="padding-left:10;padding-top:px">
 	@productPageNav@
 	</td>
 </tr>
@@ -21,6 +21,14 @@
 	
 </tr>
 </table>
+
+<div align="left" style="padding-left:15px;padding-top:0px">
+@sortDes@
+</div>
+
+<div align="left" style="padding-left:15px;padding-top:0px">
+@DispCatNav@
+</div>
 
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>

@@ -297,4 +297,5 @@ ALTER TABLE `phpshop_products` ADD `ed_izm` VARCHAR( 255 ) NOT NULL;
 ALTER TABLE `phpshop_sort_categories` ADD `goodoption` ENUM( '0', '1' ) NOT NULL;
 ALTER TABLE `phpshop_sort_categories` ADD `optionname` ENUM( '0', '1' ) NOT NULL;
 
-
+ALTER TABLE `phpshop_sort_categories` ADD `page` varchar(255) NOT NULL default '';
+ALTER TABLE `phpshop_sort` ADD `page` varchar(255) NOT NULL default '';

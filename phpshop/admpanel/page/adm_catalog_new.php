@@ -112,6 +112,9 @@ global $catalogID,$PHP_SELF,$table_name;
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+   <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent(\'page_site_catalog\')">Справка</BUTTON>
+	</td>
   <td align="right" style="padding:10">
   <input type="submit"  name="productSAVE" value="OK" class=but>
 <input type="reset" name="btnLang" class=but  value="Сбросить">
