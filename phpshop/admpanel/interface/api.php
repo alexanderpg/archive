@@ -26,95 +26,9 @@ $option=unserialize($GetSystems['admoption']);
 $Lang=$option['lang'];
 require("../language/".$Lang."/language.php");
 
-
-
-$str=array(
-"time"=>date("U"),
-"log"=>$_SESSION['logPHPSHOP'],
-"pas"=>$_SESSION['pasPHPSHOP']);
-$str=serialize($str);
-$code=base64_encode($str);
-$code2=str_replace("7","!",$code);
-$F=str_replace("O","$",$code2);
-
-
 // Создаем интерфейс
 
 switch($p){
-
-      // Отзывы
-      case("gbook"):
-	  require("../gbook/admin_gbook.php");
-	  	  $interface='
-	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
-<tr>
-<td style="padding-left:10px"><form name="calendar">
-<table cellpadding="0" cellspacing="0" width="100%">
-<tr>
-  <td width="5"></td>
-	<td align="left">
-	 <table cellspacing="0" cellpadding="0"  >
- 
-<tr>
-    <td><td>
-<input type="text" style="width:80" value="';
-	if(!$var1) $interface.= date("d-m-Y");
-	else $interface.= @$var1;
-	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
-
-</td>
-	<td>
-	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
-	</td>
-	<td><input type="text" style="width:80" value="';
-	if(!$var2) $interface.= date("d-m-Y");
-	else $interface.= @$var2;
-	$interface.='" name="pole2" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_2'].'\')" onMouseOut="hide()" onfocus="hide()">
-	</td>
-	<td><IMG onclick="popUpCalendar(this, calendar.pole2, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
-	</td>
-	<td>
-	<input type=button id=btnShow value="Показать" class=but3 onclick="DoReload(\'gbook\',calendar.pole1.value, calendar.pole2.value)">
-	</td>
-	<td width="10"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-   <td width="5"></td>
-    <td id="but2" class="butoff" align="left"><img src="icon/page_new.gif" name="imgLang" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'gbook/adm_gbook_new.php\',630,580)"></td>
-</tr>
-</table>
-
-	</td>
-	
-   
-  <td align="right">
-	<select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.document.form_flag,1000)">
-			<option SELECTED id=txtLang value=0>С отмеченными</option>
-			<option value="48" id=txtLang>Отключить вывод</option>
-			<option value="50" id=txtLang>Включить вывод</option>
-			<option value="49" id=txtLang>Удалить из базы</option>
-   </select>
-
-	</td>
-</tr>
-</table>
-</form>
-</td>
-</tr>
-</table>
-	  ';
-	  if(CheckedRules($UserStatus[$p],0) == 1) $interface.=Gbook($var1,$var2);
-	  else  $interface = $UserChek->BadUserForma();
-      break;
-	  
-
-      // Рейтинги
-      case("rating"):
-	  require("../rating/admin_rating.php");
-	  if(CheckedRules($UserStatus[$p],0) == 1) $interface.=Rating();
-	  else $interface = $UserChek->BadUserForma();
-      break;
-
 
       // Комментарии
       case("comment"):
@@ -122,18 +36,11 @@ switch($p){
 	   $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td style="padding-left:10px">
+<td>
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<td>
-<input type="text" style="width:80" value="';
-	if(!$var1) $interface.= date("d-m-Y");
-	else $interface.= @$var1;
-	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
-
-</td>
-	<td>
+	<td><input type="text" style="width:80" name="pole1" value="'.@$var1.'">
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="';
@@ -160,8 +67,6 @@ switch($p){
    <td>
    <select name="action" size="1" onchange="DoWithSelect(this.value,form_flag,1000)">
 			<option SELECTED id=txtLang>С отмеченными</option>
-			<option value="43" id=txtLang>Раблокировать вывод</option>
-			<option value="44" id=txtLang>Заблокировать вывод</option>
 			<option value="41" id=txtLang>Удалить из базы</option>
    </select>
    </td>
@@ -185,7 +90,7 @@ switch($p){
 	   $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td style="padding-left:10px">
+<td>
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -209,7 +114,7 @@ switch($p){
 <tr>
     <td>
 	<input type=text name="order_serach" size=20 class=s onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help'][6].'\')" onMouseOut="hide()" onfocus="hide()" value="'.$var3.'">
-	<input type=button value=Поиск class=but3 id=btnSearch name="btnLang" onclick="DoReload(\'shopusers_notice\',calendar.pole1.value,calendar.pole2.value,document.getElementById(\'order_serach\').value)">
+	<input type=button value=Поиск class=but3 id=btnSearch  onclick="DoReload(\'shopusers_notice\',calendar.pole1.value,calendar.pole2.value,document.getElementById(\'order_serach\').value)">
 	</td>
 </tr>
 </table>
@@ -240,14 +145,6 @@ switch($p){
 	  $interface.=ShopUsersNotice($var1,$var2,$var3);
 	  else $interface=$UserChek->BadUserForma();
 	  break;
-
-
-	  // Сообщения пользователей
-	  case("shopusers_messages"):
-      require("../shopusers/admin_messages.php");
-	  if(CheckedRules($UserStatus["shopusers"],0) == 1) $interface= Shopusers_messages();
-	  else $interface = $UserChek->BadUserForma();
-      break;
 
        
 	  // Электронные платежи
@@ -309,6 +206,12 @@ switch($p){
 	  else $interface=$UserChek->BadUserForma();
 	  break;
 	   
+	  // Рассылка
+	  case("news_writer"):
+      require("../mail/admin_news_writer.php");
+	  if(CheckedRules($UserStatus["discount"],0) == 1) $interface= News_writer();
+	  else $interface = $UserChek->BadUserForma();
+      break;
 	   
 	  // Сервера
 	  case("servers"):
@@ -349,55 +252,40 @@ switch($p){
 <TR>
 
 <TD vAlign=top style="padding-top:25">
-<div align="center"><h4><span name=txtLang id=txtLang>Мастер загрузки товарной базы 1С:Предприятие</span></h4></div>
+<div align="center"><h4>Мастер загрузки товарной базы 1С:Предприятие</h4></div>
 <FIELDSET>
 
 <FORM name=csv_upload action="" method=post encType=multipart/form-data>
 <table cellpadding="10" align="center">
 <tr>
 	<td>
-	<span name=txtLang id=txtLang>Выберите файл с расширением *.csv</span><br>
-	<INPUT type=file size=80 name="csv_file" id="csv_file" onchange="UpdateFileNameBase1C(this.value)">
+	Выберите файл с расширением *.csv<br>
+	<INPUT type=file size=80 name=csv_file>
 	</td>
 	
 	<td align="right">
 	<INPUT class=but onclick="DoLoadBase1C(this.form.csv_file,\'predload\')" type=button value=OK><br>
-<INPUT class=but type=reset name="btnLang"> 
+<INPUT class=but type=reset value=Сброс> 
 <input type="hidden" name="load" value="ok">
 	</td>
 </tr>
 <tr>
    <td colspan="2">
-    <FIELDSET>
-	<LEGEND>Тип файла</LEGEND>
-	<div style="padding:10">
-	<input type="hidden" id="1c_tree_check" value="0">
-	<input type="radio" name="filename" id="filenamebase" value="base" checked onclick="Option1c(1)"> Экспорт номенклатуры
-	<input type="radio" name="filename" id="filenametree" value="tree" onclick="Option1c(0)"> Экспорт каталога групп
-	</div>
-	</FIELDSET>
-   </td>
-</tr>
-   
-<tr>
-   <td colspan="2" id="pole_1c_option">
      <FIELDSET id=fldLayout >
-<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>анные, отмеченные флажками будут изменены/добавлены</span></LEGEND>
+<LEGEND id=lgdLayout><u>Д</u>анные, отмеченные флажками будут изменены/добавлены</LEGEND>
 <div style="padding:10">
-<input type="checkbox" value="1" id="tip_1" checked> Наименование</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_2" > <span name=txtLang id=txtLang>Краткое описание</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_3" > <span name=txtLang id=txtLang>Маленькая картинка</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_4" > <span name=txtLang id=txtLang>Подробное описание</span>&nbsp;&nbsp;<br>
-<input type="checkbox" value="1" id="tip_5" > <span name=txtLang id=txtLang>Большая картинка</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_6" checked> <span name=txtLang id=txtLang>Цена1</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_7" checked> <span name=txtLang id=txtLang>Цена2</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_8" checked> <span name=txtLang id=txtLang>Цена3</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_9" checked> <span name=txtLang id=txtLang>Цена4</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_10" checked> <span name=txtLang id=txtLang>Цена5</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_11" checked> <span name=txtLang id=txtLang>Склад</span>&nbsp;&nbsp;<br>
-<input type="checkbox" value="1" id="tip_14" checked> <span name=txtLang id=txtLang>Категория&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_15" checked> <span name=txtLang id=txtLang>Характеристики&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_12" checked disabled> <span name=txtLang id=txtLang>Вес</span>&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_1" checked> Наименование&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_2" checked> Краткое описание&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_3" checked> Маленькая картинка&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_4" checked> Подробное описание&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_5" checked> Большая картинка&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_6" checked> Цена1&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_7" checked> Цена2&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_8" checked> Цена3&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_9" checked> Цена4&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_10" checked> Цена5&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_11" checked> Склад&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_12" checked> Вес&nbsp;&nbsp;
 </div>
 </div>
 </FIELDSET>
@@ -406,10 +294,33 @@ switch($p){
 </table>
 
 </FIELDSET>
-
-
-<div align="right" style="padding:10">
-<BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON>
+<p><br></p>
+<table style="border: 1px;border-style: inset;" cellpadding="10">
+<tr>
+	<td width="100%" ><h4>Ход операции</h4>
+<ol>
+    <li><strong>Шаг 1</strong> - в программе 1С:Предприятие в меню "Файл" выбрать опцию "<a href="#" onclick="confirm(\'ПО для выгрузки номенклатуры из 1С:Предприятие\nспрашивайте у администратора сервера.\')">Выгрузка для Интернет-магазина</a>"
+    <li><strong>Шаг 2</strong> - выгрузить товарную базу клавишей "Выгрузить"
+	<li><strong>Шаг 3</strong> - выбрать заранее выгруженный файл базы с расширением *.csv
+	<li><strong>Шаг 4</strong> - принять изменения в распечатанном файле
+	<li><strong>Шаг 5</strong> - дождаться выполнения операции
+	<li><strong>Шаг 6</strong> - перейти в раздел "Каталог - Выгруженные товары - 1С:Предприятие"
+    <li><strong>Шаг 7</strong> - выделите флажком товары и выберете папку для переноса опцией "С отмеченными - Перенести в каталог". Если требуется,  составьте соответствующие каталоги.
+</ol></td>
+</tr>
+<tr>
+   <td valign="top"><h4>Внимание!</h4>
+Внимательно проверяйте предварительно загруженные данные во избежания
+ неверной их загрузки.</td>
+</tr>
+</table>
+<div align="right" style="padding:10">';
+if($SysValue['pro']['enabled'] == "true")
+@$interface.='
+<BUTTON style="width: 15em; height: 2.2em; margin-left:5"  onclick="miniWin(\'./1c/seamply_base_1c.csv\',500,370)">
+<img src="./img/action_save.gif" width="16" height="16" border="0" align="absmiddle" hspace="3">
+Скачать пример файла
+</BUTTON>
 </div>
 </TD></TR></TABLE>
 	  ';
@@ -447,25 +358,23 @@ switch($p){
 <tr>
    <td colspan="2">
       <FIELDSET id=fldLayout >
-<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>анные, отмечанные флажками будут изменены/добавлены</span></LEGEND>
+<LEGEND id=lgdLayout><u>Д</u>анные, отмечанные флажками будут изменены/добавлены</LEGEND>
 <div style="padding:10">
-<input type="checkbox" value="1" id="tip_1" checked> <span name=txtLang id=txtLang>Наименование&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_2" checked> <span name=txtLang id=txtLang>Краткое описание&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_3" checked> <span name=txtLang id=txtLang>Маленькая картинка&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_4" checked> <span name=txtLang id=txtLang>Подробное описание&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_5" checked> <span name=txtLang id=txtLang>Большая картинка&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_6" checked> <span name=txtLang id=txtLang>Цена1&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_7" checked> <span name=txtLang id=txtLang>Цена2&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_8" checked> <span name=txtLang id=txtLang>Цена3&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_9" checked> <span name=txtLang id=txtLang>Цена4&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_10" checked> <span name=txtLang id=txtLang>Цена5&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_11" checked> <span name=txtLang id=txtLang>Склад&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_13" checked> <span name=txtLang id=txtLang>Артикул&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_14" checked> <span name=txtLang id=txtLang>Категория&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_15" checked> <span name=txtLang id=txtLang>Характеристики&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_17" checked> <span name=txtLang id=txtLang>Доп. категория&nbsp;&nbsp;</span>
-<input type="checkbox" value="1" id="tip_12" checked disabled> <span name=txtLang id=txtLang>Вес&nbsp;&nbsp;</span>
-Валюта: '.ChoiceValuta().' 
+<input type="checkbox" value="1" id="tip_1" checked> Наименование&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_2" checked> Краткое описание&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_3" checked> Маленькая картинка&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_4" checked> Подробное описание&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_5" checked> Большая картинка&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_6" checked> Цена1&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_7" checked> Цена2&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_8" checked> Цена3&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_9" checked> Цена4&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_10" checked> Цена5&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_11" checked> Склад&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_12" checked> Вес&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_13" checked> Артикул&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_14" checked> Категория&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_15" checked> Характеристики&nbsp;&nbsp;
 </div>
 </div>
 </FIELDSET>
@@ -476,7 +385,7 @@ switch($p){
 
 </FIELDSET>
 <p><br></p>
-<table style="border: 1px;border-style: inset;background-color: White;" cellpadding="10">
+<table style="border: 1px;border-style: inset;" cellpadding="10">
 <tr>
 	<td width="100%" ><h4><span name=txtLang id=txtLang>Ход операции</span></h4>
 <ol>
@@ -495,7 +404,6 @@ switch($p){
 </tr>
 </table>
 <div align="right" style="padding:10">
-<BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON>
 <BUTTON style="width: 15em; height: 2.2em; margin-left:5"  onclick="miniWin(\'./export/seamply_base.csv\',500,370)">
 <img src="./img/action_save.gif" width="16" height="16" border="0" align="absmiddle" hspace="3">
 <span name=txtLang id=txtLang>Скачать пример файла</span>
@@ -521,13 +429,13 @@ switch($p){
 <TR>
 <TD vAlign=top style="padding-top:25">
 <div align="center"><h4><span name=txtLang id=txtLang>Мастер загрузки прайса Excel (опорных данных)</span></h4>
-<p><span name=txtLang id=txtLang>Возможно только обновление данных, для загрузки новых товаров <br>
-воспользуйтесь модулем <a href="javascript:DoReload(\'csv_base\')"><img src="img/i_eraser[1].gif" title="" width="16" height="16" border="0" hspace="3" align="absmiddle">"Загрузка базы Excel"</a>
-</span></p>
+<p>Возможно только обновление данных, для загрузки новых товаров <br>
+воспользуйтесь модулем <a href="javascript:DoReload(\'csv_base\')"><img src="img/i_eraser[1].gif" alt="" width="16" height="16" border="0" hspace="3" align="absmiddle">"Загрузка базы Excel"</a>
+</p>
 </div>
 <FIELDSET>
-<FORM name=csv_upload method=post encType=multipart/form-data>
 <table cellpadding="10" align="center">
+<FORM name=csv_upload method=post encType=multipart/form-data>
 <tr>
 	<td>
 	<span name=txtLang id=txtLang>Выберите файл с расширением</span> *.csv<br>
@@ -541,7 +449,7 @@ switch($p){
 	</td>
 </tr>
 </table>
-</FORM>
+
 </FIELDSET>
 <p><br></p>
 <table style="border: 1px;border-style: inset;" cellpadding="10">
@@ -555,15 +463,10 @@ switch($p){
     <td></td>
 	<td valign="top"><h4><span name=txtLang id=txtLang>Внимание</span>!</h4>
 <span name=txtLang id=txtLang>Внимательно проверяйте предварительно загруженные данные во избежания
- неверной загрузки данных</span>.
- <div align="right">
-<BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON>
-</div>
- </td>
+ неверной загрузки данных</span>.</td>
 </tr>
 </table>
 </TD></TR></TABLE>
-
 
    ');
       else $interface = $UserChek->BadUserForma();
@@ -572,49 +475,7 @@ switch($p){
 	  // Статусы
 	  case("shopusers_status"):
 	  require("../shopusers/admin_status.php");
-	  if(CheckedRules($UserStatus["discount"],0) == 1) $interface.= ShopUsersStatus();
-	  else $interface = $UserChek->BadUserForma();
-      break;
-      
-      case("rssgraber_chanels"):
-      	
-      	 $interface='
-
-<table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
-<tr>
-	
-   <td>
-
-   <table cellpadding="0" cellspacing="0" width="100%">
-<tr>
-	<td>
-	&nbsp;
-   </td>
-	<td align="right">
-	
-	<select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.document.form_flag,1000)">
-			<option SELECTED id=txtLang value=0>С отмеченными</option>
-			<option value="rss1" id=txtLang>Удалить</option>
-			<option value="rss2" id=txtLang>Включить</option>
-			<option value="rss3" id=txtLang>Выключить</option>
-			<option value="rss4" id=txtLang>Привязать к единой дате</option>
-   </select>
-
-	</td>
-	  
-</td>
-</tr>
-</table>
-
-   </td>
-</tr>
-</table>
-
-	 ';	
-      	
-      	
-	  require("../rssgraber/admin_chanels.php");
-	  if(CheckedRules($UserStatus["rsschanels"],0) == 1) $interface.= RSSchanels();
+	  if(CheckedRules($UserStatus["discount"],0) == 1) $interface= ShopUsersStatus();
 	  else $interface = $UserChek->BadUserForma();
       break;
 	   
@@ -662,57 +523,30 @@ switch($p){
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td><form name="calendar">
-<table cellpadding="0" cellspacing="0" width="100%">
+<td><form name="data_list">
+<table cellpadding="0" cellspacing="0">
 <tr>
-  <td width="10"></td>
-	<td align="left" >
-	 <table cellspacing="0" cellpadding="0"  >
+  <td width="5"></td>
+	<td>
+	 <table cellspacing="0" cellpadding="0" >
  
 <tr>
-    <td><td>
-<input type="text" style="width:80" value="';
-	if(!$var1) $interface.= date("d-m-Y");
-	else $interface.= @$var1;
-	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
+	<td>
+    <select class=s name="data_news" id="data_news">
+	'.Ras_data().'
+	</select>
+	<input type=button name="btnLang" value=Разослать class=but3 onclick="Ras(data_news.value,400,200)">
+	<input type=hidden name=p value=news>
+	</td>
+</tr>
+</table>
 
-</td>
-	<td>
-	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
-	</td>
-	<td><input type="text" style="width:80" value="';
-	if(!$var2) $interface.= date("d-m-Y");
-	else $interface.= @$var2;
-	$interface.='" name="pole2" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_2'].'\')" onMouseOut="hide()" onfocus="hide()">
-	</td>
-	<td><IMG onclick="popUpCalendar(this, calendar.pole2, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
-	</td>
-	<td>
-	<input type=button id=btnShow value="Показать" class=but3 onclick="DoReload(\'news\',calendar.pole1.value, calendar.pole2.value, 1)">
 	</td>
 	<td width="10"></td>
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-    <td id="but2" class="butoff" align="left"><img src="icon/page_new.gif" name="imgLang" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'news/adm_news_new.php\',630,630)"></td>
-<td width="5"></td>
-      <td id="but38" class="butoff"><img name="imgLang" src="icon/layout_content.gif" title="Вывод всех новостей" width="16" height="16" border="0" onmouseover="ButOn(38)" onmouseout="ButOff(38)" onclick="DoReload(\'news\',calendar.pole1.value, calendar.pole2.value,\'all\')"></td>
-   <td width="5"></td>
-    <td id="but51" class="butoff" align="left"><img src="icon/rss.gif" name="imgLang" title="RSS каналы" width="16" height="16" border="0" onmouseover="ButOn(51)" onmouseout="ButOff(51)" onclick="DoReload(\'rssgraber_chanels\')"></td>
-</tr>
-</table>
-
-	</td>
-	
-   
-  <td align="right">
-	<select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.document.form_flag,1000)">
-			<option SELECTED id=txtLang value=0>С отмеченными</option>
-			<option value="46" id=txtLang>Удалить из базы</option>
-			<option value="47" id=txtLang>Разослать пользователям</option>
-   </select>
-
-	</td>
+    <td id="but2" class="butoff"><img src="icon/page_new.gif" name="imgLang" alt="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'news/adm_news_new.php\',630,630)"></td>
 </tr>
 </table>
 </form>
@@ -720,7 +554,7 @@ switch($p){
 </tr>
 </table>
 	  ';
-	  if(CheckedRules($UserStatus[$p],0) == 1) $interface.=News($var1,$var2,$var3);
+	  if(CheckedRules($UserStatus[$p],0) == 1) $interface.=News();
 	  else $interface = $UserChek->BadUserForma();
       break;
 	  
@@ -730,7 +564,7 @@ switch($p){
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td style="padding-left:10px">
+<td>
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -762,7 +596,7 @@ switch($p){
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-	   <td id="but2" class="butoff"><img src="icon/page_go.gif" name="imgLang" title="Передресация поиска" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="DoReload(\'search_pre\')"></td>
+	   <td id="but2" class="butoff"><img src="icon/page_go.gif" name="imgLang" alt="Передресация поиска" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="DoReload(\'search_pre\')"></td>
 </tr>
 
 </table>
@@ -783,11 +617,11 @@ switch($p){
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td style="padding-left:10px">
+<td>
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<td id="but2" class="butoff"><img src="icon/page_add.gif" name="imgLang" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'report/adm_pre_new.php\',400,380)"></td>
+	<td id="but2" class="butoff"><img src="icon/page_add.gif" name="imgLang" alt="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'report/adm_pre_new.php\',400,380)"></td>
 	<td width="5"></td>
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
@@ -804,7 +638,7 @@ switch($p){
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-	   <td id="but1" class="butoff"><img src="icon/page_find.gif" name="imgLang" title="Журнал поиска" width="16" height="16" border="0" onmouseover="ButOn(1)" onmouseout="ButOff(1)" onclick="DoReload(\'search_jurnal\')"></td>
+	   <td id="but1" class="butoff"><img src="icon/page_find.gif" name="imgLang" alt="Журнал поиска" width="16" height="16" border="0" onmouseover="ButOn(1)" onmouseout="ButOff(1)" onclick="DoReload(\'search_jurnal\')"></td>
 </tr>
 </table>
 </form>
@@ -832,7 +666,7 @@ switch($p){
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td style="padding-left:10px">
+<td>
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -853,7 +687,7 @@ switch($p){
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-    <td id="but23"  class="butoff"><img src="icon/vcard_delete.gif" name="imgLang" title="Черный список" width="16" height="16" border="0" onmouseover="ButOn(23)" onmouseout="ButOff(23)" onclick="DoReload(\'users_jurnal_black\')"></td>
+    <td id="but23"  class="butoff"><img src="icon/vcard_delete.gif" name="imgLang" alt="Черный список" width="16" height="16" border="0" onmouseover="ButOn(23)" onmouseout="ButOff(23)" onclick="DoReload(\'users_jurnal_black\')"></td>
 </tr>
 </table>
 </form>
@@ -882,7 +716,12 @@ switch($p){
 	  else $interface = $UserChek->BadUserForma();
       break;
 	  
-	  
+	  // Отзывы
+      case("gbook"):
+	  require("../gbook/admin_gbook.php");
+	  if(CheckedRules($UserStatus[$p],0) == 1) $interface.=Gbook();
+	  else  $interface = $UserChek->BadUserForma();
+      break;
 	  
 	  
 	  // Администраторы
@@ -895,47 +734,42 @@ switch($p){
       // Авторизованные пользователи
       case("shopusers"):
 $interface=('
+<script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
 <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td style="padding-left:10px">
+<td>
 <form method="post" name=calendar>
-<table cellpadding="0" cellspacing="0" width="100%">
+<table cellpadding="0" cellspacing="0">
 <tr>
-	<td align="left" >	
-	
-	<table cellpadding="0" cellspacing="0">
-<tr>
-	<td >
-	
-
-	<input type=text name="words" id="words" size=50 class=s onMouseMove="show(\'[ '.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help'][5].'\')" onMouseOut="hide()" onfocus="hide()">
-	<input type=button value=Поиск class=but3 name="btnLang"  onclick="DoReload(\'shopusers\',document.getElementById(\'words\').value)"></td>
-	<td width="10"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-   <td width="5"></td>
-	 <td id="but2" class="butoff"><img name="imgLang" src="icon/blank.gif" alt="" width="1" height="1" border="0"><img src="icon/group_add.gif" name="imgLang" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'shopusers/adm_users_new.php\',500,560)"></td>
-<td width="5"></td>
-<td id="but39" class="butoff"><img src="icon/folder_key.gif" name="imgLang" title="Статусы пользователей" width="16" height="16" border="0" onmouseover="ButOn(39)" onmouseout="ButOff(39)" onclick="DoReload(\'shopusers_status\')"></td>
-<td width="5"></td>
-	<td width="1" bgcolor="#ffffff"></td>
-	<td width="1" bgcolor="#808080"></td>
-    <td width="5"></td>
-	<td><span name=txtLang id=txtLang>Статус</span>: '.GetUsersStatusForma($var2).'</td>
-    <td width="10"></td>
-	</td>
-</tr>
-</table>
-
-   <td align="right">
+   <td width="10"></td>
+   <td>
    <select name="action" size="1" onchange="DoWithSelect(this.value,form_flag,1000)">
 			<option SELECTED id=txtLang>С отмеченными</option>
 			<option value="20" id=txtLang>Заблокировать</option>
 			<option value="21" id=txtLang>Разблокировать</option>
 			<option value="22" id=txtLang>Удалить из базы</option>
-			<option value="222" id=txtLang>Разослать сообщение</option>
    </select>
    </td>
+	<td width="10"></td>
+	<td width="1" bgcolor="#ffffff"></td>
+	<td width="1" bgcolor="#808080"></td>
+   <td width="10"></td>
+	<td>	
+	<input type=text name="words" id="words" size=30 class=s onMouseMove="show(\'[ '.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help'][5].'\')" onMouseOut="hide()" onfocus="hide()">
+	<input type=button value=Поиск class=but3 name="btnLang"  onclick="DoReload(\'shopusers\',document.getElementById(\'words\').value)"></td>
+	<td width="10"></td>
+	<td width="1" bgcolor="#ffffff"></td>
+	<td width="1" bgcolor="#808080"></td>
+   <td width="5"></td>
+	 <td id="but2" class="butoff"><img src="icon/group_add.gif" name="imgLang" alt="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="miniWin(\'shopusers/adm_users_new.php\',500,560)"></td>
+<td width="5"></td>
+<td id="but39" class="butoff"><img src="icon/folder_key.gif" name="imgLang" alt="Статусы пользователей" width="16" height="16" border="0" onmouseover="ButOn(39)" onmouseout="ButOff(39)" onclick="DoReload(\'shopusers_status\')"></td>
+<td width="5"></td>
+	<td width="1" bgcolor="#ffffff"></td>
+	<td width="1" bgcolor="#808080"></td>
+    <td width="5"></td>
+	<td><span name=txtLang id=txtLang>Статус</span>: '.GetUsersStatusForma($var2).'</td>
+
 	   
 	
 </tr>
@@ -962,7 +796,7 @@ $interface=('
 <tr>
 <td width="7"></td>
 <td><span name=txtLang id=txtLang>Поиск</span>: 
-	<input type=text name="words" size=50 class=s  onMouseMove="show(\'[ Подсказка]\', \''.$SysValue['Lang']['Help'][6].'\')" onMouseOut="hide()" onfocus="hide()">
+	<input type=text name="words" size=50 class=s  onMouseMove="show(\'[ Подсказка]\', \'Поиск товара производится по номеру товара ID, артикулу или названию\')" onMouseOut="hide()" onfocus="hide()">
 	<input type=button id=btnShow value=Показать class=but3 onclick="SearchProducts(search.words.value)">
 	</td>
 	<td width="10"></td>
@@ -970,18 +804,20 @@ $interface=('
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
    
-	<td id="but1"  class="butoff"><img src="icon/blank.gif" name="imgLang" title="" width="1" height="1" border="0"><img name="imgLang" src="icon/folder_add.gif" title="Новый каталог"  width="16" height="16" border="0" onmouseover="ButOn(1)" onmouseout="ButOff(1)" onclick="miniWin(\'catalog/adm_catalog_new.php\',650,630);return false;"></td>
+	<td id="but1"  class="butoff"><img name="imgLang" src="icon/folder_add.gif" alt="Новый каталог" width="16" height="16" border="0" onmouseover="ButOn(1)" onmouseout="ButOff(1)" onclick="miniWin(\'catalog/adm_catalog_new.php\',650,630);return false;"></td>
    <td width="3"></td>
-	<td id="but2" class="butoff"><img name="imgLang" src="icon/page_new.gif" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="NewProduct()"></td>
+	<td id="but2" class="butoff"><img name="imgLang" src="icon/page_new.gif" alt="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(2)" onmouseout="ButOff(2)" onclick="NewProduct()"></td>
 	<td width="5"></td>
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-   <td id="but37" class="butoff"><img name="imgLang" src="icon/folder_edit.gif" title="Редактировать подкаталог" width="16" height="16" border="0" onmouseover="ButOn(37)" onmouseout="ButOff(37)" onclick="EditCatalog()"></td>
+   <td id="but37" class="butoff"><img name="imgLang" src="icon/folder_edit.gif" alt="Редактировать подкаталог" width="16" height="16" border="0" onmouseover="ButOn(37)" onmouseout="ButOff(37)" onclick="EditCatalog()"></td>
 <td width="3"></td>
-      <td id="but38" class="butoff"><img name="imgLang" src="icon/layout_content.gif" title="Вывод всех товаров" width="16" height="16" border="0" onmouseover="ButOn(38)" onmouseout="ButOff(38)" onclick="AllProducts()"></td>
+      <td id="but38" class="butoff"><img name="imgLang" src="icon/layout_content.gif" alt="Вывод всех товаров" width="16" height="16" border="0" onmouseover="ButOn(38)" onmouseout="ButOff(38)" onclick="AllProducts()"></td>
   <td width="3"></td>
-<td id="but39"  class="butoff"><img name="imgLang" src="icon/icon_component.gif" title="Характеристики" width="16" height="16" border="0" onmouseover="ButOn(39)" onmouseout="ButOff(39)" onclick="DoReload(\'sort\')"></td>
+<td id="but39"  class="butoff"><img name="imgLang" src="icon/icon_component.gif" alt="Характеристики" width="16" height="16" border="0" onmouseover="ButOn(39)" onmouseout="ButOff(39)" onclick="DoReload(\'sort\')"></td>
+  <td width="3"></td>
+  <td id="buttable_sort" class="butoff"><img name="imgLang" src="icon/table_sort.gif" alt="Калькулятор характеристик" width="16" height="16" border="0" onmouseover="ButOn(\'table_sort\')" onmouseout="ButOff(\'table_sort\')" onclick="CalcSort()"></td>
      <td width="5"></td>
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
@@ -994,7 +830,7 @@ $interface=('
 		<option id="txtLang" value="9" STYLE="background: #fff">Сделать копию</option>
 		<option id="txtLang" value="23" STYLE="background: #fff">Связать со статьями</option>
         <option id="txtLang" value="24" STYLE="background: #fff">Связать с характеристикой</option>
-		<option id="txtLang" value="8" STYLE="background: #fff">Экспорт в Excel (1C)</option>
+		<option id="txtLang" value="8" STYLE="background: #fff">Экспорт в Excel</option>
 		</optgroup> 
 		<optgroup id="txtLang" label="Новинки" STYLE="background: #C0D2EC;">
 		<option id="txtLang" value="10" STYLE="background: #fff">Добавить в новинки</option>
@@ -1042,7 +878,6 @@ $interface=('
 	 else $interface=$UserChek->BadUserForma();
 	 break;
 	 
-
 	 
 	 // Страницы
 	 case("page_site_catalog"):
@@ -1052,7 +887,7 @@ $interface=('
 <tr>
 <td>
 
-<table cellpadding="0" cellspacing="0" >
+<table cellpadding="0" cellspacing="0">
 <tr>
     <td width="10"></td>
 <td><span name=txtLang id=txtLang>Поиск страницы</span>: 
@@ -1063,31 +898,24 @@ $interface=('
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-    <td id="but23"  class="butoff"><img name="imgLang" src="icon/page_new.gif" title="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(23)" onmouseout="ButOff(23)" onclick="NewProductPage()">
+    <td id="but23"  class="butoff"><img name="imgLang" src="icon/page_new.gif" alt="Новая позиция" width="16" height="16" border="0" onmouseover="ButOn(23)" onmouseout="ButOff(23)" onclick="NewProductPage()">
     </td>
     <td width="3"></td>
-	<td id="but1"  class="butoff"><img name="imgLang" src="icon/folder_add.gif" title="Новый каталог" width="16" height="16" border="0" onmouseover="ButOn(1)" onmouseout="ButOff(1)" onclick="miniWin(\'page/adm_catalog_new.php\',\'500\',\'320\')"></td>
+	<td id="but1"  class="butoff"><img name="imgLang" src="icon/folder_add.gif" alt="Новый каталог" width="16" height="16" border="0" onmouseover="ButOn(1)" onmouseout="ButOff(1)" onclick="miniWin(\'page/adm_catalog_new.php\',\'500\',\'320\')"></td>
 <td width="5"></td>
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="5"></td>
-	<td id="but37" class="butoff"><img name="imgLang" src="icon/folder_edit.gif" title="Редактировать подкаталог" width="16" height="16" border="0" onmouseover="ButOn(37)" onmouseout="ButOff(37)" onclick="EditCatalogPage()"></td>
+	<td id="but37" class="butoff"><img name="imgLang" src="icon/folder_edit.gif" alt="Редактировать подкаталог" width="16" height="16" border="0" onmouseover="ButOn(37)" onmouseout="ButOff(37)" onclick="EditCatalogPage()"></td>
 <td width="3"></td>
-      <td id="but38" class="butoff"><img name="imgLang" src="icon/layout_content.gif" title="Вывод всех страниц" width="16" height="16" border="0" onmouseover="ButOn(38)" onmouseout="ButOff(38)" onclick="AllPage()"></td>
+      <td id="but38" class="butoff"><img name="imgLang" src="icon/layout_content.gif" alt="Вывод всех страниц" width="16" height="16" border="0" onmouseover="ButOn(38)" onmouseout="ButOff(38)" onclick="AllPage()"></td>
    <td width="5"></td>
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
    <td width="10"></td>
-   <td align="right">
+   <td>
    
-   
-   </td>
-</tr>
-</table>
-
-</td>
-<td align="right">
-<select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.frame2.document.form_flag,1000)">
+   <select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.frame2.document.form_flag,1000)">
 			<option SELECTED id=txtLang value=0>С отмеченными</option>
 			<option value="30" id=txtLang>Включить вывод</option>
 			<option value="31" id=txtLang>Отключить вывод</option>
@@ -1097,37 +925,32 @@ $interface=('
 			<option value="35" id=txtLang>Добавить рекомендованные товары</option>
 			<option value="39" id=txtLang>Удалить из базы</option>
    </select>
+   </td>
+</tr>
+</table>
+</form>
+</td>
 </td>
 </tr>
-</table></form>';
+</table>';
 	 require("../page/admin_page_catalog.php");
 	 if(CheckedRules($UserStatus["page_site"],0) == 1) $interface.=SiteCatalog();
 	 else $interface=$UserChek->BadUserForma();
 	 break;
-
-
-
 	 
 
 	 // По дефолту грузим заказы
 	 case("orders"):
 	 $a_button=3;
 	 //${"list_".$var4.""}="SELECTED";
-	 	 $interface='
+	 $interface='
 <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;" height="10">
 <tr>
-<td style="padding-left:10px">
+<td>
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<td>
-<input type="text" style="width:80" value="';
-	if(!$var1) $interface.= date("d-m-Y");
-	else $interface.= @$var1;
-	$interface.='" name="pole1" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
-
-</td>
-	<td>
+	<td><input type="text" style="width:80" name="pole1" value="'.@$var1.'" onMouseMove="show(\'['.$SysValue['Lang']['Help']['Help'].']\', \''.$SysValue['Lang']['Help']['forma_1'].'\')" onMouseOut="hide()" onfocus="hide()">
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="';
@@ -1166,7 +989,7 @@ $interface=('
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>
     <td width="3"></td>
-	    <td id="but30"  class="butoff"><img name="imgLang" src="icon/coins.gif" title="Электронные платежи" width="16" height="16" border="0" onmouseover="ButOn(30)" onmouseout="ButOff(30)" onclick="DoReload(\'order_payment\')"></td>
+	    <td id="but45"  class="butoff"><img name="iconLang" src="icon/coins.gif" alt="Электронные платежи" width="16" height="16" border="0" onmouseover="ButOn(45)" onmouseout="ButOff(45)" onclick="DoReload(\'order_payment\')"></td>
     <td width="3"></td>
 	
 </tr>
@@ -1182,10 +1005,9 @@ $interface=('
    <td>
    <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-	<td style="padding-left:10px">
+	<td>
    	<img name="iconLang" src="icon/plugin.gif" width="16" height="16" border="0"  align="absmiddle" hspace="1">
-<a href="javascript:LoadAgent()" class="blue" title="Контроль и редактирование заказов в  Windows" id="txtLoadExe">Установить Order Agent Windows</a>
-
+<a href="javascript:LoadAgent()" class="blue">Загрузить Order Agent Windows</a>
    </td>
 	<td align="right">
 	<select name="actionSelect" size="1" id="actionSelect" onchange="DoWithSelect(this.value,window.document.form_flag,1000)">
@@ -1193,7 +1015,6 @@ $interface=('
 			<option value="36" id=txtLang>Удалить из базы</option>
 			<option value="37" id=txtLang>Изменить статус</option>
 			<option value="38" id=txtLang>Создать новый</option>
-			<option value="45" >Выгрузить в 1С:Предприятие</option>
    </select>
 
 	</td>

@@ -26,7 +26,7 @@ function getFotoIconPodrobno($n,$pic_big){
 global $SysValue;
 $sql="select * from ".$SysValue['base']['table_name35']." where parent=$n order by num";
 $result=mysql_query($sql);
-@$num=mysql_num_rows(@$result);
+$num=mysql_num_rows($result);
 if($num !=0){
 $j=1;
 while(@$row = mysql_fetch_array(@$result))
@@ -44,31 +44,32 @@ while(@$row = mysql_fetch_array(@$result))
 }
 
 if(is_array($FotoArray))
-	@$dBig='
+	$dBig='
  <div align="center" id="IMGloader" style="padding-bottom: 10px">
- <img src="'.$pic_big.'" border="1" class="imgOn" alt="'.$f.'" onerror="NoFoto2(this)"><br>'.$FotoArray[0]["info"].'
+ <img src="'.$FotoArray[0]["name"].'" border="1" class="imgOn" alt="'.$f.'" onerror="NoFoto2(this)"><br>'.$FotoArray[0]["info"].'
 </div>';
 	
 	
 	
     
 	
-if(is_array($FotoArray[0]) and count($FotoArray)>1)
+if(is_array($FotoArray[0]))
 @$disp.='
   <td align="center">
-  <a href="javascript:fotoload('.$n.',0);"><img src="'.$FotoArray[0]["name_s"].'" alt="'.$FotoArray[0]["info"].'" border="1" class="imgOn" onerror="NoFoto2(this)"></a><br>&nbsp;
+  1<br>
+  <a href="javascript:fotoload('.$n.',0);"><img src="'.$FotoArray[0]["name_s"].'" alt="'.$FotoArray[0]["info"].'" border="1" class="imgOn" height="110" onerror="NoFoto2(this)"></a><br>&nbsp;
   </td>';
   
-if(is_array(@$FotoArray[1]))
+if(is_array($FotoArray[1]))
 @$disp.='
-  <td align="center">
-    <a href="javascript:fotoload('.$n.',1);"><img src="'.$FotoArray[1]["name_s"].'" alt="'.$FotoArray[1]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" onerror="NoFoto2(this)"></a><br>&nbsp;
+  <td align="center">2<br>
+    <a href="javascript:fotoload('.$n.',1);"><img src="'.$FotoArray[1]["name_s"].'" alt="'.$FotoArray[1]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" height="110" onerror="NoFoto2(this)"></a><br>&nbsp;
   </td>';
   
-if(is_array(@$FotoArray[2]))
+if(is_array($FotoArray[2]))
 @$disp.='
-  <td align="center">
-    <a href="javascript:fotoload('.$n.',2);"><img src="'.$FotoArray[2]["name_s"].'" alt="'.$FotoArray[2]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" onerror="NoFoto2(this)"><br>
+  <td align="center">3<br>
+    <a href="javascript:fotoload('.$n.',2);"><img src="'.$FotoArray[2]["name_s"].'" alt="'.$FotoArray[2]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" height="110" onerror="NoFoto2(this)"><br>
 Вперед &raquo;</a>
   </td>
 
@@ -90,7 +91,7 @@ else {
 
 $d='
  <div align="center" id="IMGloader" style="padding-bottom: 10px">
- <img src="'.$pic_big.'" border="1" class="imgOn" alt="'.$f.'" onerror="NoFoto2(this)">
+ <img src="'.$pic_big.'" border="1" class="imgOn" alt="'.$f.'" onerror="NoFoto2(this)" width="300">
 </div>';
 
 }

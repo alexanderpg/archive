@@ -1,11 +1,7 @@
 
-@ComStartReg@
-<div  id=allspecwhite style="margin-bottom:20px">
-<img src="images/shop/icon_key.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle">
+<div  id=allspecwhite style="margin-bottom:20px"><img src="images/shop/icon_key.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle">
 <a href="/users/register.html" class="b">«арегистрируйтесь</a> и получите дополнительные возможности и <b>скидки</b>.
 </div>
-@ComEndReg@
-<p><br></p>
 <form method="post" name="forma_order" action="/done/">
 <table  cellpadding="5" cellspacing="0" width=100% >
 <tr>
@@ -123,7 +119,7 @@
 </tr>
 </table>
 	<input type="hidden" name="send_to_order" value="ok" >
-	<input type="hidden" name="d" id="d" value="@deliveryId@">
+	<input type="hidden" name="d" value="@deliveryId@" >
 	<input type="hidden" name="nav" value="done">
     </td>
 </tr>

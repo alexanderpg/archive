@@ -16,7 +16,6 @@ $SysValue=parse_ini_file("../phpshop/inc/config.ini",1);
 @die("".PHPSHOP_error(101,$SysValue['my']['error_tracer'])."");
 mysql_select_db($SysValue['connect']['dbase'])or 
 @die("".PHPSHOP_error(102,$SysValue['my']['error_tracer'])."");
-@mysql_query("SET NAMES 'cp1251'");
 
 // Настройки
 function Systems()// вывод настроек
@@ -106,12 +105,14 @@ while (@$row = mysql_fetch_array($result))
 return $Valuta;
 }
 
-// Отрезаем до точки
-function mySubstr($str,$a){
-for ($i = 1; $i <= $a; $i++) {
-	if($str{$i} == ".") $T=$i;
-}
-return substr($str, 0, $T+1);
+function STR($d1){
+$length=strlen($d1);
+	for($i=$length; $i>0; $i--)
+	{
+		if($d1[$i]==";" and (($i-$length)<7))
+		return substr($d1,0,$i+1);
+	}
+return $d1;
 }
  
 // Вывод продуктов
@@ -129,9 +130,8 @@ while ($row = mysql_fetch_array($result))
 	
 	if($row['p_enabled'] == 1) $p_enabled="true";
 	else $p_enabled="false";
-	
-	$d=mySubstr($row['description'],200);
-	$description=htmlspecialchars(strip_tags($d));
+	$description=$row['description'];
+	$d1=substr(htmlspecialchars(strip_tags($description)),0,200);
 	$array=array(
 	"id"=>"$id",
 	"category"=>"$category",
@@ -139,7 +139,7 @@ while ($row = mysql_fetch_array($result))
 	"picture"=>$row['pic_small'],
 	"price"=>"$price",
 	"p_enabled"=>"$p_enabled",
-	"description"=>$description
+	"description"=>STR($d1)
 	);
 	$Products[$id]=$array;
 	}
@@ -185,7 +185,7 @@ $XML.= ('
 <title>'.$PRODUCT[$key]['name'].'</title>
 <price>'.$PRODUCT[$key]['price'].'</price>
 <currencyId>'.$VALUTA[$SYSTEM['dengi']]['iso'].'</currencyId>
-<url>http://'.$SERVER_NAME.'/shop/UID_'.$PRODUCT[$key]['id'].'.html?from=rambler</url>
+<url>http://'.$SERVER_NAME.'/shop/UID_'.$PRODUCT[$key]['id'].'.html?from=yml</url>
 <img>http://'.$SERVER_NAME.$PRODUCT[$key]['picture'].'</img>
 <descript>'.$PRODUCT[$key]['description'].'</descript>
 </offer>

@@ -6,63 +6,6 @@
 
 var ROOT_PATH="";
 
-// Вывод фильтров в поиске
-function proSerch(category) {
-		var req = new Subsys_JsHttpRequest_Js();
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				if (req.responseJS) {
-					document.getElementById('sort').innerHTML = (req.responseJS.sort||'');
-				}
-			}
-		}
-		req.caching = false;
-		// Подготваливаем объект.
-		// Реальное размещение
-	        var dir=dirPath();
-		req.open('POST', dir+'/phpshop/search.php', true);
-		req.send({ category: category });
-	}
-
-
-// Прорисовка календаря
-function calres(year,month) {
-		var req = new Subsys_JsHttpRequest_Js();
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				if (req.responseJS) {
-					document.getElementById('calres').innerHTML = (req.responseJS.calres||'');
-				}
-			}
-		}
-		req.caching = false;
-		// Подготваливаем объект.
-		// Реальное размещение
-	        var dir=dirPath();
-		req.open('POST', dir+'/phpshop/calres.php', true);
-		req.send({ year: year, month: month });
-	}
-
-	
-// Проверка формы связи
-function CheckOpenMessage(){
-var tema = document.getElementById("tema").value;
-var name = document.getElementById("name").value;
-var content = document.getElementById("content").value;
-if(tema=="" || name=="" || content=="") alert("Ошибка заполения формы сообщения!\nДанные, отмеченные флажками обязательны для заполнения.");
-else document.forma_message.submit();
-}
-
-
-// Проверка формы пожаловаться на цену
-function CheckPricemail(){
-var mail = document.getElementById("mail").value;
-var name = document.getElementById("name").value;
-var links = document.getElementById("links").value;
-var key = document.getElementById("key").value;
-if(mail=="" || name=="" || links=="" || key=="") alert("Ошибка заполения формы сообщения!\nДанные, отмеченные флажками обязательны для заполнения.");
-else forma_pricemail.submit();
-}
 
 function LoadPath(my_path){
 ROOT_PATH = my_path;
@@ -79,13 +22,6 @@ Id.className='imgOn';
 
 function ButOff(Id){
 Id.className='imgOff';
-}
-
-
-// Обновить картинку
-function CapReload(){
-var dd=new Date(); 
-document.getElementById("captcha").src="../phpshop/captcha.php?time="+dd.getTime();
 }
 
 // Смайлики
@@ -124,10 +60,8 @@ function countSymb(lim) {
 function commentList(xid,comand,page,cid) {
 var message="";
 
-if(comand == "add") {
+if(comand == "add") 
 message = document.getElementById('message').value;
-alert ("Комменетарий будет доступен после прохождения модерации...");
-}
 
 if(comand == "edit_add"){
 message = document.getElementById('message').value;
@@ -202,14 +136,12 @@ document.getElementById('fotoload').innerHTML = document.getElementById('fotoloa
 function UpdateDelivery(xid) {
 		var req = new Subsys_JsHttpRequest_Js();
 		var sum = document.getElementById('OrderSumma').value;
-		var wsum = document.getElementById('WeightSumma').innerHTML;
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
 				if (req.responseJS) {
 document.getElementById('DosSumma').innerHTML = (req.responseJS.delivery||'');
 document.getElementById('d').value = xid;
 document.getElementById('TotalSumma').innerHTML = (req.responseJS.total||'');
-document.getElementById('seldelivery').innerHTML = (req.responseJS.dellist||'');
 				}
 			}
 		}
@@ -219,11 +151,27 @@ document.getElementById('seldelivery').innerHTML = (req.responseJS.dellist||'');
         var dir=dirPath();
 		
 		req.open('POST', dir+'/phpshop/delivery.php', true);
-		req.send({ xid: xid, sum: sum, wsum: wsum });
+		req.send({ xid: xid, sum: sum });
 	}
 
-
-
+// PHPShop CartAdder v 0.52
+function ToCart(xid,num) {
+		var req = new Subsys_JsHttpRequest_Js();
+		req.onreadystatechange = function() {
+			if (req.readyState == 4) {
+				if (req.responseJS) {
+					// Записываем в <div> результат работы. 
+					document.getElementById('num').innerHTML = (req.responseJS.num||'');
+                    document.getElementById('sum').innerHTML = (req.responseJS.sum||'');
+				}
+			}
+		}
+		req.caching = false;
+		// Подготваливаем объект.
+		req.open('POST', dirPath+'phpshop/cartload.php', true);
+		req.send({ xid: xid, num: num, test:303 });
+	}
+	
 
 // Очистка корзины
 function cartClean(){
@@ -359,7 +307,7 @@ function mp(e){if(document.all){if((event.button==2)||(event.button==3)){alert('
 
 function do_err(){return true}onerror=do_err;if(window.location.href.substring(0,4)=="file")window.location="about:blank";
 
-function atlpdp1(){for(wi=0;wi<document.all.length;wi++){if(document.all[wi].style.visibility!='hidden'){document.all[wi].style.visibility='hidden';document.all[wi].id='atlpdpst'}}}function atlpdp2(){for (wi=0;wi<document.all.length;wi++){if(document.all[wi].id=='atlpdpst')document.all[wi].style.visibility=''}}
+function atlpdp1(){for(wi=0;wi<document.all.length;wi++){if(document.all[wi].style.visibility!='hidden'){document.all[wi].style.visibility='hidden';document.all[wi].id='atlpdpst'}}}function atlpdp2(){for (wi=0;wi<document.all.length;wi++){if(document.all[wi].id=='atlpdpst')document.all[wi].style.visibility=''}}window.onbeforeprint=atlpdp1;window.onafterprint=atlpdp2;
 
 
 // Изменение кол-ва в поле
@@ -383,43 +331,31 @@ document.SkinForm.submit();
 
 
 // PHPShop CartAdder v 1.2
-function ToCart(xid,num,xxid) {
+function ToCart(xid,num) {
 		var req = new Subsys_JsHttpRequest_Js();
-		var same= 0;
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
 				if (req.responseJS) {
 					// Записываем в <div> результат работы. 
 					initialize();
-				        setTimeout("initialize_off()",3000);
+		            setTimeout("initialize_off()",3000);
 					document.getElementById('num').innerHTML = (req.responseJS.num||'');
-			                document.getElementById('sum').innerHTML = (req.responseJS.sum||'');
-					same=(req.responseJS.same||'');
-					if (same==1) {alert("Этот товар добавлялся ранее с другой характеристикой. Количество товара в корзине увеличено и характеристика обновлена на последний вариант!");}
+                    document.getElementById('sum').innerHTML = (req.responseJS.sum||'');
+					
 				}
 			}
 		}
 		req.caching = false;
 		// Подготваливаем объект.
 		var truePath=dirPath();
-
-		var name="allOptionsSet"+xxid;
-		if(document.getElementById(name)) {
-			addname=document.getElementById(name).value;
-		} else {
-			addname="";
-		}
-
-
 		req.open('POST', truePath+'/phpshop/cartload.php', true);
-		req.send({ xid: xid, num: num, addname: addname, same: same, test:303 });
+		req.send({ xid: xid, num: num, test:303 });
 	}
 	
 	function AddToCart(xid) {
 	    var num=1;
-	    var xxid=xid;
 	    if(confirm("Добавить выбранный товар ("+num+" шт.) в корзину?")){
-		ToCart(xid,num,xxid);
+		ToCart(xid,num);
 		if(document.getElementById("order")) document.getElementById("order").style.display='block';
 		}
 	}	
@@ -427,61 +363,24 @@ function ToCart(xid,num,xxid) {
 		// Если есть поле с кол-вом товара
 		function AddToCartNum(xid,pole) {
 		var num=Number(document.getElementById(pole).value);
-		    var xxid=xid;
 		if(num<1) num=1;
 	    if(confirm("Добавить выбранный товар ("+num+" шт.) в корзину?")){
-		ToCart(xid,num,xxid);
+		ToCart(xid,num);
 		if(document.getElementById("order")) document.getElementById("order").style.display='block';
 		}
 	}
 	
 	// Если есть подчиненные товары OPTION
-	function AddToCartParent(xxid) {
+	function AddToCartParent() {
 	    var num=1;
 		var xid=document.getElementById("parentId").value;
 	    if(confirm("Добавить выбранный товар ("+num+" шт.) в корзину?")){
-		ToCart(xid,num,xxid);
+		ToCart(xid,num);
 		initialize();
 		setTimeout("initialize_off()",3000);
 		if(document.getElementById("order")) document.getElementById("order").style.display='block';
 		}
 	}	
-
-
-// Добавить в сравнение
-function AddToCompare(xid) {
-    var num=1;
-    var same=0;
-    if(confirm("Добавить выбранный товар в таблицу сравнения?")){
-
-	var req = new Subsys_JsHttpRequest_Js();
-	req.onreadystatechange = function() {
-		if (req.readyState == 4) {
-			if (req.responseJS) {
-				// Записываем в <div> результат работы. 
-			        same=(req.responseJS.same||'');
-
-				if (same==0) {
-					initialize2();
-					setTimeout("initialize_off2()",3000);
-				} else {
-					alert("Товар уже есть в таблице сравнения!");
-				}
-
-
-				document.getElementById('numcompare').innerHTML = (req.responseJS.num||'');
-				
-			}
-		}
-	}
-	req.caching = false;
-	// Подготваливаем объект.
-	var truePath=dirPath();
-	req.open('POST', truePath+'/phpshop/compare.php', true);
-	req.send({ xid: xid, num: num, same:same});
-	if(document.getElementById("compare")) document.getElementById("compare").style.display='block';
-	}
-}	
 	
 
 
@@ -505,18 +404,17 @@ return url;
 }
 
 
-
-function GetSortAll(){// Сортировка всех v2
+function GetSortAll(v1,v2,v3,v4,v5){// Сортировка всех
 var url="?";
-var i=0;
-var c=arguments.length;
-for(i=0; i<c; i++)
-if(document.getElementById(arguments[i])) url=url+ReturnSortUrl(arguments[i]);
+if(document.getElementById(v1)) url=url+ReturnSortUrl(v1);
+if(document.getElementById(v2)) url=url+ReturnSortUrl(v2);
+if(document.getElementById(v3)) url=url+ReturnSortUrl(v3);
+if(document.getElementById(v4)) url=url+ReturnSortUrl(v4);
+if(document.getElementById(v5)) url=url+ReturnSortUrl(v5);
 location.replace(url);
 }
 
-
-function GetSort(id,sort){// Сортировка 
+function GetSort(id,sort){// Сортировка
 var path=location.pathname;
 if(sort!=0) location.replace(path+'?'+id+'='+sort);
  else location.replace(path);
@@ -541,21 +439,19 @@ function systemInfo() {
 
 	
 
-// PhpGoToAdmin v3.1	
+// PhpGoToAdmin v2.1	
 function getKey(e){
 
 // Реальное размещение
 var dir=dirPath();
 
 
-    if (e == null) { // ie
-        key = event.keyCode;
-        var ctrl=event.ctrlKey;
-    } else { // mozilla
-        key = e.which;
-        var ctrl=e.ctrlKey;
-    }
-    if((key=='123') && ctrl) window.location.replace(dir+'/phpshop/admpanel/');
+	if (e == null) { // ie
+		key = event.keyCode;
+	} else { // mozilla
+		key = e.which;
+	}
+	if(key=='123') window.location.replace(dir+'/phpshop/admpanel/');
     if(key=='120') systemInfo();
 }
 
@@ -583,9 +479,9 @@ if(document.all['i'+subm]) document.all['i'+subm].src=IMG2;
 }}
 
 
-// PHPSHOP JavaListCatalog v 2.0
+// PHPSHOP JavaListCatalog v 1.7
 // Start Load Modul
-function pressbutt_load(subm,dir,copyrigh,protect,psubm){
+function pressbutt_load(subm,dir,copyrigh,protect){
 var path=location.pathname;
 
 // Работа с классом
@@ -618,8 +514,7 @@ var pattern=/page/;
 if(pattern.test(path)==true){
 var catalog=pressbutt_load_catalog(subm,dir);
 }
-else{ 
-// Каталог товаров
+else{ // Каталог товаров
 if(!dir) dir='';
 var IMG2=dir+'/images/shop/arr3.gif';
 if(subm!=''){
@@ -628,14 +523,6 @@ SUBMENU.visibility = 'visible';
 SUBMENU.position = 'relative';
 if(document.all['i'+subm]) document.all['i'+subm].src=IMG2;
 }
-if(psubm!=''){
- var PSUBMENU = document.getElementById("m"+psubm).style;
- PSUBMENU.visibility = 'visible';
- PSUBMENU.position = 'relative';
- if(document.all['i'+psubm]) document.all['i'+psubm].src=IMG2;
- }
-
-
 }}
 
 // PHPSHOP JavaListCatalog v1.3
@@ -714,16 +601,10 @@ var s1=window.document.forms.forma_order.mail.value;
 var s2=window.document.forms.forma_order.name_person.value;
 var s3=window.document.forms.forma_order.tel_name.value;
 var s4=window.document.forms.forma_order.adr_name.value;
-if (document.getElementById("makeyourchoise").value=="DONE") {bad=0;} else {bad=1;}
-
-
-if (s1=="" || s2=="" || s3=="" || s4=="") {
+if (s1=="" || s2=="" || s3=="" || s4=="")
  alert("Ошибка заполнения формы заказа.\nДанные отмеченные флажками заполнять обязательно! ");
-} else if (bad==1) {
- alert("Ошибка заполнения формы заказа.\nВыберите доставку!");
-}  else{
+  else
      document.forma_order.submit();
-}
 }
 
 function Fchek()

@@ -36,23 +36,23 @@ while ($row = mysql_fetch_array($result))
 	$status=$row['status'];
 	if(($row['enabled'])=="1"){$checked="<img src=img/icon-activate.gif  width=\"16\" height=\"16\" alt=\"В наличии\">";}else{$checked="<img src=img/icon-deactivate.gif  width=\"16\" height=\"16\" alt=\"Отсутствует\">";};
 	@$display.="
-	<tr id=\"r".$id."\" class=row>
-    <td style=\"padding:3\" align=center id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,550)\">
+	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row >
+    <td style=\"padding:3\" align=center onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,550)\" class=forma>
 	".$checked."
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,550)\">
+	<td onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,580)\" class=forma>
 	".$row['mail']."
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,550)\">
+	<td onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,580)\" class=forma>
 	$login
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,550)\">
+	<td onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,580)\" class=forma>
 	".GetUsersStatus2($status,"name")."
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,550)\">
+	<td onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,580)\" class=forma>
 	".GetUsersStatus2($status,"discount")."
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,550)\">
+	<td onclick=\"miniWin('shopusers/adm_userID.php?id=$id',500,580)\" class=forma>
 	".dataV($row['datas'])."
 	</td>
 	<td>
@@ -65,7 +65,6 @@ while ($row = mysql_fetch_array($result))
 if($i>20)$razmer="height:600;";
 	$_Return="
 <div id=interfacesWin name=interfacesWin align=\"left\" style=\"width:100%;".@$razmer.";overflow:auto\"> 
-
 <form name=\"form_flag\">
 <table width=\"100%\"  cellpadding=\"0\" cellspacing=\"0\" style=\"border: 1px;
 	border-style: inset;\">
@@ -73,13 +72,13 @@ if($i>20)$razmer="height:600;";
 	<td valign=\"top\">
 <table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" class=\"sortable\" id=\"sort\">
 <tr>
-<td width=\"50\" id=pane align=center><img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('users');\" align=left><span name=txtLang id=txtLang>Статус</span></td>
-    <td width=\"30%\" id=pane align=center>E-mail</td>
+<td width=\"50\" id=pane align=center><span name=txtLang id=txtLang>Статус</span></td>
+    <td width=\"20%\" id=pane align=center>E-mail</td>
 	<td  id=pane align=center><span name=txtLang id=txtLang>Имя</span></td>
-	<td width=\"200\" id=pane align=center><span name=txtLang id=txtLang>Статус</span></td>
+	<td width=\"150\" id=pane align=center><span name=txtLang id=txtLang>Статус</span></td>
 	<td width=\"100\" id=pane align=center><span name=txtLang id=txtLang>Скидка</span> %</td>
-	<td width=\"30%\" id=pane align=center><span name=txtLang id=txtLang>Последний вход</span></td>
-	<td width=\"10\" id=pane align=center style=\"padding:0px\"><input type=checkbox value=1 name=DoAll onclick=\"SelectAllBox(this,form_flag)\"></td>
+	<td width=\"20%\" id=pane align=center><span name=txtLang id=txtLang>Последний вход</span></td>
+	<td width=\"20\" id=pane align=center style=\"padding:0px\"><input type=checkbox value=1 name=DoAll onclick=\"SelectAllBox(this,form_flag)\"></td>
 </tr>
 
 	".$display."
@@ -90,20 +89,7 @@ if($i>20)$razmer="height:600;";
     </table>
 	</form>
 </div>
-	".'
-<div class=cMenu id=cMenuNws> 
-	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
-	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews20>Заблокировать</A></TD></TR>
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews21>Разблокировать</A></TD></TR>	
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews22>Удалить из базы</A></TD></TR>		
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews222>Разослать сообщение</A></TD></TR>			
-	</TABLE>
-</div>
-
-';
-
-	
+	";
 return $_Return;
 }
 
