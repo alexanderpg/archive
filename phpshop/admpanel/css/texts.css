@@ -15,10 +15,6 @@ body
    padding:0px
 }
 
-.cMenu{
-    display:none;
-}
-
 #loader{
    background: ButtonFace;
    DISPLAY: none;
@@ -30,17 +26,6 @@ body
    FILTER: alpha(opacity=80);
 }
 
-#lock{
-   background: ButtonFace;
-   DISPLAY: none;
-   position: absolute;
-   visibility: hidden;
-   Z-INDEX: 2; 
-   width: 100%;
-   height: 100%;
-   FILTER: alpha(opacity=50);
-   
-}
 
 #loadmes{
    width:400px;
@@ -66,14 +51,15 @@ body
 
 a.phpshop{
    text-decoration:none;
-   padding-right:10;
+   font-weight: bolder;
+   padding-right:20;
    color:#0A246A;
    font-size:15px;
 }
-
-
-
-
+#phpshop{
+width:100%;
+filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=1, OffY=1, Color='white', Positive='true');
+}
 a.none{
    text-decoration: none;
 }
@@ -164,31 +150,19 @@ table.sortable span.sortarrow {
 	height: 20px;
 }
 #pane{
-    border: 1px;
-    border-style: outset;
-    background: ButtonFace;
-    text-align: center;
-    padding: 3;
+	border: 1px;
+	border-style: outset;
+	background: ButtonFace;
+	text-align: center;
+	padding: 3;
 }
-button.pane{
-    width:100%;
-}
-
-
-
-tr.row td {
-   padding: 5px;
-   cursor: help;
-}
-
-
 #rol td{
-	padding: 5;
+	padding: 3;
 	/*cursor: pointer;*/
 	background: White;
 }
 tr.row {
-   padding: 5;
+   padding: 3;
    background: White;
    cursor: help;
 }
@@ -249,7 +223,6 @@ height: 2.2em;
 font-size: 8pt;
 margin-top:0;
 }
-
 button.option{
 background-image: url(../icon/page_edit.gif);
 background-repeat: no-repeat;
@@ -259,13 +232,7 @@ font-size: 8pt;
 margin-top:0;
 padding-left:15px;
 cursor: pointer;
-}
-button.help{
-background-image: url(../icon/btn_help[1].gif);
-background-repeat: no-repeat;
-padding-left:15px;
-margin-top:5;
-cursor: pointer;
+
 }
 .tip1{
 filter:alpha(opacity=50);

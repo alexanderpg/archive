@@ -79,15 +79,19 @@ DoResize(<? echo $GetSystems['width_icon']?>,400,270);
 <LEGEND><span name=txtLang id=txtLang><u>Н</u>азвание</span> </LEGEND>
 <div style="padding:10">
 <input type="text" name="name_new"  value="<?=$name?>" style="width:200px"><br><br>
+<?
+if($SysValue['pro']['enabled'] == "true")
+echo '
 
 <span name=txtLang id=txtLang>Использовать</span> <select name="price_new">
-				<option value="1" <?=$price_1?>>1</option>
-				<option value="2" <?=$price_2?>>2</option>
-				<option value="3" <?=$price_3?>>3</option>
-				<option value="4" <?=$price_4?>>4</option>
-				<option value="5" <?=$price_5?>>5</option>
+				<option value="1" '.$price_1.'>1</option>
+				<option value="2" '.$price_2.'>2</option>
+				<option value="3" '.$price_3.'>3</option>
+				<option value="4" '.$price_4.'>4</option> 
+				<option value="5" '.$price_5.'>5</option> 
 </select> <span name=txtLang id=txtLang>колонку цен</span>.
 </div>
+';?>
 </FIELDSET>
 	</td>
 	<td>
@@ -112,9 +116,6 @@ DoResize(<? echo $GetSystems['width_icon']?>,400,270);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-   <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('shopusers_statusID')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
 <input type="hidden" name="id" value="<?=$id?>" >
 	<input type="submit" name="editID" value="OK" class=but>
@@ -159,3 +160,6 @@ DoReloadMainWindow('shopusers_status');
 }else $UserChek->BadUserFormaWindow();
 }
 ?>
+
+
+

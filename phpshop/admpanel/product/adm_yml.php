@@ -1,11 +1,7 @@
-<?
-require("../connect.php");
-?>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html>
-    <head>
+<head>
 	<title>YML</title>
 <META http-equiv="Content-Type" content="text-html; charset=windows-1251">
 <meta http-equiv="MSThemeCompatible" content="Yes">
@@ -52,7 +48,7 @@ if(p1.checked == true) window.opener.document.getElementById('p_enabled').value=
 else window.opener.document.getElementById('p_enabled').value=0;
 
 var p3=document.getElementById("bid").value;
-window.opener.document.getElementById('yml_bid').value=p3;
+window.opener.document.getElementById('yml_bid_new').value=p3;
 
 var p4=document.getElementById("cbid").value;
 window.opener.document.getElementById('yml_cbid').value=p4;
@@ -65,7 +61,7 @@ var p6=document.getElementById("cbid_enabled");
 if(p6.checked==true) window.opener.document.getElementById('yml_cbid_enabled').value=1;
 else window.opener.document.getElementById('yml_cbid_enabled').value=0;
 
-self.close();
+//window.close();
 }
 </script>
 
@@ -110,7 +106,7 @@ self.close();
 </table>
 <hr>
 <div align="right">
-<input type="button" name="btnLang" class=but value="Принять" onClick="OkWindow();">
+<input type="button" name="btnLang" class=but value="Принять" onClick="OkWindow();window.close()">
 <input type="button" name="btnLang" class=but value="Отмена" onClick="CloseWindow();">
 </div>
 </form>

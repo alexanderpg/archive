@@ -22,10 +22,10 @@ return $num;
 }
 
 
-function Vivod_rekurs($n,$low=0)// вывод подкаталогов рекурсом
+function Vivod_rekurs($n)// вывод подкаталогов рекурсом
 {
 global $table_name,$sid;
-$clow=$low;
+
 // Multibase
 $Systems=GetSystems();
 $admoption=unserialize($Systems['admoption']);
@@ -41,36 +41,17 @@ $id=$row['id'];
 $name=$row['name'];
 $parent_to=$row['parent_to'];
 $num=TestCat($id);
-    $secure_groups=$row['secure_groups'];
-    $link1='javascript:AdmCat('.$id.',500,370);';
-    $link2='admin_cat_content.php?pid='.$id;	
-    $right='';
-	$low=0;
-	if (strlen($secure_groups)) {
-		$ider=trim($_SESSION['idPHPSHOP']);
-		$string='i'.$ider.'-1i';
-		if (strpos($secure_groups,$string) ===false) {
-		    $low=1;	
-		}
-	}
-
- 	if (($low===1) || ($clow===1)) {
-		    $link1='';
-		    $link2='';	
-		    $right='[Мало прав!]';
-		    $low=1;	
-	}
 
 if($i<$num)// если есть еще каталоги
   {
-   @$disp.="d.add($id,$n,'$name $right','$link1');
-".Vivod_rekurs($id,$low)."
+   @$disp.="d.add($id,$n,'$name','javascript:AdmCat($id,500,370);');
+".Vivod_rekurs($id)."
 ";
 
   }
 else// если нет каталогов
    {
-   @$disp.="d.add($id,$n,'$name (".Vivod_cat_all_num($id).") $right','$link2');";
+   @$disp.="d.add($id,$n,'$name (".Vivod_cat_all_num($id).")','admin_cat_content.php?pid=$id');";
    }
 
 }
@@ -93,38 +74,17 @@ $i=0;
 $j=0;
 while($row = mysql_fetch_array($result))
     {
-
     $id=$row['id'];
     $name=$row['name'];
-    $num=TestCat($id);
-    $secure_groups=$row['secure_groups'];
-    $link1='javascript:AdmCat('.$id.',500,270);';
-    $link2='admin_cat_content.php?pid='.$id;	
-    $right='';
-	$low=0;
-	if (strlen($secure_groups)) {
-		$ider=trim($_SESSION['idPHPSHOP']);
-		$string='i'.$ider.'-1i';
-		if (strpos($secure_groups,$string) ===false) {
-		    $low=1;	
-		}
-	}
-
- 	if ($low===1) {
-		    $link1='';
-		    $link2='';	
-		    $right='[Мало прав!]';
-	}
-
-	
+	$num=TestCat($id);
 	if($num>0) 
 	 @$dis.="
-	d.add($id,0,'$name $right','$link1');
-	".Vivod_rekurs($id,$low)."
+	d.add($id,0,'$name','javascript:AdmCat($id,500,270);');
+	".Vivod_rekurs($id)."
 	";
 	else @$dis.="
-	d.add($id,0,'$name (".Vivod_cat_all_num($id).") $right','$link2');
-	".Vivod_rekurs($id,$low)."
+	d.add($id,0,'$name (".Vivod_cat_all_num($id).")','admin_cat_content.php?pid=$id');
+	".Vivod_rekurs($id)."
 	";
 	
 	$i++;
@@ -186,7 +146,6 @@ return $num;
 <meta http-equiv="Content-Type" content="text/html; charset=<?=$SysValue['Lang']['System']['charset']?>">
 <LINK href="../css/dtree.css" type=text/css rel=stylesheet>
 <SCRIPT language=JavaScript src="../java/dtree.js" type=text/javascript></SCRIPT>
-<SCRIPT language=JavaScript src="../java/javaMG.js" type=text/javascript></SCRIPT>
 </head>
 <body bottommargin="0" rightmargin="0" topmargin="0" leftmargin="0" bgcolor="#ffffff">
 <div style="padding:10px">

@@ -90,8 +90,6 @@ $dis="
 		d2 = new dTree('d2');
 		d2.add(0,-1,'<b>".$SysValue['Lang']['Category'][1]."</b>');
         ".$dis."
-              d2.add(1000003,0,'".$SysValue['Lang']['Category'][14]."','','','','../img/imgfolder.gif','');
-".Vivod_rekurs(1000003)."
 		document.write(d2);";
 if($category!=""){
 		$dis.="d2.openTo(".$category.", true);";

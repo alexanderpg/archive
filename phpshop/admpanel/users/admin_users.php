@@ -128,8 +128,6 @@ global $SysValue;
 $sql="select datas from ".$SysValue['base']['table_name10']." where user='$n' order by id desc LIMIT 1";
 $result=mysql_query($sql);
 $row = mysql_fetch_array($result);
-$num = mysql_numrows($result);
-if($num==0) return "-";
 $datas=$row['datas'];
 $data=dataV($datas,"shot");
 return $data;
@@ -147,17 +145,17 @@ while ($row = mysql_fetch_array($result))
 	$status=$row['status'];
 	if(($row['enabled'])=="1"){$checked="<img src=img/icon-activate.gif  width=\"16\" height=\"16\" alt=\"В наличии\">";}else{$checked="<img src=img/icon-deactivate.gif  width=\"16\" height=\"16\" alt=\"Отсутствует\">";};
 	@$display.="
-	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row  onclick=\"miniWin('users/adm_userID.php?id=$id',500,500)\">
-    <td style=\"padding:3\" align=center id=Nws class=Nws>
+	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row  onclick=\"miniWin('users/adm_userID.php?id=$id',500,360)\">
+    <td style=\"padding:3\" align=center>
 	".$checked."
 	</td>
-	<td id=Nws class=Nws>
+	<td>
 	".$row['mail']."
 	</td>
-	<td id=Nws class=Nws>
+	<td>
 	$login
 	</td>
-	<td id=Nws class=Nws>
+	<td>
 	".GetLastEnter($login)."
 	</td>
     </tr>
@@ -184,7 +182,7 @@ if($i>20)$razmer="height:600;";
 </tr>
     </table>
 
-<div align=\"right\" style=\"padding:10;width:70%\"><BUTTON style=\"width: 15em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('users/adm_users_new.php',500,500)\">
+<div align=\"right\" style=\"padding:10;width:70%\"><BUTTON style=\"width: 15em; height: 2.2em; margin-left:5\"  onclick=\"miniWin('users/adm_users_new.php',500,360)\">
 <img src=\"icon/page_add.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\" hspace=\"5\">
 <span name=txtLang id=txtLang>Новая позиция</span>
 </BUTTON></div>

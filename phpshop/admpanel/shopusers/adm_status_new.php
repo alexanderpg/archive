@@ -62,7 +62,9 @@ DoResize(<? echo $GetSystems['width_icon']?>,400,270);
 <LEGEND><span name=txtLang id=txtLang><u>Н</u>азвание</span> </LEGEND>
 <div style="padding:10">
 <input type="text" name="name_new"  style="width:200px"><br><br>
-
+<?
+if($SysValue['pro']['enabled'] == "true")
+echo '
 <span name=txtLang id=txtLang>Использовать</span> <select name="price_new">
 				<option value="1">1</option>
 				<option value="2">2</option>
@@ -70,7 +72,7 @@ DoResize(<? echo $GetSystems['width_icon']?>,400,270);
 				<option value="4">4</option> 
 				<option value="5">5</option> 
 </select> <span name=txtLang id=txtLang>колонку цен</span>.
-
+';?>
 </div>
 </FIELDSET>
 	</td>
@@ -96,9 +98,6 @@ DoResize(<? echo $GetSystems['width_icon']?>,400,270);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('shopusers_statusID')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
     <input type="submit" name="editID" value="OK" class=but>
 	<input type="reset" name="btnLang" name="delID" value="Сбросить" class=but>
@@ -123,3 +122,6 @@ DoReloadMainWindow('shopusers_status');
 }else $UserChek->BadUserFormaWindow();
 }
 ?>
+
+
+

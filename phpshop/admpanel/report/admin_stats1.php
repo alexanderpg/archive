@@ -49,7 +49,7 @@ if($i>30)$razmer="height:600;";
 return '
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<td width="70%" style="padding-left:5px">
+	<td width="70%">
 <div align="left" style="width:100%;'.@$razmer.';overflow:auto"> 
 <table width="100%"  cellpadding="0" cellspacing="0" style="border: 1px;
 	border-style: inset;">
@@ -123,7 +123,7 @@ while(@$row = mysql_fetch_array(@$result))
   
     @$display.=('
 
-	<tr bgcolor="ffffff"  onmouseover="show_on(\'r'.$id.'\')" id="r'.$id.'" onmouseout="show_out(\'r'.$id.'\')" class=row onclick="miniWin(\'order/adm_visitorID.php?visitorID='.$id.'\',650,500)">
+	<tr bgcolor="ffffff"  onmouseover="show_on(\'r'.$id.'\')" id="r'.$id.'" onmouseout="show_out(\'r'.$id.'\')" class=row onclick="miniWin(\'order/adm_visitor.php?visitorID='.$id.'\',650,500)">
     <td class=forma align="center">
 	'.$uid.'
 	</td>
@@ -195,7 +195,7 @@ return'
 <tr><td><br><h4>1.</h4></td>
 	<td align="left" width="150">
 	
-	<span name=txtLang id=txtLang>Выберите вид отчета</span><br>
+	<span name=txtLang id=txtLang>Выберете вид отчета</span><br>
     <select name="stattip">
 	<option value="1" SELECTED id=txtLang>Отчет заказов по дате</option>
     </select>
@@ -204,13 +204,11 @@ return'
 	<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>с даты</span></td>
-	<td></td>
 	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>по дату</span></td>
 	<td></td>
 </tr>
 <tr>
-	<td><input type="text" style="width:80" name="pole1" value="'.date("d-m-Y").'"></td>
-	<td>
+	<td><input type="text" style="width:80" name="pole1">
 	<IMG onclick="popUpCalendar(this, calendar.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="'.date("d-m-Y").'" name="pole2">
@@ -245,13 +243,11 @@ return'
 	<table>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>с даты</span></td>
-	<td></td>
 	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span name=txtLang id=txtLang>по дату</span></td>
 	<td></td>
 </tr>
 <tr>
-	<td><input type="text" style="width:80" name="pole1" value="'.date("d-m-Y").'">
-	</td><td>
+	<td><input type="text" style="width:80" name="pole1">
 	<IMG onclick="popUpCalendar(this, calendar2.pole1, \'dd-mm-yyyy\');" height=16 hspace=3 src="icon/date.gif" width=16 border=0 align="absmiddle">
 	</td>
 	<td><input type="text" style="width:80" value="'.date("d-m-Y").'" name="pole2">
@@ -267,6 +263,8 @@ return'
 
 </table>
 </form>
+</FIELDSET>
+</div>
 ';
 
 }

@@ -1,291 +1,308 @@
-<?php
+<?
+/*
++-------------------------------------+
+|  PHPShop Enterprise                 |
+|  Модуль Генерации XML Yandex        |
++-------------------------------------+
+*/
 
-/**
- * Файл выгрузки для Яндекс Маркет
- * @package PHPShopCore
- */
-$_classPath = "../phpshop/";
-include($_classPath . "class/obj.class.php");
-PHPShopObj::loadClass("base");
-$PHPShopBase = new PHPShopBase($_classPath . "inc/config.ini");
-PHPShopObj::loadClass("array");
-PHPShopObj::loadClass("orm");
-PHPShopObj::loadClass("product");
-PHPShopObj::loadClass("system");
-PHPShopObj::loadClass("valuta");
-PHPShopObj::loadClass("string");
-PHPShopObj::loadClass("security");
-PHPShopObj::loadClass("modules");
 
-// Модули
-$PHPShopModules = new PHPShopModules($_classPath . "modules/");
+// Парсируем установочный файл
+$SysValue=parse_ini_file("../phpshop/inc/config.ini",1);
 
-/**
- *  Вывод характеристик по имени
- *  @example $search=PHPShopSortSearch('Бренд','vendor'); $search->search($vendor_aray);
- */
-class PHPShopSortSearch {
 
-    /**
-     * Выборка характеритик по имени
-     * @param string $name имя характеристики
-     * @param string $tag тэг обрамления
-     */
-    function PHPShopSortSearch($name, $tag) {
+// Подключаем базу MySQL
+@mysql_connect ($SysValue['connect']['host'], $SysValue['connect']['user_db'],  $SysValue['connect']['pass_db'])or 
+@die("".PHPSHOP_error(101,$SysValue['my']['error_tracer'])."");
+mysql_select_db($SysValue['connect']['dbase'])or 
+@die("".PHPSHOP_error(102,$SysValue['my']['error_tracer'])."");
+@mysql_query("SET NAMES 'cp1251'");
 
-        $this->tag = $tag;
-        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['table_name20']);
-        $PHPShopOrm->debug = false;
-        $data = $PHPShopOrm->select(array('id'), array('name' => '="' . $name . '"'), false, array('limit' => 1));
-        if (is_array($data)) {
-
-            $sort_category = $data['id'];
-            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['table_name21']);
-            $PHPShopOrm->debug = false;
-            $data = $PHPShopOrm->select(array('id,name'), array('category' => '=' . $sort_category), false, array('limit' => 100));
-            if (is_array($data)) {
-                foreach ($data as $val)
-                    $this->sort_array[$val['id']] = $val['name'];
-            }
-        }
-    }
-
-    /**
-     * Поиск в массиве характеритик товара нужной характеристики
-     * @param array $row массив характеристик товара
-     * @return string имя характеристики в тэге
-     */
-    function search($row) {
-        if (is_array($row))
-            foreach ($row as $val) {
-                if (!empty($this->sort_array[$val[0]])) {
-                    return '<' . $this->tag . '>' . $this->sort_array[$val[0]] . '</' . $this->tag . '>';
-                }
-            }
-    }
-
+// Настройки
+function Systems()// вывод настроек
+{
+global $SysValue;
+$sql="select * from ".$SysValue['base']['table_name3'];
+$result=mysql_query($sql);
+$row = mysql_fetch_array($result);
+foreach($row as $k=>$v)
+$array[$k]=$v;
+return $array;
 }
 
-class PHPShopYml {
+// Promo - преобразования
+function NameToLatin($str){
+$str=strtolower($str);
+$str=str_replace("/", "", $str);
+$str=str_replace("\\", "", $str);
+$str=str_replace("(", "", $str);
+$str=str_replace(")", "", $str);
+$str=str_replace(":", "", $str);
+$str=str_replace("-", "", $str);
+$str=str_replace(" ", "", $str);
 
-    var $xml = null;
+$_Array=array(
+"а"=>"a",
+"б"=>"b",
+"в"=>"v",
+"г"=>"g",
+"д"=>"d",
+"е"=>"e",
+"ё"=>"e",
+"ж"=>"gh",
+"з"=>"z",
+"и"=>"i",
+"й"=>"i",
+"к"=>"k",
+"л"=>"l",
+"м"=>"m",
+"н"=>"n",
+"о"=>"o",
+"п"=>"p",
+"р"=>"r",
+"с"=>"s",
+"т"=>"t",
+"у"=>"u",
+"ф"=>"f",
+"х"=>"h",
+"ц"=>"c",
+"ч"=>"ch",
+"ш"=>"sh",
+"щ"=>"sh",
+"ъ"=>"i",
+"ы"=>"yi",
+"ь"=>"i",
+"э"=>"a",
+"ю"=>"u",
+"я"=>"ya",
+"А"=>"a",
+"Б"=>"b",
+"В"=>"v",
+"Г"=>"g",
+"Д"=>"d",
+"Ё"=>"e",
+"Ж"=>"gh",
+"З"=>"z",
+"И"=>"i",
+"Й"=>"i",
+"К"=>"k",
+"Л"=>"l",
+"М"=>"m",
+"Н"=>"n",
+"О"=>"o",
+"П"=>"п",
+"Р"=>"r",
+"С"=>"s",
+"Т"=>"t",
+"У"=>"u",
+"Ф"=>"f",
+"Х"=>"h",
+"Ц"=>"c",
+"Ч"=>"ch",
+"Ш"=>"sh",
+"Щ"=>"sh",
+"Э"=>"a",
+"Ю"=>"u",
+"Я"=>"ya",
+"."=>"_",
+"$"=>"i",
+"%"=>"i",
+"&"=>"and"
+);
 
-    /**
-     * @var bool вывод сортировки
-     */
-    var $vendor = false;
+$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
 
-    /**
-     * @var string имя тэга
-     */
-    var $vendor_tag = 'vendor';
+foreach($chars as $val)
+if(empty($_Array[$val])) @$new_str.=$val;
 
-    /**
-     * @var string имя характеристики
-     */
-    var $vendor_name = 'Бренд';
+return @$new_str;
+}
 
-    function PHPShopYml() {
-        $this->PHPShopSystem = new PHPShopSystem();
-        $PHPShopValuta = new PHPShopValutaArray();
-        $this->PHPShopValuta = $PHPShopValuta->getArray();
+// Вывод каталогов
+function  Catalog()
+ {
+global $SysValue;
+$sql="select id,name from ".$SysValue['base']['table_name']." where parent_to=0 and yml='1' order by id";
+$result=mysql_query($sql);
+while ($row = mysql_fetch_array($result))
+    {
+	$id=$row['id'];
+	$name=$row['name'];
+	$array=array(
+	"id"=>"$id",
+	"name"=>"$name"
+	);
+	$Catalog[$id]=$array;
+	}
+return $Catalog;
+ }
 
-        // Процент накрутки
-        $this->percent = $this->PHPShopSystem->getValue('percent');
+// Вывод подкаталогов
+function  Podcatalog()
+ {
+global $SysValue;
+$sql="select id,name,parent_to from ".$SysValue['base']['table_name']." where parent_to!=0 and yml='1' order by id";
+$result=mysql_query($sql);
+$FROM=split(",",$SysValue['yml']['catalog']);
+while ($row = mysql_fetch_array($result))
+    {
+	$id=$row['id'];
+	$name=$row['name'];
+	$parent_to=$row['parent_to'];
+	$array=array(
+	"id"=>"$id",
+	"name"=>"$name",
+	"parent_to"=>"$parent_to"
+	);
+	$Catalog[$id]=$array;
+	}
+return $Catalog;
+ }
 
-        // Валюта по умочанию
-        $this->defvaluta = $this->PHPShopSystem->getValue('dengi');
-        $this->defvalutaiso = $this->PHPShopValuta[$this->defvaluta]['iso'];
-        $this->defvalutacode = $this->PHPShopValuta[$this->defvaluta]['code'];
+// Парсер для изображений
+function ImgParser($img){
+$array=split("\"",$img);
+while (list($key, $value) = each($array))
+    //if (preg_match("/\//",$value))
+  if (preg_match("/Image/",$value))
+    return $array[$key];
+}
 
-        // Кол-во знаков после запятой в цене
-        $this->format = $this->PHPShopSystem->getSerilizeParam('admoption.price_znak');
-    }
+function Vendor($vendor)// проверка вывода вендора для этого каталога
+{
+global $SysValue;
+$sql="select name from ".$SysValue['base']['table_name4']." where id='$vendor'";
+$result=mysql_query($sql);
+@$row = mysql_fetch_array(@$result);
+$name=$row['name'];
+return $name;
+}
 
-    // Вывод каталогов
-    function category() {
-        $Catalog = array();
-        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['table_name']);
-        $data = $PHPShopOrm->select(array('id,name,parent_to'), false, false, array('limit' => 1000));
+function DispValuta($n)// вывод валют
+{
+global $SysValue;
+$sql="select * from ".$SysValue['base']['table_name24']." where id=$n";
+$result=mysql_query($sql);
+while (@$row = mysql_fetch_array($result))
+    {
+    $id=$row['id'];
+	$name=$row['name'];
+	$code=$row['code'];
+	$iso=$row['iso'];
+	$kurs=$row['kurs'];
+	$array=array(
+	"id"=>$id,
+	"name"=>$name,
+	"code"=>$code,
+	"iso"=>$iso,
+	"kurs"=>$kurs
+	);
+	$Valuta[$id]=$array;
+	}
+return $Valuta;
+}
 
-        if (is_array($data))
-            foreach ($data as $row) {
-                $Catalog[$row['id']]['id'] = $row['id'];
-                $Catalog[$row['id']]['name'] = $row['name'];
-                $Catalog[$row['id']]['parent_to'] = $row['parent_to'];
-            }
 
-        return $Catalog;
-    }
+ 
+// Отрезаем до точки
+function mySubstr($str,$a){
+for ($i = 1; $i <= $a; $i++) {
+	if($str{$i} == ".") $T=$i;
+}
+return substr($str, 0, $T+1);
+}
+ 
+// Вывод продуктов
+function  Product()
+ {
+global $SysValue;
+$sql="select * from ".$SysValue['base']['table_name2']." where enabled='1' and yml='1' order by id";
+$result=mysql_query($sql);
+while ($row = mysql_fetch_array($result))
+    {
+	$id=$row['id'];
+	$name=htmlspecialchars($row['name']);
+	$category=$row['category'];
+    $uid=$row['uid'];
+	$price=$row['price'];
+	if($row['p_enabled'] == 1) $p_enabled="true";
+	else $p_enabled="false";
+	$d=mySubstr($row['description'],200);
+	$description=htmlspecialchars(strip_tags($d));
+	$array=array(
+	"id"=>"$id",
+	"category"=>"$category",
+	"name"=>"$name",
+	"picture"=>$row['pic_small'],
+	"price"=>"$price",
+	"p_enabled"=>"$p_enabled",
+	"yml_bid_array"=>unserialize($row['yml_bid_array']),
+	"uid"=>"$uid",
+	"description"=>$description
+	);
+	$Products[$id]=$array;
+	}
+return $Products;
+ }
 
-    /**
-     * Данные по товарам
-     * @return array массис товаров
-     */
-    function product() {
-        $Products = array();
+$CATALOG=Catalog();
+$PODCATALOG=Podcatalog();
+$PRODUCT=Product();
+$SYSTEM=Systems();
+$VALUTA=DispValuta($SYSTEM['dengi']);
 
-        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-        $data = $PHPShopOrm->select(array('*'), array('yml' => "='1'", 'enabled' => "='1'"), false, array('limit' => 1000000));
-        if (is_array($data))
-            foreach ($data as $row) {
-                $id = $row['id'];
-                $name = htmlspecialchars($row['name']);
-                $category = $row['category'];
-                $uid = $row['uid'];
-                $price = $row['price'];
-
-                if ($row['p_enabled'] == 1)
-                    $p_enabled = "true";
-                else
-                    $p_enabled = "false";
-
-                $description = trim(PHPShopString::mySubstr($row['description'], 300));
-                $baseinputvaluta = $row['baseinputvaluta'];
-
-                if ($baseinputvaluta) {
-                    if ($baseinputvaluta !== $this->defvaluta) {//Если валюта отличается от базовой
-                        $vkurs = $this->PHPShopValuta[$baseinputvaluta]['kurs'];
-
-                        // Приводим цену в базовую валюту
-                        $price = $price / $vkurs;
-                    }
-                }
-
-                $price = ($price + (($price * $this->percent) / 100));
-                $price = round($price, $this->format);
-
-                $array = array(
-                    "id" => $id,
-                    "category" => $category,
-                    "name" => $name,
-                    "picture" => $row['pic_small'],
-                    "price" => $price,
-                    "p_enabled" => $p_enabled,
-                    "yml_bid_array" => unserialize($row['yml_bid_array']),
-                    "uid" => $uid,
-                    "description" => $description
-                );
-
-                // Параметр сортировки
-                if (!empty($this->vendor))
-                    $array['vendor_array'] = unserialize($row['vendor_array']);
-
-                $Products[$id] = $array;
-            }
-        return $Products;
-    }
-
-    function setHeader() {
-        $this->xml.='<?xml version="1.0" encoding="windows-1251"?>
+$XML=('<?xml version="1.0" encoding="windows-1251"?>
 <!DOCTYPE yml_catalog SYSTEM "shops.dtd">
-<yml_catalog date="' . date('Y-m-d H:m') . '">
+<yml_catalog date="'.date('Y-m-d H:m').'">
 
 <shop>
-<name>' . $this->PHPShopSystem->getName() . '</name>
-<company>' . $this->PHPShopSystem->getValue('company') . '</company>
-<url>http://' . $_SERVER['SERVER_NAME'] . '</url>';
-    }
+<name>'.$SYSTEM['name'].'</name>
+<company>'.$SYSTEM['company'].'</company>
+<url>http://'.$SERVER_NAME.'</url>
 
-    function setCurrencies() {
-        $this->xml.='<currencies>';
-        $this->xml.='<currency id="' . $this->PHPShopValuta[$this->PHPShopSystem->getValue('dengi')]['iso'] . '" rate="1"/>';
-        $this->xml.='</currencies>';
-    }
+<currencies>
+');
+  foreach($VALUTA as $v)
+  $XML.='<currency id="'.$v['iso'].'" rate="1"/>';
+$XML.=('
+</currencies>
 
-    function setCategories() {
-        $this->xml.='<categories>';
-        $category = $this->category();
-        foreach ($category as $val) {
-            if (empty($val['parent_to']))
-                $this->xml.='<category id="' . $val['id'] . '">' . $val['name'] . '</category>';
-            else
-                $this->xml.='<category id="' . $val['id'] . '" parentId="' . $val['parent_to'] . '">' . $val['name'] . '</category>';
-        }
+<categories>');
+while (list($key, $val) = @each($CATALOG)) 
+$XML.= ('
+<category id="'.$key.'">'.$CATALOG[$key]['name'].'</category>');
 
-        $this->xml.='</categories>';
-    }
+while (list($key, $val) = @each($PODCATALOG)) 
+$XML.= ('
+<category id="'.$key.'" parentId="'.$PODCATALOG[$key]['parent_to'].'">'.$PODCATALOG[$key]['name'].'</category>');
 
-    function setDelivery() {
-        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['table_name30']);
-        $data = $PHPShopOrm->select(array('price'), array('flag' => "='1'"), false, array('limit' => 1));
-        if (is_array($data))
-            $this->xml.='<local_delivery_cost>' . $data['price'] . '</local_delivery_cost>';
-    }
+$XML.=('</categories>
+<offers>');
+while (list($key, $val) = @each($PRODUCT)) {
+    
+	$bid_str="";
 
-    function setProducts() {
-        
-        $this->xml.='<offers>';
-        $product = $this->product($vendor = true);
-
-        // Учет модуля SEOURL
-        if (!empty($GLOBALS['SysValue']['base']['seourl']['seourl_system'])) {
-            $seourl_enabled = true;
-        }
-
-        // Поиск характеристики по имени
-        if ($this->vendor) {
-            $PHPShopSortSearch = new PHPShopSortSearch($this->vendor_name, $this->vendor_tag);
-        }
-
-        $seourl = null;
-
-        foreach ($product as $val) {
-
-            $bid_str = null;
-            $bid_str = null;
-            $vendor = null;
-
-            // Тэг характеристики
-            if ($this->vendor)
-                $vendor = $PHPShopSortSearch->search($val['vendor_array']);
-
-            // Если есть bid
-            if (!empty($val['yml_bid_array']['bid_enabled']))
-                $bid_str = '  bid="' . $val['yml_bid_array']['bid'] . '" ';
-
-            // Если есть cbid
-            if (!empty($val['yml_bid_array']['cbid_enabled']))
-                $bid_str.='  cbid="' . $val['yml_bid_array']['cbid'] . '" ';
-
-            if (!empty($seourl_enabled))
-                $seourl = '_' . PHPShopString::toLatin($val['name']);
-
-            $this->xml.='<offer id="' . $val['id'] . '" available="' . $val['p_enabled'] . '" ' . $bid_str . '>
- <url>http://' . $_SERVER['SERVER_NAME'] . '/shop/UID_' . $val['id'] . $seourl . '.html?from=yml</url>
-      <price>' . $val['price'] . '</price>
-      <currencyId>' . $this->defvalutaiso . '</currencyId>
-      <categoryId>' . $val['category'] . '</categoryId>
-      <picture>http://' . $_SERVER['SERVER_NAME'] . $val['picture'] . '</picture>
-      <name>' . $val['name'] . '</name>
-      <description>' . $val['description'] . '</description>' .
-                    $vendor . '
-';
-            $cart_min = $this->PHPShopSystem->getSerilizeParam('admoption.cart_minimum');
-            if (!empty($cart_min))
-                $this->xml.= '<sales_notes>минимальная сумма заказа ' . $cart_min . ' ' . $this->defvalutacode . '</sales_notes>';
-
-            $this->xml.='</offer>';
-        }
-        $this->xml.='</offers>';
-    }
-
-    function serFooter() {
-        $this->xml.='</shop></yml_catalog>';
-    }
-
-    function compile() {
-        $this->setHeader();
-        $this->setCurrencies();
-        $this->setCategories();
-        $this->setDelivery();
-        $this->setProducts();
-        $this->serFooter();
-        echo $this->xml;
-    }
-
+   // Если есть bid
+   if($PRODUCT[$key]['yml_bid_array']['bid_enabled'] == 1) $bid_str='  bid="'.$PRODUCT[$key]['yml_bid_array']['bid'].'" ';
+   
+   // Если есть cbid
+   if($PRODUCT[$key]['yml_bid_array']['cbid_enabled'] == 1) @$bid_str.='  cbid="'.$PRODUCT[$key]['yml_bid_array']['cbid'].'" ';
+   
+$XML.= ('
+<offer id="'.$PRODUCT[$key]['id'].'" available="'.$PRODUCT[$key]['p_enabled'].'" '.$bid_str.'>
+ <url>http://'.$SERVER_NAME.'/shop/UID_'.$PRODUCT[$key]['id'].'.html?from=yml</url>
+      <price>'.$PRODUCT[$key]['price'].'</price>
+      <currencyId>'.$VALUTA[$SYSTEM['dengi']]['iso'].'</currencyId>
+      <categoryId>'.$PRODUCT[$key]['category'].'</categoryId>
+      <picture>http://'.$SERVER_NAME.$PRODUCT[$key]['picture'].'</picture>
+      <name>'.$PRODUCT[$key]['name'].'</name>
+      <description>'.$PRODUCT[$key]['description'].'</description>
+    </offer>
+');
 }
+$XML.= ('</offers>
+</shop>
+</yml_catalog>');
 
-$PHPShopYml = new PHPShopYml();
-$PHPShopYml->compile();
+echo $XML;
 ?>

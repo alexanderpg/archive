@@ -237,8 +237,8 @@ function InnovaEditor(oName)
 	this.preloadHTML="";
 
 	this.onSave=function(){return true;};
-	this.useBR=true;
-	this.useDIV=false;
+	this.useBR=false;
+	this.useDIV=true;
 
 	this.doUndo=doUndo;
 	this.doRedo=doRedo;

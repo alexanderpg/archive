@@ -17,13 +17,10 @@ function doCmd(sCmd,sOption)
 function bodyOnLoad()
     {
     var idSource = document.getElementById("idSource").contentWindow;
-    //var sourceDocBody = idSource.document.body;
-    //sourceDocBody.innerHTML = "";
-    //sourceDocBody.style.cssText="overflow-x:scroll;overflow-y:scroll;white-space:nowrap";
-    //sourceDocBody.clearAttributes;
-
-        // Fix FF
-    //setTimeout(idSource.document.designMode="On", 100);
+    var sourceDocBody = idSource.document.body;
+    sourceDocBody.innerHTML = "";
+    sourceDocBody.style.cssText="overflow-x:scroll;overflow-y:scroll;white-space:nowrap";
+    sourceDocBody.clearAttributes;
 
     idSource.document.designMode="on";
     idSource.focus();
@@ -40,29 +37,18 @@ function doInsert()
 
 function fixWord()
     {
-        
     for (var i=0;i<idSource.document.body.getElementsByTagName("*").length;i++)
         {
 		idSource.document.body.getElementsByTagName("*")[i].removeAttribute("class");
 		idSource.document.body.getElementsByTagName("*")[i].removeAttribute("style");
         }
-        
     var str=idSource.document.body.innerHTML;
-
 
     str=String(str).replace(/<\\?\?xml[^>]*>/g,"");
     str=String(str).replace(/<\/?o:p[^>]*>/g,"");
     str=String(str).replace(/<\/?v:[^>]*>/g,"");
     str=String(str).replace(/<\/?o:[^>]*>/g,"");
     str=String(str).replace(/<\/?st1:[^>]*>/g,"");
-
-    //FF Fix
-    str=String(str).replace(/<\/?meta[^>]*>/g,"");
-    str=String(str).replace(/<\/?link[^>]*>/g,"");
-    str=String(str).replace(/<\/?style[^>]*>/g,"");
-    str=String(str).replace(/<\/?xml[^>]*>/g,"");
-    str=String(str).replace(/<\/?w:[^>]*>/g,"");
-    str=String(str).replace(/<\/?m:[^>]*>/g,"");
 
     str=String(str).replace(/&nbsp;/g,"");//<p>&nbsp;</p>
 
@@ -78,7 +64,6 @@ function fixWord()
     str=String(str).replace(/<\/?H6[^>]*>/g,"");
 
     str=String(str).replace(/<\/?P[^>]*><\/P>/g,"");
- 
     return str; 
     }
 </script>

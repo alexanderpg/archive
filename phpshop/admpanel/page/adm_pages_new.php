@@ -60,8 +60,7 @@ if(strpos($_SERVER["HTTP_USER_AGENT"],"MSIE"))
 else
 	echo "<script language=JavaScript src='../editor3/scripts/moz/editor.js'></script>";
 ?>
-<script type="text/javascript" language="JavaScript1.2" src="../language/<?
-echo $Lang;?>/language_windows.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
 <script type="text/javascript" src="../java/tabpane.js"></script>
@@ -124,7 +123,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 	<?echo '
 <input type=text id="myName"  style="width: 550" value="'.Disp_cat($categoryID).'">
 <input type="hidden" value="'.$categoryID.'" name="category_new" id="myCat">
-<BUTTON style="width: 3em; height: 2.2em; margin-left:5"  onclick="miniWinFull(\'adm_cat.php?category='.$categoryID.'\',300,400,300,200);return false;"><img src="../img/icon-move-banner.gif"  width="16" height="16" border="0"></BUTTON>';
+<BUTTON style="width: 3em; height: 2.2em; margin-left:5"  onclick="miniWinFull(\'adm_cat.php?category='.$categoryID.'\',300,400,300,200)"><img src="../img/icon-move-banner.gif"  width="16" height="16" border="0"></BUTTON>';
 	?>
 	</FIELDSET>
 	</td>
@@ -144,7 +143,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
    <td valign="top">
    <table>
    <tr>
-   <td ><FIELDSET id=fldLayout>
+   <td width="200"><FIELDSET id=fldLayout>
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>С</u>сылка</span></LEGEND>
 <div style="padding:10">
 <input type="text" name="link_new" style="width:150" value="<?=GetLastId()?>">.html
@@ -160,6 +159,14 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 </FIELDSET>
 	</td>
 	<td>
+	<FIELDSET id=fldLayout >
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>ополнительно</span>:</LEGEND>
+<div style="padding:10">
+<input type="checkbox" name="enabled_new" value="1" checked> <span name=txtLang id=txtLang>Показывать</span>
+&nbsp;&nbsp;
+<input type="checkbox" name="secure_new" value="1"> <span name=txtLang id=txtLang>Только для зарег. польз.</span>
+</div>
+</FIELDSET>
 	</td>
    </tr>
    </table>
@@ -190,10 +197,6 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 </tr>
 </table>
 </div>
-
-
-
-
 <div class="tab-page" id="content" style="height:420px">
 <h2 class="tab"><span name=txtLang id=txtLang>Содержание</span></h2>
 
@@ -217,7 +220,7 @@ echo'
 	<script>
 		var oEdit1 = new InnovaEditor("oEdit1");
 	oEdit1.cmdAssetManager="modalDialogShow(\''.$SysValue['dir']['dir'].'/phpshop/admpanel/editor3/assetmanager/assetmanager.php\',640,500)";
-		oEdit1.width=600;
+		oEdit1.width=400;
 		oEdit1.height=360;
 		oEdit1.btnStyles=true;
 	    oEdit1.css="'.$MyStyle.'";
@@ -278,89 +281,9 @@ echo '
 tabPane.addTabPage( document.getElementById( "promo" ) );
 </script>
 </div>
-<div class="tab-page" id="security" style="height:420px">
-<h2 class="tab"><span name=txtLang id=txtLang>Безопасность</span></h2>
-
-<script type="text/javascript">
-tabPane.addTabPage( document.getElementById( "security" ) );
-</script>
-<table width="100%">
-<tr>
-<td width="100%">
-
-<SCRIPT>
-function enable_div1() {
-if (document.getElementById('secure_new').checked) {
-	document.getElementById('allreg').disabled=false;
-	document.getElementById('allusers').checked=true;
-} else {
-	document.getElementById('allreg').disabled=true;
-}
-}
-
-
-function enable_div2() {
-if (document.getElementById('allusers').checked) {
-	document.getElementById('regsel').disabled=true;
-} else {
-	document.getElementById('regsel').disabled=false;
-}
-}
-
-</SCRIPT>
-	<FIELDSET id=fldLayout >
-<div style="padding:10">
-<input type="checkbox" name="enabled_new" value="1" checked> <span name=txtLang id=txtLang>Включить</span>
-<BR>
-<input type="checkbox" id="secure_new" name="secure_new" onClick="enable_div1()" value="1" <?=$sel4?>> <span name=txtLang id=txtLang>Показывать только зарегистрированным пользователям</span><BR>
-<?
-$sql='select id,name from '.$SysValue['base']['table_name28'].' WHERE enabled="1"';
-$result=mysql_query($sql);
-$num = mysql_num_rows($result);
-if ($num) { ?>
-
-<DIV <? if ($sel4!=="checked") echo "disabled";?>  id="allreg">
-<span name=txtLang id=txtLang>Из зарегистрировавшихся показывать:</span><BR>
-&nbsp;&nbsp;&nbsp;
-<input type="HIDDEN" name="9999" value="0">
-<?
-if (strlen($secure_groups)) {$che='';} else {$che='checked';}
-
-?>
-<input type="checkbox" onClick="enable_div2()" id="allusers" name="seq[9999]" <?=$che?> value="1"><span name=txtLang id=txtLang>Всем пользователям (снимите отметку, чтобы выбрать определенные группы)</span><BR>
-
-<DIV <?if (!(strlen($secure_groups))) echo "disabled";?> id="regsel" style="overflow-y:auto; height:280px;">
-<BR>
-<?
-	while ($row = mysql_fetch_array($result)) {
-		if (strlen($secure_groups)) {
-			$string='i'.$row['id'].'-1i';
-			if (strpos($secure_groups,$string) !==false) {$che='checked';} else {$che='';}
-		} else {$che='';}
-		echo '&nbsp;&nbsp;&nbsp;
-			<input type="HIDDEN" name="seq['.$row['id'].']" value="0">
-			<input type="checkbox" name="seq['.$row['id'].']" '.$che.' value="1">'.$row['name'].'<BR>';
-	}
-?>
-</DIV>
-</DIV>
-<?
-} //Конец если есть статусы
-?>
-</div>
-</FIELDSET>
-
-
-</td>
-</tr>
-</table>
-</div>
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('page_site_catalog')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
 	<input type="hidden" name="id" value="<?=$id?>">
 	<input type="submit" name="editID" value="OK" class=but>
@@ -375,16 +298,8 @@ if (strlen($secure_groups)) {$che='';} else {$che='checked';}
 if(isset($editID) and $link_new!="")// Запись редактирования
 {
 if(CheckedRules($UserStatus["page_site"],2) == 1){
-
-
-foreach ($seq as $crid =>$value) {
-	$sq_new.='i'.$crid.'-'.$value.'i';
-	if (isset($seq['9999'])) {$sq_new=''; break;}
-}
-
-
 $sql="INSERT INTO ".$SysValue['base']['table_name11']."
-VALUES ('','$name_new','$link_new','$category_new','$keywords_new','$description_new','".addslashes($EditorContent)."','$flag_new','$num_new','".date("U")."','$odnotip_new','$title_new','$enabled_new','$secure_new','$sq_new')";
+VALUES ('','$name_new','$link_new','$category_new','$keywords_new','$description_new','".addslashes($EditorContent)."','$flag_new','$num_new','".date("U")."','$odnotip_new','$title_new','$enabled_new','$secure_new')";
 $result=mysql_query($sql) or die("".$sql.mysql_error()."");
 echo('
 <script>

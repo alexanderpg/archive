@@ -123,7 +123,7 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,580);
 	<td width="10"></td>
 	<td><input type="text" name="login_new" value="<?=$login?>" style="width:250px;" ></td>
 	<td rowspan="2" valign="top" style="padding-left:10">
-	<button style="width: 14em; height: 2.2em; margin-left:5"  onclick="miniWin('../order/adm_visitor_new.php?userAdd=<?=$id?>',650,550);return false;">
+	<button style="width: 14em; height: 2.2em; margin-left:5"  onclick="location.replace('../order/adm_visitor_new.php?userAdd=<?=$id?>')">
 <img src="../img/page_attachment.gif" border="0" align="absmiddle" hspace=5>
 	<span name=txtLang id=txtLang>Новый заказ</span></button>
 	</div>
@@ -187,9 +187,6 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,580);
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('shopusersID')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
     <input type="hidden" name="userID" value="<?=$id?>" >
 	<input type="submit" name="editID" value="OK" class=but>

@@ -38,7 +38,7 @@ return $str;
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_interface.js"></script>
 <script>
-DoResize(<? echo $GetSystems['width_icon']?>,500,500);
+DoResize(<? echo $GetSystems['width_icon']?>,645,500);
 </script>
 </head>
 <body bottommargin="0"  topmargin="0" leftmargin="0" rightmargin="0" onload="DoCheckLang(location.pathname,<?=$SysValue['lang']['lang_enabled']?>);preloader(0)">
@@ -85,8 +85,39 @@ if(isset($id))
 	 if($row['name_enabled']==1)
 	$f4="checked";
 	
-	function Checked($a,$b){$array=explode("-",$a); if($array[$b]==1) return "checked";}
+	
+	function Checked($a,$b){
+$array=explode("-",$a);
+if($array[$b]==1) return "checked";
+}
 
+
+
+// Выбор шкуры
+function GetSkins($skin){
+global $SysValue;
+$dir="../../templates";
+if (is_dir($dir)) {
+    if ($dh = opendir($dir)) {
+        while (($file = readdir($dh)) !== false) {
+		
+		    if($skin == $file)
+			$sel="selected";
+			  else $sel="";
+		
+		    if($file!="." and $file!=".." and $file!="index.html")
+            @$name.= "<option value=\"$file\" $sel>$file</option>";
+        }
+        closedir($dh);
+    }
+}
+$disp="
+<select name=\"skin_new\" style=\"height:200px;width:280px\" size=5 onchange=\"GetSkinIcon(this.value)\">
+".@$name."
+</select>
+";
+return @$disp;
+}
 
 // Выбор иконки шкуры
 function GetSkinsIcon($skin){
@@ -132,7 +163,8 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
   <FIELDSET>
 <LEGEND><span name=txtLang id=txtLang><u>И</u>мя</span></LEGEND>
 <div style="padding:10">
-<input type="text" name="name_new" value="<?=$name?>" class=full>
+<input type="text" name="name_new" value="<?=$name?>" class=full><!-- <br><br>
+<input type="checkbox" value="1" name="name_enabled_new" <?=@$f4?>> Размещять персональную карточку продавца при выводе товара -->
 </div>
 </FIELDSET>
   </td>
@@ -142,7 +174,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
   <FIELDSET>
 <LEGEND><u>E</u>-mail</LEGEND>
 <div style="padding:10">
-<input type="text" name="mail_new" size="30" value="<?=$mail?>" >
+<input type="text" name="mail_new" value="<?=$mail?>" class=full>
 </div>
 </FIELDSET>
   </td>
@@ -150,44 +182,56 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
   <FIELDSET>
 <LEGEND><span name=txtLang id=txtLang><u>C</u>татус</span></LEGEND>
 <div style="padding:10">
-<input type="radio" name="enabled_new" value="1" <?=@$fl?>><span name=txtLang id=txtLang>Активировать</span>&nbsp;&nbsp;&nbsp;
-<input type="radio" name="enabled_new" value="0" <?=@$fl2?>><font color="#FF0000"><span name=txtLang id=txtLang>Деактивировать</span></font>
+<input type="radio" name="enabled_new" value="1" <?=@$fl?>><span name=txtLang id=txtLang>Активизировать</span>&nbsp;&nbsp;&nbsp;
+<input type="radio" name="enabled_new" value="0" <?=@$fl2?>><font color="#FF0000"><span name=txtLang id=txtLang>Деактивизировать</span></font>
 </div>
 </FIELDSET>
   </td>
 </tr>
 <tr>
 	<td colspan="3">
-	<FIELDSET id=fldLayout>
-<LEGEND id=lgdLayout><input type="checkbox" value="1" id="update" > <span name=txtLang id=txtLang>Сменить данные</span> </LEGEND>
+	<FIELDSET id=fldLayout style="width: 480; height: 8em;">
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>И</u>зменить доступ</span></LEGEND>
 <div style="padding:10">
 <table>
 <tr>
-	<td>Пользователь</td>
+	<td>Login</td>
 	<td width="10"></td>
-	<td><input type="text" name="login_new" id="login" value="<?=$login?>" size="20"> ( не менее 4 символов )</td>
-</tr>
-<tr>
-	<td>Пароль</td>
-	<td width="10"></td>
-	<td><input type="Password" name="password" id="pas1" onclick="DispPasPole(this)" size="20" value="<?=CleachPassword($password); ?>"> ( не менее 6 символов )</td>
-</tr>
-<tr>
-	<td>Пароль еще раз</td>
-	<td width="10"></td>
-	<td><input type="Password" name="password2" id="pas2" size="20" value=""> 
-	<INPUT class=but type=button value="Сгенерировать" style="width:100px" onclick="GenPassword('<?="P".substr(md5(date("U")),0,6)?>')">
-        </td>
-</tr>
-<tr>
-	<td></td>
-	<td width="10"></td>
-	<td>
-	<input type="checkbox" value="1" name="pas_send" id="pas_send" checked> отослать новые  регистрационные данные на почту
+	<td><input type="text" name="login_new" value="<?=$login?>" size="20" onclick="password_new.value='';flag.checked=true"></td>
+	<td rowspan="2" valign="top" style="padding-left:10">
+	<img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <span name=txtLang id=txtLang>Данные шифруются алгоритмом</span> <u>BASE64</u>.<br><br>
+	 <input type="checkbox" name="flag" value="1""> <span name=txtLang id=txtLang>Изменить</span> Login & Password
 	</td>
+</tr>
+<tr>
+	<td>Password *</td>
+	<td width="10"></td>
+	<td><input type="Password" name="password_new" onclick="this.value='';;flag.checked=true" size="20" value="<?=CleachPassword($password); ?>"></td>
 </tr>
 </table>
 
+</div>
+</FIELDSET>
+	</td>
+</tr>
+</table>
+</div>
+<!-- begin intro page -->
+<div class="tab-page" id="content" style="height:320px">
+<h2 class="tab"><span name=txtLang id=txtLang>Описание</span></h2>
+
+<script type="text/javascript">
+tabPane.addTabPage( document.getElementById( "content" ) );
+</script>
+<table width="100%">
+
+<tr>
+	<td colspan=3>
+	<FIELDSET id=fldLayout>
+<div style="padding:10">
+<textarea style="width:100%;height:260px" name="EditorContent" id="EditorContent">
+
+</textarea>
 </div>
 </FIELDSET>
 	</td>
@@ -208,12 +252,6 @@ tabPane.addTabPage( document.getElementById( "rules" ) );
 	<td id=pane align=center><img src="../img/arrow_d.gif" alt="" width="7" height="7" border="0" hspace="5"><span name=txtLang id=txtLang>Доступ</span></td>
 </tr>
 <form name="product_edit">
- <tr class="row">
-	<td ><span name=txtLang id=txtLang>Модули</span></td>
-	<td align="center">
-	<input type="checkbox" value="1" name="module_rul_1" <?=Checked($status['module'],0)?>> <span name=txtLang id=txtLang>Запрет установок</span>&nbsp;&nbsp;
-	</td>
-</tr>
 <tr class="row">
 	<td ><span name=txtLang id=txtLang>Отзывы</span></td>
 	<td align="center">
@@ -264,8 +302,6 @@ tabPane.addTabPage( document.getElementById( "rules" ) );
 	<input type="checkbox" value="1" name="cat_prod_rul_3" <?=Checked($status['cat_prod'],2)?>> <span name=txtLang id=txtLang>Создание</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" name="cat_prod_rul_5" <?=Checked($status['cat_prod'],4)?>> <span name=txtLang id=txtLang>Удаление</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" name="cat_prod_rul_4" <?=Checked($status['cat_prod'],3)?>> <span name=txtLang id=txtLang>Все товары</span>&nbsp;&nbsp;
-<BR>
-	<input type="checkbox" value="1" name="cat_prod_rul_6" <?=Checked($status['cat_prod'],5)?>> <span name=txtLang id=txtLang>Назначать доступ к каталогам</span>&nbsp;&nbsp;
 	</td>
 </tr>
 <tr class="row">
@@ -276,6 +312,12 @@ tabPane.addTabPage( document.getElementById( "rules" ) );
 	<input type="checkbox" value="1" name="stats1_rul_3" <?=Checked($status['stats1'],2)?>> <span name=txtLang id=txtLang>Создание</span>&nbsp;&nbsp;
 	</td>
 </tr>
+<!-- <tr class="row">
+	<td >Rupay</td>
+	<td align="center">
+	<input type="checkbox" value="1" name="rupay_rul_1" <?=Checked($status['rupay'],0)?>> Обзор&nbsp;&nbsp;
+	</td>
+</tr> -->
 <tr class="row">
 	<td ><span name=txtLang id=txtLang>Подписчики</span></td>
 	<td align="center">
@@ -333,15 +375,6 @@ tabPane.addTabPage( document.getElementById( "rules" ) );
 	</td>
 </tr>
 <tr class="row">
-	<td ><span name=txtLang id=txtLang>Рейтинг</span></td>
-	<td align="center">
-	<input type="checkbox" value="1" name="rating_rul_1" <?=Checked($status['rating'],0)?>> <span name=txtLang id=txtLang>Обзор</span>&nbsp;&nbsp;
-	<input type="checkbox" value="1" name="rating_rul_2" <?=Checked($status['rating'],1)?>> <span name=txtLang id=txtLang>Редактирование</span>&nbsp;&nbsp;
-	<input type="checkbox" value="1" name="rating_rul_3" <?=Checked($status['rating'],2)?>> <span name=txtLang id=txtLang>Создание</span>&nbsp;&nbsp;
-	</td>
-</tr>
-
-<tr class="row">
 	<td ><span name=txtLang id=txtLang>Работа с БД</span></td>
 	<td align="center">
 	<input type="checkbox" value="1" name="sql_rul_2" <?=Checked($status['sql'],1)?>> <span name=txtLang id=txtLang>Редактирование</span>&nbsp;&nbsp;
@@ -386,32 +419,40 @@ tabPane.addTabPage( document.getElementById( "rules" ) );
 	<input type="checkbox" value="1" name="servers_rul_3" <?=Checked($status['servers'],2)?>> <span name=txtLang id=txtLang>Создание</span>&nbsp;&nbsp;
 	</td>
 </tr>
-<tr class="row">
-	<td ><span name=txtLang id=txtLang>RSS каналы</span></td>
-	<td align="center">
-	<input type="checkbox" value="1" name="rss_rul_1" <?=Checked($status['rsschanels'],0)?>> <span name=txtLang id=txtLang>Обзор</span>&nbsp;&nbsp;
-	<input type="checkbox" value="1" name="rss_rul_2" <?=Checked($status['rsschanels'],1)?>> <span name=txtLang id=txtLang>Редактирование</span>&nbsp;&nbsp;
-	<input type="checkbox" value="1" name="rss_rul_3" <?=Checked($status['rsschanels'],2)?>> <span name=txtLang id=txtLang>Создание</span>&nbsp;&nbsp;
-	</td>
-</tr>
-<tr class="row">
-	<td ><span name=txtLang id=txtLang>Автоматическое обновление</span></td>
-	<td align="center">
-	<input type="checkbox" value="1" name="upload_rul_1" <?=Checked($status['upload'],0)?>> <span name=txtLang id=txtLang>Разрешить</span>&nbsp;&nbsp;
-	</td>
-</tr>
 </table>
 </div>
+<!-- begin intro page -->
+
+<!-- <div class="tab-page" id="skin" style="height:320px">
+<h2 class="tab">Дизайн</h2>
+
+<script type="text/javascript">
+tabPane.addTabPage( document.getElementById( "skin" ) );
+</script>
+
+	<table >
+	<tr class=adm2>
+	  <td align=left>
+	  <?=GetSkins($skin)?>
+	  </td>
+	  <td style=\"padding-left:5px\" valign=top>
+	  <FIELDSET >
+	  <LEGEND ><u>С</u>криншот</LEGEND>
+	  <div align="center" style="padding:10px"> <?=GetSkinsIcon($skin)?></div>
+	  </FIELDSET>
+	  <br>
+	  <input type="checkbox" value="1" name="skin_enabled_new" <?=@$f3?>> Использовать дизайн
+	  </td>
+	</tr>
+
+</table>
+</div> -->
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-	<td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('usersID')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
     <input type="hidden" name="userID" value="<?=$id?>" >
-	<input type="button"  value="OK" class=but onclick="TestPas()">
-	<input type="hidden" name="editID" value="1">
+	<input type="submit" name="editID" value="OK" class=but>
 	<input type="button" name="btnLang" class=but value="Удалить" onClick="PromptThis();">
     <input type="hidden" class=but  name="productDELETE" id="productDELETE">
 	<input type="button" name="btnLang" value="Отмена" onClick="return onCancel();" class=but>
@@ -421,7 +462,7 @@ tabPane.addTabPage( document.getElementById( "rules" ) );
 </form>
 	  <?
       }
-if(isset($editID) and @$login!="")
+if(isset($editID) and @$login_new!="")
 {
 if(CheckedRules($UserStatus["users"],3) == 1){
 
@@ -431,7 +472,7 @@ $statusUser=array(
 "visitor"=>Zero($visitor_rul_1)."-".Zero($visitor_rul_2)."-".Zero($visitor_rul_3)."-".Zero($visitor_rul_4),
 "users"=>Zero($users_rul_1)."-".Zero($users_rul_2)."-".Zero($users_rul_3)."-".Zero($users_rul_4),
 "shopusers"=>Zero($shopusers_rul_1)."-".Zero($shopusers_rul_2)."-".Zero($shopusers_rul_3),
-"cat_prod"=>Zero($cat_prod_rul_1)."-".Zero($cat_prod_rul_2)."-".Zero($cat_prod_rul_3)."-".Zero($cat_prod_rul_4)."-".Zero($cat_prod_rul_5)."-".Zero($cat_prod_rul_6),
+"cat_prod"=>Zero($cat_prod_rul_1)."-".Zero($cat_prod_rul_2)."-".Zero($cat_prod_rul_3)."-".Zero($cat_prod_rul_4)."-".Zero($cat_prod_rul_5),
 "stats1"=>Zero($stats1_rul_1)."-".Zero($stats1_rul_2)."-".Zero($stats1_rul_3),
 "rupay"=>Zero($rupay_rul_1)."-".Zero($rupay_rul_2)."-".Zero($rupay_rul_3),
 "news_writer"=>Zero($news_writer_rul_1)."-".Zero($news_writer_rul_2)."-".Zero($news_writer_rul_3),
@@ -441,59 +482,41 @@ $statusUser=array(
 "links"=>Zero($links_rul_1)."-".Zero($links_rul_2)."-".Zero($links_rul_3),
 "csv"=>Zero($csv_rul_1)."-".Zero($csv_rul_2)."-".Zero($csv_rul_3),
 "opros"=>Zero($opros_rul_1)."-".Zero($opros_rul_2)."-".Zero($opros_rul_3),
-"rating"=>Zero($rating_rul_1)."-".Zero($rating_rul_2)."-".Zero($rating_rul_3),
 "sql"=>Zero($sql_rul_1)."-".Zero($sql_rul_2)."-".Zero($sql_rul_3),
 "option"=>Zero($option_rul_1)."-".Zero($option_rul_2),
 "discount"=>Zero($discount_rul_1)."-".Zero($discount_rul_2)."-".Zero($discount_rul_3),
 "valuta"=>Zero($valuta_rul_1)."-".Zero($valuta_rul_2)."-".Zero($valuta_rul_3),
 "delivery"=>Zero($delivery_rul_1)."-".Zero($delivery_rul_2)."-".Zero($delivery_rul_3),
-"servers"=>Zero($servers_rul_1)."-".Zero($servers_rul_2)."-".Zero($servers_rul_3),
-"rsschanels"=>Zero($rss_rul_1)."-".Zero($rss_rul_2)."-".Zero($rss_rul_3),
-"upload"=>Zero($upload_rul_1),
-"module"=>Zero($module_rul_1)."-".Zero($module_rul_2)
+"servers"=>Zero($servers_rul_1)."-".Zero($servers_rul_2)."-".Zero($servers_rul_3)
 );
+$sql="UPDATE $table_name19
+SET
+status='".serialize($statusUser)."'
+where id='$userID'";
+$result=mysql_query($sql)or @die("Невозможно изменить запись");
+}
+
+
+if(CheckedRules($UserStatus["users"],1) == 1){
 
 $sql="UPDATE $table_name19
 SET
 mail='$mail_new',
-status='".serialize($statusUser)."',
 enabled='$enabled_new',
-name='$name_new' 
+content='$EditorContent',
+skin='$skin_new',
+skin_enabled='$skin_enabled_new',
+name='$name_new',
+name_enabled='$name_enabled_new' 
 where id='$userID'";
 $result=mysql_query($sql)or @die("Невозможно изменить запись");
-if(!empty($password2)){
+if(isset($flag)){
 $sql="UPDATE $table_name19
 SET
 login='$login_new',
-password='".base64_encode($password2)."'
+password='".base64_encode($password_new)."'
 where id='$userID'";
 $result=mysql_query($sql)or @die("Невозможно изменить запись");
-
-
-//Отправка почты
-if($_POST['pas_send'] == 1){
-
-$codepage  = "windows-1251";              
-$header  = "MIME-Version: 1.0\n";
-$header .= "From:   <no_reply@phpshop.ru>\n";
-$header .= "Content-Type: text/plain; charset=$codepage\n";
-$header .= "X-Mailer: PHP/";
-$zag="PHPShop: данные пользователя для сервера ".$SERVER_NAME;
-$content="
-Доброго времени!
----------------------------------------------------------
-
-Административная панель доступна по адресу:  http://$SERVER_NAME".$SysValue['dir']['dir']."/phpshop/admpanel/
-или нажатием клавиши F12
-Логин: ".$_POST['login']."
-Пароль: ".$_POST['password']."
-
----------------------------------------------------------
-Powered & Developed by www.PHPShop.ru
-".$SysValue['license']['product_name'];
-mail($mail,$zag,$content,$header);
-
-}
 }
 echo"
 <script>

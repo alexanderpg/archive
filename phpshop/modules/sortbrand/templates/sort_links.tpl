@@ -1,1 +1,0 @@
-<div>@sortbrand_value@</div>

@@ -52,8 +52,7 @@ else
 	echo "<script language=JavaScript src='../editor3/scripts/moz/editor.js'></script>";
 ?>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
-<script type="text/javascript" language="JavaScript1.2" src="../language/<? 
-echo $Lang;?>/language_windows.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script type="text/javascript" src="../java/tabpane.js"></script>
 <script>
 DoResize(<? echo $GetSystems['width_icon']?>,650,600);
@@ -92,7 +91,6 @@ DoResize(<? echo $GetSystems['width_icon']?>,650,600);
 	$category=$row['category'];
 	$dir=$row['dir'];
 	$odnotip=$row['odnotip'];
-	$secure_groups=$row['secure_groups'];
 	if ($row['flag']==1)
 	   {
 	   $sel="checked";
@@ -141,7 +139,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>аталог</span>:</LEGEND>
 	<div style="padding:10">
 	<?echo '
-<input type=text id="myName"  style="width: 500" value="'.Disp_cat($category).'">
+<input type=text id="myName"  style="width: 550" value="'.Disp_cat($category).'">
 <input type="hidden" value="'.$category.'" name="category_new" id="myCat">
 <BUTTON style="width: 3em; height: 2.2em; margin-left:5"  onclick="miniWinFull(\'adm_cat.php?category='.$category.'\',300,400,300,200);return false;"><img src="../img/icon-move-banner.gif"  width="16" height="16" border="0"></BUTTON>';
 	?>
@@ -163,14 +161,14 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
    <td valign="top">
    <table>
    <tr>
-   <td><FIELDSET id=fldLayout>
+   <td width="230"><FIELDSET id=fldLayout>
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>С</u>сылка</span></LEGEND>
 <div style="padding:10">
 /page/<input type="text" name="link_new" style="width:110" value="<?=$link?>">.html
 </div>
 </FIELDSET>
 </td>
-	<td>
+	<td width="100">
 	<FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>П</u>озиция</span>:</LEGEND>
 <div style="padding:10">
@@ -178,10 +176,24 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 </div>
 </FIELDSET>
 	</td>
-
-</TR>
+	<td>
+	<FIELDSET id=fldLayout >
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>ополнительно</span>:</LEGEND>
+<div style="padding:10">
+<input type="checkbox" name="enabled_new" value="1" <?=$sel3?>> <span name=txtLang id=txtLang>Показывать</span>
+&nbsp;&nbsp;
+<input type="checkbox" name="secure_new" value="1" <?=$sel4?>> <span name=txtLang id=txtLang>Только для зарег. польз.</span>
+</div>
+</FIELDSET>
+	</td>
+   </tr>
+   </table>
+   </td>
+   
+	
+</tr>
 <tr>
-    <td align=left  colspan=2>
+    <td align=left >
 	
 	<FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Р</u>екомендуемые товары для совместной продажи</span>:</LEGEND>
@@ -201,16 +213,8 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 
 	</td>
 </tr>
-   </table>
-   </td>
-   
-	
-</tr>
 </table>
-
-
 </div>
-
 <div class="tab-page" id="content" style="height:420px">
 <h2 class="tab"><span name=txtLang id=txtLang>Содержание</span></h2>
 
@@ -297,89 +301,9 @@ tabPane.addTabPage( document.getElementById( "promo" ) );
 
 
 </div>
-<div class="tab-page" id="security" style="height:420px">
-<h2 class="tab"><span name=txtLang id=txtLang>Безопасность</span></h2>
-
-<script type="text/javascript">
-tabPane.addTabPage( document.getElementById( "security" ) );
-</script>
-<table width="100%">
-<tr>
-<td width="100%">
-
-<SCRIPT>
-function enable_div1() {
-if (document.getElementById('secure_new').checked) {
-	document.getElementById('allreg').disabled=false;
-	document.getElementById('allusers').checked=true;
-} else {
-	document.getElementById('allreg').disabled=true;
-}
-}
-
-
-function enable_div2() {
-if (document.getElementById('allusers').checked) {
-	document.getElementById('regsel').disabled=true;
-} else {
-	document.getElementById('regsel').disabled=false;
-}
-}
-
-</SCRIPT>
-	<FIELDSET id=fldLayout >
-<div style="padding:10">
-<input type="checkbox" name="enabled_new" value="1" <?=$sel3?>> <span name=txtLang id=txtLang>Включить</span>
-<BR>
-<input type="checkbox" id="secure_new" name="secure_new" onClick="enable_div1()" value="1" <?=$sel4?>> <span name=txtLang id=txtLang>Показывать только зарегистрированным пользователям</span><BR>
-<?
-$sql='select id,name from '.$SysValue['base']['table_name28'].' WHERE enabled="1"';
-$result=mysql_query($sql);
-$num = mysql_num_rows($result);
-if ($num) { ?>
-
-<DIV <? if ($sel4!=="checked") echo "disabled";?>  id="allreg">
-<span name=txtLang id=txtLang>Из зарегистрировавшихся показывать:</span><BR>
-&nbsp;&nbsp;&nbsp;
-<input type="HIDDEN" name="9999" value="0">
-<?
-if (strlen($secure_groups)) {$che='';} else {$che='checked';}
-
-?>
-<input type="checkbox" onClick="enable_div2()" id="allusers" name="seq[9999]" <?=$che?> value="1"><span name=txtLang id=txtLang>Всем пользователям (снимите отметку, чтобы выбрать определенные группы)</span><BR>
-
-<DIV <?if (!(strlen($secure_groups))) echo "disabled";?> id="regsel" style="overflow-y:auto; height:280px;">
-<BR>
-<?
-	while ($row = mysql_fetch_array($result)) {
-		if (strlen($secure_groups)) {
-			$string='i'.$row['id'].'-1i';
-			if (strpos($secure_groups,$string) !==false) {$che='checked';} else {$che='';}
-		} else {$che='';}
-		echo '&nbsp;&nbsp;&nbsp;
-			<input type="HIDDEN" name="seq['.$row['id'].']" value="0">
-			<input type="checkbox" name="seq['.$row['id'].']" '.$che.' value="1">'.$row['name'].'<BR>';
-	}
-?>
-</DIV>
-</DIV>
-<?
-} //Конец если есть статусы
-?>
-</div>
-</FIELDSET>
-
-
-</td>
-</tr>
-</table>
-</div>
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('page_site_catalog')">Справка</BUTTON></BUTTON>
-	</td>
 	<td align="right" style="padding:10">
 	<input type="hidden" name="id" value="<?=$id?>">
 	<input type="submit" name="editID" value="OK" class=but>
@@ -395,15 +319,6 @@ if (strlen($secure_groups)) {$che='';} else {$che='checked';}
 if(isset($editID))// Запись редактирования
 {
 if(CheckedRules($UserStatus["page_site"],1) == 1){
-
-if(is_array($seq))
-foreach ($seq as $crid =>$value) {
-	$sq_new.='i'.$crid.'-'.$value.'i';
-	if (isset($seq['9999'])) {$sq_new=''; break;}
-}
-
-
-
 $sql="UPDATE $table_name12
 SET
 name='$name_new',
@@ -418,14 +333,8 @@ datas='".date("U")."',
 odnotip='$odnotip_new',
 title='$title_new',
 enabled='$enabled_new',
-secure='$secure_new',
-secure_groups='$sq_new' where id='$id'";
-
-//echo $s;
-//print_r($seq);
-
-//echo $sql;
-///*
+secure='$secure_new'
+where id='$id'";
 $result=mysql_query($sql)or @die("Невозможно изменить запись".mysql_error());
 echo"
 	  <script>
@@ -433,7 +342,6 @@ CLREL(\"right\");
 window.close(); 
 </script>
 	   ";
-//*/
 }else $UserChek->BadUserFormaWindow();
 }
 if(@$productDELETE=="doIT")// Удаление
