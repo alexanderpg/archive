@@ -267,9 +267,6 @@ return'
 
 </table>
 </form>
-<div align="right"><BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON></div>
-</FIELDSET>
-</div>
 ';
 
 }

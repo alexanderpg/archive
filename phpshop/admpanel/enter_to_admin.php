@@ -13,7 +13,7 @@ class UserChek {
 	  var $statusPHPSHOP;
 	  var $mailPHPSHOP;
 	  var $OkFlag=0;
-	  var $DIR;
+	  var $DIR="";
 	  
 	  function ChekBase($table_name){
 	  $sql="select * from ".$table_name." where enabled='1'";
@@ -30,11 +30,11 @@ class UserChek {
 	  
 	  function BadUser(){
 	  if($this->OkFlag == 0){
-	  header("Location: ".$this->$DIR."/phpshop/admpanel/");
+	  header("Location: ".$this->DIR."/phpshop/admpanel/");
 	  exit("Login Error");}
 	  }
 	  
-	  function UserChek($logPHPSHOP,$pasPHPSHOP,$table_name,$DIR=""){
+	  function UserChek($logPHPSHOP,$pasPHPSHOP,$table_name,$DIR){
 	  $this->logPHPSHOP=$logPHPSHOP;
 	  $this->pasPHPSHOP=$pasPHPSHOP;
 	  $this->DIR = $DIR;
@@ -86,13 +86,13 @@ $array=explode("-",$a);
 return $array[$b];
 }
 
-// Secure Fix 6.0
+// Secure Fix 6.5
 function RequestSearch($search){
 global $PHP_SELF;
 $pathinfo=pathinfo($PHP_SELF);
 $f=$pathinfo['basename'];
-if($f != "adm_sql.php" and $f != "adm_sql_file.php" and $f != "action.php"){
-$com=array("union","select","insert","update","delete");
+if($f != "adm_sql.php" and $f != "adm_sql_file.php" and $f != "action.php" and $f !=  "adm_upload.php" ){
+$com=array("union");
 $mes='
 <html>
 <head>

@@ -86,19 +86,35 @@ $CloudCount[$v]['size']=count($count);
 
 if(is_array($CloudCount))
 foreach($CloudCount as $key=>$val)
-  if($tip=="serach") @$disp.="<a href=\"/search/?words=$key&pole=2\" style='font-size:
-".FontSize($val['size'])."px' title=\"$key\" >$key</a> ";
+  if($tip=="serach") @$disp.="<a href='/search/?words=$key' style='font-size:".FontSize($val['size'])."pt;'>$key</a>";
     else @$disp.="$key ";
 
+
 if($tip=="serach")
-$disp='<div>'.$disp.'</div>';
+$disp='<div id="wpcumuluscontent">загрузка флеш...</div><script type="text/javascript">
+		   var dd=new Date(); 
+		   var so = new SWFObject("/stockgallery/tagcloud.swf?rnd="+dd.getTime(), "tagcloudflash", "180", "180", "9", "#518EAD");
+so.addParam("wmode", "transparent");
+so.addParam("allowScriptAccess", "always");
+so.addVariable("tcolor", "0x518EAD");
+so.addVariable("tspeed", "150");
+so.addVariable("distr", "true");
+so.addVariable("mode", "tags");
+so.addVariable("tagcloud", "<tags>'.$disp.'</tags>");
+so.write("wpcumuluscontent");</script>';
   else $disp='<H1>'.$disp.'</H1>';
 @$SysValue['sql']['num']++;
+
+$SysValue['other']['leftMenuName']= $SysValue['lang']['tagcloud_name'];
+$SysValue['other']['leftMenuContent']= $disp;
+$dis=ParseTemplateReturn($SysValue['templates']['left_menu']);
+
 }
-return @$disp;
+return @$dis;
 }
 
 	
-
+$admoption=unserialize($LoadItems['System']['admoption']);
+if($admoption['cloud_enabled']==1)
 $SysValue['other']['cloud']= TegCloud($SysValue['nav']['id']);
 ?>

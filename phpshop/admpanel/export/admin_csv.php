@@ -89,8 +89,10 @@ class ReadCsv {
 
    
    
+
+$Default=0; // Флаг, не трогаем наличие
 // Склад
-  switch($this->Sklad_status){
+switch($this->Sklad_status){
   
        case(3):
 	   if($CsvToArray[10]<1) {
@@ -115,28 +117,56 @@ class ReadCsv {
 	   break;
 	   
 	   default: 
-	   $sklad=0;
-	   $enabled=1;
+	   $Default=1; // Флаг, не трогаем наличие
 	   break;
   }
    
 $sql="UPDATE ".$this->TableName."
-SET
-name='".trim($CsvToArray[2])."',
-uid='".trim($CsvToArray[1])."',
-price='".$CsvToArray[3]."',
-sklad='".$sklad."',
-price2='".$CsvToArray[4]."',
-price3='".$CsvToArray[5]."',
-price4='".$CsvToArray[6]."',
-price5='".$CsvToArray[7]."',
-newtip='".$CsvToArray[8]."',
-spec='".$CsvToArray[9]."',
-items='".$CsvToArray[10]."',
-weight='".$CsvToArray[11]."',
-num='".$CsvToArray[12]."',
-enabled='".$enabled."' 
-where id='".$CsvToArray[0]."'";
+SET";
+
+if(!empty($CsvToArray[2]))
+$sql.="name='".trim($CsvToArray[2])."',";
+
+if(!empty($CsvToArray[1]))
+$sql.="uid='".trim($CsvToArray[1])."',";
+
+if(!empty($CsvToArray[3]))
+$sql.="price='".trim($CsvToArray[3])."',";
+
+if(!empty($CsvToArray[10]) and $Default==0)
+$sql.="sklad='".$sklad."',";
+
+if(!empty($CsvToArray[4]))
+$sql.="price2='".trim($CsvToArray[4])."',";
+
+if(!empty($CsvToArray[5]))
+$sql.="price3='".trim($CsvToArray[5])."',";
+
+if(!empty($CsvToArray[6]))
+$sql.="price4='".trim($CsvToArray[6])."',";
+
+if(!empty($CsvToArray[7]))
+$sql.="price5='".trim($CsvToArray[7])."',";
+
+if(!empty($CsvToArray[8]))
+$sql.="newtip='".trim($CsvToArray[8])."',";
+
+if(!empty($CsvToArray[9]))
+$sql.="spec='".trim($CsvToArray[9])."',";
+
+if(!empty($CsvToArray[10]))
+$sql.="items='".trim($CsvToArray[10])."',";
+
+if(!empty($CsvToArray[11]))
+$sql.="weight='".trim($CsvToArray[11])."',";
+
+if(!empty($CsvToArray[12]))
+$sql.="num='".trim($CsvToArray[13])."',";
+
+if(!empty($CsvToArray[10]) and $Default==0)
+$sql.="enabled='".$enabled."'";
+
+$sql.="where id='".$CsvToArray[0]."'";
    $result=mysql_query($sql);
    }
 

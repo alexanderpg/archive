@@ -43,7 +43,7 @@ while ($row = mysql_fetch_array($result))
 	$fl="";}
 	@$display.="
 	<tr id=\"r".$id."\" class=row>
-   <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >$fl</td>
+   <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" align=center>$fl</td>
 	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" >
 	<a href=\"".$SysValue['dir']['dir']."/search/?words=$name&cat=$cat&set=$set\" title=\"Перейти по ссылке:\n/search/?words=$name&cat=$cat&set=$set\" target=\"_blank\">$name</a>
 	</td>
@@ -79,8 +79,8 @@ if($i>20)$razmer="height:600;";
 	<td valign=\"top\">
 <table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" class=\"sortable\" id=\"sort\">
 <tr>
-    <td width=\"25\" id=pane align=center><img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('search_jurnal');\" align=left>&plusmn;</td>
-	<td width=\"25%\" id=pane align=center><span name=txtLang id=txtLang>Запрос</span></td>
+    <td width=\"5%\" id=pane align=center><img  src=\"icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('search_jurnal');\" align=left>&plusmn;</td>
+	<td width=\"20%\" id=pane align=center><span name=txtLang id=txtLang>Запрос</span></td>
     <td width=\"15%\" id=pane align=center><span name=txtLang id=txtLang>Дата</span></td>
 	<td width=\"10%\" id=pane align=center><span name=txtLang id=txtLang>Найдено</span></td>
 	<td width=\"20%\" id=pane align=center><span name=txtLang id=txtLang>Искали в каталоге</span></td>

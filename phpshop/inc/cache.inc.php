@@ -81,7 +81,7 @@ $SysValue['sql']['num']++;
 		   
 	       case("CID"):
 		      if($SysValue['nav']['path'] == "shop")
-	          $str=" where category=".$SysValue['nav']['id']." and enabled='1'";
+	          $str=" where (category=".$SysValue['nav']['id']." or dop_cat LIKE '%#".$SysValue['nav']['id']."#%') and enabled='1'";
 			    else $str="none";
 	       break;
 		   
