@@ -134,26 +134,8 @@ echo '
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
-    <td align="left" style="padding:10">
-	<?
-if(isset($UID)) {//Отправка сообщения пользователю
-$UsersId=$UID;
-$sql="select * from ".$SysValue['base']['table_name27']." where id=$UsersId LIMIT 0, 1";
-$result=mysql_query($sql);
-@$row = mysql_fetch_array($result);
-$id=$row['id'];
-$login=$row['login'];
-$password=$row['password'];
-$status=$row['status'];
-$mail=$row['mail'];
-$name=$row['name'];
-$company=$row['company'];
-$inn=$row['inn'];
-$tel=$row['tel'];
-$adres=$row['adres'];
-}
-echo "<BUTTON style=\"width: 11em; height: 2.2em; margin-left:5\"  onclick=\"GetMailTo('".$mail."','Re: ".$GetSystems['name']."');return false;\"> <img src=\"../img/icon_email.gif\"  border=\"0\" align=\"absmiddle\" hspace=\"5\">E-mail</BUTTON>";
-?>
+	<td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent('shopusers_messages')">Справка</BUTTON></BUTTON>
 	</td>
 	<td align="right" style="padding:10">
 	<input type="submit" name="editID" value="OK" class=but>

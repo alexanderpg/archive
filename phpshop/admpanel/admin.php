@@ -45,6 +45,50 @@ $option=unserialize($GetSystems['admoption']);
 $Lang=$option['lang'];
 require("./language/".$Lang."/language.php");
 
+function detect_utf($Str) {
+ for ($i=0; $i<strlen($Str); $i++) { 
+  if (ord($Str[$i]) < 0x80) $n=0; # 0bbbbbbb 
+  elseif ((ord($Str[$i]) & 0xE0) == 0xC0) $n=1; # 110bbbbb 
+  elseif ((ord($Str[$i]) & 0xF0) == 0xE0) $n=2; # 1110bbbb 
+  elseif ((ord($Str[$i]) & 0xF0) == 0xF0) $n=3; # 1111bbbb 
+  else return false; # Does not match any model 
+  for ($j=0; $j<$n; $j++) { # n octets that match 10bbbbbb follow ? 
+   if ((++$i == strlen($Str)) || ((ord($Str[$i]) & 0xC0) != 0x80)) return false; 
+  } 
+ } 
+ return true; 
+}
+
+function utf8_win ($s){ 
+$out=""; 
+$c1=""; 
+$byte2=false; 
+for ($c=0;$c<strlen($s);$c++){ 
+$i=ord($s[$c]); 
+if ($i<=127) $out.=$s[$c]; 
+if ($byte2){ 
+$new_c2=($c1&3)*64+($i&63); 
+$new_c1=($c1>>2)&5; 
+$new_i=$new_c1*256+$new_c2; 
+if ($new_i==1025){ 
+$out_i=168; 
+}else{ 
+if ($new_i==1105){ 
+$out_i=184; 
+}else { 
+$out_i=$new_i-848; 
+} 
+} 
+$out.=chr($out_i); 
+$byte2=false; 
+} 
+if (($i>>5)==6) { 
+$c1=$i; 
+$byte2=true; 
+} 
+} 
+return $out; 
+}
 
 // Проверяем update
 if($option['update_enabled'] == 1) $ChekUpdate="ChekUpdate('false');";
@@ -52,10 +96,12 @@ if($License['License']['RegisteredTo']!="Trial NoName"  and !getenv("COMSPEC"))
 if(@$db=readDatabase(PATH,"update")){
 
 foreach ($db as $k=>$v){
+         if (detect_utf($db[$k]['content'])) $db[$k]['content']=utf8_win($db[$k]['content']);
      if($db[$k]['num'] > $product_num)
      $UpadateContent.="Обновление ".$db[$k]['num']." - ".$db[$k]['name']."".$db[$k]['content'];
-	 }
+         }
 }
+
 
 // Opera 9 Fix
 if(eregi('Opera', $HTTP_USER_AGENT)) 
@@ -75,6 +121,7 @@ $onload="";
 <LINK href="css/texts.css" type=text/css rel=stylesheet>
 <LINK href="css/dateselector.css" type=text/css rel=stylesheet>
 <LINK href="css/contextmenu.css" type=text/css rel=stylesheet>
+<LINK href="css/help.css" type=text/css rel=stylesheet>
 <SCRIPT language="JavaScript" src="/phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 <script type="text/javascript" language="JavaScript" src="/phpshop/lib/JsHttpRequest/JsHttpRequest.js"></script>
 <SCRIPT type="text/javascript" language="JavaScript" src="java/popup_lib.js"></SCRIPT>
@@ -139,7 +186,7 @@ if(document.getElementById("CSCHint"))document.getElementById("CSCHint").style.v
 
 </script>
 </head>
-<body id="mybody" style="background: threedface; color: windowtext;" topmargin="0" rightmargin="3" leftmargin="3" <?=$onload?>  oncontextmenu="return false;" onresize="ResizeWin('prders')">
+<body id="mybody" style="background: threedface; color: windowtext;" topmargin="0" rightmargin="3" leftmargin="3" <?=$onload?>  oncontextmenu="return false;" onresize="ResizeWin('prders')" onhelp="initSlide(0);loadhelp();return false;">
 <span id="cartwindow" style="position:absolute;left:10px;top:0;visibility:hidden; width: 250px; height: 68px;Z-INDEX: 3;BACKGROUND: #C0D2EC;padding:10px;border: solid;border-width: 1px; border-color:#4D88C8;FILTER: revealTrans  (duration=1,transition=4);" > 
 <table width="100%" height="100%">
 <tr>
@@ -154,10 +201,44 @@ if(document.getElementById("CSCHint"))document.getElementById("CSCHint").style.v
 // Проверка новых заказов
 <?
 if($option['message_enabled']==1)
-echo 'setInterval("DoMessage()",'.($option['message_time']*1000).');'
+echo 'setInterval("DoMessage()",'.($option['message_time']*1000).');';
+
+
+// Если заканчивается лицензия 7 дней
+$LicenseUntilUnixTime = $License['License']['Expires'];
+$until=$LicenseUntilUnixTime - date("U");
+$until_day=$until/(24*60*60);
+if(is_numeric($LicenseUntilUnixTime))
+  if($until_day < 8 and $until_day > 0){
+    $warning_mes = $SysValue['Lang']['System']['license'];
+    echo 'setInterval("startmessagelicense()",'.($option['message_time']*1000).');';
+    }
+
+// Если заканчивается поддержа 7 дней
+if(empty($warning_mes)){
+$TechPodUntilUnixTime = $License['License']['SupportExpires'];
+if(is_numeric($TechPodUntilUnixTime))
+$until=$TechPodUntilUnixTime - date("U");
+$until_day=$until/(24*60*60);
+if(is_numeric($TechPodUntilUnixTime))
+  if($until_day < 8 and $until_day > 0){
+    $warning_mes = $SysValue['Lang']['System']['techpod'];
+    echo 'setInterval("startmessagelicense()",'.($option['message_time']*1000).');';
+	}
+}
+
 ?>
 </script>
-
+<span id="licensewindow" style="position:absolute;left:10px;top:0;visibility:hidden; width: 250px; height: 68px;Z-INDEX: 4;BACKGROUND: F5F16F;padding:10px;border: solid;border-width: 1px; border-color:#F86918;FILTER: revealTrans  (duration=1,transition=4);" > 
+<table width="100%" height="100%">
+<tr>
+	<td width="40" vAlign=center>
+	<img src="img/i_crontab_med[1].gif" alt="" width="32" height="32" border="0" align="absmiddle">
+	</td>
+	<td><b><?=$SysValue['Lang']['System']['cart1']?></b><br><?=$warning_mes." <strong>".round($until_day)."</strong> дней. <a href=\"http://www.phpshop.ru/order/?from=admin\" target=\"_blank\">Форма заказа продления &raquo;</a>."?></td>
+</tr>
+</table>
+</span>
 <span id="commentwindow" style="position:absolute;left:10px;top:0;visibility:hidden; width: 250px; height: 68px;Z-INDEX: 3;BACKGROUND: #99FF99;padding:10px;border: solid;border-width: 1px; border-color:339933;FILTER: revealTrans  (duration=1,transition=4);" > 
 <table width="100%" height="100%">
 <tr>
@@ -201,7 +282,7 @@ echo 'setInterval("DoMessage()",'.($option['message_time']*1000).');'
 
 <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset; Z-INDEX: 1">
 <tr>
-    <td>
+    <td style="padding-left:7px">
 	<script type="text/javascript" language="JavaScript" src="language/<? echo 
 $Lang;?>/menu.js"></script>
 	</td>
@@ -215,7 +296,7 @@ $Lang;?>/menu.js"></script>
 </table>
 <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;" >
 <tr>
-	 <td style="padding-left:5">
+	 <td style="padding-left:12">
 	<table cellpadding="0" cellspacing="0">
 <tr>
     <td id="but0"  class="butoff"><img name="iconLang" src="icon/folder_images.gif" alt="Каталог" width="16" height="16" border="0" onmouseover="ButOn(0)" onmouseout="ButOff(0)" onclick="DoReload('cat_prod')" ></td>
@@ -239,7 +320,7 @@ $Lang;?>/menu.js"></script>
   <td width="1" bgcolor="#ffffff"></td>
    <td width="1" bgcolor="#808080" ></td>
    <td width="3"></td>
-   <td id="but6"  class="butoff"><img name="iconLang" src="icon/joystick.gif" alt="Системные настройки" width="16" height="16" border="0" onmouseover="ButOn(6)" onmouseout="ButOff(6)" onclick="miniWin('system/adm_system.php',550,430)"></td>
+   <td id="but6"  class="butoff"><img name="iconLang" src="icon/joystick.gif" alt="Системные настройки" width="16" height="16" border="0" onmouseover="ButOn(6)" onmouseout="ButOff(6)" onclick="miniWin('system/adm_system.php',600,450)"></td>
 <td width="3"></td>
 <td id="butxhtml"  class="butoff"><img name="iconLang" src="icon/xhtml.gif" alt="Keywords & Titles" width="16" height="16" border="0" onmouseover="ButOn('xhtml')" onmouseout="ButOff('xhtml')" onclick="miniWin('system/adm_system_promo.php',650,630)"></td>
 <td width="3"></td>
@@ -295,6 +376,10 @@ $Lang;?>/menu.js"></script>
  <td width="3"></td>
     <td id="but16"  class="butoff"><img name="iconLang" src="icon/door.gif" alt="Выход" width="16" height="16" border="0" onmouseover="ButOn(16)" onmouseout="ButOff(16)" onclick="window.close()"></td>
 <td width="3"></td>
+<? if ($option['helper_enabled']==1) {?>
+    <td id="but99"  class="butoff"><img name="iconLang" src="icon/question_frame.png" alt="Быстрая справка" width="16" height="16" border="0" onmouseover="ButOn(99)" onmouseout="ButOff(99)" onclick="initSlide(0);loadhelp();"></td>
+<td width="3"></td>
+<?}?>
     
 </tr>
 </table>
@@ -305,6 +390,37 @@ $Lang;?>/menu.js"></script>
 	</td>
 </tr>
 </table>
+<? if ($option['helper_enabled']==1) {
+?>
+<DIV id="helpdiv">
+	<DIV id="inhelpbutdiv">
+		<DIV id="slidebutt" onclick="initSlide(0);loadhelp();" title="Справка">
+			
+		</DIV>
+	</DIV>
+	<DIV id="inhelpdiv">
+		<DIV id="helpcontent">&nbsp;</DIV>
+		<INPUT TYPE="HIDDEN" id="helppage"></div>
+	</DIV>
+</DIV>
+<SCRIPT>
+//Блок инициализации
+var elheight=(window.innerHeight)?window.innerHeight: ((document.all)?document.body.offsetHeight:null);
+document.getElementById("helpdiv").style.height=elheight;
+document.getElementById("inhelpdiv").style.height=elheight;
+document.getElementById("inhelpbutdiv").style.height=elheight;
+var anime;
+centerOnElement("inhelpbutdiv", "slidebutt");
+//Блок инициализации
+
+function ButOnHelp() {document.getElementById("slidebutt").style.background="#cccccc";}
+function ButOffHelp() {document.getElementById("slidebutt").style.background="#dee2ea";}
+
+</SCRIPT>
+<?
+}
+?>
+
 <div align="center" id="interfaces" name="interfaces">
 <script>
 setTimeout("DoReload('orders')",500);

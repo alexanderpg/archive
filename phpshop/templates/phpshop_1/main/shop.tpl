@@ -154,7 +154,7 @@
 		  
 		   @oprosDisp@  
 		   
-		    @cloud@
+		    <p>@cloud@</p>
             
             @leftMenu@
                

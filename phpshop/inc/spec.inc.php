@@ -155,7 +155,7 @@ while($row = mysql_fetch_array($result))
 	$price=$row['price'];
     $sklad=$row['sklad'];
 	$priceNew=$row['price_n'];
-	$price=($price+(($price*$System['percent'])/100));
+	$price=($price+(($price*$LoadItems['System']['percent'])/100));
 	$pic_small=$row['pic_small'];
 	$baseinputvaluta=$row['baseinputvaluta'];	
 @$SysValue['other']['optionsDisp']=DispCatOptions($category,$id); /////////////////////////////////	
@@ -174,7 +174,7 @@ while($row = mysql_fetch_array($result))
 	
 	// Если есть новая цена
 	if($priceNew>0){
-	$priceNew=($priceNew+(($priceNew*$System['percent'])/100));
+	$priceNew=($priceNew+(($priceNew*$LoadItems['System']['percent'])/100));
 	$priceNew=number_format($priceNew,"2",".","");
 	}
 	

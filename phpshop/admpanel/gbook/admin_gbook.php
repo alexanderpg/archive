@@ -29,16 +29,16 @@ while ($row = mysql_fetch_array($result))
 		}
 	@$display.="
 	<tr id=\"r".$id."\" class=row>
-<td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,630)\">
+<td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,580)\">
 	$imgchek
 	</td>
-	<td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,630)\">
+	<td align=\"center\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,580)\">
 	".dataV($datas,"shot")."
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,630)\">
+	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,580)\">
 	$name
 	</td>
-	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,630)\">
+	<td id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('gbook/adm_gbookID.php?id=$id',630,580)\">
 	".substr($tema,0,250)."...
 	</td>
 	<td><input type=checkbox name='c".$id."' value=\"$id\"></td>

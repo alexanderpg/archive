@@ -2,15 +2,36 @@
 function Catalog()
 {
 global $table_name,$PHP_SELF,$categoryID,$systems,$pid;
+
+$GetSystems=GetSystems();
+$systems=$GetSystems;
+$option=unserialize($GetSystems['admoption']);
+
+if($option['prevpanel_enabled'] == 1) $prevpanel_enabled="checked";
+
+
+
+
 return "
 
 <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
 <tr>
 	<td id=pane align=center width=\"295\"><img src=img/arrow_d.gif width=7 height=7 border=0 hspace=5 ><span name=txtLang id=txtLang>Каталоги</span></td>
     <td rowspan=2 valign=top width=\"100%\">
-<iframe id=interfacesWin1 src=\"catalog/admin_cat_content.php\" width=\"100%\" height=\"580\"  name=\"frame2\" frameborder=\"0\" scrolling=\"Auto\" ></iframe>
+<iframe id=interfacesWin1 src=\"catalog/admin_cat_content.php\" width=\"100%\" height=\"400\"  name=\"frame2\" frameborder=\"0\" scrolling=\"Auto\"></iframe>
+
+<div style=\"padding:5px\">
+<input type=\"hidden\" value=\"\" id=\"prevpanel_mem\">
+<FIELDSET>
+	  <LEGEND><input type=\"checkbox\" id=\"prevpanel_act\" value=\"1\" onclick=\"ClosePanelProductDisp()\" $prevpanel_enabled> Отображать иконку, описание и характеристики товара</LEGEND>
+<div id='prevpanel' style=\"padding:5px;width:100%\">
+
+</div>
+	 </FIELDSET>
 	</td>
 </tr>
+</div>
+
 
 <tr valign=\"top\">
 	<td id=\"catalog_products\"><iframe id=interfacesWin2  src=\"catalog/tree.php\" width=\"300\"  height=\"550\"  scrolling=\"Auto\" name=\"frame1\"></iframe>
@@ -108,14 +129,18 @@ while(@$row = mysql_fetch_array($result))
     if(($row['sklad'])=="1") $checked.="&nbsp;&nbsp;<img name=imgLang src=../icon/cart_error.gif   alt=\"Уведомление, под заказ\">";
     if($parent_enabled==1) $checked.="&nbsp;&nbsp;<img name=imgLang src=../icon/plugin.gif   alt=\"Подтип товара\">";
 	$uid=$row['uid'];
-
+    $weight=$row['weight'];
+	$ed_izm=$row['ed_izm'];
+	
+	if(empty($ed_izm)) $ed_izm="шт.";
+	
 	$baseinputvaluta=$row['baseinputvaluta'];
 
 	$vsql="select dengi from ".$SysValue['base']['table_name3'];
 	$vresult=mysql_query($vsql);
 	$vrow = mysql_fetch_array($vresult);
 	$defaultvaluta=$vrow['dengi'];
-
+    
 	if ($defaultvaluta==$baseinputvaluta) {$baseinputvaluta='';}
 
 
@@ -146,8 +171,11 @@ while(@$row = mysql_fetch_array($result))
 	  <td width=\"55\"  align=\"center\"  id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\">
 	  $id
 	  </td>
-	  <td width=\"500\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
+	  <td width=\"500\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."');DoUpdateProductDisp(".$id.");\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
 	  &nbsp;$name  
+	  </td>
+	  <td width=\"100\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
+	  &nbsp;".$weight." ".$ed_izm."
 	  </td>
 	  <td width=\"100\"   id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('../product/adm_productID.php?productID=$id',650,630)\"> 
 	  &nbsp;".($price*1).$viso."
@@ -160,13 +188,13 @@ while(@$row = mysql_fetch_array($result))
 	$num++;
 	}
 $disp="
-
 <table cellpadding=0 bgcolor=808080 border=0 cellspacing=1 width=100% class=\"sortable\" id=\"sort\">
 <form name=\"form_flag\">
 <tr valign=\"top\">
 	<td width=\"100\" id=pane align=center><img  src=\"../icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('product');\"><span name=txtLang  id=txtLang>Вывод</span></td>
     <td width=\"55\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>ID</td>
 	<td width=\"540\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>Наименование</td>
+   <td width=\"100\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>Склад</td>
     <td width=\"100\" id=pane align=center><img src=../img/arrow_d.gif width=7 height=7 border=0 hspace=5>Цена</td>
 	<td width=\"25\" id=pane align=center>&plusmn;</td>
 </tr>
