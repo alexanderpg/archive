@@ -14,8 +14,6 @@ function actionStart() {
     $PHPShopGUI->field_col = 3;
     $data = $PHPShopGUI->valid($data,'name','content','servers');
 
-
-
     $PHPShopGUI->action_button['Сохранить и отправить'] = array(
         'name' => 'Сохранить и отправить',
         'action' => 'saveID',
@@ -51,7 +49,7 @@ function actionStart() {
     // Содержание закладки 1
     $Tab1=$PHPShopGUI->setField("Тема", $PHPShopGUI->setInput("text.requared", "name_new", $data['name']));
 
-  
+ 
     // Новости
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['news']);
     $data_page = $PHPShopOrm->select(array('*'), false, array('order' => 'id desc'), array('limit' => 10));
@@ -68,7 +66,7 @@ function actionStart() {
     
     $Tab1= $PHPShopGUI->setCollapse('Информация',$Tab1);
     
-    $Tab1.=$PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
+    $Tab1.=$PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI(). $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail') . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);

@@ -10,7 +10,7 @@ function tab_info($data) {
         <ol>
         <li>Google Merchant: <code>' . Marketplaces::getProtocol() . $_SERVER['SERVER_NAME'] .$GLOBALS['SysValue']['dir']['dir']. '/rss/google.xml</code>
         <li>AliExpress: <code>' . Marketplaces::getProtocol() . $_SERVER['SERVER_NAME'] .$GLOBALS['SysValue']['dir']['dir']. '/yml/?marketplace=' . Marketplaces::ALIEXPRESS . '</code>
-        <li>СберМегаМаркет: <code>' . Marketplaces::getProtocol() . $_SERVER['SERVER_NAME'] .$GLOBALS['SysValue']['dir']['dir']. '/yml/?marketplace=' . Marketplaces::SBERMARKET . '</code>
+        <li>Мегамаркет: <code>' . Marketplaces::getProtocol() . $_SERVER['SERVER_NAME'] .$GLOBALS['SysValue']['dir']['dir']. '/yml/?marketplace=' . Marketplaces::SBERMARKET . '</code>
         <li>Яндекс.Маркет: <code>' . Marketplaces::getProtocol() . $_SERVER['SERVER_NAME'] .$GLOBALS['SysValue']['dir']['dir']. '/yml/?marketplace=' . Marketplaces::CDEK . '</code>
         </ol>                      
       <h4>SQL запросы для пакетной обработки</h4>
@@ -49,12 +49,12 @@ function tab_info($data) {
         <tr>
           <th scope="row">7</th>
           <td>update phpshop_products set sbermarket=\'0\' where price<1 or items<1;</td>
-          <td>Замена статуса участие в СберМаркет (убрать из выгрузки) при пустом складе или нулевой цене</td>
+          <td>Замена статуса участие в Мегамаркет (убрать из выгрузки) при пустом складе или нулевой цене</td>
         </tr>
          <tr>
           <th scope="row">8</th>
           <td>update phpshop_products set sbermarket=\'1\' where price>0 and items>0;</td>
-          <td>Замена статуса участие в СберМаркет (добавить в выгрузку) при положительном складе и не нулевой цене</td>
+          <td>Замена статуса участие в Мегамаркет (добавить в выгрузку) при положительном складе и не нулевой цене</td>
         </tr>
    </tbody>
 </table>

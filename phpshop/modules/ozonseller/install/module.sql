@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_categories` (
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
-ALTER TABLE `phpshop_orders` ADD `ozonseller_order_data` text default '';
+ALTER TABLE `phpshop_orders` ADD `ozonseller_order_data` text NOT NULL;
 ALTER TABLE `phpshop_categories` ADD `category_ozonseller` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_sort_categories` ADD `attribute_ozonseller` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_products` ADD `export_ozon` enum('0','1') DEFAULT '0';

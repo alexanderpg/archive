@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_baners` (
   `size` enum('0','1','2') DEFAULT '0',
   `dir` varchar(255) DEFAULT '',
   `dop_cat` varchar(255) DEFAULT '',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `skin` varchar(64) DEFAULT '',
   `image` varchar(255) DEFAULT NULL,
   `description` text,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_categories` (
   `sort` blob,
   `content` text,
   `vid` enum('0','1') DEFAULT '0',
-  `servers` varchar(255) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `title` varchar(255) DEFAULT '',
   `title_enabled` enum('0','1','2') DEFAULT '0',
   `title_shablon` varchar(255) DEFAULT '',
@@ -115,7 +115,13 @@ CREATE TABLE IF NOT EXISTS `phpshop_categories` (
   `podcatalog_view` enum('0','1') DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `parent_to` (`parent_to`),
-  KEY `servers` (`servers`)
+  KEY `servers` (`servers`),
+  KEY `vid` (`vid`),
+  KEY `skin_enabled` (`skin_enabled`),
+  KEY `menu` (`menu`),
+  KEY `tile` (`tile`),
+  KEY `podcatalog_view` (`podcatalog_view`),
+  KEY `dop_cat` (`dop_cat`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_categories` (`id`, `name`, `num`, `parent_to`, `yml`, `num_row`, `num_cow`, `sort`, `content`, `vid`, `servers`, `title`, `title_enabled`, `title_shablon`, `descrip`, `descrip_enabled`, `descrip_shablon`, `keywords`, `keywords_enabled`, `keywords_shablon`, `skin`, `skin_enabled`, `order_by`, `order_to`, `secure_groups`, `icon`, `icon_description`, `dop_cat`, `parent_title`, `sort_cache`, `sort_cache_created_at`, `menu`, `cat_seo_name`, `cat_seo_name_old`, `tile`, `length`, `width`, `height`, `weight`, `ed_izm`, `color`) VALUES
@@ -209,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_delivery` (
   `sum_min` float DEFAULT '0',
   `weight_max` int(11) DEFAULT '0',
   `weight_min` int(11) DEFAULT '0',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `is_mod` enum('1','2') DEFAULT '1',
   `warehouse` int(11) DEFAULT '0',
   `comment` text,
@@ -248,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_dialog_answer` (
   `message` text,
   `enabled` enum('0','1') DEFAULT '1',
   `num` int(11) DEFAULT NULL,
-  `servers` varchar(255) DEFAULT NULL,
+  `servers` varchar(1000) DEFAULT '',
   `view` enum('1','2') DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
@@ -342,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_gbook` (
   `otsiv` text,
   `otvet` text,
   `flag` enum('0','1') DEFAULT '0',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
@@ -366,7 +372,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_menu` (
   `num` int(11) DEFAULT '0',
   `dir` varchar(64) DEFAULT NULL,
   `element` enum('0','1') DEFAULT '0',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `dop_cat` VARCHAR(255) DEFAULT '',
   `mobile` enum('0','1') DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -382,7 +388,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules` (
   `path` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) DEFAULT '',
   `date` int(11) DEFAULT '0',
-  `servers` varchar(255) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   PRIMARY KEY (`path`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
@@ -615,7 +621,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_payment_systems` (
   `yur_data_flag` enum('0','1') DEFAULT '0',
   `icon` varchar(255) DEFAULT '',
   `color` varchar(64) DEFAULT '#000000',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `company` int(11) DEFAULT '0',
   `status` INT(11) DEFAULT '0',
   `sum_max` float DEFAULT '0',
@@ -637,7 +643,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_news` (
   `podrob` text,
   `datau` int(11) DEFAULT '0',
   `odnotip` text,
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `icon` varchar(255) DEFAULT '',
   `news_seo_name` varchar(255) DEFAULT '',
   PRIMARY KEY (`id`)
@@ -764,7 +770,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_page` (
   `keywords` text,
   `description` varchar(255) DEFAULT '',
   `content` text,
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `num` smallint(3) DEFAULT '0',
   `datas` int(11) DEFAULT '0',
   `odnotip` text,
@@ -799,7 +805,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_page_categories` (
   `num` int(64) DEFAULT '1',
   `parent_to` int(11) DEFAULT '0',
   `content` text,
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `menu` enum('0','1') DEFAULT '0',
   `page_cat_seo_name` varchar(255) DEFAULT '',
   `icon` varchar(255) DEFAULT '',
@@ -874,8 +880,8 @@ CREATE TABLE IF NOT EXISTS `phpshop_products` (
   `enabled` enum('0','1') DEFAULT '1',
   `uid` varchar(64) DEFAULT '',
   `spec` enum('0','1') DEFAULT '0',
-  `odnotip` varchar(64) DEFAULT '',
-  `vendor` text,
+  `odnotip` varchar(255) DEFAULT '',
+  `vendor` varchar(1000) DEFAULT '',
   `vendor_array` blob,
   `yml` enum('0','1') DEFAULT '0',
   `num` int(11) DEFAULT '1',
@@ -929,8 +935,15 @@ CREATE TABLE IF NOT EXISTS `phpshop_products` (
   KEY `category` (`category`),
   KEY `enabled` (`enabled`),
   KEY `uid` (`uid`),
-  KEY `external_code` (`external_code`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=cp1251;
+  KEY `vendor` (`vendor`),
+  KEY `external_code` (`external_code`),
+  KEY `spec` (`spec`),
+  KEY `newtip` (`newtip`),
+  KEY `yml` (`yml`),
+  KEY `parent_enabled` (`parent_enabled`),
+  KEY `sklad` (`sklad`),
+  KEY `dop_cat` (`dop_cat`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
 INSERT INTO `phpshop_products` (`id`, `category`, `name`, `description`, `content`, `price`, `price_n`, `sklad`, `p_enabled`, `enabled`, `uid`, `spec`, `odnotip`, `vendor`, `vendor_array`, `yml`, `num`, `newtip`, `title`, `title_enabled`, `datas`, `page`, `user`, `descrip`, `descrip_enabled`, `title_shablon`, `descrip_shablon`, `keywords`, `keywords_enabled`, `keywords_shablon`, `pic_small`, `pic_big`, `yml_bid_array`, `parent_enabled`, `parent`, `items`, `weight`, `price2`, `price3`, `price4`, `price5`, `files`, `baseinputvaluta`, `ed_izm`, `dop_cat`, `rate`, `rate_count`, `price_search`, `parent2`, `color`, `vendor_code`, `vendor_name`, `productday`, `hit`, `prod_seo_name`, `prod_seo_name_old`, `length`, `width`, `height`, `price_purch`) VALUES
 (1, 8, 'Товар с подтипами1', '', '', 8000, 0, '0', '1', '1', '000-001', '1', '', 'i6-9ii4-1i', 0x613a323a7b693a363b613a313a7b693a303b733a313a2239223b7d693a343b613a313a7b693a303b733a313a2231223b7d7d, '1', 0, '1', '', '0', 1634645649, 'null', 1, '', '0', '', '', '', '0', '', '/UserFiles/Image/trial/primer-fotos.jpg', '/UserFiles/Image/trial/primer-foto.jpg', 0x613a313a7b733a333a22626964223b733a303a22223b7d, '0', '20,18,17', 80, 0, 0, 0, 0, 0, 'N;', 6, 'шт.', '', 4, 2, 0, NULL, NULL, '', '', '0', '0', 'tovar1', '', '', '', '', 0),
@@ -1037,7 +1050,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_rssgraber` (
   `start_date` int(16) UNSIGNED DEFAULT '0',
   `end_date` int(16) UNSIGNED DEFAULT '0',
   `last_load` int(16) UNSIGNED DEFAULT '0',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
@@ -1153,7 +1166,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_slider` (
   `num` smallint(6) DEFAULT '0',
   `link` varchar(255) DEFAULT '',
   `alt` varchar(255) DEFAULT '',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `mobile` enum('0','1') DEFAULT '0',
   `name` varchar(255) DEFAULT NULL,
   `link_text` varchar(255) DEFAULT NULL,
@@ -1208,7 +1221,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_sort_categories` (
   `virtual` enum('0','1') DEFAULT '0',
   `yandex_param` enum('1','2') DEFAULT '1',
   `yandex_param_unit` varchar(64) DEFAULT '',
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   `show_preview` enum('0','1') DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `category` (`category`)
@@ -1316,7 +1329,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_warehouses` (
   `uid` varchar(64) DEFAULT NULL,
   `enabled` enum('0','1') DEFAULT '1',
   `num` int(11) DEFAULT NULL,
-  `servers` varchar(64) DEFAULT '',
+  `servers` varchar(1000) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
@@ -1384,7 +1397,7 @@ INSERT INTO `phpshop_modules_tinkoff_system` (`id`, `title`, `terminal`, `secret
 (1, 'Платежная система Т-Банк', 'TinkoffBankTest', 'TinkoffBankTest', 'https://securepay.tinkoff.ru/v2', '0', 2.5, 0, 0, '', 'osn');
 
 INSERT INTO `phpshop_payment_systems` (`id`, `name`, `path`, `enabled`, `num`, `message`, `message_header`, `yur_data_flag`, `icon`) VALUES
-(10032, 'Мир, Visa, Mastercard (Т-Банк)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tinkoff.png');
+(10032, 'Мир, Visa, Mastercard (Т-Банк)', 'modules', '0', 0, '', '', '', '/UserFiles/Image/Payments/tbank.svg');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_tinkoff_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

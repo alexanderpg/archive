@@ -229,7 +229,7 @@ function actionStart() {
     $Tab_icon = $PHPShopGUI->setField("Инверсия цвета текста", $PHPShopGUI->setInputText(null, "color_new", (int) $data['color'], 100, '%'));
 
     // Иконка
-    $Tab_icon .= $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['icon'], "icon_new", false));
+    $Tab_icon .= $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['icon'], "icon_new", false, ['load' => true, 'server' => true, 'url' => true, 'multi' => false, 'search' => true]));
 
     $Tab1 .= $PHPShopGUI->setCollapse('Иконка', $Tab_icon);
 
@@ -241,10 +241,10 @@ function actionStart() {
     $editor->ToolbarSet = 'Normal';
     $editor->Value = $data['content'];
     $Tab2 = $editor->AddGUI();
-    
+
     // AI
-    $Tab2.=$PHPShopGUI->setAIHelpButton('content_new',300,'catalog_content');
-        
+    $Tab2 .= $PHPShopGUI->setAIHelpButton('content_new', 300, 'catalog_content');
+
     // Заголовки
     $Tab7 = $PHPShopGUI->loadLib('tab_headers', $data);
 
@@ -412,7 +412,7 @@ function actionUpdate() {
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('vid_new', 'skin_enabled_new', 'menu_new', 'tile_new','podcatalog_view_new');
+    $PHPShopOrm->updateZeroVars('vid_new', 'skin_enabled_new', 'menu_new', 'tile_new', 'podcatalog_view_new');
     $PHPShopOrm->debug = false;
     $action = $PHPShopOrm->update($_POST, array('id' => '=' . $_POST['rowID']));
     $PHPShopOrm->clean();
@@ -466,16 +466,26 @@ function iconAdd() {
     if (!empty($_FILES['file']['name'])) {
         $_FILES['file']['ext'] = PHPShopSecurity::getExt($_FILES['file']['name']);
         $_FILES['file']['name'] = PHPShopString::toLatin(str_replace('.' . $_FILES['file']['ext'], '', PHPShopString::utf8_win1251($_FILES['file']['name']))) . '.' . $_FILES['file']['ext'];
-        if (in_array($_FILES['file']['ext'], array('gif', 'png', 'jpg', 'jpeg', 'svg'))) {
+        if (in_array($_FILES['file']['ext'], array('gif', 'png', 'jpg', 'jpeg', 'svg','webp'))) {
             if (move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path . $_FILES['file']['name'])) {
                 $file = $GLOBALS['dir']['dir'] . $path . $_FILES['file']['name'];
             }
         }
     }
 
-    // Читаем файл из URL
+    // Копируем файл из URL
     elseif (!empty($_POST['furl'])) {
         $file = $_POST['icon_new'];
+        $path_parts = pathinfo($file);
+        $file_name = $path_parts['basename'];
+        $file_ext = PHPShopSecurity::getExt($file_name);
+        $file_name = PHPShopString::toLatin(str_replace('.' . $file_ext, '', PHPShopString::utf8_win1251($file_name))) . '.' . $file_ext;
+
+        if (in_array($file_ext, array('gif', 'png', 'jpg', 'jpeg', 'svg','webp'))) {
+            if(copy($file, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path. $file_name)){
+                $file = $GLOBALS['dir']['dir'] . $path . $file_name;
+            }
+        }
     }
 
     // Читаем файл из файлового менеджера

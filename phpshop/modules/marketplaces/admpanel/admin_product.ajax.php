@@ -47,7 +47,7 @@ function marketplacesAddLabels($product) {
         $postfix = null;
 
     if (isset($product['sbermarket']) && (int) $product['sbermarket'] === 1 && (int) $memory['catalog.option']['label_sbermarket'] === 1)
-        $PHPShopInterface->productTableRowLabels[] = '<a class="label label-success" title="' . __('Вывод в СберМаркет') . '" href="?path=catalog' . $postfix . '&where[sbermarket]=1">' . __('Сбер') . '</a> ';
+        $PHPShopInterface->productTableRowLabels[] = '<a class="label label-success" title="' . __('Вывод в Мегамаркет') . '" href="?path=catalog' . $postfix . '&where[sbermarket]=1">' . __('Сбер') . '</a> ';
 
     if (isset($product['cdek']) && (int) $product['cdek'] === 1 && (int) $memory['catalog.option']['label_cdek'] === 1)
         $PHPShopInterface->productTableRowLabels[] = '<a class="label label-success" title="' . __('Вывод в СДЭК.МАРКЕТ') . '" href="?path=catalog' . $postfix . '&where[cdek]=1">' . __('ЯМ') . '</a> ';

@@ -8,7 +8,7 @@ function actionStart() {
     global $PHPShopInterface, $PHPShopOrm, $TitlePage;
 
     $PHPShopInterface->setActionPanel($TitlePage, array('Удалить выбранные'), array('Добавить'));
-    $data = $PHPShopOrm->select(array('*'), false, array('order' => 'num DESC'), array('limit' => 1000));
+    $data = $PHPShopOrm->select(array('*'), false, array('order' => 'num'), array('limit' => 1000));
     if (is_array($data)) {
 
         $PHPShopInterface->setCaption(array(null, "3%"), array("Название", "30%"), array("Код", "30%"), array("", "10%"), array("Статус", "10%", array('align' => 'right')));

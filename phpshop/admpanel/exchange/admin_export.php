@@ -432,6 +432,25 @@ function actionSave() {
 
         $ext_file = 'xml';
     }
+     // Webmaster
+    else if ($_POST['export_format'] == 'webmaster') {
+        PHPShopObj::loadClass("valuta");
+        PHPShopObj::loadClass("promotions");
+        PHPShopObj::loadClass('yml');
+
+        //$_GET['getall'] = true;
+        $_GET['available'] = true;
+
+        if ($_POST['export_code'] == 'utf')
+            $_GET['utf'] = true;
+
+        $PHPShopYml = new PHPShopYml();
+        $PHPShopYml->where = $val;
+
+        $csv = $PHPShopYml->compile();
+
+        $ext_file = 'xml';
+    }
     // RSS
     else if ($_POST['export_format'] == 'rss') {
         PHPShopObj::loadClass("valuta");
@@ -836,20 +855,21 @@ function actionStart() {
 
 
     if (empty($subpath[2])) {
-        $format_value[] = array('Яндекс (YML)', 'yml', $export_format);
+        $format_value[] = array('Яндекс.Маркет (YML)', 'yml', $export_format);
+        $format_value[] = array('Яндекс.Вебмастер (YML)', 'webmaster', $export_format);
         $format_value[] = array('Google (RSS)', 'rss', $export_format);
     }
 
     $format_value[] = array('1C (CML)', 'cml', $export_format);
 
-    $Tab1 = $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 150)) .
-            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), 1, 'Колонка с характеристиками только для общего каталога. Для формата Excel', $class) .
+    $Tab1 = $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 200)) .
+            $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 200), 1, 'Колонка с характеристиками только для общего каталога. Для формата Excel', $class) .
             $PHPShopGUI->setField('Полный путь для изображений', $PHPShopGUI->setCheckbox('export_imgpath', 1, null, @$memory[$_GET['path']]['export_imgpath']), 1, 'Добавляет к изображениям адрес сайта для формата Excel', $class) .
-            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения для формата Excel', $class) .
-            $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 150)) .
-            $PHPShopGUI->setField('Формат файла', $PHPShopGUI->setSelect('export_format', $format_value, 150), 1, false, $class_xml) .
+            $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 200), 1, 'Дополнительные изображения для формата Excel', $class) .
+            $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 200)) .
+            $PHPShopGUI->setField('Формат файла', $PHPShopGUI->setSelect('export_format', $format_value, 200), 1, false, $class_xml) .
             $PHPShopGUI->setField('GZIP сжатие', $PHPShopGUI->setCheckbox('export_gzip', 1, null, 0), 1, 'Сокращает размер создаваемого файла') .
-            $PHPShopGUI->setField('Лимит строк', $PHPShopGUI->setInputText(null, 'export_limit', $export_limit, 150), 1, 'Запись c 1 по 10000');
+            $PHPShopGUI->setField('Лимит строк', $PHPShopGUI->setInputText(null, 'export_limit', $export_limit, 200), 1, 'Запись c 1 по 10000');
 
     // Закладка 3
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges']);

@@ -62,7 +62,7 @@ if (is_array($productcomponents)) {
             if (is_array($row)) {
                 foreach ($row as $data) {
 
-                    if ($data['baseinputvaluta'] != $productcomponents['baseinputvaluta']) {
+                    if ($data['baseinputvaluta'] != $products['baseinputvaluta']) {
                         $data['price'] = $data['price'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
                         $data['price2'] = $data['price2'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];
                         $data['price3'] = $data['price3'] / $PHPShopValutaArray->getArray()[$data['baseinputvaluta']]['kurs'];

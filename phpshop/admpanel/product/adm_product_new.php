@@ -252,7 +252,7 @@ function actionStart() {
 
         // Дополнительный склад
         $PHPShopOrmWarehouse = new PHPShopOrm($GLOBALS['SysValue']['base']['warehouses']);
-        $dataWarehouse = $PHPShopOrmWarehouse->select(array('*'), array('enabled' => "='1'"), array('order' => 'num DESC'), array('limit' => 100));
+        $dataWarehouse = $PHPShopOrmWarehouse->select(array('*'), array('enabled' => "='1'"), array('order' => 'num'), array('limit' => 100));
         if (is_array($dataWarehouse)) {
 
             $Tab_info .= $PHPShopGUI->setField('Общий склад', $PHPShopGUI->setInputText(false, 'items_new', $data['items'], 100, $ed_izm), 'left');

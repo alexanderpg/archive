@@ -2,7 +2,13 @@
 
 // Включение
 $enabled = false;
-$ssl = false;
+
+if (empty($_SERVER['DOCUMENT_ROOT'])) {
+    $_classPath = realpath(dirname(__FILE__)) . "/../../../";
+    $enabled = true;
+    $ssl = true;
+} else
+    $_classPath = "../../../";
 
 $_classPath = "../../../";
 include($_classPath . "class/obj.class.php");
@@ -37,4 +43,3 @@ if(isset($_GET['ssl']))
 (new SitemapPro())->generateSitemap($ssl);
 
 echo "Sitemap.xml done!";
-?>

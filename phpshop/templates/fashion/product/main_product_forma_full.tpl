@@ -29,8 +29,8 @@
                     <!-- End Main Slider -->
 
                     <!-- Slider Nav -->
-                    <div class="row row-center position-absolute bottom-0 right-0 left-0 px-4 py-3">
-                        <div id="heroSliderNav" class="js-slick-carousel slick slick-gutters-1 slick-equal-height slick-transform-off max-w-28rem mx-auto"
+                    <div class="position-absolute bottom-0 right-0 left-0 px-4 py-3">
+                        <div id="heroSliderNav" class="js-slick-carousel slick slick-gutters-1 slick-transform-off mx-auto"
                              data-hs-slick-carousel-options='{
                              "infinite": true,
                              "autoplaySpeed": 7000,

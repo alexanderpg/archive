@@ -169,7 +169,7 @@ class PHPShopCommerceML {
 		</Товары>
 	</Каталог>';
 
-        $xml = '<?xml version="1.0" encoding="windows-1251"?> //T09:41:49
+        $xml = '<?xml version="1.0" encoding="windows-1251"?>
 <КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . PHPShopDate::get(time(), false, true) . 'T'.date("H:i:s").'">
     <Классификатор>
     <Ид>1</Ид>

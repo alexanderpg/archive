@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с Яндекс Доставкой API 2.0
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  * @package PHPShopModules
  * @todo https://yandex.ru/support2/delivery-profile/ru/modules/widgets
  */
@@ -222,7 +222,11 @@ class YandexDelivery {
             'total_weight' => (int) ($data->weight),
         ]);
 
-        return ceil(explode(' ', (int) $response['pricing_total'])[0] + $this->getAddPrice($response));
+        //$this->log($response, null, '/api/b2b/platform/pricing-calculator', null);
+
+        $pricing_total = explode(' ', (int) $response['pricing_total'])[0];
+
+        return ceil($pricing_total + $this->getAddPrice($pricing_total));
     }
 
     /**
@@ -285,9 +289,9 @@ class YandexDelivery {
                 ],
             ],
             'recipient_info' => [
-                'email' => $data->email,
-                'first_name' => $data->name,
-                'phone' => $data->phone,
+                'email' => (string) $data->email,
+                'first_name' => (string) $data->name,
+                'phone' => (string) $data->phone,
             ],
             'source' => [
                 'platform_station' => [

@@ -38,17 +38,17 @@ function productsproperty_UID_hook($obj, $row, $rout) {
                                 $link = '/shop/UID_' . $property['id'][$k] . '.html';
                         }
 
-
                         $price = $PHPShopProduct->getPrice();
-
-
-
-                        //$list .= PHPShopText::a($link, $val, $val, false, false, false, 'btn btn-default property-value-' . ($n + 1)) . ' ';
+                        $items = $PHPShopProduct->getParam('items');
+                        $unit = $PHPShopProduct->getParam('ed_izm');
+                        
                         $obj->set('productsproperty_link', $link);
                         $obj->set('productsproperty_class', $class);
                         $obj->set('productsproperty_num', ($n + 1));
                         $obj->set('productsproperty_name', $val);
                         $obj->set('productsproperty_price', $price);
+                        $obj->set('productsproperty_items', (int)$items);
+                        $obj->set('productsproperty_unit', $unit);
                         $list .= PHPShopParser::file($GLOBALS['SysValue']['templates']['productsproperty']['product'], true, false, true);
                     }
                 }

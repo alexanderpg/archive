@@ -4,7 +4,7 @@
  * Автономная синхронизация номенклатуры из 1С и CML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 4.3
+ * @version 4.4
  */
 // Авторизация
 include_once("login.php");
@@ -579,7 +579,9 @@ class ReadCsv1C extends PHPShopReadCsvNative {
 
             if ($this->ObjSystem->getSerilizeParam("1c_option.update_price") == 1 and $CsvToArray[7] != "")
                 $sql .= "price='" . $CsvToArray[7] . "', "; // цена 1
-
+            
+            if (!empty($CsvToArray[0]))
+                $sql .= "uid='" . $CsvToArray[0] . "', "; // артикул
 
             if ($this->ObjSystem->getSerilizeParam("1c_option.update_item") == 1) {
 

@@ -132,7 +132,7 @@ $().ready(function () {
         var words = $(this).val();
         var s = $(this);
         var set = s.attr('data-set');
-        if (words.length > 3) {
+        if (words.length > 2) {
             $.ajax({
                 type: "POST",
                 url: "?path=modules&id=ozonseller",

@@ -3,8 +3,8 @@
         opacity: 1;
     }
 </style>
-    
-   
+
+
 <!-- Модальное окно yandexwidget -->
 <div class="modal fade bs-example-modal" id="yandexwidgetModal" tabindex="-1" role="dialog" aria-hidden="true" >
     <div class="modal-dialog modal-lg">
@@ -19,16 +19,16 @@
                 <script async src="//widget-pvz.dostavka.yandex.net/widget.js"></script>
 
                 <div id="delivery-widget"></div>
+                <style>
+                    .widget__wrapper{
+                        height:500px !important;
+                    }
+                </style>
 
                 <!-- Код виджета -->
                 <script>
                     (function(w) {
                         function startWidget() {
-
-                            var is_mobile = false;
-                            if($(window).width() <= 576)
-                                is_mobile = true;
-                            
 
                             var weight = Number($('input[name="yandexdelivery_weight"]').val());
                             var city = $('input[name="yandexdelivery_city"]').val();
@@ -40,7 +40,7 @@
                                     city: city,               // Город отображаемый на карте при запуске
                                     // Размеры виджета
                                     size:{
-                                        "height": is_mobile ? "300px" : "500px",        // Высота
+                                        "height": "500px",        // Высота
                                         "width": "100%"           // Ширина
                                     },
                                     source_platform_station: station, // Станция отгрузки

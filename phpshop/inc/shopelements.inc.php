@@ -417,7 +417,7 @@ class PHPShopDialogElement extends PHPShopElements {
 
                     if (in_array(PHPShopSecurity::getExt($row['attachments']), array('gif', 'png', 'jpg', 'jpeg'))) {
                         $flist = '
-                             <a href="' . $row['attachments'] . '" class="thumbnail" target="_blank" title="' . $row['attachments'] . '"><img src="' . $row['attachments'] . '" alt="" ></a>';
+                             <a href="' . $row['attachments'] . '" class="thumbnail" target="_blank" title="' . $row['attachments'] . '"><img src="' . $row['attachments'] . '" alt="" class="img-responsive img-fluid"></a>';
                     } else {
                         $pathinfo = pathinfo($row['attachments']);
                         $flist = '<a title="" target="_blank" href="' . $row['attachments'] . '"><span class="glyphicon glyphicon-paperclip"></span> ' . $pathinfo['basename'] . '</a>';

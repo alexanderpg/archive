@@ -1,6 +1,6 @@
 <?php
 
-$TitlePage = __("CRM Журнал");
+$TitlePage = __("Журнал операций");
 
 function actionStart() {
     global $PHPShopInterface, $TitlePage, $PHPShopSystem;

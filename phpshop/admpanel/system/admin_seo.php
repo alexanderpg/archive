@@ -16,8 +16,9 @@ function actionStart() {
     $PHPShopGUI->addJSFiles('./js/jquery.waypoints.min.js', './system/gui/system.gui.js', './system/gui/headers.gui.js');
     $PHPShopGUI->setActionPanel($TitlePage, false, array('Сохранить'));
 
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setField('Основной заголовок (Title)', $PHPShopGUI->setTextarea('title_new', $data['title'], false, false, 100));
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setField('Основное описание (Description)', $PHPShopGUI->setTextarea('descrip_new', $data['descrip'], false, false, 100));
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setField('Основной заголовок (Title)', $PHPShopGUI->setTextarea('title_new', $data['title'], false, false, 100) . $PHPShopGUI->setAIHelpButton('title_new', 200, 'site_title'));
+
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setField('Основное описание (Description)', $PHPShopGUI->setTextarea('descrip_new', $data['descrip'], false, false, 100). $PHPShopGUI->setAIHelpButton('descrip_new', 200, 'site_descrip'));
     $PHPShopGUI->_CODE .= $PHPShopGUI->setField('Основные ключевые слова (Keywords)', $PHPShopGUI->setTextarea('keywords_new', $data['keywords'], false, false, 100));
     $PHPShopGUI->_CODE .= $PHPShopGUI->setField("Ссылочная масса", $PHPShopGUI->setCheckbox('option[safe_links]', 1, 'Показывать отключенные товары по прямым ссылкам для поисковиков вместо 404 ошибки', $option['safe_links']));
     $PHPShopGUI->_CODE .= $PHPShopGUI->setField("Заголовок HSTS", $PHPShopGUI->setCheckbox('option[hsts]', 1, 'Открытие сайта только по протоколу HTTPS', $option['hsts']));

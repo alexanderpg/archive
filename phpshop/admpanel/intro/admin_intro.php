@@ -17,12 +17,12 @@ function mailNotice($type, $until_day, $promo = null) {
             case "license":
 
                 $userContent = PHPShopParser::file("tpl/license.mail.tpl", true, false);
-                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается лицензия для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html");
+                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается лицензия для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html",false, false, true);
 
                 break;
             case "support":
                 $userContent = PHPShopParser::file("tpl/support.mail.tpl", true, false);
-                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается техническая поддержка для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html");
+                new PHPShopMail($PHPShopSystem->getEmail(), $PHPShopSystem->getEmail(), __('Заканчивается техническая поддержка для сайта') . ' ' . $_SERVER['SERVER_NAME'], $userContent, "text/html",false, false, true);
 
                 break;
         }

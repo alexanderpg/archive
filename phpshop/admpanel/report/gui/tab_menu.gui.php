@@ -11,7 +11,6 @@ function tab_menu() {
        <li class="' . @$menu_active_statproduct . '"><a href="?path=report.statproduct">'.__('Отчеты по товарам').'</a></li>    
        <li class="' . @$menu_active_statuser . '"><a href="?path=report.statuser">'.__('Топ 10 покупатели').'</a></li>
        <li class="' . @$menu_active_statpayment . '"><a href="?path=report.statpayment">'.__('Статусы заказов').'</a></li>
-       <li class="' . @$menu_active_crm . '"><a href="?path=report.crm">'.__('CRM журнал').'</a></li>
        </ul>';
     
     return $tree;

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Библиотека YML для Яндекс Маркета
+ * Библиотека YML
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopClass
  */
 class PHPShopYml {
@@ -270,7 +270,10 @@ class PHPShopYml {
                 $where = "export_ozon='1' and";
             } elseif (isset($_GET['marketplace']) && $_GET['marketplace'] === 'vk' && isset($GLOBALS['SysValue']['base']['vkseller']['vkseller_system'])) {
                 $where = "export_vk='1' and";
-            } else {
+            } 
+            elseif (isset($_GET['marketplace']) && $_GET['marketplace'] === 'megamarket' && isset($GLOBALS['SysValue']['base']['megamarket']['megamarket_system'])) {
+                $where = "export_megamarket='1' and";
+            }else {
                 $where = "yml='1' and";
             }
         }

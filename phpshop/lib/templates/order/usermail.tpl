@@ -206,7 +206,7 @@
                     <tr>
                         <td bgcolor="#f3f3f3" align="center" height="60"
                             style="font-size: 20px; color: #464646; font-weight: 700; background: #f3f3f3; border-radius:4px;font-family:    Helvetica, sans-serif; letter-spacing: 4px; ">
-                            {Заказ} № @ouid@
+                            {Заказ} &#8470; @ouid@
                         </td>
                     </tr>
                     <tr>

@@ -3,7 +3,7 @@
 /**
  * Обработчик товаров
  * @author PHPShop Software
- * @version 2.7
+ * @version 2.8
  * @package PHPShopShopCore
  */
 class PHPShopShop extends PHPShopShopCore {
@@ -853,61 +853,66 @@ function CID_Product($category = null, $mode = false) {
     } else
         $where = array('(category' => '=' . intval($this->category) . ' OR dop_cat LIKE \'%#' . $this->category . '#%\')', 'enabled' => "='1'", 'parent_enabled' => "='0'", $this->PHPShopSystem->getPriceColumn() => '>1');
 
-    // Максимальная и минимальная цена для всех товаров
-    if ($this->multi_currency_search)
-        $search_where = array('min(price_search) as min', 'max(price_search) as max');
-    else
-        $search_where = array('max(' . $this->PHPShopSystem->getPriceColumn() . ') as max', 'min(' . $this->PHPShopSystem->getPriceColumn() . ') as min');
 
     $group = null;
 
-    $data = $this->select($search_where, $where, $group);
-    $data['max'] = intval($data['max']);
-    $data['min'] = intval($data['min']);
+    // Максимальная и минимальная цена для всех товаров
+    if (strlen($this->PHPShopCategory->getParam('sort')) > 5) {
 
-    // Проверка промоакций
-    $promotion = (new PHPShopPromotions())->promotion_get_discount(['category' => $this->category]);
+        if ($this->multi_currency_search)
+            $search_where = array('min(price_search) as min', 'max(price_search) as max');
+        else
+            $search_where = array('max(' . $this->PHPShopSystem->getPriceColumn() . ') as max', 'min(' . $this->PHPShopSystem->getPriceColumn() . ') as min');
 
-    if (!empty($promotion['action'])) {
+        $data = $this->select($search_where, $where, $group);
+        $data['max'] = intval($data['max']);
+        $data['min'] = intval($data['min']);
 
-        // %
-        if (!empty($promotion['percent'])) {
 
-            // Повышение
-            if ($promotion['status'] == 1) {
-                $data['max'] += $data['max'] * $promotion['percent'];
-                $data['min'] += $data['min'] * $promotion['percent'];
+        // Проверка промоакций
+        $promotion = (new PHPShopPromotions())->promotion_get_discount(['category' => $this->category]);
+
+        if (!empty($promotion['action'])) {
+
+            // %
+            if (!empty($promotion['percent'])) {
+
+                // Повышение
+                if ($promotion['status'] == 1) {
+                    $data['max'] += $data['max'] * $promotion['percent'];
+                    $data['min'] += $data['min'] * $promotion['percent'];
+                }
+                // Понижение
+                else {
+                    $data['max'] -= $data['max'] * $promotion['percent'];
+                    $data['min'] -= $data['min'] * $promotion['percent'];
+                }
             }
-            // Понижение
-            else {
-                $data['max'] -= $data['max'] * $promotion['percent'];
-                $data['min'] -= $data['min'] * $promotion['percent'];
+            // Сумма
+            elseif (!empty($promotion['sum'])) {
+
+                // Повышение
+                if ($promotion['status'] == 1) {
+                    $data['max'] += $promotion['sum'];
+                    $data['min'] += $promotion['sum'];
+                }
+                // Понижение
+                else {
+                    $data['max'] -= $promotion['sum'];
+                    $data['min'] -= $promotion['sum'];
+                }
             }
         }
-        // Сумма
-        elseif (!empty($promotion['sum'])) {
 
-            // Повышение
-            if ($promotion['status'] == 1) {
-                $data['max'] += $promotion['sum'];
-                $data['min'] += $promotion['sum'];
-            }
-            // Понижение
-            else {
-                $data['max'] -= $promotion['sum'];
-                $data['min'] -= $promotion['sum'];
-            }
-        }
+        $this->price_max = intval($data['max']) + 6;
+        $this->price_min = intval($data['min']);
+
+        if ($this->price_min == $this->price_max)
+            $this->price_min = intval($this->price_max / 2);
+
+        $this->set('price_max', intval($this->price_max));
+        $this->set('price_min', intval($this->price_min));
     }
-
-    $this->price_max = intval($data['max']) + 6;
-    $this->price_min = intval($data['min']);
-
-    if ($this->price_min == $this->price_max)
-        $this->price_min = intval($this->price_max / 2);
-
-    $this->set('price_max', intval($this->price_max));
-    $this->set('price_min', intval($this->price_min));
 
     // Фильтр сортировки по складам
     if ($this->PHPShopSystem->ifSerilizeParam('admoption.sklad_sort_enabled')) {

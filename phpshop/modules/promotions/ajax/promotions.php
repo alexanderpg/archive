@@ -407,25 +407,29 @@ foreach ($PHPShopCart->getArray() as $product) {
 $totalsummainput = number_format($totalsummainput, $PHPShopSystem->format, '.', '');
 
 // Итого товары по акции
-if ($promoSum > 0)
+if ($promoSum > 0){
+    
     $total = $promoSum;
-else
+    
+    // Итого товары без промоакции, применяем скидку статуса пользователя\суммы заказа
+    $total += (float) $PHPShopOrder->returnSumma($PHPShopCart->getSumWithoutPromo(true), $PHPShopOrder->ChekDiscount($totalsumma), '', (float) $delivery);
+
+    // Итого с учетом бонусов
+    $total -= (float) (new PHPShopBonus((int) $_SESSION['UsersId']))->getUserBonus($total);
+    
+    // Процент
+    if (strstr($discountAll, '%')) {
+        $discount = ($data['discount'] * $_REQUEST['sum'] / 100);
+        $discount = "- " . number_format($_REQUEST['ssum'] + $discount, $PHPShopSystem->format, '.', '');
+    } else
+        $discount = "- " . $_REQUEST['ssum'] + $data['discount'];
+}
+else{
     $total = $totalsummainput;
+    $discount=0;
+}
 
-$total = $totalsummainput;
 
-// Итого товары без промоакции, применяем скидку статуса пользователя\суммы заказа
-$total += (float) $PHPShopOrder->returnSumma($PHPShopCart->getSumWithoutPromo(true), $PHPShopOrder->ChekDiscount($totalsumma), '', (float) $delivery);
-
-// Итого с учетом бонусов
-$total -= (float) (new PHPShopBonus((int) $_SESSION['UsersId']))->getUserBonus($total);
-
-// Процент
-if (strstr($discountAll, '%')) {
-    $discount = ($data['discount'] * $_REQUEST['sum'] / 100);
-    $discount = "- " . number_format($_REQUEST['ssum'] + $discount, $PHPShopSystem->format, '.', '');
-} else
-    $discount = "- " . $_REQUEST['ssum'] + $data['discount'];
 
 // Результат
 $_RESULT = array(

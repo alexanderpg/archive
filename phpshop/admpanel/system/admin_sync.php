@@ -5,7 +5,7 @@ $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['system']);
 
 // Стартовый вид
 function actionStart() {
-    global $PHPShopGUI, $PHPShopModules, $TitlePage, $PHPShopOrm,$hideCatalog;
+    global $PHPShopGUI, $PHPShopModules, $TitlePage, $PHPShopOrm, $hideCatalog;
 
     PHPShopObj::loadClass('order');
 
@@ -34,8 +34,8 @@ function actionStart() {
     if (is_array($OrderStatusArray))
         foreach ($OrderStatusArray as $order_status)
             $order_status_value[] = array($order_status['name'], $order_status['id'], $option['1c_load_status']);
-    
-    
+
+
     $PHPShopGUI->_CODE = $PHPShopGUI->setCollapse('Данные для загрузки', $PHPShopGUI->setField("Номенклатура", $PHPShopGUI->setCheckbox('option[update_name]', 1, 'Наименование номенклатуры', $option['update_name']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[update_description]', 1, 'Краткое описание', $option['update_description']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[update_content]', 1, 'Подробное описание', $option['update_content']) . '<br>' .
@@ -46,19 +46,18 @@ function actionStart() {
                     $PHPShopGUI->setCheckbox('option[update_price]', 1, 'Цены', $option['update_price']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[update_item]', 1, 'Склад', $option['update_item']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[seo_update]', 1, 'SEO ссылка', $option['seo_update'])
-            ));
-    
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Выгрузка заказов', 
-            $PHPShopGUI->setField("Статус заказа", $PHPShopGUI->setSelect('option[1c_load_status]', $order_status_value, 300)
-            , 1, 'Заказы выгружаются только при определенном статусе',$hideCatalog));
+    ));
+
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Выгрузка заказов', $PHPShopGUI->setField("Статус заказа", $PHPShopGUI->setSelect('option[1c_load_status]', $order_status_value, 300)
+                    , 1, 'Заказы выгружаются только при определенном статусе', $hideCatalog));
 
     /*
-if(empty($hideCatalog))
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Обмен с сайтом', $PHPShopGUI->setField("Бухгалтерские документы", $PHPShopGUI->setCheckbox('1c_load_accounts_new', 1, 'Оригинальный счет с печатью и подписями из 1С', $data['1c_load_accounts']) . '<br>' .
-                    $PHPShopGUI->setCheckbox('1c_load_invoice_new', 1, 'Оригинальная счет-фактура с печатью из 1С', $data['1c_load_invoice']) . '<br>' .
-                    $PHPShopGUI->setCheckbox('option[1c_load_status_email]', 1, 'E-mail оповещение покупателя о новых загруженных бухгалтерских документах из 1С', $option['1c_load_status_email'])
-                    , 1, 'Оригинальные документы выгружаются из 1С при синхронизации заказов с помощью PHPShop Exchange.')
-    );*/
+      if(empty($hideCatalog))
+      $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Обмен с сайтом', $PHPShopGUI->setField("Бухгалтерские документы", $PHPShopGUI->setCheckbox('1c_load_accounts_new', 1, 'Оригинальный счет с печатью и подписями из 1С', $data['1c_load_accounts']) . '<br>' .
+      $PHPShopGUI->setCheckbox('1c_load_invoice_new', 1, 'Оригинальная счет-фактура с печатью из 1С', $data['1c_load_invoice']) . '<br>' .
+      $PHPShopGUI->setCheckbox('option[1c_load_status_email]', 1, 'E-mail оповещение покупателя о новых загруженных бухгалтерских документах из 1С', $option['1c_load_status_email'])
+      , 1, 'Оригинальные документы выгружаются из 1С при синхронизации заказов с помощью PHPShop Exchange.')
+      ); */
 
     // Артикул
     $key_value[] = array(__('Артикул'), 'uid', $option['exchange_key']);
@@ -75,31 +74,29 @@ if(empty($hideCatalog))
     } else
         $protocol = 'http://';
 
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Настройка CommerceML', $PHPShopGUI->setField("Артикул на сайте", $PHPShopGUI->setSelect('option[exchange_key]', $key_value, 300) . '<br>' .
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Настройка CommerceML', $PHPShopGUI->setField("Авторизация", $PHPShopGUI->setSelect('option[exchange_auth]', $auth_value, 300)) .
+            $PHPShopGUI->setField($PHPShopGUI->setLink('../../1cManager/' . $option['exchange_auth_path'] . '.php', 'Имя файла', '_blank', false, 'Открыть ссылку', false, false, false), $PHPShopGUI->setInputText($protocol . $_SERVER['SERVER_NAME'] . '/1cManager/', 'option[exchange_auth_path]', $option['exchange_auth_path'], 400, '.php', false, false, 'secret_cml_path')) .
+            $PHPShopGUI->setField("Артикул на сайте", $PHPShopGUI->setSelect('option[exchange_key]', $key_value, 300) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[exchange_zip]', 1, 'Сжатие данных ZIP', $option['exchange_zip']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[exchange_create]', 1, 'Создавать новые товары', $option['exchange_create']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[exchange_create_category]', 1, 'Создавать новые каталоги', $option['exchange_create_category']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[exchange_image]', 1, 'Создавать новые изображения', $option['exchange_image']) . '<br>' .
-                    $PHPShopGUI->setCheckbox('option[exchange_log]', 1, 'Журнал соединений', $option['exchange_log']) . '<br>'.
+                    $PHPShopGUI->setCheckbox('option[exchange_log]', 1, 'Журнал соединений', $option['exchange_log']) . '<br>' .
                     $PHPShopGUI->setCheckbox('option[exchange_clean]', 1, 'Выключить товары, отсутствующие в файле импорта', $option['exchange_clean']) . '<br>'
             ) .
-             $PHPShopGUI->setField("Цена",$PHPShopGUI->setInputText(false, 'option[exchange_price1]', $option['exchange_price1'], 300, false, false, false, 'Внешний код' )).
-            $PHPShopGUI->setField("Цена 2",$PHPShopGUI->setInputText(false, 'option[exchange_price2]', $option['exchange_price2'], 300, false, false, false, 'Внешний код' )).
-            $PHPShopGUI->setField("Цена 3",$PHPShopGUI->setInputText(false, 'option[exchange_price3]', $option['exchange_price3'], 300, false, false, false, 'Внешний код' )).
-            $PHPShopGUI->setField("Цена 4",$PHPShopGUI->setInputText(false, 'option[exchange_price4]', $option['exchange_price4'], 300, false, false, false, 'Внешний код' )).
-            $PHPShopGUI->setField("Цена 5",$PHPShopGUI->setInputText(false, 'option[exchange_price5]', $option['exchange_price5'], 300, false, false, false, 'Внешний код' )).
-            $PHPShopGUI->setField("Блокировка характеристик", $PHPShopGUI->setTextarea('option[exchange_sort_ignore]', $option['exchange_sort_ignore'], false, false, false, __('Укажите характеристики через запятую'),__('Примечание'))).
-            $PHPShopGUI->setField("Блокировка обновления товаров", $PHPShopGUI->setTextarea('option[exchange_product_ignore]', $option['exchange_product_ignore'], false, false, false, __('Укажите внешний код товаров через запятую'),__('Внешний код'))).
-            $PHPShopGUI->setField("Авторизация", $PHPShopGUI->setSelect('option[exchange_auth]', $auth_value, 300)) .
-            $PHPShopGUI->setField($PHPShopGUI->setLink('../../1cManager/'.$option['exchange_auth_path'].'.php', 'Имя файла', '_blank', false, 'Открыть ссылку',false, false, false), $PHPShopGUI->setInputText($protocol . $_SERVER['SERVER_NAME'] . '/1cManager/', 'option[exchange_auth_path]', $option['exchange_auth_path'], 400, '.php', false, false, 'secret_cml_path'))
-            
-           
-            );
-    
-    if (empty($_SESSION['mod_pro'])){
-        $PHPShopGUI->_CODE= $PHPShopGUI->setAlert('Раздел настройки <b>обмена данными</b> доступен только в версии <a class="btn btn-sm btn-info" href="https://www.phpshop.ru/page/compare.html?from='.$_SERVER['SERVER_NAME'].'" target="_blank"><span class="glyphicon glyphicon-info-sign"></span> PHPShop Pro</a>', 'info',true);
+            $PHPShopGUI->setField("Цена", $PHPShopGUI->setInputText(false, 'option[exchange_price1]', $option['exchange_price1'], 300, false, false, false, 'Внешний код')) .
+            $PHPShopGUI->setField("Цена 2", $PHPShopGUI->setInputText(false, 'option[exchange_price2]', $option['exchange_price2'], 300, false, false, false, 'Внешний код')) .
+            $PHPShopGUI->setField("Цена 3", $PHPShopGUI->setInputText(false, 'option[exchange_price3]', $option['exchange_price3'], 300, false, false, false, 'Внешний код')) .
+            $PHPShopGUI->setField("Цена 4", $PHPShopGUI->setInputText(false, 'option[exchange_price4]', $option['exchange_price4'], 300, false, false, false, 'Внешний код')) .
+            $PHPShopGUI->setField("Цена 5", $PHPShopGUI->setInputText(false, 'option[exchange_price5]', $option['exchange_price5'], 300, false, false, false, 'Внешний код')) .
+            $PHPShopGUI->setField("Блокировка характеристик", $PHPShopGUI->setTextarea('option[exchange_sort_ignore]', $option['exchange_sort_ignore'], false, false, false, __('Укажите характеристики через запятую'), __('Примечание'))) .
+            $PHPShopGUI->setField("Блокировка обновления товаров", $PHPShopGUI->setTextarea('option[exchange_product_ignore]', $option['exchange_product_ignore'], false, false, false, __('Укажите внешний код товаров через запятую'), __('Внешний код')))
+    );
+
+    if (empty($_SESSION['mod_pro'])) {
+        $PHPShopGUI->_CODE = $PHPShopGUI->setAlert('Раздел настройки <b>обмена данными</b> доступен только в версии <a class="btn btn-sm btn-info" href="https://www.phpshop.ru/page/compare.html?from=' . $_SERVER['SERVER_NAME'] . '" target="_blank"><span class="glyphicon glyphicon-info-sign"></span> PHPShop Pro</a>', 'info', true);
     }
-        
+
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
 
@@ -140,12 +137,12 @@ function actionUpdate() {
         //$_POST['option']['exchange_key'] = 'external';
         $_POST['option']['exchange_zip'] = 1;
     }
-    
+
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)
             $option[$key] = $val;
-    
+
     // Поиск нулевых значений
     if (is_array($_POST['option']))
         $option_null = array_diff_key($option, $_POST['option']);
@@ -156,8 +153,8 @@ function actionUpdate() {
         foreach ($option_null as $key => $val)
             $option[$key] = 0;
     }
-    
-    
+
+
     $_POST['1c_load_accounts_new'] = $_POST['1c_load_accounts_new'] ? 1 : 0;
     $_POST['1c_load_invoice_new'] = $_POST['1c_load_invoice_new'] ? 1 : 0;
     $_POST['1c_option_new'] = serialize($option);

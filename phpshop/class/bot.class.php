@@ -28,14 +28,24 @@ class PHPShopBot {
         }
     }
 
-    //  ѕоиск по сайту
+    //  ѕоиск текста по сайту
     private function search($text) {
 
         $YandexSearch = new YandexSearch();
         $site = $_SERVER['SERVER_NAME'];
         //$site = 'myphpshop.ru';
         $result = $YandexSearch->search($text . ' site:' . $site);
-        return PHPShopString::utf8_win1251($result[0]['title']) . ' - ' . $result[0]['url'] . ', добавь в ответ ссылку на ' . $result['url'] . '';
+        return PHPShopString::utf8_win1251($result[0]['title']) . ' - ' . $result[0]['url'] . ', добавь в ответ ссылку на ' . $result[0]['url'];
+    }
+    
+    //  ѕоиск изображени€ по сайту
+    private function search_img($text) {
+
+        $YandexSearch = new YandexSearch();
+        $site = $_SERVER['SERVER_NAME'];
+        //$site = 'myphpshop.ru';
+        $result = $YandexSearch->search_img($text, false, false, false, false, $site);
+        return $result;
     }
 
     // AI
@@ -68,7 +78,12 @@ class PHPShopBot {
 
             $result = $YandexGPT->text(PHPShopString::utf8_win1251(strip_tags($message['text'])), $system . $search, 0.3, 200);
             $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
-
+            
+            $search_img = $this->search_img($text);
+            if(!empty($search_img[0]['url']))
+                $attachments = $search_img[0]['url'];
+            else $attachments=null;
+            
             $insert = array(
                 'user_id' => $message['user_id'],
                 'chat' => array
@@ -80,7 +95,7 @@ class PHPShopBot {
                 'date' => time(),
                 'text' => $text,
                 'staffid' => 0,
-                'attachments' => null,
+                'attachments' => $attachments,
                 'bot' => 'message',
                 'isview' => 0,
                 'isview_user' => 0,

@@ -150,6 +150,17 @@ $().ready(function () {
         $('#selectModal').modal('show');
     });
 
+    // Поиск избражений в Яндекс
+    $('#yandexsearchModal').on('click', function (event) {
+        event.preventDefault();
+        var id = $(this).attr('data-target');
+        $('#adminModal .modal-title').html(locale.select_file);
+        $('#adminModal .glyphicon-fullscreen, #adminModal .glyphicon-eye-open').addClass('hidden');
+        $('#adminModal .product-modal-content').attr('height', $(window).height() - 120);
+        $('#adminModal .product-modal-content').attr('src', './system/ajax/yandexsearch.ajax.php?text=' + $('#name_new').val()+'&target='+id);
+        $('#adminModal').modal('show');
+    });
+
     // Назад
     $('.back').on('click', function (event) {
         event.preventDefault();
@@ -793,7 +804,8 @@ $().ready(function () {
                             width: "50%"
                         }).done(function () {
 
-                            if (tinymce.get(obj) !== null) {
+
+                            if (typeof tinymce !== "undefined" && tinymce.get(obj) !== null) {
                                 tinymce.get(obj).setContent(json['text']);
                             }
 

@@ -118,7 +118,7 @@ function tab_img($data) {
     if (!empty($data_pic) and is_array($data_pic) and count($data_pic) % $row_num != 0)
         $img_list .= '</div>';
 
-    $img_add = $PHPShopGUI->setIcon(false, "img_new", false, array('load' => true, 'server' => true, 'url' => true, 'multi' => true), $img_width);
+    $img_add = $PHPShopGUI->setIcon(false, "img_new", false, array('load' => true, 'server' => true, 'url' => true, 'multi' => true,'search'=>true), $img_width);
 
     $disp = $PHPShopGUI->setCollapse('Добавить изображение', $img_add);
 

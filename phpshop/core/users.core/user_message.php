@@ -121,7 +121,7 @@ function viewMessage($data) {
 
                 if (in_array(PHPShopSecurity::getExt($row['attachments']), array('gif', 'png', 'jpg', 'jpeg'))) {
                     $flist = '<div class="col-xs-6 col-md-6">
-                             <a href="' . $row['attachments'] . '" class="thumbnail" target="_blank" title="' . $row['attachments'] . '"><img src="' . $row['attachments'] . '" alt="" ></a></div>';
+                             <a href="' . $row['attachments'] . '" class="thumbnail" target="_blank" title="' . $row['attachments'] . '"><img src="' . $row['attachments'] . '" alt="" class="img-responsive img-fluid"></a></div>';
                 } else {
                     $path = pathinfo($row['attachments']);
                     $flist = '<div class="col-xs-12 col-md-12"><a title="" target="_blank" href="' . $row['attachments'] . '"><span class="glyphicon glyphicon-paperclip"></span> ' . $path['basename'] . '</a></div>';

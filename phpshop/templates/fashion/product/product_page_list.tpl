@@ -117,7 +117,7 @@
                         $('#ajaxInProgress').addClass('progress-scroll');
 
                         var next_page = new Number(count) + 1;
-                        url = "/shop/CID_@pcatalogId@@page_prefix@" + next_page + "@seomod@.html?@page_postfix@" + window.location.hash.split('#').join('').split(']').join('][]');
+                        url = "/shop/CID_@pcatalogId@@page_prefix@" + next_page + "@seomod@.html@page_filters@?@page_postfix@" + window.location.hash.split('#').join('').split(']').join('][]');
 
                         $.ajax({
                             type: "POST",

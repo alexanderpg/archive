@@ -20,11 +20,7 @@ function actionStart() {
     $data = $PHPShopOrm->select();
 
     // Интструкция
-    $info='<p><h4>Как подключиться к 1С внешним обработчиком PHPShop?</h4>
-        <ol>
-        <li>Если 1С локальная - <a href="https://docs.phpshop.ru/sinkhronizaciya-s-1s/ustanovka-i-aktivaciya-1s-sinkhronizacii#1s-na-kompyutere" target="_blank">инструкция по подключению</a>
-        <li>Если 1С в облаке - <a href="https://docs.phpshop.ru/sinkhronizaciya-s-1s/ustanovka-i-aktivaciya-1s-sinkhronizacii#1s-v-oblake" target="_blank">инструкция по подключению</a>
-        </ol></p>
+    $info='<p>
         <p><h4>Как подключиться к 1С встроенным типовым обменом CommerceML?</h4>
         <ol>
         <li>Если 1С локальная или в облаке - <a href="https://docs.phpshop.ru/sinkhronizaciya-s-1s/commerceml" target="_blank">инструкция по подключению</a>
@@ -34,13 +30,18 @@ function actionStart() {
         <ol>
         <li>Воспользуйтесь <a href="https://docs.phpshop.ru/sinkhronizaciya-s-1s/sinkhronizaciya-s-moi-sklad" target="_blank">инструкцией по подключению</a>
         </ol>
+        <h4>Как подключиться к 1С внешним обработчиком PHPShop (для старых 1С)?</h4>
+        <ol>
+        <li>Если 1С локальная - <a href="https://docs.phpshop.ru/sinkhronizaciya-s-1s/ustanovka-i-aktivaciya-1s-sinkhronizacii#1s-na-kompyutere" target="_blank">инструкция по подключению</a>
+        <li>Если 1С в облаке - <a href="https://docs.phpshop.ru/sinkhronizaciya-s-1s/ustanovka-i-aktivaciya-1s-sinkhronizacii#1s-v-oblake" target="_blank">инструкция по подключению</a>
+        </ol></p>
         </p>
 ';
     
     $Tab3 = $PHPShopGUI->setPay(false, false, $data['version'], false);
 
     // Вывод формы закладки
-    $PHPShopGUI->setTab(array("Инструкция", $PHPShopGUI->setCollapse('',$info),true), array("Документооборот", null, '?path=system.sync'), array("Журнал операций", null, '?path=report.crm'));
+    $PHPShopGUI->setTab(array("Инструкция", $PHPShopGUI->setCollapse('',$info),true), array("Обмен данными", null, '?path=system.sync'), array("Журнал операций", null, '?path=report.crm'));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter =

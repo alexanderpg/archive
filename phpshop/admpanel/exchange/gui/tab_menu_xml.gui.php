@@ -15,8 +15,8 @@ function tab_menu_xml() {
        <li><a href="'.$GLOBALS['SysValue']['dir']['dir'].'/yml/?getall&available&marketplace=webmaster" target="_blank">'.__('Яндекс.Вебмастер').'</a></li>
        <li><a href="'.$GLOBALS['SysValue']['dir']['dir'].'/yml/?marketplace=ozon" target="_blank">'.__('Ozon').'</a></li>
        <li><a href="'.$GLOBALS['SysValue']['dir']['dir'].'/yml/?marketplace=vk" target="_blank">'.__('ВКонтакте').'</a></li>
+       <li><a href="'.$GLOBALS['SysValue']['dir']['dir'].'/yml/?marketplace=megamarket" target="_blank">'.__('Мегамаркет').'</a></li>
        <li><a href="'.$GLOBALS['SysValue']['dir']['dir'].'/rss/google.xml" target="_blank">Google Merchant</a></li>
-       <li><a href="'.$GLOBALS['SysValue']['dir']['dir'].'/yml/?marketplace=sbermarket" target="_blank">'.__('СберМегаМаркет').'</a></li>
        <li><a href="'.$GLOBALS['SysValue']['dir']['dir'].'/yml/?marketplace=aliexpress" target="_blank">AliExpress</a></li>
        </ul>';
     

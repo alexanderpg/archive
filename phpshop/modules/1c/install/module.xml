@@ -11,7 +11,7 @@
         <title>1С синхронизация</title>
         <capability>true</capability>
         <podmenu>
-            <podmenu_name>Документооборот</podmenu_name>
+            <podmenu_name>Обмен данными</podmenu_name>
             <podmenu_action>system.sync</podmenu_action>
         </podmenu>
         <podmenu>

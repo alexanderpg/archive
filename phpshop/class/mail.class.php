@@ -32,13 +32,13 @@ class PHPShopMail {
      * @param boolean $noSend true - не отсылать письмо при создании экземпляра класса. 
      * @param array $option дополнительные параметры SMTP 
      */
-    function __construct($to, $from, $subject, $content, $type = false, $noSend = false, $option = false) {
+    function __construct($to, $from, $subject, $content, $type = false, $noSend = false, $option = false, $codepage = false) {
         global $PHPShopSystem, $_classPath;
 
         if (empty($_classPath))
             $_classPath = './phpshop/';
 
-        if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
+        if ($GLOBALS['PHPShopBase']->codBase == 'utf-8' and empty($codepage))
             $this->codepage = 'utf-8';
 
         // Загрузчик

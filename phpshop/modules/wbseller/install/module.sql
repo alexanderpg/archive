@@ -1,10 +1,10 @@
 DROP TABLE IF EXISTS `phpshop_modules_wbseller_system`;
 CREATE TABLE IF NOT EXISTS `phpshop_modules_wbseller_system` (
 `id` int(11) NOT NULL auto_increment,
-`token` TEXT default '',
-`status` int(11) NOT NULL,
-`price` int(11) NOT NULL,
-`fee` int(11) NOT NULL,
+`token` text NOT NULL,
+`status` int(11) NOT NULL default '0',
+`price` int(11) NOT NULL default '0',
+`fee` int(11) NOT NULL default '0',
 `fee_type` enum('1','2') NOT NULL default '1',
 `warehouse_id`  varchar(255) NOT NULL,
 `type` enum('1','2') NOT NULL default '1',
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_wbseller_system` (
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_wbseller_system` VALUES (1, '', '',1,0,'1','','1','0','',0,'1','0','1.7');
+INSERT INTO `phpshop_modules_wbseller_system` VALUES (1,'','0','0','1','0','1','1','1','0','0','0','1','0','1.7');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_wbseller_log` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_wbseller_log` (
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
-ALTER TABLE `phpshop_orders` ADD `wbseller_order_data` text default '';
+ALTER TABLE `phpshop_orders` ADD `wbseller_order_data` text NOT NULL;
 ALTER TABLE `phpshop_categories` ADD `category_wbseller` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_sort_categories` ADD `attribute_wbseller` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_products` ADD `export_wb` enum('0','1') DEFAULT '0';

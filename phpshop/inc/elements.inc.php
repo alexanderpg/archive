@@ -1908,7 +1908,10 @@ class PHPShopPhotoElement extends PHPShopElements {
                 $this->set('photoInfo', $row['info']);
                 $this->set('photoImg', $row['name']);
 
-                $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_preview.tpl', true);
+                if (PHPShopParser::checkFile('photo/photo_list_forma.tpl'))
+                    $dis .= ParseTemplateReturn('photo/photo_element_preview.tpl');
+                else
+                    $dis .= $this->parseTemplate('./phpshop/lib/templates/photo/photo_element_preview.tpl', true);
             }
         return $dis;
     }
@@ -2098,6 +2101,7 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
 
 
 

@@ -3,7 +3,7 @@
 /**
  * Родительский класс ядра вывода товаров
  * @author PHPShop Software
- * @version 1.8
+ * @version 1.9
  * @package PHPShopClass
  */
 class PHPShopShopCore extends PHPShopCore {
@@ -400,8 +400,14 @@ class PHPShopShopCore extends PHPShopCore {
         } else
             $SQL = $sql;
 
+        // Поддержка виртуальных каталогов /filters/
+        if (strpos($GLOBALS['SysValue']['nav']['truepath'], '/filters/') !== false) {
+            $filters = '/filters/' . preg_replace('#^.*/filters/(.*)$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+            $this->set("page_filters", $filters);
+        } else
+            $filters = null;
 
-        $sort = '?';
+        $sort = $filters . '?';
 
         // Фильтры
         if (!empty($_GET['v']) and is_array($_GET['v']))
@@ -622,8 +628,8 @@ class PHPShopShopCore extends PHPShopCore {
                         return true;
                 } else if (!in_array($category, $this->multi_cat))
                     return true;
-            }
-            else return false;
+            } else
+                return true;
         }
     }
 

@@ -4,7 +4,7 @@
  * Синхронизация данных через JSON
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 1.1
+ * @version 1.2
  */
 $_classPath = "../../phpshop/";
 include($_classPath . "class/obj.class.php");
@@ -63,6 +63,11 @@ class PHPShopJSON extends PHPShopBaseXml {
 
         if (is_array($this->sql)) {
             $this->xml['method'] = $this->sql['method'];
+            
+            if(is_array($this->sql['vars']))
+                foreach($this->sql['vars'] as $k=>$v)
+                    $this->sql['vars'][$k] = PHPShopString::utf8_win1251($v);
+            
             $this->xml['vars'] = array($this->sql['vars']);
             $this->xml['from'] = $this->sql['from'];
 

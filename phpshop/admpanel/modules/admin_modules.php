@@ -356,19 +356,19 @@ function actionStart() {
     // Кол-во модулей
     $count_mod = [
         0 => [
-            'pro' => 13,
+            'pro' => 14,
             'template' => 8,
             'seo' => 5,
             'delivery' => 11,
             'chat' => 7,
             'crm' => 6,
-            'marketplaces' => 6,
+            'marketplaces' => 7,
             'payment' => 28,
             'credit' => 4,
             'yandex' => 3,
             'sale' => 19,
             'develop' => 14,
-            'minus' => -15
+            'minus' => -16
         ],
         1 => [
             'pro' => 3,

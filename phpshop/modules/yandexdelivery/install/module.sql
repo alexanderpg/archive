@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexdelivery_system` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_yandexdelivery_system` VALUES (1, '', '', '', 0, '', '', '', '', '', '30.0', 0, 1, 0, '1.1');
+INSERT INTO `phpshop_modules_yandexdelivery_system` VALUES (1, '', '', '', 0, '', '', '', '', '', '30.0', 0, 1, 0, '1.2');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_yandexdelivery_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

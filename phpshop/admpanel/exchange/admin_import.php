@@ -398,10 +398,17 @@ function csv_update($data) {
     $img_th = $PHPShopSystem->getSerilizeParam('admoption.img_th');
 
     // AI
-    if ($PHPShopSystem->ifSerilizeParam('ai.yandexgpt_seo_import')) {
+    if ($_POST['export_ai'] == 1) {
         PHPShopObj::loadClass('yandexcloud');
         require_once $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/phpshop/lib/parsedown/Parsedown.php';
         $YandexGPT = new YandexGPT();
+    }
+
+    // Поиск Яндекс
+    if ($_POST['export_imgsearch'] == 1) {
+        PHPShopObj::loadClass('yandexcloud');
+        $YandexSearch = new YandexSearch();
+        $yandexsearch_image_num = (int) $PHPShopSystem->getSerilizeParam('ai.yandexsearch_image_num');
     }
 
     if (is_array($data)) {
@@ -506,8 +513,50 @@ function csv_update($data) {
                 $row['data_adres'] = serialize($tel);
             }
 
+            // Яндекс Поиск картинок товаров
+            if (isset($row['pic_big']) and isset($YandexSearch)) {
+
+                if ($YandexSearch->init())
+                    $result = $YandexSearch->search_img($row['name']);
+
+                if (is_array($result)) {
+                    $row['pic_big'] = null;
+                    $i = 0;
+                    foreach ($result as $images) {
+
+                        if ($i < $yandexsearch_image_num)
+                            $row['pic_big'] .= $images['url'] . ',';
+                        else
+                            continue;
+
+                        $i++;
+                    }
+                }
+            }
+
+            // Яндекс Поиск картинок каталогов
+            if (isset($row['icon']) and isset($YandexSearch)) {
+
+                if ($YandexSearch->init())
+                    $result = $YandexSearch->search_img($row['name']);
+
+                if (is_array($result)) {
+                    $row['icon'] = null;
+                    $i = 0;
+                    foreach ($result as $images) {
+
+                        if ($i < 1)
+                            $row['icon'] = $images['url'];
+                        else
+                            continue;
+
+                        $i++;
+                    }
+                }
+            }
+
             // AI Описание
-            if (isset($row['content']) and class_exists('YandexGPT')) {
+            if (isset($row['content']) and isset($YandexGPT)) {
 
                 if ($subpath[2] == 'catalog')
                     $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_catalog_content_role');
@@ -522,7 +571,7 @@ function csv_update($data) {
                 if ($_POST['export_code'] == 'utf')
                     $message = PHPShopString::utf8_win1251($message);
 
-                if (!empty($message)) {
+                if (!empty($message) and $YandexGPT->init()) {
                     $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 300);
                     $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
                     $row['content'] = PHPShopString::utf8_win1251($text);
@@ -530,7 +579,7 @@ function csv_update($data) {
             }
 
             // AI Краткое описание
-            if (isset($row['description']) and class_exists('YandexGPT')) {
+            if (isset($row['description']) and isset($YandexGPT)) {
 
                 $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_description_role');
 
@@ -542,7 +591,7 @@ function csv_update($data) {
                 if ($_POST['export_code'] == 'utf')
                     $message = PHPShopString::utf8_win1251($message);
 
-                if (!empty($message)) {
+                if (!empty($message) and $YandexGPT->init()) {
                     $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 100);
 
                     $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
@@ -580,10 +629,11 @@ function csv_update($data) {
 
             // AI Meta Description
             if (isset($row['descrip']) and class_exists('YandexGPT')) {
-                
+
                 if ($subpath[2] == 'catalog')
-                $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_catalog_description_role');
-                else $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_descrip_role');
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_catalog_description_role');
+                else
+                    $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_product_descrip_role');
 
                 if (!empty($row['descrip']))
                     $message = $row['descrip'];
@@ -728,7 +778,7 @@ function csv_update($data) {
             // Отключение изображений
             if ($_POST['export_imgload'] == 0) {
                 unset($data_img);
-                $row['pic_big'] = $row['pic_small'] = null;
+                $row['pic_big'] = null;
             }
 
             if (!empty($data_img) and is_array($data_img)) {
@@ -1051,6 +1101,7 @@ function actionSave() {
                 $_POST = unserialize($data['option']);
                 $exchanges_name = $data['name'];
                 unset($_POST['exchanges_new']);
+                unset($_POST['bot']);
             }
         }
     }
@@ -1095,6 +1146,8 @@ function actionSave() {
     $memory[$_GET['path']]['export_delim'] = @$_POST['export_delim'];
     $memory[$_GET['path']]['export_imgproc'] = @$_POST['export_imgproc'];
     $memory[$_GET['path']]['export_imgload'] = @$_POST['export_imgload'];
+    $memory[$_GET['path']]['export_imgsearch'] = @$_POST['export_search'];
+    $memory[$_GET['path']]['export_ai'] = @$_POST['export_ai'];
 
     // Копируем csv от пользователя
     if (!empty($_FILES['file']['name'])) {
@@ -1277,8 +1330,10 @@ function actionSave() {
                         $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), PHPShopString::utf8_win1251((string) $item->description[0]), $images, PHPShopString::utf8_win1251((string) $item->description[0]), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
                     }
 
-
-                    $csv_file = './csv/product.yml.csv';
+                    if (empty($GLOBALS['exchanges_cron']))
+                        $csv_file = './csv/product.yml.csv';
+                    else
+                        $csv_file = '../../../admpanel/csv/product.yml.csv';
                 }
                 // Категории
                 else if ($subpath[2] == 'catalog') {
@@ -1286,7 +1341,11 @@ function actionSave() {
                     foreach ($xml->shop[0]->categories[0]->category as $item) {
                         $yml_array[] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item[0]), (string) $item->attributes()->parentId];
                     }
-                    $csv_file = './csv/category.yml.csv';
+
+                    if (empty($GLOBALS['exchanges_cron']))
+                        $csv_file = './csv/category.yml.csv';
+                    else
+                        $csv_file = '../../../admpanel/csv/category.yml.csv';
                 }
 
                 // Временный файл
@@ -1325,8 +1384,12 @@ function actionSave() {
             }
 
 
+            if (empty($GLOBALS['exchanges_cron']))
+                $csv_file = './csv/product.rss.csv';
+            else
+                $csv_file = '../../../admpanel/csv/product.rss.csv';
+
             // Временный файл
-            $csv_file = './csv/product.rss.csv';
             PHPShopFile::writeCsv($csv_file, $yml_array);
         }
 
@@ -1338,7 +1401,10 @@ function actionSave() {
 
             if ($xlsx = SimpleXLSX::parse($csv_file)) {
 
-                $csv_file = './csv/product.xlsx.csv';
+                if (empty($GLOBALS['exchanges_cron']))
+                    $csv_file = './csv/product.xlsx.csv';
+                else
+                    $csv_file = '../../../admpanel/csv/product.xlsx.csv';
 
                 // Временный файл
                 PHPShopFile::writeCsv($csv_file, $xlsx->rows());
@@ -1355,7 +1421,10 @@ function actionSave() {
 
             if ($xls = SimpleXLS::parse($csv_file)) {
 
-                $csv_file = './csv/product.xls.csv';
+                if (empty($GLOBALS['exchanges_cron']))
+                    $csv_file = './csv/product.xls.csv';
+                else
+                    $csv_file = '../../../admpanel/csv/product.xls.csv';
 
                 // Временный файл
                 PHPShopFile::writeCsv($csv_file, $xls->rows());
@@ -1527,7 +1596,8 @@ function actionSave() {
 
 // Стартовый вид
 function actionStart() {
-    global $PHPShopGUI, $PHPShopModules, $TitlePage, $PHPShopOrm, $key_name, $subpath, $key_base, $key_stop, $result_message;
+    global $PHPShopGUI, $PHPShopModules, $PHPShopSystem, $TitlePage, $PHPShopOrm, $key_name, $subpath, $key_base, $key_stop, $result_message;
+
 
     // Выбрать настройку
     if (!empty($_GET['exchanges'])) {
@@ -1542,6 +1612,8 @@ function actionStart() {
     }
 
     if (!empty($_POST['export_action'])) {
+
+
         $memory[$_GET['path']]['export_sortdelim'] = @$_POST['export_sortdelim'];
         $memory[$_GET['path']]['export_sortsdelim'] = @$_POST['export_sortsdelim'];
         $memory[$_GET['path']]['export_imgdelim'] = @$_POST['export_imgdelim'];
@@ -1556,6 +1628,9 @@ function actionStart() {
         $memory[$_GET['path']]['export_key'] = @$_POST['export_key'];
         $memory[$_GET['path']]['export_imgfunc'] = @$_POST['export_imgfunc'];
         $memory[$_GET['path']]['export_extension'] = @$_POST['export_extension'];
+        $memory[$_GET['path']]['export_imgsearch'] = @$_POST['export_imgsearch'];
+        $memory[$_GET['path']]['export_ai'] = @$_POST['export_ai'];
+
 
         $export_sortdelim = @$memory[$_GET['path']]['export_sortdelim'];
         $export_sortsdelim = @$memory[$_GET['path']]['export_sortsdelim'];
@@ -1570,6 +1645,8 @@ function actionStart() {
     else {
         $memory[$_GET['path']]['export_imgload'] = 1;
         $memory[$_GET['path']]['export_imgproc'] = 1;
+        $memory[$_GET['path']]['export_imgsearch'] = 0;
+        $memory[$_GET['path']]['export_ai'] = 0;
         $export_imgload = 1;
 
         $_POST['line_limit'] = 1;
@@ -1654,13 +1731,13 @@ function actionStart() {
 
 
     // Размер названия поля
-    $PHPShopGUI->field_col = 3;
+    $PHPShopGUI->field_col = 4;
     $PHPShopGUI->addJSFiles('./exchange/gui/exchange.gui.js');
     $PHPShopGUI->_CODE = $result_message;
 
     // Товары
     if (empty($subpath[2])) {
-        $class = $yml = false;
+        $class = $yml = $class_ai = false;
         $TitlePage .= ' ' . __('товаров');
         $data['path'] = null;
     }
@@ -1668,19 +1745,19 @@ function actionStart() {
     // Каталоги
     elseif ($subpath[2] == 'catalog') {
         $class = 'hide';
-        $yml = false;
+        $yml = $class_ai = false;
         $TitlePage .= ' ' . __('каталогов');
     }
 
     // Пользователи
     elseif ($subpath[2] == 'user') {
-        $class = $yml = 'hide';
+        $class = $yml = $class_ai = 'hide';
         $TitlePage .= ' ' . __('пользователей');
     }
 
     // Пользователи
     elseif ($subpath[2] == 'order') {
-        $class = $yml = 'hide';
+        $class = $yml = $class_ai = 'hide';
     }
 
     $PHPShopGUI->setActionPanel($TitlePage . $exchanges_name, false, array('Импорт'));
@@ -1727,12 +1804,19 @@ function actionStart() {
     $imgload_value[] = array(__('Загрузить по внешней ссылке'), 1, $export_imgload);
     $imgload_value[] = array(__('Прописать ссылку в базе'), 2, $export_imgload);
 
+    // AI
+    if (empty($PHPShopSystem->ifSerilizeParam('admoption.yandexcloud_enabled'))) {
+        $yandexcloud = $PHPShopGUI->setField('Создание описаний с помощью AI', $PHPShopGUI->setCheckbox('export_ai', 1, null, @$memory[$_GET['path']]['export_ai'], $PHPShopGUI->disabled_yandexcloud), 1, 'Создание и обработка описаний с помощью AI. Требуется подписка Yandex Cloud.', $class_ai) .
+                $PHPShopGUI->setField('Поиск изображений в Яндекс', $PHPShopGUI->setCheckbox('export_imgsearch', 1, null, @$memory[$_GET['path']]['export_imgsearch'], $PHPShopGUI->disabled_yandexcloud), 1, 'Поиск изображений в Яндексе по имени товара. Требуется подписка Yandex Cloud.', $class_ai);
+    }
+
     // Закладка 1
     $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile($_POST['lfile']), 1, 'Поддерживаются файлы csv, xls, xlsx, yml, xml') .
             $PHPShopGUI->setField('Действие', $PHPShopGUI->setSelect('export_action', $action_value, 150, true)) .
             $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 150, true)) .
             $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), false, 'Для формата Excel', $class) .
             $PHPShopGUI->setField('Разделитель значений характеристик', $PHPShopGUI->setSelect('export_sortsdelim', $delim_sort, 150), false, 'Для формата Excel', $class) .
+            $yandexcloud .
             $PHPShopGUI->setField('Обработка изображений', $PHPShopGUI->setCheckbox('export_imgproc', 1, null, @$memory[$_GET['path']]['export_imgproc']), 1, 'Создание изображения для превью и ватермарк', $class) .
             $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setSelect('export_imgload', $imgload_value, 250), 1, 'Загрузить изображения или использовать ссылки', $class) .
             $PHPShopGUI->setField('Действие для изображений', $PHPShopGUI->setSelect('export_imgfunc', $imgfunc_value, 250), 1, 'Заменить на новые или дополнить изображения', $class) .

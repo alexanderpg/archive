@@ -188,9 +188,54 @@ function template_parent($obj, $dataArray, $rout) {
                     $obj->set('parentPrice', $val['price']);
                     $obj->set('parentImage', $size_color_array[$val['id']]['image']);
 
-                    // Склад
-                    if ($obj->PHPShopSystem->getSerilizeParam('admoption.sklad_enabled') == 1)
-                        $obj->set('parentItems', $obj->lang('product_on_sklad') . " " . $val['items'] . " " . $val['ed_izm']);
+                    // Дополнительнеы склады
+                    if ($obj->PHPShopSystem->isDisplayWarehouse()) {
+                        $warehouse = [];
+
+                        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['warehouses']);
+
+                        $where = [];
+                        $where['enabled'] = "='1'";
+
+                        if (defined("HostID") or defined("HostMain")) {
+
+                            if (defined("HostID"))
+                                $where['servers'] = " REGEXP 'i" . HostID . "i'";
+                            elseif (defined("HostMain"))
+                                $where['enabled'] .= ' and (servers ="" or servers REGEXP "i1000i")';
+                        }
+
+                        $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'num'), array('limit' => 100));
+                        if (is_array($data))
+                            foreach ($data as $row) {
+                                if (!empty($row['description']))
+                                    $warehouse[$row['id']] = $row['description'];
+                                else
+                                    $warehouse[$row['id']] = $row['name'];
+                            }
+
+                        if (is_array($warehouse) and count($warehouse) > 0) {
+                            $items = null;
+
+                            $itemsData = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['*'], ['id' => '=' . (int) $val['id']]);
+
+                            if (empty($itemsData['ed_izm']))
+                                $itemsData['ed_izm'] = __('шт.');
+
+                            // Общий склад
+                            if ($obj->PHPShopSystem->getSerilizeParam('admoption.sklad_sum_enabled') == 1)
+                                $items = __('Общий склад') . ": " . $itemsData['items'] . " " . $itemsData['ed_izm'].PHPShopText::br();
+
+                            foreach ($warehouse as $store_id => $store_name) {
+                                if (isset($itemsData['items' . $store_id])) {
+                                    $items .= $store_name . ": " . $itemsData['items' . $store_id] . " " . $itemsData['ed_izm'].PHPShopText::br();
+                                }
+                            }
+                        } else
+                            $items = $obj->PHPShopBase->SysValue['lang']['product_on_sklad'] . " " . $val['items'] . " " . $val['ed_izm'];
+                    } else
+                        $items = null;
+                    $obj->set('parentItems',$items);
 
                     if ((float) $size_color_array[$val['id']]['price_n'] > 0)
                         $obj->set('parentPriceOld', $size_color_array[$val['id']]['price_n']);

@@ -198,10 +198,8 @@ function actionStart() {
     // Цвет
     $Tab_icon = $PHPShopGUI->setField("Инверсия цвета текста", $PHPShopGUI->setInputText(null, "color_new", (int) $data['color'], 100, '%'));
 
-
     // Иконка
-    $Tab_icon .= $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['icon'], "icon_new", false));
-
+    $Tab_icon .= $PHPShopGUI->setField("Изображение", $PHPShopGUI->setIcon($data['icon'], "icon_new", false, ['load' => true, 'server' => true, 'url' => true, 'multi' => false, 'search' => true]));
 
     $Tab1 .= $PHPShopGUI->setCollapse('Иконка', $Tab_icon);
 
@@ -405,11 +403,20 @@ function iconAdd() {
         }
     }
 
-    // Читаем файл из URL
+    // Копируем файл из URL
     elseif (!empty($_POST['furl'])) {
         $file = $_POST['icon_new'];
-    }
+        $path_parts = pathinfo($file);
+        $file_name = $path_parts['basename'];
+        $file_ext = PHPShopSecurity::getExt($file_name);
+        $file_name = PHPShopString::toLatin(str_replace('.' . $file_ext, '', PHPShopString::utf8_win1251($file_name))) . '.' . $file_ext;
 
+        if (in_array($file_ext, array('gif', 'png', 'jpg', 'jpeg', 'svg','webp'))) {
+            if(copy($file, $_SERVER['DOCUMENT_ROOT'] . $GLOBALS['dir']['dir'] . $path. $file_name)){
+                $file = $GLOBALS['dir']['dir'] . $path . $file_name;
+            }
+        }
+    }
     // Читаем файл из файлового менеджера
     elseif (!empty($_POST['icon_new'])) {
         $file = $_POST['icon_new'];

@@ -81,7 +81,7 @@ function actionStart() {
 
     $Tab1 .= $PHPShopGUI->setCollapse('Автоматизация', $Tab2);
 
-    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI() . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
+    $Tab1 .= $PHPShopGUI->setCollapse("Текст письма", $oFCKeditor->AddGUI(). $PHPShopGUI->setAIHelpButton('content_new', 300, 'news_sendmail')  . $PHPShopGUI->setHelp('Переменные: <code>@url@</code> - адрес сайта, <code>@user@</code> - имя подписчика, <code>@email@</code> - email подписчика, <code>@name@</code> - название магазина, <code>@tel@</code> - телефон компании'));
 
 
 

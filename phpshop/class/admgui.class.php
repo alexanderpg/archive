@@ -43,6 +43,11 @@ class PHPShopGUI {
 
         // Языковой файл
         PHPShopObj::loadClass("lang");
+
+        if (empty($_SESSION['yandexcloud']) or $_SESSION['yandexcloud'] < time())
+            $this->disabled_yandexcloud = 'disabled="disabled"';
+        else
+            $this->disabled_yandexcloud = null;
     }
 
     /**
@@ -114,7 +119,8 @@ class PHPShopGUI {
      * @param bool $drag_off загрузка перетаскиванием
      * @param array $option настройки
      */
-    function setIcon($data, $id = "icon_new", $drag_off = false, $option = array('load' => true, 'server' => true, 'url' => true, 'multi' => false, 'view' => false), $width = false) {
+    function setIcon($data, $id = "icon_new", $drag_off = false, $option = array('load' => true, 'server' => true, 'url' => true, 'multi' => false, 'view' => false, 'search' => false), $width = false) {
+        global $PHPShopSystem;
 
         $filename = $option['load'] === true ? '' : $option['load'];
 
@@ -145,6 +151,12 @@ class PHPShopGUI {
             $add .= '<button type="button" class="btn btn-default" id="promtUrl" data-target="' . $id . '">URL</button>
               <input type="hidden" name="furl' . $filename . '" id="furl" value="0">';
 
+        // Поиск Яндекс
+        if (!empty($option['search']) and empty($PHPShopSystem->ifSerilizeParam('admoption.yandexcloud_enabled'))) {
+
+            $add .= '<button ' . $this->disabled_yandexcloud . ' type="button" class="btn btn-default" id="yandexsearchModal" data-target="' . $id . '"><span class="glyphicon glyphicon-search"></span> ' . __('Поиск в Яндексе') . '</button>';
+        }
+
         if ($drag_off) {
             $drag = null;
             $icon = str_replace('img-thumbnail-dashed', null, $icon);
@@ -161,7 +173,7 @@ class PHPShopGUI {
 
         if (empty($option['view']))
             $dis .= '
-        <div class="col-md-8 col-xs-8">
+        <div class="col-md-10 col-xs-10">
           <p><span class="remove glyphicon glyphicon-remove-sign ' . $icon_hide . '" data-return="' . $id . '" data-toggle="tooltip" data-placement="top" title="' . $this->__('Удалить эту запись') . '"></span> ' . $name . '</p><input type="hidden" name="' . $id . '" value="' . $data . '">
             <div class="btn-group btn-group-sm" role="group" aria-label="...">
               ' . $add . '
@@ -227,8 +239,9 @@ class PHPShopGUI {
      * @param bool $locale локализация
      * @param string $width размер
      * @param string $dismiss закрытие
+     * @param string $style css
      */
-    function setAlert($text, $type = 'success', $locale = true, $width = false, $dismiss = 'data-dismiss="alert"') {
+    function setAlert($text, $type = 'success', $locale = true, $width = false, $dismiss = 'data-dismiss="alert"', $style = false) {
 
         if ($locale)
             $text = $this->__($text);
@@ -236,7 +249,7 @@ class PHPShopGUI {
         if ($width)
             $width = 'style="width:' . $width . 'px"';
 
-        return '<div class="alert alert-' . $type . ' alert-dismissible" role="alert" ' . $width . '>
+        return '<div class="alert alert-' . $type . ' alert-dismissible" role="alert" ' . $width . ' style="' . $style . '">
   <button type="button" class="close" ' . $dismiss . ' aria-label="Close"><span aria-hidden="true">&times;</span></button>
   ' . $text . '</div>';
     }
@@ -1930,10 +1943,11 @@ class PHPShopGUI {
      * @param string $role роль
      * @return string
      */
-    function setAIHelpButton($name, $length, $role, $text=false) {
+    function setAIHelpButton($name, $length, $role, $text = false) {
         global $PHPShopSystem;
-        if ($PHPShopSystem->ifSerilizeParam('ai.yandexgpt_seo')){
-            return '<div class="text-right" style="padding-top:10px"><button type="button" class="btn btn-default btn-sm ai-help" data-value="' . $name . '" data-length="' . $length . '" data-role="' . $role . '" data-user="' . $text . '"><span class="glyphicon glyphicon-hdd"></span> ' . __('Помощь AI') . '</button></div>';
+
+        if (empty($PHPShopSystem->ifSerilizeParam('admoption.yandexcloud_enabled'))) {
+            return '<div class="text-right" style="padding-top:10px"><button ' . $this->disabled_yandexcloud . ' type="button" class="btn btn-default btn-sm ai-help" data-value="' . $name . '" data-length="' . $length . '" data-role="' . $role . '" data-user="' . $text . '"><span class="glyphicon glyphicon-hdd"></span> ' . __('Помощь AI') . '</button></div>';
         }
     }
 

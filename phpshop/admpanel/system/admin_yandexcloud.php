@@ -15,13 +15,36 @@ function actionStart() {
     $PHPShopGUI->field_col = 3;
     $PHPShopGUI->addJSFiles('./js/jquery.waypoints.min.js', './system/gui/system.gui.js');
 
-    $PHPShopGUI->setActionPanel($TitlePage, false, array('Сохранить'));
+
+    if (empty($_SESSION['yandexcloud']) or $_SESSION['yandexcloud'] < time()) {
+
+        $PHPShopGUI->action_button['Подписка'] = array(
+            'name' => __('Купить подписку'),
+            'action' => 'https://www.phpshop.ru/order/order.html?from=' . $_SERVER['SERVER_NAME'] . '#subscription',
+            'class' => 'btn btn-primary btn-sm navbar-btn btn-info btn-action-panel-blank',
+            'type' => 'submit',
+            'icon' => 'glyphicon glyphicon-ruble'
+        );
+
+        $PHPShopGUI->setActionPanel($TitlePage, false, ['Подписка']);
+
+        $PHPShopGUI->_CODE .= $PHPShopGUI->setAlert('Интеграция с искусственным интеллектом <a href="https://docs.phpshop.ru/nastroiky/yandex-cloud" target="_blank">YandexGPT</a> и <a href="https://docs.phpshop.ru/nastroiky/yandex-cloud#poisk" target="_blank">Yandex Search API</a> доступна только по <b>платной подписке</b>', 'info', true);
+
+        $option['yandexgpt_seo'] = 0;
+        $option['yandexgpt_seo_import'] = 0;
+        $option['yandexgpt_chat_enabled'] = 0;
+        $option['yandexsearch_site_enabled'] = 0;
+        $PHPShopOrm->update(['ai_new' => serialize($option)]);
+    } else
+        $PHPShopGUI->setActionPanel($TitlePage, false, array('Сохранить'));
+
+
 
     $yandexgpt_model_value[] = array('YandexGPT Lite', 'yandexgpt-lite/latest', $option['yandexgpt_model']);
     $yandexgpt_model_value[] = array('YandexGPT Pro', 'yandexgpt/latest', $option['yandexgpt_model']);
 
     // Настройки
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Облако', $PHPShopGUI->setField('Идентификатор', $PHPShopGUI->setInputText(null, 'option[yandexgpt_id]', $option['yandexgpt_id'], 300))
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Облако', $PHPShopGUI->setField('Идентификатор', $PHPShopGUI->setInputText(null, 'option[yandexgpt_id]', $option['yandexgpt_id'], 375,'<a target="_blank" href="https://docs.phpshop.ru/nastroiky/yandex-cloud">' . __('Подключить') . '</a>'))
     );
 
     // AI
@@ -36,19 +59,16 @@ function actionStart() {
     $yandexgpt_temperature_value[] = array('0.8', '0.8', $option['yandexgpt_temperature']);
     $yandexgpt_temperature_value[] = array('0.9', '0.9', $option['yandexgpt_temperature']);
 
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Искуственный интеллект', $PHPShopGUI->setField('Токен', $PHPShopGUI->setInputText(false, 'option[yandexgpt_token]', $option['yandexgpt_token'], 375, '<a target="_blank" href="https://oauth.yandex.ru/authorize?response_type=token&client_id=1a6990aa636648e9b2ef855fa7bec2fb">' . __('Получить') . '</a>')) .
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Искусственный интеллект', $PHPShopGUI->setField('Токен', $PHPShopGUI->setInputText(false, 'option[yandexgpt_token]', $option['yandexgpt_token'], 375, '<a target="_blank" href="https://oauth.yandex.ru/authorize?response_type=token&client_id=1a6990aa636648e9b2ef855fa7bec2fb">' . __('Получить') . '</a>')) .
             $PHPShopGUI->setField('Креативность ответа', $PHPShopGUI->setSelect('option[yandexgpt_temperature]', $yandexgpt_temperature_value, 100)) .
-            $PHPShopGUI->setField('Конфигурация', $PHPShopGUI->setSelect('option[yandexgpt_model]', $yandexgpt_model_value, 200)) .
-            $PHPShopGUI->setField(null, $PHPShopGUI->setCheckbox('option[yandexgpt_seo]', 1, 'Включить помощь AI в ручном заполнении данных', $option['yandexgpt_seo'])) .
-            $PHPShopGUI->setField(null, $PHPShopGUI->setCheckbox('option[yandexgpt_seo_import]', 1, 'Включить помощь AI в импорте данных', $option['yandexgpt_seo_import']))
+            $PHPShopGUI->setField('Конфигурация', $PHPShopGUI->setSelect('option[yandexgpt_model]', $yandexgpt_model_value, 200))
     );
 
     if (empty($option['yandexgpt_chat_role']))
-        $option['yandexgpt_chat_role'] = 'Ты - консультант по продажам на сайте ' . $_SERVER['SERVER_NAME'] . '. Род деятельности -  ' . $PHPShopSystem->getParam('descrip') . ', телефон - ' . $PHPShopSystem->getParam('tel') . ', время работы - ' . $PHPShopSystem->getSerilizeParam("bank.org_time") . ', адрес - ' . $PHPShopSystem->getSerilizeParam("bank.org_adres") . '. Тебя зовут Чат-бот.  Напиши ответ с учётом вида текста и заданной темы.';
+        $option['yandexgpt_chat_role'] = 'Ты - консультант по продажам на сайте ' . $_SERVER['SERVER_NAME'] . '. Напиши ответ с учётом вида текста и заданной темы.';
 
     if (empty($option['yandexgpt_avatar_dialog']))
         $option['yandexgpt_avatar_dialog'] = '/phpshop/lib/templates/chat/ai.png';
-
 
 
     if (empty($option['yandexgpt_day_dialog']))
@@ -61,14 +81,30 @@ function actionStart() {
 
     // Чат
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Чат', $PHPShopGUI->setField(null, $PHPShopGUI->setCheckbox('option[yandexgpt_chat_enabled]', 1, 'Включить AI для чата в нерабочее время', $option['yandexgpt_chat_enabled'])) .
-            $PHPShopGUI->setField("Заголовок чата", $PHPShopGUI->setInputText(null, "option[yandexgpt_title_dialog]", $option['yandexgpt_title_dialog'], 300)) .
+            $PHPShopGUI->setField("Заголовок чата", $PHPShopGUI->setInputText(null, "option[yandexgpt_title_dialog]", $option['yandexgpt_title_dialog'], 375)) .
             $PHPShopGUI->setField("Аватар AI в чате", $PHPShopGUI->setIcon($option['yandexgpt_avatar_dialog'], "yandexgpt_avatar_dialog", false, array('load' => false, 'server' => true))) .
             $PHPShopGUI->setField('Задача для ответа', $PHPShopGUI->setTextarea('option[yandexgpt_chat_role]', $option['yandexgpt_chat_role'], false, false, 100))
     );
 
     // Яндекс Поиск
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Поиск', $PHPShopGUI->setField("Токен", $PHPShopGUI->setInputText(null, "option[yandexsearch_token]", $option['yandexsearch_token'], 300)) .
-            $PHPShopGUI->setField(null, $PHPShopGUI->setCheckbox('option[yandexsearch_enabled]', 1, 'Включить поиск ответов для чата на сайте через Яндекс', $option['yandexsearch_enabled']) . '<br>' . $PHPShopGUI->setCheckbox('option[yandexsearch_site_enabled]', 1, 'Использовать поиск через Яндекс на сайте, вместо стандартного поиска', $option['yandexsearch_site_enabled']))
+    if(empty($option['yandexsearch_image_num']))
+        $option['yandexsearch_image_num']=1;
+    
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Поиск', $PHPShopGUI->setField("Токен", $PHPShopGUI->setInputText(null, "option[yandexsearch_token]", $option['yandexsearch_token'], 375)) .
+            $PHPShopGUI->setField(null, $PHPShopGUI->setCheckbox('option[yandexsearch_enabled]', 1, 'Включить поиск ответов для чата на сайте через Яндекс', $option['yandexsearch_enabled']) . '<br>' . $PHPShopGUI->setCheckbox('option[yandexsearch_site_enabled]', 1, 'Использовать поиск через Яндекс на сайте, вместо стандартного поиска', $option['yandexsearch_site_enabled'])).
+            $PHPShopGUI->setField("Изображений в поиске", $PHPShopGUI->setInputText(null, "option[yandexsearch_image_num]", (int)$option['yandexsearch_image_num'], 50)) 
+    );
+
+    // SEO Сайт
+    if (empty($option['yandexgpt_site_descrip_role']))
+        $option['yandexgpt_site_descrip_role'] = 'Ты - seo оптимизатор. Создай описание сайта для Meta Description. Верни только текст.';
+
+    if (empty($option['yandexgpt_site_title_role']))
+        $option['yandexgpt_site_title_role'] = 'Ты - seo оптимизатор. Создай описание сайта для Meta Title. Верни только текст.';
+
+
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Сайт', $PHPShopGUI->setField('Задача для создания Meta Title', $PHPShopGUI->setTextarea('option[yandexgpt_site_title_role]', $option['yandexgpt_site_title_role'], false, false, 100)) .
+            $PHPShopGUI->setField('Задача для создания Meta Description', $PHPShopGUI->setTextarea('option[yandexgpt_site_descrip_role]', $option['yandexgpt_site_descrip_role'], false, false, 100))
     );
 
     // SEO каталоги
@@ -114,8 +150,12 @@ function actionStart() {
     if (empty($option['yandexgpt_news_description_role']))
         $option['yandexgpt_news_description_role'] = 'Ты - seo оптимизатор. Создай анонс новости.';
 
-    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Новости', $PHPShopGUI->setField('Задача для создания новости', $PHPShopGUI->setTextarea('option[yandexgpt_news_content_role]', $option['yandexgpt_news_content_role'], false, false, 100)) .
-            $PHPShopGUI->setField('Задача для создания анонса', $PHPShopGUI->setTextarea('option[yandexgpt_news_description_role]', $option['yandexgpt_news_description_role'], false, false, 100))
+    if (empty($option['yandexgpt_news_sendmail_role']))
+        $option['yandexgpt_news_sendmail_role'] = 'Ты - seo оптимизатор. Создай текст рассылки.';
+
+    $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Новости и рассылки', $PHPShopGUI->setField('Задача для создания новости', $PHPShopGUI->setTextarea('option[yandexgpt_news_content_role]', $option['yandexgpt_news_content_role'], false, false, 100)) .
+            $PHPShopGUI->setField('Задача для создания анонса', $PHPShopGUI->setTextarea('option[yandexgpt_news_description_role]', $option['yandexgpt_news_description_role'], false, false, 100)) .
+            $PHPShopGUI->setField('Задача для создания рассылки', $PHPShopGUI->setTextarea('option[yandexgpt_news_sendmail_role]', $option['yandexgpt_news_sendmail_role'], false, false, 100))
     );
 
     // SEO страницы
@@ -152,16 +192,6 @@ function actionStart() {
             $PHPShopGUI->setField('Задача для ответа на отзыв о сайте', $PHPShopGUI->setTextarea('option[yandexgpt_gbook_answer_role]', $option['yandexgpt_gbook_answer_role'], false, false, 100)) .
             $PHPShopGUI->setField('Задача для ответа на комментарий о товаре', $PHPShopGUI->setTextarea('option[yandexgpt_product_comment_role]', $option['yandexgpt_product_comment_role'], false, false, 100))
     );
-
-    if (empty($_SESSION['yandexcloud']) or $_SESSION['yandexcloud'] < time()) {
-        $PHPShopGUI->_CODE = $PHPShopGUI->setAlert('Раздел настройки интеграции с <b>Yandex Cloud</b> доступен только по <a class="btn btn-sm btn-info" href="https://www.phpshop.ru/order/order.html#subscription?from=' . $_SERVER['SERVER_NAME'] . '" target="_blank"><span class="glyphicon glyphicon-ruble"></span> Платной подписке</a>', 'info', true);
-
-        $option['yandexgpt_seo']=0;
-        $option['yandexgpt_seo_import']=0;
-        $option['yandexgpt_chat_enabled']=0;
-        $option['yandexsearch_site_enabled']=0;
-        $PHPShopOrm->update(['ai_new'=>serialize($option)]);
-    }
 
     // Запрос модуля на закладку
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $data);
@@ -204,7 +234,7 @@ function actionUpdate() {
     $option = unserialize($data['ai']);
 
     // Корректировка пустых значений
-    $PHPShopOrm->updateZeroVars('option.yandexgpt_chat_enabled', 'option.yandexsearch', 'option.yandexsearch_site_enabled', 'option.yandexgpt_seo', 'option.yandexgpt_seo_import');
+    $PHPShopOrm->updateZeroVars('option.yandexgpt_chat_enabled', 'option.yandexsearch', 'option.yandexsearch_site_enabled', 'option.yandexgpt_seo_import', 'option.yandexsearch_image');
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)

@@ -10,7 +10,7 @@ function marketplacesAddCaptions()
         $PHPShopInterface->productTableCaption[] = ["G.Merchant", "15%", ['view' => (int) $memory['catalog.option']['price_google']]];
     }
     if(isset($memory['catalog.option']['price_sbermarket'])) {
-        $PHPShopInterface->productTableCaption[] = ["СберМаркет", "15%", ['view' => (int) $memory['catalog.option']['price_sbermarket']]];
+        $PHPShopInterface->productTableCaption[] = ["Мегамаркет", "15%", ['view' => (int) $memory['catalog.option']['price_sbermarket']]];
     }
     if(isset($memory['catalog.option']['price_aliexpress'])) {
         $PHPShopInterface->productTableCaption[] = ["AliExpress", "15%", ['view' => (int) $memory['catalog.option']['price_aliexpress']]];

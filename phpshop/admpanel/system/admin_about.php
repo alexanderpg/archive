@@ -88,7 +88,7 @@ function actionStart() {
             $PHPShopGUI->setField("Дополнительные витрины", $ShowcaseLimit, false, 'Многосайтовость', false, 'text-right') .
             $PHPShopGUI->setField("Окончание поддержки", $TechPodUntil . '&nbsp;&nbsp; <a class="btn btn-sm btn-default  ' . $loadLicClass . '" href="?path=support"><span class="glyphicon glyphicon-user"></span> ' . __('Задать вопрос в поддержку') . '</a>', false, false, false, 'text-right') .
             $PHPShopGUI->setField("Окончание лицензии", $LicenseUntil, false, false, false, 'text-right') .
-            $PHPShopGUI->setField("Окончание подписки <a href=\"https://docs.phpshop.ru/nastroiky/yandex-cloud\" target=\"_blank\">Yandex Cloud</a>", $YandexCloudUntil, false, false, false, 'text-right') .
+            $PHPShopGUI->setField("Окончание подписки <a href=\"?path=system.yandexcloud\">Yandex Cloud</a>", $YandexCloudUntil, false, false, false, 'text-right') .
             $PHPShopGUI->setField("Файл лицензии", $licFilepath, false, false, false, 'text-right') .
             $PHPShopGUI->setField("Серийный номер", $serialNumber, false, false, false, 'text-right') .
             $PHPShopGUI->setField("Версия PHP", phpversion(), false, false, false, 'text-right') .

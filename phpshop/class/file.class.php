@@ -100,7 +100,7 @@ class PHPShopFile {
      * @param bool $error вывод ошибки
      */
     static function writeCsv($file, $csv, $error = false) {
-        $fp = @fopen($file, "w+");
+        $fp = fopen($file, "w+");
         if ($fp) {
             if (is_array($csv))
                 foreach ($csv as $value) {

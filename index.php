@@ -1,6 +1,6 @@
 <?php /*                                         
 +-------------------------------------------------------+
-|  PHPShop 6.4                                          |
+|  PHPShop 6.5                                          |
 |  Copyright © PHPShop, 2004-2024                       |
 |  Все права защищены. ИП Туренко Д.Л.                  |
 |  https://www.phpshop.ru/page/license.html             |

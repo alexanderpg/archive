@@ -32,7 +32,7 @@
                 <li>
                     @productArt@
                 </li>
-                <li id="items @hideCatalog@">
+                <li id="items" class="@hideCatalog@">
                     @productSklad@
                 </li>
                 <li>

@@ -3,7 +3,7 @@
     <version>1.2</version>
     <name>CRM Битрикс24</name>
     <faqlink>https://docs.phpshop.ru/moduli/crm/bitrix24</faqlink>
-    <description>Синхронизация с CRM системой Битрикс24</description>
+    <description>Синхронизация с CRM системой Битрикс24.</description>
     <sign>1618822466</sign>
     <category>crm,pro</category>
     <pro>true</pro>

@@ -10,7 +10,12 @@ class Marketplaces
 
     public static function isMarketplace()
     {
-        return isset($_GET[self::IDENTIFIER]);
+        if(isset($_GET[self::IDENTIFIER]) and in_array($_GET[self::IDENTIFIER],[self::SBERMARKET,self::ALIEXPRESS,self::CDEK,self::RETAIL_CRM])){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public static function isSbermarket()

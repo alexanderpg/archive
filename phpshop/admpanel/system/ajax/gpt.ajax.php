@@ -58,6 +58,11 @@ switch ($_POST['role']) {
         $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_news_description_role');
         break;
     
+    case "news_sendmail":
+        $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_news_sendmail_role');
+        $html = true;
+        break;
+    
     case "page_content":
         $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_page_content_role');
         $html = true;
@@ -82,6 +87,14 @@ switch ($_POST['role']) {
     case "gbook_answer":
         $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_gbook_answer_role');
         $html = true;
+        break;
+    
+   case "site_title":
+        $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_site_title_role');
+        break;
+    
+   case "site_descrip":
+        $system = $PHPShopSystem->getSerilizeParam('ai.yandexgpt_site_descrip_role');
         break;
     
 }

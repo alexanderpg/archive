@@ -55,7 +55,7 @@ function treegenerator($array, $i, $curent, $dop_cat_array) {
 function actionStart() {
     global $PHPShopGUI, $PHPShopOrm,$PHPShopSystem;
 
-    $PHPShopGUI->field_col = 4;
+    $PHPShopGUI->field_col = 5;
 
     $data = $PHPShopOrm->select();
 
@@ -156,9 +156,9 @@ function actionStart() {
 
     // Выбор каталога СберМаркет
     $catOption = $PHPShopGUI->setField("Размещение", $tree_select_sm . $PHPShopGUI->setCheckbox("categories_sm_all", 1, "Выбрать все категории?", 0), 1, 'Пакетное редактирование. Настройка не сохраняется.');
-    $catOption .= $PHPShopGUI->setField("Вывод в СберМегаМаркет", $PHPShopGUI->setRadio("enabled_sm_all", 1, "Вкл.", 1) . $PHPShopGUI->setRadio("enabled_sm_all", 0, "Выкл.", 1));
+    $catOption .= $PHPShopGUI->setField("Вывод в Мегамаркет", $PHPShopGUI->setRadio("enabled_sm_all", 1, "Вкл.", 1) . $PHPShopGUI->setRadio("enabled_sm_all", 0, "Выкл.", 1));
 
-    $Tab1 .= $PHPShopGUI->setCollapse('Товары для СберМегаМаркет', $catOption);
+    $Tab1 .= $PHPShopGUI->setCollapse('Товары для Мегамаркет', $catOption);
     
     $valuta = $PHPShopSystem->getDefaultValutaCode();
 
@@ -172,7 +172,7 @@ function actionStart() {
             $PHPShopGUI->setField('Колонка цен AliExpress', $PHPShopGUI->setSelect('options[price_ali]', $PHPShopGUI->setSelectValue($options['price_ali'], 5), 100)) .
             $PHPShopGUI->setField('Наценка', $PHPShopGUI->setInputText(null, 'options[price_ali_fee]', $options['price_ali_fee'], 100, '%') .'<br>'.
                     $PHPShopGUI->setInputText(null, 'options[price_ali_markup]', $options['price_ali_markup'], 100, $valuta)) .
-            $PHPShopGUI->setField('Колонка цен СберМаркет', $PHPShopGUI->setSelect('options[price_sbermarket]', $PHPShopGUI->setSelectValue($options['price_sbermarket'], 5), 100)) .
+            $PHPShopGUI->setField('Колонка цен Мегамаркет', $PHPShopGUI->setSelect('options[price_sbermarket]', $PHPShopGUI->setSelectValue($options['price_sbermarket'], 5), 100)) .
             $PHPShopGUI->setField('Наценка', $PHPShopGUI->setInputText(null, 'options[price_sbermarket_fee]', $options['price_sbermarket_fee'], 100, '%').'<br>'.$PHPShopGUI->setInputText(null, 'options[price_sbermarket_markup]', $options['price_sbermarket_markup'], 100, $valuta)) 
                     
     );
