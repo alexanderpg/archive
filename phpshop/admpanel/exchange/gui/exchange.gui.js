@@ -74,6 +74,7 @@ $().ready(function () {
 
         var count = Number($('#total-update').html());
         var stop = $('#stop').val();
+        var img_load = 0;
 
         if (stop != 1) {
 
@@ -83,6 +84,7 @@ $().ready(function () {
             data.push({name: 'start', value: start});
             data.push({name: 'end', value: end});
             data.push({name: 'ajax', value: true});
+            data.push({name: 'img_load', value: img_load});
 
             //console.log(data);
 
@@ -94,6 +96,7 @@ $().ready(function () {
                 success: function (json) {
                     $('#bot_result').html(json['result']);
                     count += json['count'];
+                    img_load += json['img_load'];
                     $('#total-update').html(count);
 
                     if (json['success'] == 'done') {

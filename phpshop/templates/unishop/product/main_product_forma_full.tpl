@@ -174,7 +174,6 @@
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="home" itemprop="description">@productDes@</div>
                 <div role="tabpanel" class="tab-pane" id="settings">  
-                    <br>
                     <div class="row">
                         <div class="col-md-8">@vendorDisp@</div>
                         <div class="col-md-4">@brandUidDescription@</div>

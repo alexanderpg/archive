@@ -70,6 +70,7 @@ function _tpl($file) {
         'container_2.tpl' => 'Каталог справа',
         'container_3.tpl' => 'Каталог сверху',
         'filter' => 'Вид фильтров',
+        'warehouse.tpl' => 'Фильтр по складам',
         'filter_1.tpl' => 'Фильтр в виде кнопок',
         'filter_2.tpl' => 'Фильтр в виде чекбоксов',
         'footer' => 'Вид подвала',

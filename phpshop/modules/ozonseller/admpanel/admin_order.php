@@ -49,6 +49,14 @@ function actionStart() {
         $orders = $ordersFbo['result'];
 
     $total = 0;
+    
+    if ($OzonSeller->type == 2) {
+        $type_name = __('Арт');
+        $type = 'uid';
+    } else {
+        $type_name = 'ID';
+        $type = 'id';
+    }
 
     if (is_array($orders))
         foreach ($orders as $row) {
@@ -64,9 +72,10 @@ function actionStart() {
                     $sum += $product['price'] * $product['quantity'];
 
             if ($row['type'] == 'fbs')
-                $type = "FBS";
+                $order_type = '<div class="text-muted">FBS</div>';
             else
-                $type = "FBO";
+                $order_type = '<div class="text-muted">FBO</div>';
+            
 
             $prod = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['id,uid,name,pic_small'], [$type => '="' . (string) PHPShopString::utf8_win1251($product['offer_id']) . '"']);
 
@@ -74,12 +83,13 @@ function actionStart() {
                 $product_info = $OzonSeller->getProductAttribures($product['offer_id'], 'offer_id')['result'][0];
                 $image = $product_info['images'][0]['file_name'] ;
                 $link = 'https://www.ozon.ru/product/' . $product['sku'];
-                $prod['name']=PHPShopString::utf8_win1251($product_info['name']);
+                $prod['name']=PHPShopString::utf8_win1251($row['products'][0]['name']);
                 $uid = '<div class="text-muted">' . __('Арт') . ' ' . PHPShopString::utf8_win1251($product['offer_id']) . '</div>';
             } else {
-                $image = $product['pic_small'];
-                $link = '?path=product&id=' . $product['id'] . '&return=modules.dir.ozonseller';
+                $image = $prod['pic_small'];
+                $link = '?path=product&id=' . $prod['id'] . '&return=modules.dir.ozonseller';
                 $uid = '<div class="text-muted">' . __('Арт') . ' ' . $prod['uid'] . '</div>';
+         
             }
             
             $status = '<div class="text-muted">' . __($OzonSeller->getStatus($row['status'])) . '</div>';
@@ -92,7 +102,7 @@ function actionStart() {
 
             $total += $sum;
 
-            $PHPShopInterface->setRow(['name' => $row['posting_number'], 'link' => '?path=modules.dir.ozonseller.order&id=' . $row['posting_number'] . '&type=' . $type], $icon, array('name' => $prod['name'], 'addon' => $uid, 'link' => $link,'target'=>'_blank'), ['name'=>$OzonSeller->getTime($row['in_process_at']),'addon'=>$status],  $sum . $currency);
+            $PHPShopInterface->setRow(['name' => $row['posting_number'],'addon' => $order_type, 'link' => '?path=modules.dir.ozonseller.order&id=' . $row['posting_number'] . '&type=' . $row['type']], $icon, array('name' => $prod['name'], 'addon' => $uid, 'link' => $link,'target'=>'_blank'), ['name'=>$OzonSeller->getTime($row['in_process_at']),'addon'=>$status],  $sum . $currency);
         }
 
     $order_status_value[] = array(__('Все заказы'), null, $_GET['status']);

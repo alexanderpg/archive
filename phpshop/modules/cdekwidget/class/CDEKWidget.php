@@ -1,7 +1,11 @@
 <?php
 
 /**
- * API version 2.0
+ * Библиотека работы с CDEK API 2
+ * @author PHPShop Software
+ * @version 2.0
+ * @package PHPShopClass
+ * @subpackage RestApi
  */
 class CDEKWidget {
 
@@ -19,6 +23,7 @@ class CDEKWidget {
     private $domain = 'https://api.cdek.ru/';
     private $authUrl = 'v2/oauth/token';
     private $orderUrl = 'v2/orders';
+    private $citiesUrl = 'v2/location/suggest';
     private $token;
     private $orderId;
 
@@ -110,6 +115,15 @@ class CDEKWidget {
         );
 
         $PHPShopOrm->insert($log);
+    }
+    
+    /**
+     * Получение кода города
+     * @param string $city город
+     */
+    public function getCityCode($city){
+        $result = $this->request($this->citiesUrl, ['cities?name='.PHPShopString::win_utf8($city).'&country_code=RU'],false);
+        return $result;
     }
 
     public function send($order) {
@@ -426,13 +440,15 @@ class CDEKWidget {
             'Authorization: Bearer ' . $this->token,
             'Content-Type: application/json'
         );
+        
+        
         if ($post) {
             $headers[2] = 'Content-Length: ' . strlen(json_encode($params));
             curl_setopt($ch, CURLOPT_URL, $domain . $method);
         } else {
             curl_setopt($ch, CURLOPT_URL, $domain . $method . '/' . $params[0]);
         }
-
+        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);

@@ -715,4 +715,8 @@ width: auto;
         width:95%;
         bottom: 10px;
     }
+    
+    body.modal-open{
+        margin-right: 0px;
+    }
 }

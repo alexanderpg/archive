@@ -179,11 +179,17 @@ $().ready(function () {
                             table.api().ajax.url(ajax_path + "product.ajax.php?cat=" + cat).load();
 
                             $('#select_all').prop('checked', false);
-                            $('[name="addNew"]').attr('data-cat', cat);
-                            $.cookie('cat', cat);
-                            $('.cat-select, .cat-view').removeClass('hide');
 
-                            $('#btnBackProduct').removeClass('disabled');
+                            if (data['editable'] != 0) {
+
+                                $('[name="addNew"]').attr('data-cat', cat);
+                                $.cookie('cat', cat);
+                                $('.cat-select, .cat-view').removeClass('hide');
+
+                                $('#btnBackProduct').removeClass('disabled');
+                            } else {
+                                $('.cat-select, .cat-view').addClass('hide');
+                            }
                         } else
                             window.location.href = '?path=catalog&id=' + data['tags'];
                     }
@@ -431,14 +437,14 @@ $().ready(function () {
                 var idselect = [];
 
             var cur = 0;
-            var count=0;
+            var count = 0;
 
             $('#data input[name="items"]:checkbox:checked').each(function () {
                 if (this.value != 'all') {
 
                     cur = $.inArray($(this).attr('data-id'), idselect);
 
-                    if (cur > 0){
+                    if (cur > 0) {
                         idselect.splice(cur, 1);
                         count++;
                     }
@@ -452,7 +458,7 @@ $().ready(function () {
                 message: locale.confirm_wishlist_delete
             }).done(function () {
 
-                showAlertMessage(locale.wishlist_delete_done+' '+count);
+                showAlertMessage(locale.wishlist_delete_done + ' ' + count);
 
                 $.cookie('idselect', JSON.stringify(idselect), {
                     path: '/',
@@ -476,14 +482,14 @@ $().ready(function () {
             } else
                 var idselect = [];
 
-            var count=0;
+            var count = 0;
             $('#data input[name="items"]:checkbox:checked').each(function () {
                 if (this.value != 'all') {
 
-                    if ($.inArray($(this).attr('data-id'), idselect) < 0){
+                    if ($.inArray($(this).attr('data-id'), idselect) < 0) {
                         idselect.push($(this).attr('data-id'));
                     }
-                    
+
                     count++;
                 }
 
@@ -494,8 +500,8 @@ $().ready(function () {
                 buttonFail: locale.cancel,
                 message: locale.confirm_wishlist
             }).done(function () {
-                
-                showAlertMessage(locale.wishlist_done+' '+count);
+
+                showAlertMessage(locale.wishlist_done + ' ' + count);
 
                 $.cookie('idselect', JSON.stringify(idselect), {
                     path: '/',

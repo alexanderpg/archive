@@ -104,6 +104,7 @@ function actionStart() {
             $update_enable = @xml2array(UPDATE_PATH, "update", true);
             if (is_array($update_enable) and $update_enable['status'] != 'no_update') {
                 $_SESSION['update_check'] = intval($update_enable['name'] - $update_enable['num']);
+                
             } else
                 $_SESSION['update_check'] = 0;
         }
@@ -130,6 +131,11 @@ function actionStart() {
                 $search_jairnal_icon = 'exclamation-sign';
             }
     }
+    
+    // Сообщение об обновлении
+    if($License['License']['SupportExpires'] > date("U") and !empty($_SESSION['update_check']))
+        $_SESSION['update_check_message'] = true;
+    else $_SESSION['update_check_message'] = false;
 
     // Заканчивается лицензия
     $LicenseUntilUnixTime = intval($License['License']['Expires']);
@@ -552,8 +558,10 @@ function actionStart() {
        </div>
    </div>   
 ';
+    
+    // Доступно обновление сообщение
+    $PHPShopGUI->_CODE .='<div id="update_check" data-update="'.$_SESSION['update_check_message'].'"></div>';
 
     $PHPShopGUI->Compile();
 }
-
 ?>

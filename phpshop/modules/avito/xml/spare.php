@@ -19,21 +19,24 @@ PHPShopObj::loadClass("promotions");
 PHPShopObj::loadClass("parser");
 PHPShopObj::loadClass("lang");
 
-// Ìàññèâ âàëþò
+// ÐœÐ°ÑÑÐ¸Ð² Ð²Ð°Ð»ÑŽÑ‚
 $PHPShopValutaArray = new PHPShopValutaArray();
 
-// Ñèñòåìíûå íàñòðîéêè
+// Ð¡Ð¸ÑÑ‚ÐµÐ¼Ð½Ñ‹Ðµ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸
 $PHPShopSystem = new PHPShopSystem();
 
 $PHPShopLang = new PHPShopLang(array('locale'=>$_SESSION['lang'],'path'=>'shop'));
 
-// Êîðçèíà
+// ÐšÐ¾Ñ€Ð·Ð¸Ð½Ð°
 $PHPShopCart = new PHPShopCart();
 
-// Ìîäóëè
+// ÐœÐ¾Ð´ÑƒÐ»Ð¸
 $PHPShopModules = new PHPShopModules($_classPath . "modules/");
 
 header("HTTP/1.1 200");
 header("Content-Type: application/xml; charset=utf-8");
 $Spare = new AvitoSpare(3);
+ob_start();
 $Spare->compile();
+$xml = ob_get_clean();
+echo str_replace(' x ','Ã—',$xml);

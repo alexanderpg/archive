@@ -108,7 +108,7 @@ function retailOrder($id, $type) {
             foreach ($order["orders"]["Cart"]["cart"] as $item) {
 
                 $item["retail_product_id"] = (new PHPShopOrm($GLOBALS['SysValue']['base']['products']))->getOne(['retail_product_id'], ['id' => '=' . $item["id"]])["retail_product_id"];
-                
+
                 // Есть externalId
                 if (!empty($item["retail_product_id"])) {
                     $tmp["items"][] = array(
@@ -133,8 +133,19 @@ function retailOrder($id, $type) {
             $tmp["delivery"]["code"] = $value["delivery"][$order["orders"]["Person"]["dostavka_metod"]];
         }
 
-        if ($order["user"] != 0) {
-            $tmp["customerId"] = $order["user"];
+
+
+        if (!empty($order["user"])) {
+
+            // Внешний код
+            $PHPShopOrmUser = new PHPShopOrm($GLOBALS['SysValue']['base']['shopusers']);
+            $retail_user_id = $PHPShopOrmUser->getOne(['retail_user_id'], ['id' => '=' . (int) $order["user"]])['retail_user_id'];
+
+            if (!empty($retail_user_id))
+                $tmp["customerId"] = $retail_user_id;
+            else
+                $tmp["customerId"] = $order["user"];
+            
         } else {
             $tmp["customerId"] = uniqid(time());
             if (!empty($persone["org_name"]) || !empty($persone["org_inn"]) || !empty($persone["org_kpp"])) {

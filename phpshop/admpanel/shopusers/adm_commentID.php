@@ -59,7 +59,7 @@ function actionStart() {
             $PHPShopGUI->setField("Название", $media) .
             $PHPShopGUI->setField("Статус", $PHPShopGUI->setCheckbox("enabled_new", 1, null, $data['enabled'])) .
             $PHPShopGUI->setField("Рейтинг", $PHPShopGUI->setSelect('rate_new', $rate_value, 50)) .
-            $PHPShopGUI->setField("Комментарий", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 100, 'product_comment', 'product_name'))
+            $PHPShopGUI->setField("Комментарий", $oFCKeditor->AddGUI() . $PHPShopGUI->setAIHelpButton('content_new', 300, 'product_comment', 'product_name'))
     );
 
 

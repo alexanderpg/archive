@@ -173,6 +173,7 @@ function OzonsellerUpdate($post) {
 $addHandler = array(
     'actionStart' => 'addOzonsellerProductTab',
     'actionDelete' => false,
-    'actionUpdate' => 'OzonsellerUpdate'
+    'actionUpdate' => 'OzonsellerUpdate',
+    'actionOptionEdit' => 'addOzonsellerProductTab',
 );
 ?>

@@ -4,7 +4,7 @@
  * Класс создания элементов товаров
  * Примеры использования размещены в папке phpshop/inc/
  * @author PHPShop Software
- * @version 1.3
+ * @version 1.4
  * @package PHPShopClass
  */
 class PHPShopProductElements extends PHPShopElements {
@@ -44,6 +44,7 @@ class PHPShopProductElements extends PHPShopElements {
     var $no_photo = 'images/shop/no_photo.gif';
     var $total = 0;
     var $product_grid;
+    var $previewSorts;
 
     /**
      * Тип верстки таблиц товаров [default | li | div]
@@ -308,7 +309,7 @@ class PHPShopProductElements extends PHPShopElements {
 
             // Проверка дополнительных складов
             $this->getStore($row);
-            
+
             // Общий склад
             $this->set('productWarehouse', $row['items']);
 
@@ -619,6 +620,8 @@ function product_grid($dataArray, $cell, $template = false, $line = true, $mod =
 
             $this->set('productUid', $row['id']);
             $this->set('catalog', $this->lang('catalog'));
+            
+            $this->set('previewSorts', $this->getPreviewSorts($dataArray, $row));
 
             // Подключение функции вывода средней оценки товара из отзывов пользователей
             $this->doLoadFunction(__CLASS__, 'comment_rate', array("row" => $row, "type" => "CID"), 'shop');
@@ -725,6 +728,62 @@ function setCell($d1, $d2 = null, $d3 = null, $d4 = null, $d5 = null, $d6 = null
     return $tr;
 }
 
+public function getPreviewSorts($products, $currentProduct) {
+
+    if (is_null($this->sortCategories)) {
+        $sortCategoryOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['sort_categories']);
+        $this->sortCategories = $sortCategoryOrm->getList(['id', 'name'], ['show_preview' => '="1"'], ['order' => 'num, name']);
+    }
+
+    if (count($this->sortCategories) === 0) {
+        return null;
+    }
+
+    // Выполняется над всеми товарами сразу только на первой итерации
+    if (is_null($this->previewSorts)) {
+        $sortValueIds = array();
+        foreach ($products as $product) {
+            $vendorArray = unserialize($product['vendor_array']);
+            if (is_array($vendorArray)) {
+                foreach (array_values($vendorArray) as $sortValues) {
+                    foreach ($sortValues as $sortValue) {
+                        $sortValueIds[] = (int) $sortValue;
+                    }
+                }
+            }
+        }
+
+        if (count($sortValueIds) === 0) {
+            return null;
+        }
+
+        $sortOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['sort']);
+        $sorts = $sortOrm->getList(array('id', 'name'), array('`id` IN ' => sprintf('(%s)', implode(',', $sortValueIds))));
+
+        foreach ($sorts as $sort) {
+            $this->previewSorts[$sort['id']] = $sort['name'];
+        }
+    }
+
+    $vendorArray = unserialize($currentProduct['vendor_array']);
+    $html = '';
+    foreach ($this->sortCategories as $sortCategory) {
+        if (isset($vendorArray[$sortCategory['id']])) {
+            $titles = array();
+            foreach ($vendorArray[$sortCategory['id']] as $value) {
+                if (isset($this->previewSorts[(int) $value])) {
+                    $titles[(int) $value] = $this->previewSorts[(int) $value];
+                }
+            }
+            $this->set('previewSortTitle', $sortCategory['name']);
+            $this->set('previewSortValue', implode(', ', $titles));
+            $html .= ParseTemplateReturn("product/preview_sort_one.tpl");
+        }
+    }
+
+    $this->set('previewSorts', $html);
+
+    return ParseTemplateReturn("product/preview_sorts.tpl");
 }
 
-?>
+}

@@ -34,7 +34,7 @@ function setProducts_ozonseller_hook($obj, $data) {
             }
         }
 
-        $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . $price . '</price><oldprice>' . $oldprice . '</oldprice>', $data['xml']);
+        $data['xml'] = str_replace('<price>' . $data['val']['price'] . '</price>', '<price>' . $price . '</price><oldprice>' . $oldprice . '</oldprice><min_price>' . $price . '</min_price>', $data['xml']);
         
 
         $outlets = null;

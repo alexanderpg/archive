@@ -59,7 +59,7 @@ function actionStart() {
         );
 
 
-    $PHPShopGUI->setActionPanel(__('Товар') . ': ' . PHPShopString::utf8_win1251($product_info['name']) . ' [ID ' . $_GET['id'] . ']', false, array('Загрузить товар'));
+    $PHPShopGUI->setActionPanel(__('Товар') . ': ' . PHPShopString::utf8_win1251($product_info['name']), false, array('Загрузить товар'));
 
     // Знак рубля
     if ($PHPShopSystem->getDefaultValutaIso() == 'RUB' or $PHPShopSystem->getDefaultValutaIso() == 'RUR')

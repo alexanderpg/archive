@@ -525,8 +525,8 @@ body.modal-open{
 }
 
 .img-responsive{
-  max-width: 100%;
-  height: auto;
+    max-width: 100%;
+    height: auto;
 }
 
 @media (max-width: 767px) {
@@ -534,5 +534,9 @@ body.modal-open{
         left: 10px;
         width:95%;
         bottom: 10px;
+    }
+
+    body.modal-open{
+        margin-right: 0px;
     }
 }

@@ -12,7 +12,7 @@ function actionStart() {
     global $PHPShopGUI, $PHPShopSystem, $PHPShopInterface, $OzonSeller;
 
     // Данные по заказу Озон
-    if ($_GET['type'] == 'FBS')
+    if ($_GET['type'] == 'fbs')
         $order_info = $OzonSeller->getOrderFbs($_GET['id']);
     else
         $order_info = $OzonSeller->getOrderFbo($_GET['id']);
@@ -60,10 +60,13 @@ function actionStart() {
     $PHPShopInterface->setCaption(array("Наименование", "50%"), array("Цена", "15%"), array("Кол-во", "10%"), array("Сумма", "15%", array('align' => 'right')));
 
     // Ключ обновления
-    if ($OzonSeller->type == 2)
+    if ($OzonSeller->type == 2) {
+        $type_name = __('Арт');
         $type = 'uid';
-    else
+    } else {
+        $type_name = 'ID';
         $type = 'id';
+    }
 
     $data = $order_info['result']['products'];
 
@@ -96,7 +99,7 @@ function actionStart() {
   </div>
    <div class="media-body">
     <div class="media-heading"><a href="'.$link.'" target="_blank">' . PHPShopString::utf8_win1251($row['name']) . '</a></div>
-    ' . __('Код') . ': ' . $row['offer_id'] . '
+    ' . $type_name . ': ' . $row['offer_id'] . '
   </div>
 </div>';
 
@@ -138,11 +141,12 @@ function actionSave() {
 
     // Ключ обновления
     if ($OzonSeller->type == 2)
-        $ozon_type = 'uid';
+        $type = 'uid';
     else
-        $ozon_type = 'id';
+        $type = 'id';
 
     $data = $order_info['result']['products'];
+    
     if (is_array($data))
         foreach ($data as $row) {
 
@@ -199,7 +203,7 @@ function actionSave() {
     $order['Person']['dos_do'] = '';
     $order['Person']['order_metod'] = '';
     $insert['dop_info_new'] = $comment;
-
+    
     // данные для записи в БД
     $insert['datas_new'] = time();
     $insert['uid_new'] = $OzonSeller->setOrderNum();

@@ -127,6 +127,7 @@ class BaseAvitoXml
                 "category"       => PHPShopString::win_utf8($this->categories[$product['category']]['category']),
                 "type"           => PHPShopString::win_utf8($this->categories[$product['category']]['type']),
                 "subtype"        => PHPShopString::win_utf8($this->categories[$product['category']]['subtype']),
+                "subtype_id"        => $this->categories[$product['category']]['subtype_avito'],
                 "name"           => str_replace(array('&#43;', '&#43'), '+', $product['name']),
                 "images"         => $images,
                 "price"          => $this->getProductPrice($product),
@@ -140,6 +141,8 @@ class BaseAvitoXml
                 "oem"            => $product['oem_avito'],
                 "tiers"          => $product['tiers_avito'],
                 "items"          => $product['items'],
+                "building_avito"          => $product['building_avito'],
+                "type_avito" => $this->categories[$product['category']]['type_avito']
             );
         }
 
@@ -224,9 +227,11 @@ class BaseAvitoXml
                     'category'       => $avitoCategory,
                     'type'           => $this->Avito->getAvitoType($category['type_avito']),
                     'subtype'        => $this->Avito->getAvitoSubType($category['subtype_avito']),
+                    'subtype_avito' => $category['subtype_avito'],
                     'category_avito' => (int) $category['category_avito'],
                     'site_title'     => $category['name'],
-                    'site_id'        => (int) $category['id']
+                    'site_id'        => (int) $category['id'],
+                    'type_avito'        => (int) $category['type_avito']
                 );
             }
         }

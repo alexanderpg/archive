@@ -24,7 +24,7 @@ function tab_log() {
                 $text = __('Обработано ') . $info[0] . __(' строк') . '. ' . $info[1] . ' ' . $info[2] . __(' записей');
             }
 
-            $PHPShopInterface->setRow(array('name' => $date, 'link' => '?path=exchange.import&id=' . $row['id']), array('name' => pathinfo($row['file'])['basename']), $status, array('name' => $text, 'align' => 'right'));
+            $PHPShopInterface->setRow(array('name' => $date, 'link' => '?path=exchange.import&id=' . $row['id']), array('name' => pathinfo($row['file'])['basename']), $status, array('name' => $text, 'link'=>'?path=catalog&cat=0&import=' . $row['import_id'], 'align' => 'right'));
         }
 
     return '<table class="table table-hover">' . $PHPShopInterface->_CODE . '</table><a class="btn btn-default btn-sm pull-right" href="?path=exchange.log">'.__('Показать все записи').'</a>';

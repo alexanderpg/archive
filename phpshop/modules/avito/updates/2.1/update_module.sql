@@ -1,7 +1,3 @@
-ALTER TABLE `phpshop_categories` ADD `condition_cat_avito` varchar(64) DEFAULT 'Новое';
-ALTER TABLE `phpshop_categories` ADD `export_cat_avito` enum('0','1') DEFAULT '0';
-ALTER TABLE `phpshop_products` ADD `building_avito` text;
-
 UPDATE `phpshop_modules_avito_types` SET `name` = 'Аудио и видеотехника' WHERE `id` = 203;
 
 INSERT INTO `phpshop_modules_avito_subtypes` (`id`, `name`, `type_id`) VALUES

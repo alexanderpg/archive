@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_wbseller_log` (
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
-ALTER TABLE `phpshop_orders` ADD `wbseller_order_data` text NOT NULL;
+ALTER TABLE `phpshop_orders` ADD `wbseller_order_data` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_categories` ADD `category_wbseller` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_sort_categories` ADD `attribute_wbseller` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_products` ADD `export_wb` enum('0','1') DEFAULT '0';
@@ -40,3 +40,5 @@ ALTER TABLE `phpshop_products` ADD `export_wb_task_status` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_products` ADD `barcode_wb` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_products` ADD `export_wb_id` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_categories` ADD `category_wbseller_id` int(11) DEFAULT 0;
+
+ALTER TABLE `phpshop_orders` ADD INDEX(`wbseller_order_data`); 

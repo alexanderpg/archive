@@ -431,7 +431,7 @@ function csv_update($data) {
                 foreach ($_POST['select_action'] as $k => $name) {
 
                     // Автоматизация
-                    if (!empty($_POST['bot'])) {
+                    if (!empty($_POST['smart'])) {
                         $_POST['select_action'][$k] = PHPShopString::utf8_win1251($name, true);
                     }
 
@@ -502,7 +502,7 @@ function csv_update($data) {
                 else
                     $row[strtolower($cols_name)] = $data[$k];
             }
-            
+
             // Телефон пользователя
             if (!empty($row['data_adres'])) {
 
@@ -572,7 +572,7 @@ function csv_update($data) {
                     $message = PHPShopString::utf8_win1251($message);
 
                 if (!empty($message) and $YandexGPT->init()) {
-                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 300);
+                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 500);
                     $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
                     $row['content'] = PHPShopString::utf8_win1251($text);
                 }
@@ -592,7 +592,7 @@ function csv_update($data) {
                     $message = PHPShopString::utf8_win1251($message);
 
                 if (!empty($message) and $YandexGPT->init()) {
-                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 100);
+                    $result = $YandexGPT->text(strip_tags($message), $system, 0.3, 200);
 
                     $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
                     $text = preg_replace("/\r|\n/", ' ', $text);
@@ -674,7 +674,7 @@ function csv_update($data) {
 
             // Путь каталога
             if (isset($row['path'])) {
-                //if (empty($row['category'])) {
+
                 $search = $row['path'];
                 $category = new PHPShopCategory(0);
                 $category->getChildrenCategories(100, ['id', 'parent_to', 'name'], false, $search);
@@ -687,7 +687,6 @@ function csv_update($data) {
                 }
 
                 $row['category'] = $category->search_id;
-                //}
             }
 
             // Коррекция флага подтипа
@@ -820,6 +819,8 @@ function csv_update($data) {
                         if (!empty($_POST['export_imgpath']))
                             $img = '/UserFiles/Image/' . $img;
 
+
+
                         // Проверка изображния
                         $checkImage = checkImage($img, $row['id'], $row['parent_enabled']);
                         $img_save = $checkImage['img'];
@@ -879,10 +880,9 @@ function csv_update($data) {
                                 $row['pic_big'] = $img;
 
                                 // Главное превью
-                                if ($_POST['export_imgload'] == 2){
+                                if ($_POST['export_imgload'] == 2) {
                                     $row['pic_small'] = $img;
-                                }
-                                else if ($_POST['export_imgload'] == 1 and isset($_POST['export_imgproc'])) {
+                                } else if ($_POST['export_imgload'] == 1 and isset($_POST['export_imgproc'])) {
                                     $row['pic_small'] = str_replace(array(".png", ".jpg", ".jpeg", ".gif", ".PNG", ".JPG", ".JPEG", ".GIF", ".webp", ".WEBP"), array("s.png", "s.jpg", "s.jpeg", "s.gif", "s.png", "s.jpg", "s.jpeg", "s.gif", "s.webp", "s.webp"), $img);
                                 }
                             }
@@ -897,7 +897,7 @@ function csv_update($data) {
 
             // Создание данных
             if ($_POST['export_action'] == 'insert') {
-                
+
 
                 $PHPShopOrm->debug = false;
                 $PHPShopOrm->mysql_error = false;
@@ -971,6 +971,9 @@ function csv_update($data) {
                     if (isset($row['price5'])) {
                         $row['price5'] = str_replace(',', '.', $row['price5']);
                     }
+
+                    // ID загрузки
+                    $row['import_id'] = $_SESSION['import_id'];
 
                     $insertID = $PHPShopOrm->insert($row, '');
                     if (is_numeric($insertID)) {
@@ -1056,6 +1059,9 @@ function csv_update($data) {
                 // Дата обновления
                 $row['datas'] = time();
 
+                // ID загрузки
+                $row['import_id'] = $_SESSION['import_id'];
+
                 if (!empty($where)) {
                     $PHPShopOrm->debug = false;
                     if ($PHPShopOrm->update($row, $where, '') === true) {
@@ -1096,7 +1102,7 @@ function createCategoryPath($category_array, $id, $path = null) {
             $path .= createCategoryPath($category_array, $category_array[$category_array[$id][1]][0], $path);
             return $path;
         }
-        
+
         return $path;
     }
 }
@@ -1122,7 +1128,7 @@ function actionSave() {
                 $_POST = unserialize($data['option']);
                 $exchanges_name = $data['name'];
                 unset($_POST['exchanges_new']);
-                unset($_POST['bot']);
+                unset($_POST['smart']);
             }
         }
     }
@@ -1231,6 +1237,9 @@ function actionSave() {
 
         PHPShopObj::loadClass('file');
 
+        // ID загрузки
+        $_SESSION['import_id'] = md5($csv_file . date("m.d.y"));
+
         // Автоопределение расширения
         if ($_POST['export_extension'] == 'auto') {
 
@@ -1278,7 +1287,7 @@ function actionSave() {
                 // Товары
                 if (empty($subpath[2])) {
 
-                    $yml_array[0] = ["Артикул", "Наименование", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Путь каталога", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота"];
+                    $yml_array[0] = ["Артикул", "Наименование", "Большое изображение", "Подробное описание", "Склад", "Цена 1", "Вес", "ISO", "Каталог", "Путь каталога", "Характеристики", "Штрихкод", "Подтип", "Подчиненные товары", "Цвет", "Старая цена", "Длина", "Ширина", "Высота", "Внешний код"];
 
                     // Каталоги
                     foreach ($xml->shop[0]->categories[0]->category as $item) {
@@ -1296,8 +1305,8 @@ function actionSave() {
                         $category_path = substr($category_path, 1, strlen($category_path) - 1);
                         $category_path_array = explode("/", $category_path);
                         $category_path = implode("/", array_reverse($category_path_array));
-                        
-                        
+
+
                         // Склад
                         if (isset($item->count[0]))
                             $warehouse = (int) $item->count[0];
@@ -1354,6 +1363,17 @@ function actionSave() {
                         else
                             $barcode = null;
 
+                        // Артикул
+                        if (!empty((string) $item->vendorCode[0])) {
+                            $uid = (string) $item->vendorCode[0];
+                            
+                            // Внешний код
+                            $external_code = (string) $item->attributes()->id;
+                        } else {
+                            $uid = (string) $item->attributes()->id;
+                            $external_code = null;
+                        }
+
                         // Подтипы
                         if (!empty((string) $item->attributes()->group_id)) {
 
@@ -1392,9 +1412,13 @@ function actionSave() {
                         }
 
 
-                        $yml_array[(string) $item->attributes()->id] = [(string) $item->attributes()->id, PHPShopString::utf8_win1251((string) $item->name[0]), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height];
+
+
+
+
+                        $yml_array[$uid] = [$uid, PHPShopString::utf8_win1251((string) $item->name[0]), $images, nl2br(PHPShopString::utf8_win1251((string) $item->description[0])), $warehouse, (string) $item->price[0], ($item->weight[0] * 100), (string) $item->currencyId[0], (string) $item->categoryId[0], $category_path, $sort, $barcode, $parent_enabled, $parent, $parent2, $oldprice, $length, $width, $height, $external_code];
                     }
-                    
+
                     if (empty($GLOBALS['exchanges_cron']))
                         $csv_file = './csv/product.yml.csv';
                     else
@@ -1498,7 +1522,7 @@ function actionSave() {
             }
         }
         // Копируем CSV файл локально для автоматизации
-        else if ($_POST['export_extension'] == 'csv' and ! empty($url) and ! empty($_POST['bot'])) {
+        else if ($_POST['export_extension'] == 'csv' and ! empty($url) and ! empty($_POST['smart'])) {
 
             if (!empty($_POST['furl'])) {
                 $csv_file = './csv/' . $path_parts['basename'];
@@ -1507,7 +1531,7 @@ function actionSave() {
         }
 
         // Автоматизация
-        if (!empty($_POST['bot'])) {
+        if (!empty($_POST['smart'])) {
 
             $limit = intval($_POST['line_limit']);
 
@@ -1636,14 +1660,14 @@ function actionSave() {
         $PHPShopOrm->insert(array('name_new' => $_POST['exchanges_new'], 'option_new' => serialize($_POST), 'type_new' => 'import'));
     }
 
-    if (!empty($_POST['bot']) and ( empty($_POST['total']) or $_POST['line_limit'] < 10))
+    if (!empty($_POST['smart']) and ( empty($_POST['total']) or $_POST['line_limit'] < 10))
         $log_off = true;
 
     // Журнал загрузок
     if (empty($log_off)) {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges_log']);
         $_POST['exchanges'] = $_GET['exchanges'];
-        $PHPShopOrm->insert(array('date_new' => time(), 'file_new' => $csv_file, 'status_new' => $result, 'info_new' => serialize([$csv_load_totale, $lang_do, (int) $csv_load_count, $result_csv, (int) $img_load]), 'option_new' => serialize($_POST)));
+        $PHPShopOrm->insert(array('date_new' => time(), 'file_new' => $csv_file, 'status_new' => $result, 'info_new' => serialize([$csv_load_totale, $lang_do, (int) $csv_load_count, $result_csv, (int) $img_load]), 'option_new' => serialize($_POST), 'import_id_new' => $_SESSION['import_id']));
     }
 
     // Автоматизация
@@ -1653,9 +1677,17 @@ function actionSave() {
 
             $bar = round($_POST['end'] * 100 / $total);
 
-            return array("success" => $action, "bar" => $bar, "count" => $csv_load_count, "result" => PHPShopString::win_utf8($json_message), 'limit' => $limit, 'action' => PHPShopString::win_utf8(mb_strtolower($lang_do, $GLOBALS['PHPShopBase']->codBase)));
-        } else
+            return array("success" => $action, "bar" => $bar, "count" => $csv_load_count, "result" => PHPShopString::win_utf8($json_message), 'limit' => $limit, 'img_load' => (int) $img_load, 'action' => PHPShopString::win_utf8(mb_strtolower($lang_do, $GLOBALS['PHPShopBase']->codBase)));
+        } else {
+
+            // Журнал загрузок
+            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges_log']);
+            $_POST['exchanges'] = $_GET['exchanges'];
+            $PHPShopOrm->insert(array('date_new' => time(), 'file_new' => $csv_file, 'status_new' => $result, 'info_new' => serialize([$total, $lang_do, (int) ($total - 1), $result_csv, (int) $_POST['img_load']]), 'option_new' => serialize($_POST), 'import_id_new' => $_SESSION['import_id']));
+
+
             return array("success" => 'done', "count" => $csv_load_count, "result" => PHPShopString::win_utf8($json_message), 'limit' => $limit, 'action' => PHPShopString::win_utf8(mb_strtolower($lang_do, $GLOBALS['PHPShopBase']->codBase)));
+        }
     }
 }
 
@@ -1689,7 +1721,7 @@ function actionStart() {
         $memory[$_GET['path']]['export_delim'] = @$_POST['export_delim'];
         $memory[$_GET['path']]['export_imgproc'] = @$_POST['export_imgproc'];
         $memory[$_GET['path']]['export_code'] = @$_POST['export_code'];
-        $memory[$_GET['path']]['bot'] = @$_POST['bot'];
+        $memory[$_GET['path']]['smart'] = @$_POST['smart'];
         $memory[$_GET['path']]['export_key'] = @$_POST['export_key'];
         $memory[$_GET['path']]['export_imgfunc'] = @$_POST['export_imgfunc'];
         $memory[$_GET['path']]['export_extension'] = @$_POST['export_extension'];
@@ -1717,7 +1749,7 @@ function actionStart() {
         $_POST['line_limit'] = 1;
 
         if ($_GET['path'] == 'exchange.import')
-            $_POST['bot'] = 1;
+            $_POST['smart'] = 1;
 
         if ($subpath[2] == 'catalog')
             $memory[$_GET['path']]['export_action'] = 'insert';
@@ -1956,13 +1988,13 @@ function actionStart() {
     if (empty($_POST['line_limit']))
         $_POST['line_limit'] = 50;
 
-    if (empty($_POST['bot']))
-        $_POST['bot'] = null;
+    if (empty($_POST['smart']))
+        $_POST['smart'] = null;
 
     $Tab4 = $PHPShopGUI->setField('Лимит строк', $PHPShopGUI->setInputText(null, 'line_limit', $_POST['line_limit'], 150), 1, 'Зависит от скорости хостинга');
     //$Tab4 .= $PHPShopGUI->setField('Временной интервал', $PHPShopGUI->setInputText(null, 'time_limit', $_POST['time_limit'], 150, __('секунд')), 1, 'Зависит от скорости хостинга');
     //$Tab4 .= $PHPShopGUI->setInput("hidden", "line_limit", $_POST['line_limit']);
-    $Tab4 .= $PHPShopGUI->setField("Помощник", $PHPShopGUI->setCheckbox('bot', 1, __('Умная загрузка для соблюдения правила ограничений на хостинге'), @$_POST['bot'], false, false));
+    $Tab4 .= $PHPShopGUI->setField("Помощник", $PHPShopGUI->setCheckbox('smart', 1, __('Умная загрузка для соблюдения правила ограничений на хостинге'), @$_POST['smart'], false, false));
 
     $Tab1 = $PHPShopGUI->setCollapse('Настройки', $Tab1);
     $Tab2 = $PHPShopGUI->setCollapse('Подсказка', $PHPShopGUI->setHelp(__('Если вы загружаете файл, который скачали в меню "База" &rarr; "Экспорт базы", и он содержит') . ' <a name="import-col-name" href="#">' . __('штатные заголовки столбцов') . '</a> - ' . __('сопоставление полей делать <b>не нужно</b>. Если это сторонний прайс со своими названиями колонок, сделайте <b>Cопоставление полей</b>.') . '<div style="margin-top:10px" id="import-col-name" class="none panel panel-default"><div class="panel-body">' . $list . '</div></div>', false, false)) .

@@ -3,7 +3,7 @@ $().ready(function() {
 
     var theme_new = false;
     
-    // Поиск избражений в Яндекс
+    // Промт-режим AI
     $('.yandexcloudModal').on('click', function (event) {
         event.preventDefault();
         $('#adminModal .modal-title').html(locale.help+' AI');

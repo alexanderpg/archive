@@ -82,7 +82,7 @@ function tab_bot($option) {
                 $message = null;
 
 
-            $tab .= '<li><a href="?path=dialog&id=' . $row['chat_id'] . '&bot=' . $row['bot'] . '&user=' . $row['user_id'] . '&return=order.' . $_GET['id'] . '"><img src="../lib/templates/messenger/' . $row['bot'] . '.svg" title="' . ucfirst($row['bot']) . '" class="bot-icon">' . $row['name'] . $badge . $message . '</a></li>';
+            $tab .= '<li><a href="?path=dialog&id=' . $row['chat_id'] . '&sender=' . $row['bot'] . '&user=' . $row['user_id'] . '&return=order.' . $_GET['id'] . '"><img src="../lib/templates/messenger/' . $row['bot'] . '.svg" title="' . ucfirst($row['bot']) . '" class="bot-icon">' . $row['name'] . $badge . $message . '</a></li>';
         }
     $tab .= '</ul>';
 
@@ -131,7 +131,7 @@ function tab_dialog($data, $option) {
           <input type="hidden" name="actionList[selectID]" value="actionReplies">
           <input type="hidden" name="chat_id" value="' . $data_chat[0]['chat_id'] . '">
           <input type="hidden" name="user_id" value="' . $data['user'] . '">
-          <input type="hidden" name="bot" value="' . $data_chat[0]['bot'] . '">
+          <input type="hidden" name="sender" value="' . $data_chat[0]['bot'] . '">
          </form>';
         }
     }

@@ -15,6 +15,7 @@
         <link href="./css/bootstrap-select.min.css" rel="stylesheet">
         <link href="./css/signin.css" rel="stylesheet">
         <link href="./css/bar.css" rel="stylesheet">
+        <link href="./css/messagebox.min.css" rel="stylesheet">
 
     </head>
 
@@ -61,6 +62,8 @@
                 <input type="hidden" name="actionList[actionHash]" value="actionHash">
                 <input type="hidden" name="actionList[actionID]" value="actionEnter">
             </form>
+                
+                
                 </div>
         </div> <!-- /container -->
         <!-- Fixed mobile bar -->
@@ -84,18 +87,15 @@
             </a>
         </nav>
         <!--/ Fixed mobile bar -->
-
+        
+       
         <!-- Notification -->
-        <div id="notification" class="success-notification hide">
-            <div  class="alert alert-success alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
-                <span class="notification-alert">@notification@</span>
-            </div>
-        </div>
+        <div id="message" class="hide">@notification@</div>
         <!--/ Notification -->
 
-        <script src="./js/bootstrap.min.js"></script>
+        <script src="./js/bootstrap.min.js" data-rocketoptimized="false" data-cfasync="false"></script>
         <script src="./js/bootstrap-select.min.js" data-rocketoptimized="false" data-cfasync="false"></script>
-        <script src="./js/signin.js"></script>
+        <script src="./js/messagebox.min.js" data-rocketoptimized="false" data-cfasync="false"></script>
+        <script src="./js/signin.js" data-rocketoptimized="false" data-cfasync="false"></script>
     </body>
 </html>

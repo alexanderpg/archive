@@ -45,7 +45,7 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
 
         <form class="" style="padding:10px">
             <div class="input-group" >
-                <input name="text" maxlength="256" value="<?php echo urldecode($_GET['text']); ?>" class="form-control input-sm" required="" type="search">
+                <input name="text" maxlength="256" value="<?php echo PHPShopString::utf8_win1251($_GET['text']); ?>" class="form-control input-sm" required="" type="search">
                 <span class="input-group-btn">
                     <button class="btn btn-default btn-sm" type="submit"><span class="glyphicon glyphicon-search"></span> <?php _e('Поиск') ?></button>
                 </span>

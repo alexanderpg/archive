@@ -443,7 +443,7 @@ function actionSave() {
         if (is_array($val))
             foreach ($val as $id) {
 
-                $product = $PHPShopOrm->getOne(['name'], ['id' => '=' . (int) $id]);
+                $product = $PHPShopOrm->getOne(['name', 'content', 'description'], ['id' => '=' . (int) $id]);
                 $name = $product['name'];
 
                 // Подробное описание
@@ -454,7 +454,13 @@ function actionSave() {
                     $result = $YandexGPT->text($name, $system, $PHPShopSystem->getSerilizeParam('ai.yandexgpt_temperature'), $length);
                     $text = $YandexGPT->html($result['result']['alternatives'][0]['message']['text']);
 
-                    $PHPShopOrm->update(['content_new' => PHPShopString::utf8_win1251($text)], ['id' => '=' . (int) $id]);
+                    // Добавить или заменить
+                    if (!empty($_POST['action']))
+                        $content = PHPShopString::utf8_win1251($text) . $product['content'];
+                    else
+                        $content = PHPShopString::utf8_win1251($text);
+
+                    $PHPShopOrm->update(['content_new' => $content], ['id' => '=' . (int) $id]);
                 }
 
                 // Краткое описание
@@ -466,7 +472,13 @@ function actionSave() {
                     $text = str_replace(['*', '\n', '\r'], ['', '', ''], $result['result']['alternatives'][0]['message']['text']);
                     $text = preg_replace("/\r|\n/", ' ', $text);
 
-                    $PHPShopOrm->update(['description_new' => PHPShopString::utf8_win1251($text)], ['id' => '=' . (int) $id]);
+                    // Добавить или заменить
+                    if (!empty($_POST['action']))
+                        $description = PHPShopString::utf8_win1251($text) . $product['description'];
+                    else
+                        $description = PHPShopString::utf8_win1251($text);
+
+                    $PHPShopOrm->update(['description_new' => $description], ['id' => '=' . (int) $id]);
                 }
 
                 // Title Meta
@@ -750,7 +762,9 @@ function actionStart() {
                 elseif (in_array($val['Field'], $help_ai)) {
                     $name = $key_name[$val['Field']];
                     $PHPShopGUI->_CODE .= $PHPShopGUI->setField(ucfirst($name), $PHPShopGUI->setInputArg(getKeyView($val)) .
-                            $PHPShopGUI->setCheckbox('help_ai_' . $val['Field'], 1, 'Помощь AI', 0, $PHPShopGUI->disabled_yandexcloud)
+                            $PHPShopGUI->setCheckbox('help_ai_' . $val['Field'], 1, 'Помощь AI', 0, $PHPShopGUI->disabled_yandexcloud) . '&nbsp;&nbsp;' .
+                            $PHPShopGUI->setRadio('action', 0, 'Заменить', 0, true, false, false, $PHPShopGUI->disabled_yandexcloud) .
+                            $PHPShopGUI->setRadio('action', 1, 'Добавить', 0, true, false, false, $PHPShopGUI->disabled_yandexcloud)
                     );
                 }
                 // Поиск в Яндексе
@@ -972,8 +986,11 @@ function actionResetCache() {
 
 function actionCleanSort() {
     $PHPShopSort = new PHPShopOrm($GLOBALS['SysValue']['base']['sort']);
+    $PHPShopSort->debug = false;
     $PHPShopProduct = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
+    $PHPShopProduct->debug = false;
     $PHPShopSortCat = new PHPShopOrm($GLOBALS['SysValue']['base']['sort_categories']);
+    $PHPShopSortCat->debug = false;
     $count = 0;
 
     // Проверка значений характеристик
@@ -984,9 +1001,10 @@ function actionCleanSort() {
             $check = $PHPShopProduct->getOne(['id'], ['vendor' => " REGEXP 'i" . $value . "i'"]);
 
             // Удаление
-            if (empty($check)) {
-                //echo "Нет ".$row['name'].'<br>';
+            if (count($check) < 1) {
+                //echo "Нет " . $row['name'] . ', удаляю id=' . $row['id'] . ' из ' . $GLOBALS['SysValue']['base']['sort'] . '<br>';
                 $PHPShopSort->delete(['id' => '=' . $row['id']]);
+                $PHPShopSort->clean();
                 $count++;
             }
         }
@@ -999,9 +1017,10 @@ function actionCleanSort() {
             $check = $PHPShopSort->getOne(['id'], ['category' => '=' . $row['id']]);
 
             // Удаление
-            if (empty($check)) {
-                //echo "Нет ".$row['name'].'<br>';
+            if (count($check) < 1) {
+                //echo "Нет " . $row['name'] . ', удаляю id=' . $row['id'] . ' из ' . $GLOBALS['SysValue']['base']['sort_categories'] . '<br>';
                 $PHPShopSortCat->delete(['id' => '=' . $row['id']]);
+                $PHPShopSortCat->clean();
                 $count++;
             }
         }

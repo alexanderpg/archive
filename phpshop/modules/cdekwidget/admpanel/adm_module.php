@@ -22,11 +22,11 @@ function actionUpdate() {
 
     // Настройки витрины
     $PHPShopModules->updateOption($_GET['id'], $_POST['servers']);
-    
-        if (!isset($_POST['paid_new'])) {
+
+    if (!isset($_POST['paid_new'])) {
         $_POST['paid_new'] = '0';
     }
-    
+
     // Доставки
     if (isset($_POST['delivery_id_new'])) {
         if (is_array($_POST['delivery_id_new'])) {
@@ -37,7 +37,7 @@ function actionUpdate() {
             $_POST['delivery_id_new'] = @implode(',', $_POST['delivery_id_new']);
         }
     }
-    if(empty($_POST['delivery_id_new']))
+    if (empty($_POST['delivery_id_new']))
         $_POST['delivery_id_new'] = '';
 
     if (empty($_POST['test_new']))
@@ -45,7 +45,14 @@ function actionUpdate() {
     if (empty($_POST['russia_only_new']))
         $_POST['russia_only_new'] = 0;
 
-    $_POST['city_from_code_new'] = getCityCode($_POST['city_from_new']);
+
+    include_once dirname(__FILE__) . '/../class/CDEKWidget.php';
+    $CDEKWidget = new CDEKWidget();
+
+    $getCityCode = $CDEKWidget->getCityCode($_POST['city_from_new'])[0]['code'];
+
+    if (!empty($getCityCode))
+        $_POST['city_from_code_new'] = $getCityCode;
 
     $PHPShopOrm = new PHPShopOrm($PHPShopModules->getParam("base.cdekwidget.cdekwidget_system"));
     $PHPShopOrm->debug = false;
@@ -101,53 +108,46 @@ function actionStart() {
     }
 
     $Tab1 = $PHPShopGUI->setField('Аккаунт интеграции', $PHPShopGUI->setInputText(false, 'account_new', $data['account'], 300));
-    $Tab1.= $PHPShopGUI->setField('Пароль интеграции', $PHPShopGUI->setInput("password", 'password_new', $data['password'], false, 300));
-    $Tab1.= $PHPShopGUI->setField('Режим разработки', $PHPShopGUI->setCheckbox("test_new", 1, "Отправка данных на тестовую среду СДЭК", $data["test"]));
-    $Tab1.= $PHPShopGUI->setField('Только регионы РФ', $PHPShopGUI->setCheckbox("russia_only_new", 1, "Отображать в виджете только города России", $data["russia_only"]));
-    $Tab1.= $PHPShopGUI->setField('Статус для отправки', $PHPShopGUI->setSelect('status_new', $status, 300));
-    $Tab1.= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setSelect('delivery_id_new[]', $delivery_value, 300, null, false, $search = false, false, $size = 1, $multiple = true));
-    $Tab1.= $PHPShopGUI->setField('Город отправки отправлений', $PHPShopGUI->setInputText(false, 'city_from_new', $data['city_from'], 300));
-    $Tab1.= $PHPShopGUI->setField('Почтовый индекс города отправителя', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="text" value="' . $data['index_from'] . '" name="index_from_new" style="width:300px; ">');
-    $Tab1.= $PHPShopGUI->setField('Город на карте по умолчанию', $PHPShopGUI->setInputText(false, 'default_city_new', $data['default_city'], 300));
-    $Tab1.= $PHPShopGUI->setField('Добавить наценку', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="0.1" min="0" value="' . $data['fee'] . '" name="fee_new" style="width:300px;">');
-    $Tab1.= $PHPShopGUI->setField('Тип наценки', $PHPShopGUI->setSelect('fee_type_new', array(array('%', 1, $data['fee_type']), array('Руб.', 2, $data['fee_type'])), 300, true, false, $search = false, false, $size = 1));
+    $Tab1 .= $PHPShopGUI->setField('Пароль интеграции', $PHPShopGUI->setInput("password", 'password_new', $data['password'], false, 300));
+    $Tab1 .= $PHPShopGUI->setField('Режим разработки', $PHPShopGUI->setCheckbox("test_new", 1, "Отправка данных на тестовую среду СДЭК", $data["test"]));
+    $Tab1 .= $PHPShopGUI->setField('Только регионы РФ', $PHPShopGUI->setCheckbox("russia_only_new", 1, "Отображать в виджете только города России", $data["russia_only"]));
+    $Tab1 .= $PHPShopGUI->setField('Статус для отправки', $PHPShopGUI->setSelect('status_new', $status, 300));
+    $Tab1 .= $PHPShopGUI->setField('Доставка', $PHPShopGUI->setSelect('delivery_id_new[]', $delivery_value, 300, null, false, $search = false, false, $size = 1, $multiple = true));
+    $Tab1 .= $PHPShopGUI->setField('Город отправки отправлений', $PHPShopGUI->setInputText(false, 'city_from_new', $data['city_from'], 300));
+    $Tab1 .= $PHPShopGUI->setField('Почтовый индекс города отправителя', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="text" value="' . $data['index_from'] . '" name="index_from_new" style="width:300px; ">');
+    $Tab1 .= $PHPShopGUI->setField('Город на карте по умолчанию', $PHPShopGUI->setInputText(false, 'default_city_new', $data['default_city'], 300));
+    $Tab1 .= $PHPShopGUI->setField('Добавить наценку', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="0.1" min="0" value="' . $data['fee'] . '" name="fee_new" style="width:300px;">');
+    $Tab1 .= $PHPShopGUI->setField('Тип наценки', $PHPShopGUI->setSelect('fee_type_new', array(array('%', 1, $data['fee_type']), array('Руб.', 2, $data['fee_type'])), 300, true, false, $search = false, false, $size = 1));
     $Tab1 .= $PHPShopGUI->setField('Статус оплаты', $PHPShopGUI->setCheckbox('paid_new', 1, 'Заказ оплачен', $data["paid"]));
-    
-    $Tab1= $PHPShopGUI->setCollapse('Настройки',$Tab1);
-    $Tab1.= $PHPShopGUI->setCollapse('Вес и габариты по умолчанию',
-        $PHPShopGUI->setField('Вес, гр.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['weight'] . '" name="weight_new" style="width:300px; ">') .
-        $PHPShopGUI->setField('Ширина, см.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['width'] . '" name="width_new" style="width:300px;">') .
-        $PHPShopGUI->setField('Высота, см.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['height'] . '" name="height_new" style="width:300px;">') .
-        $PHPShopGUI->setField('Длина, см.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['length'] . '" name="length_new" style="width:300px;">')
+
+    $Tab1 = $PHPShopGUI->setCollapse('Настройки', $Tab1);
+    $Tab1 .= $PHPShopGUI->setCollapse('Вес и габариты по умолчанию', $PHPShopGUI->setField('Вес, гр.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['weight'] . '" name="weight_new" style="width:300px; ">') .
+            $PHPShopGUI->setField('Ширина, см.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['width'] . '" name="width_new" style="width:300px;">') .
+            $PHPShopGUI->setField('Высота, см.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['height'] . '" name="height_new" style="width:300px;">') .
+            $PHPShopGUI->setField('Длина, см.', '<input class="form-control input-sm " onkeypress="cdekvalidate(event)" type="number" step="1" min="1" value="' . $data['length'] . '" name="length_new" style="width:300px;">')
     );
 
     $info = '<h4>Получение аккаунта интеграции</h4>
        <ol>
         <li>Зарегистрироваться в <a href="https://www.cdek.ru" target="_blank">СДЭК</a>, заключить договор.</li>
-        <li>Сделать запрос на формирование учетной записи (Account и Secure_password) для интеграции на email: <a href="mailto:integrator@cdek.ru">integrator@cdek.ru</a>.</li>
+        <li>Создать ключ доступа (Account и Secure_password) в разделе <a href="https://lk.cdek.ru/integration" target="_blank">Интеграция</a>.</li>
         </ol>
-        
+
        <h4>Настройка модуля</h4>
         <ol>
         <li>Выбрать способ доставки для работы модуля.</li>
-        <li>Ввести Аккаунт и пароль интеграции.</li>
+        <li>Ввести Аккаунт и Пароль интеграции.</li>
         <li>Ввести город отправки отправлений.</li>
         <li>Ввести город по умолчанию при открытии карты.</li>
         <li>Выбрать статус для передачи заказа в личный кабинет СДЭК.</li>
         </ol>
-        
+
        <h4>Настройка доставки</h4>
         <ol>
         <li>В карточке редактирования доставки в закладке <kbd>Изменение стоимости доставки</kbd> настроить дополнительный параметр сохранения стоимости доставки для модуля. Опция "Не изменять стоимость" должна быть активна.</li>
         <li>В карточке редактирования доставки в закладке <kbd>Адреса пользователя</kbd> отметить <kbd>ФИО</kbd> "Вкл." и "Обязательное"</li>
          <li>В карточке редактирования доставки в закладке <kbd>Адреса пользователя</kbd> отметить <kbd>Телефон</kbd> "Вкл." и "Обязательное"</li>
         </ol>
-        
-      <h4>Передача заказов</h4>
-        <ol><li>Для автоматической передачи заказов в СДЭК следует добавить новую задачу в модуль <a href="https://docs.phpshop.ru/moduli/razrabotchikam/cron" target="_blank">Задачи</a> с адресом запускаемого файла <code>phpshop/modules/cdekwidget/cron/orders.php</code>. Передача будет только тех заказов, статус которых был выбран в настройках модуля. </li>
-        </ol>
-
-
 ';
 
     $Tab2 = $PHPShopGUI->setInfo($info);
@@ -159,39 +159,11 @@ function actionStart() {
     $PHPShopGUI->setTab(array("Основное", $Tab1, true), array("Инструкция", $Tab2), array("О Модуле", $Tab4));
 
     // Вывод кнопок сохранить и выход в футер
-    $ContentFooter =
-            $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
+    $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id']) .
             $PHPShopGUI->setInput("submit", "saveID", "Применить", "right", 80, "", "but", "actionUpdate.modules.edit");
 
     $PHPShopGUI->setFooter($ContentFooter);
     return true;
-}
-
-function getCityCode($city) {
-   $url = 'http://api.cdek.ru/city/getListByTerm/jsonPost.php';
-
-   $params = array(
-       'q'               => PHPShopString::win_utf8($city),
-       'limit'           => 1,
-       'displayPostCode' => false,
-       'countryIsoList'  => array('RU'),
-       'regionIdList'    => false,
-       'cityIdList'      => false
-   );
-
-    if ( $curl = curl_init() ) {
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
-        $responce = json_decode(curl_exec($curl), true);
-        curl_close($curl);
-    }
-    if ($responce) {
-        return $responce['geonames'][0]['id'];
-    }
 }
 
 // Обработка событий
@@ -199,4 +171,3 @@ $PHPShopGUI->getAction();
 
 // Вывод формы при старте
 $PHPShopGUI->setLoader($_POST['editID'], 'actionStart');
-?>

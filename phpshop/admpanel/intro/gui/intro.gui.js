@@ -43,17 +43,17 @@ function startClock() {
     if (second < 10) {
         second = "0" + second;
     }
-    timer = setInterval(function() {
+    timer = setInterval(function () {
         $('#clock').text(hour + ":" + minute + ":" + second);
     }, 100);
 }
 
 
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     // Расширенный поиск товара
-    $(".search").on('click', function(event) {
+    $(".search").on('click', function (event) {
         event.preventDefault();
 
         var data = [];
@@ -62,13 +62,13 @@ $(document).ready(function() {
         data.push({name: 'actionList[selectID]', value: 'actionAdvanceSearch'});
 
         $.ajax({
-            mimeType: 'text/html; charset='+locale.charset,
+            mimeType: 'text/html; charset=' + locale.charset,
             url: '?path=catalog.search',
             type: 'post',
             data: data,
             dataType: "html",
             async: false,
-            success: function(data) {
+            success: function (data) {
                 $('#selectModal .modal-dialog').removeClass('modal-lg');
                 $('#selectModal .modal-title').html(locale.search_advance_title);
                 $('#selectModal .modal-footer .btn-primary').html(locale.search_advance_but);
@@ -85,7 +85,7 @@ $(document).ready(function() {
 
     // Часы
     var clock = '<span class="glyphicon glyphicon-time"></span> ';
-    timer = setInterval(function() {
+    timer = setInterval(function () {
         var now = new Date();
         var hour = now.getHours();
         var minute = now.getMinutes();
@@ -129,7 +129,7 @@ $(document).ready(function() {
         });
     }
 
-    $('.canvas-bar').on('click', function(event) {
+    $('.canvas-bar').on('click', function (event) {
         event.preventDefault();
 
         if ($(this).attr("data-canvas")) {
@@ -140,8 +140,7 @@ $(document).ready(function() {
                 responsive: true,
                 tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %> " + title
             });
-        }
-        else {
+        } else {
             lineChart.destroy();
 
             lineChart = new Chart(ctx).Bar(lineChartData, {
@@ -156,7 +155,7 @@ $(document).ready(function() {
     });
 
 
-    $('.canvas-line').on('click', function(event) {
+    $('.canvas-line').on('click', function (event) {
         event.preventDefault();
 
         if ($(this).attr("data-canvas")) {
@@ -167,8 +166,7 @@ $(document).ready(function() {
                 responsive: true,
                 tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %> " + title
             });
-        }
-        else {
+        } else {
             lineChart.destroy();
 
             lineChart = new Chart(ctx).Line(lineChartData, {
@@ -182,7 +180,7 @@ $(document).ready(function() {
         $(this).parent('li').addClass('disabled');
     });
 
-    $('.canvas-radar').on('click', function(event) {
+    $('.canvas-radar').on('click', function (event) {
         event.preventDefault();
 
         if ($(this).attr("data-canvas")) {
@@ -192,8 +190,7 @@ $(document).ready(function() {
                 responsive: true,
                 tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %> " + title
             });
-        }
-        else {
+        } else {
             lineChart.destroy();
             lineChart = new Chart(ctx).Radar(lineChartData, {
                 animation: false,
@@ -205,5 +202,22 @@ $(document).ready(function() {
         $('ul.canvas-select > li').removeClass('disabled');
         $(this).parent('li').addClass('disabled');
     });
+
+    if ($('#update_check').attr('data-update') == 1 && typeof ($.cookie('update_check')) == 'undefined') {
+        
+        $.MessageBox({
+            buttonDone: "OK",
+            buttonFail: locale.cancel,
+            message: locale.update_check
+        }).done(function () {
+            window.location.href = '?path=update';
+        }).fail(function () {
+             $.cookie('update_check', 'true', {
+                path: '/phpshop/admpanel/',
+                expires: 3
+            });
+        });
+
+    }
 
 });

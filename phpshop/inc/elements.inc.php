@@ -21,7 +21,6 @@ class PHPShopCoreElement extends PHPShopElements {
     function service() {
         if ($this->PHPShopSystem->ifSerilizeParam('admoption.service_enabled', 1)) {
 
-
             $ip = explode(",", $this->PHPShopSystem->getSerilizeParam('admoption.service_ip'));
             if (is_array($ip) and in_array(trim($_SERVER['REMOTE_ADDR']), $ip))
                 return;
@@ -43,6 +42,17 @@ class PHPShopCoreElement extends PHPShopElements {
                 header('Status: 503 Service Temporarily Unavailable');
                 exit(PHPShopParser::file($_SERVER['DOCUMENT_ROOT'] . '/phpshop/lib/templates/error/service.tpl', false, true, true));
             }
+        }
+
+        // Блокировка IP
+        $block_ip = explode(",", $this->PHPShopSystem->getSerilizeParam('admoption.block_ip'));
+        if (is_array($block_ip) and in_array(trim($_SERVER['REMOTE_ADDR']), $block_ip)) {
+
+            header("HTTP/1.0 404 Not Found");
+            header("Status: 404 Not Found");
+            if (file_exists('./404.html'))
+                include_once('./404.html');
+            exit;
         }
     }
 
@@ -2101,6 +2111,8 @@ class PHPShopRecaptchaElement extends PHPShopElements {
      */
     public function true(){
     return $this->recaptcha;
+
+
 
 
 

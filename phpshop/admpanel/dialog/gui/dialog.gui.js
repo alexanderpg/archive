@@ -7,7 +7,7 @@ $().ready(function () {
 
         var chat_id = $('input[name="chat_id"]').val();
         var user_id = $('input[name="user_id"]').val();
-        var bot = $('input[name="bot"]').val();
+        var sender = $('input[name="sender"]').val();
         var $input = $("#uploadimage");
 
         var data = new FormData();
@@ -17,12 +17,12 @@ $().ready(function () {
         data.append('message', $('textarea#message').val());
         data.append('user_id', user_id);
         data.append('chat_id', chat_id);
-        data.append('bot', bot);
+        data.append('sender', sender);
         data.append('attachment', $('[name="attachment"]').val());
 
         $.ajax({
             mimeType: 'text/html; charset=' + locale.charset,
-            url: '?path=dialog&id=' + chat_id + '&bot=' + bot,
+            url: '?path=dialog&id=' + chat_id + '&sender=' + sender,
             processData: false,
             contentType: false,
             type: 'post',
@@ -46,7 +46,7 @@ $().ready(function () {
 
                     $.ajax({
                         mimeType: 'text/html; charset=' + locale.charset,
-                        url: '?path=dialog&id=' + chat_id + '&bot=' + bot,
+                        url: '?path=dialog&id=' + chat_id + '&sender=' + sender,
                         type: 'post',
                         data: data,
                         dataType: "json",
@@ -134,7 +134,7 @@ $().ready(function () {
     setInterval(function () {
 
         var chat_id = $('input[name="chat_id"]').val();
-        var bot = $('input[name="bot"]').val();
+        var sender = $('input[name="sender"]').val();
 
         var data = [];
         data.push({name: 'selectID', value: 1});
@@ -143,7 +143,7 @@ $().ready(function () {
         if( typeof chat_id != 'undefined')
         $.ajax({
             mimeType: 'text/html; charset=' + locale.charset,
-            url: '?path=dialog&id=' + chat_id + '&bot=' + bot,
+            url: '?path=dialog&id=' + chat_id + '&sender=' + sender,
             type: 'post',
             data: data,
             dataType: "json",

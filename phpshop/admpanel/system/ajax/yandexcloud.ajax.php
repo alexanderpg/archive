@@ -34,6 +34,7 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
         <link  href="../../css/bootstrap-theme-<?php echo $theme; ?>.css" rel="stylesheet">
         <link  href="../../css/admin.css" rel="stylesheet">
         <link href="../../css/messagebox.min.css" rel="stylesheet">
+        <link href="../../css/bootstrap-toggle.min.css" rel="stylesheet">
 
     </head>
     <body role="document">
@@ -42,13 +43,14 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
         <script src="../../js/jquery-1.11.0.min.js" data-rocketoptimized="false" data-cfasync="false"></script>
         <script src="../../js/bootstrap.min.js" data-rocketoptimized="false" data-cfasync="false"></script>
         <script src="../../js/messagebox.min.js" data-rocketoptimized="false" data-cfasync="false"></script>
+        <script src="../../js/bootstrap-toggle.js" data-rocketoptimized="false" data-cfasync="false"></script>
 
         <div class="content">
 
             <?php
             $PHPShopGUI->field_col = 3;
-            $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Промт-режим YandexGPT', $PHPShopGUI->setField('Инструкции', $PHPShopGUI->setTextarea('role', null, false, false, 70, false, "Введите инструкцию") . $PHPShopGUI->setHelp('Опишите условия выполнения задания, контекст, возможные ограничения или задайте стиль ответа.')) .
-                    $PHPShopGUI->setField('Запрос', $PHPShopGUI->setTextarea('user', null, false, false, 150, false, "Введите запрос") . $PHPShopGUI->setHelp('Сформулируйте свой запрос к модели. Это могут быть ключевые слова, конкретное задание или вопрос.')) .
+            $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Промт-режим YandexGPT', $PHPShopGUI->setField('Инструкции', $PHPShopGUI->setTextarea('role', null, false, false, 70, false, "Введите инструкцию") . $PHPShopGUI->setHelp('Опишите условия выполнения задания, возможные ограничения или задайте стиль ответа.')) .
+                    $PHPShopGUI->setField('Запрос', $PHPShopGUI->setTextarea('user', null, false, false, 150, false, "Введите запрос") . $PHPShopGUI->setHelp('Сформулируйте свой запрос. Это могут быть ключевые слова, конкретное задание, вопрос.') . $PHPShopGUI->setCheckbox('html', 1, 'HTML разметка', 0)) .
                     $PHPShopGUI->setField('Ответ YandexGPT', $PHPShopGUI->setTextarea('result', null, false, false, 150, false) .
                             $PHPShopGUI->setButton('Скопировать ответ', 'copy', 'ai-result-copy') . $PHPShopGUI->setButton('Ответь иначе', 'refresh', 'ai-result-refresh'))
             );
@@ -66,13 +68,12 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
 
         <script>
             $().ready(function () {
-                
-                $('[name="result"]').attr('readonly','readonly').css('background-color', '#FFF');
+
+                $('[name="result"]').attr('readonly', 'readonly').css('background-color', '#FFF');
 
                 // Preloader
                 $('.main').removeClass('transition');
-                
-               
+
                 // Копировать 
                 $(".ai-result-copy").on('click', function (event) {
                     event.preventDefault();
@@ -106,7 +107,14 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
 
                     var text = $('[name="user"]').val();
                     var role = $('[name="role"]').val();
-                    var length = 300;
+
+                    if ($('#html').prop('checked') === true) {
+                        var html = 1;
+                        var length = 1000;
+                    } else {
+                        html = 0;
+                        var length = 300;
+                    }
 
                     $.MessageBox({
                         buttonDone: "OK",
@@ -118,6 +126,7 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
                         data.push({name: 'text', value: text});
                         data.push({name: 'length', value: length});
                         data.push({name: 'role', value: role});
+                        data.push({name: 'html', value: html});
 
                         $.ajax({
                             mimeType: 'text/html; charset=' + locale.charset,
@@ -137,6 +146,7 @@ if (!file_exists('../css/bootstrap-theme-' . $theme . '.css'))
                                     }).done(function () {
                                         $('[name="result"]').val(json['text']);
                                         parent.window.is_change = false;
+                                        $('[name="result"]').removeAttr('readonly');
                                     })
 
                                 } else {

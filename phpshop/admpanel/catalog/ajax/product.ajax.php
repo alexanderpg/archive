@@ -221,6 +221,10 @@ if ($PHPShopSystem->ifSerilizeParam('admoption.rule_enabled', 1)) {
     }
 }
 
+// import id
+if(!empty($_GET['import']))
+    $where['import_id']='="'.PHPShopSecurity::TotalClean($_GET['import']).'"';
+
 // Поиск на странице JSON
 if (!empty($_GET['search']['value'])) {
     $where['parent_enabled'] .= " and (name LIKE '%" . PHPShopString::utf8_win1251(PHPShopSecurity::TotalClean($_GET['search']['value'])) . "%' or uid LIKE '%" . PHPShopString::utf8_win1251(PHPShopSecurity::TotalClean($_GET['search']['value'])) . "%')";

@@ -37,7 +37,7 @@ function send_to_order_yandexdelivery_hook($obj, $row, $rout) {
                     $tracking = $YandexDelivery->setDataFromOrderEdit($order);
 
                     if ($tracking) {
-                        (new PHPShopOrm($GLOBALS['SysValue']['base']['orders']))->update(['tracking_new' => $tracking, 'uid' => "='" . $obj->ouid . "'"]);
+                        (new PHPShopOrm($GLOBALS['SysValue']['base']['orders']))->update(['tracking_new' => $tracking], ['uid' => "='" . $obj->ouid . "'"]);
                     }
                 }
             }
@@ -46,4 +46,3 @@ function send_to_order_yandexdelivery_hook($obj, $row, $rout) {
 }
 
 $addHandler = ['send_to_order' => 'send_to_order_yandexdelivery_hook'];
-?>

@@ -138,6 +138,7 @@ function WbsellerUpdate() {
 $addHandler = array(
     'actionStart' => 'addWbsellerProductTab',
     'actionDelete' => false,
-    'actionUpdate' => 'WbsellerUpdate'
+    'actionUpdate' => 'WbsellerUpdate',
+    'actionOptionEdit' => 'addWbsellerProductTab',
 );
 ?>

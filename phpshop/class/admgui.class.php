@@ -1696,7 +1696,7 @@ class PHPShopGUI {
      * @param array $opt массив дополнительных параметров [data-x]
      * @return string
      */
-    function setRadio($name, $value, $caption, $checked = "checked", $locale = true, $class = false, $opt = false) {
+    function setRadio($name, $value, $caption, $checked = "checked", $locale = true, $class = false, $opt = false,$disabled=false) {
 
         // Автовыделение 
         if ($value == $checked)
@@ -1718,7 +1718,7 @@ class PHPShopGUI {
             $onchange = 'onchange="' . $onchange . '"';
 
         $CODE = '
-	 <div class="radio-inline ' . $class . '"><label><input type="radio" value="' . $value . '" name="' . $name . '" id="' . $name . '" ' . $checked . '  ' . $add_option . '>' . $this->__($caption, $locale) . '<i class="fa fa-circle-o small"></i></label></div>
+	 <div class="radio-inline ' . $class . '"><label><input type="radio" value="' . $value . '" name="' . $name . '" id="' . $name . '" ' . $checked . '  ' . $add_option . $disabled.'>' . $this->__($caption, $locale) . '<i class="fa fa-circle-o small"></i></label></div>
 	 ';
         return $CODE;
     }

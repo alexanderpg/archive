@@ -1303,7 +1303,7 @@ section.brands {
     margin: auto;
     border: 1px solid #e3e8ea;
     margin-bottom: 30px;
-    height: 156px;
+    /*height: 156px;*/
 }
 
 .catalog-img>.img {
@@ -1436,10 +1436,10 @@ html:not(.ie) .catalog-background {
     .catalog-wrap {
         width: 50% !important
     }
-    .catalog-img>.img img {
+    /*.catalog-img>.img img {
         max-width: 100%;
         max-height: none !important;
-    }
+    }*/
 
 
 }

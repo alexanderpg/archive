@@ -1235,5 +1235,3 @@ public function getPreviewSorts($products, $currentProduct) {
 }
 
 }
-
-?>

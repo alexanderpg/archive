@@ -336,7 +336,8 @@ function actionStart() {
     $Tab3 = $PHPShopGUI->loadLib('tab_userdata', $data, false, $order);
 
     // Все заказы пользователя
-    $Tab4 = $PHPShopGUI->loadLib('tab_userorders', $data, false, array('status' => $OrderStatusArray, 'currency' => $currency, 'color' => $OrderStatusArray));
+    if (!empty($data['user']))
+        $Tab4 = $PHPShopGUI->loadLib('tab_userorders', $data, false, array('status' => $OrderStatusArray, 'currency' => $currency, 'color' => $OrderStatusArray));
 
     // Файлы
     $Tab5 = $PHPShopGUI->loadLib('tab_files', $data, false, $order);
@@ -373,7 +374,9 @@ function actionStart() {
 
 
     // Вывод формы закладки
+    if (!empty($data['user']))
     $PHPShopGUI->setTab(array("Корзина", $PHPShopGUI->setCollapse(null, $Tab2)), array("Данные покупателя", $PHPShopGUI->setCollapse(null, $Tab3)), array("Заказы пользователя", $PHPShopGUI->setCollapse(null, $Tab4)), array("Документы", $PHPShopGUI->setCollapse(null, $Tab5)));
+    else $PHPShopGUI->setTab(array("Корзина", $PHPShopGUI->setCollapse(null, $Tab2)), array("Данные покупателя", $PHPShopGUI->setCollapse(null, $Tab3)));
 
     // Вывод кнопок сохранить и выход в футер
     $ContentFooter = $PHPShopGUI->setInput("hidden", "rowID", $data['id'], "right", 70, "", "but") .

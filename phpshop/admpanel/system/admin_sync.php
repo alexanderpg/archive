@@ -90,7 +90,8 @@ function actionStart() {
             $PHPShopGUI->setField("Цена 4", $PHPShopGUI->setInputText(false, 'option[exchange_price4]', $option['exchange_price4'], 300, false, false, false, 'Внешний код')) .
             $PHPShopGUI->setField("Цена 5", $PHPShopGUI->setInputText(false, 'option[exchange_price5]', $option['exchange_price5'], 300, false, false, false, 'Внешний код')) .
             $PHPShopGUI->setField("Блокировка характеристик", $PHPShopGUI->setTextarea('option[exchange_sort_ignore]', $option['exchange_sort_ignore'], false, false, false, __('Укажите характеристики через запятую'), __('Примечание'))) .
-            $PHPShopGUI->setField("Блокировка обновления товаров", $PHPShopGUI->setTextarea('option[exchange_product_ignore]', $option['exchange_product_ignore'], false, false, false, __('Укажите внешний код товаров через запятую'), __('Внешний код')))
+            $PHPShopGUI->setField("Блокировка обновления товаров", $PHPShopGUI->setTextarea('option[exchange_product_ignore]', $option['exchange_product_ignore'], false, false, false, __('Укажите внешний код товаров через запятую'), __('Внешний код'))) .
+            $PHPShopGUI->setField("Размещение изображений", $PHPShopGUI->setInputText($GLOBALS['SysValue']['dir']['dir'] . '/UserFiles/Image/', "option[exchange_image_result_path]", $option['exchange_image_result_path'], 400), 1, 'Путь сохранения изображений')
     );
 
     if (empty($_SESSION['mod_pro'])) {
@@ -134,7 +135,6 @@ function actionUpdate() {
     $_POST['option']['exchange_auth_path'] = substr($_POST['option']['exchange_auth_path'], 0, 10);
 
     if ($_POST['option']['exchange_image'] == 1) {
-        //$_POST['option']['exchange_key'] = 'external';
         $_POST['option']['exchange_zip'] = 1;
     }
 
@@ -142,6 +142,17 @@ function actionUpdate() {
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)
             $option[$key] = $val;
+
+    // Создаем папку
+    if (!is_dir($_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/UserFiles/Image/' . $option['exchange_image_result_path']))
+        @mkdir($_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/UserFiles/Image/' . $option['exchange_image_result_path'], 0777, true);
+
+    // Проверка пути сохранения изображений
+    if (stristr($option['exchange_image_result_path'], '..') or ! is_dir($_SERVER['DOCUMENT_ROOT'] . $GLOBALS['SysValue']['dir']['dir'] . '/UserFiles/Image/' . $option['exchange_image_result_path']))
+        $option['exchange_image_result_path'] = null;
+
+    if (substr($option['exchange_image_result_path'], -1) != '/' and ! empty($option['exchange_image_result_path']))
+        $option['exchange_image_result_path'] .= '/';
 
     // Поиск нулевых значений
     if (is_array($_POST['option']))

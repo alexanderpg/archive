@@ -18,7 +18,7 @@ function actionStart() {
         }
     } else {
         $PHPShopInterface->sort_action = false;
-        $PHPShopInterface->_CODE.= $PHPShopInterface->setAlert('Дополнительные склады не заданы, используется общий основной склад для учета остатков товаров. Дополнительные склады заводятся по кнопке <span class="glyphicon glyphicon-plus"></span>. Возможен учет товаров на разных складах при синхронизации с 1С или на дополнительных витринах.', 'info',true);
+        $PHPShopInterface->_CODE.= $PHPShopInterface->setAlert('Дополнительные склады не заданы, используется общий основной склад для учета остатков товаров. Дополнительные склады заводятся по кнопке <span class="glyphicon glyphicon-plus"></span>. Возможен учет товаров на разных складах при синхронизации с 1С/МойСклад или на дополнительных витринах.', 'info',true);
     }
 
     $sidebarleft[] = array('title' => 'Категории', 'content' => $PHPShopInterface->loadLib('tab_menu', false, './system/'));

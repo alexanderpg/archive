@@ -772,4 +772,8 @@ color: #4e5360 !important;
         width:95%;
         bottom: 10px;
     }
+    
+    body.modal-open{
+        margin-right: 0px;
+    }
 }

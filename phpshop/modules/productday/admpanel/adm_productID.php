@@ -4,14 +4,15 @@ function addOptionProdDay($data) {
     global $PHPShopGUI;
 
     // Опции вывода
-    $Tab10 = $PHPShopGUI->setCheckbox('productday_new', 1, 'Вывод товара дня на сутки', @$data['productday']);
+    $Tab10 = $PHPShopGUI->setCheckbox('productday_new', 1, 'Вывод товара дня на сутки', $data['productday'], $data['sklad']);
+    if(!empty($data['sklad']))
+       $Tab10 .=  $PHPShopGUI->setHelp('Нельзя включить - товар под заказ');
 
-    if (empty($data['sklad']))
-        $PHPShopGUI->addTab(array("Товар дня", $Tab10, true));
+    $PHPShopGUI->addTab(array("Товар дня", $Tab10, true));
 }
 
 function updateOptionProdDay($data) {
-    
+
     if (empty($_POST['ajax'])) {
         if (empty($_POST['productday_new'])) {
             $_POST['productday_new'] = 0;

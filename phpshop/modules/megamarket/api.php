@@ -81,13 +81,13 @@ switch ($_SERVER["PATH_INFO"]) {
                     $order['Cart']['cart'][$product['id']]['uid'] = $product['uid'];
                     $order['Cart']['cart'][$product['id']]['name'] = $product['name'];
                     $order['Cart']['cart'][$product['id']]['price'] = $row['finalPrice'];
-                    $order['Cart']['cart'][$product['id']]['num'] = $row['quantity'];
                     $order['Cart']['cart'][$product['id']]['weight'] = '';
                     $order['Cart']['cart'][$product['id']]['ed_izm'] = '';
                     $order['Cart']['cart'][$product['id']]['pic_small'] = $product['pic_small'];
                     $order['Cart']['cart'][$product['id']]['parent'] = 0;
                     $order['Cart']['cart'][$product['id']]['user'] = 0;
                     $qty += $row['quantity'];
+                    $order['Cart']['cart'][$product['id']]['num'] += $row['quantity'];
                     $sum += $row['finalPrice'] * $row['quantity'];
                     $weight += $product['weight'];
                 }

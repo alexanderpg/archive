@@ -262,7 +262,7 @@
 
                                     <!-- Catalog -->
                                     <li class="hs-has-mega-menu navbar-nav-item @hideSite@">
-                                        <a id="basicMegaMenu" class="hs-mega-menu-invoker nav-link nav-link-toggle" href="/catalog/" aria-haspopup="true" aria-expanded="false">{Каталог}</a>
+                                        <a id="basicMegaMenu" class="hs-mega-menu-invoker nav-link nav-link-toggle" aria-haspopup="true" aria-expanded="false">{Каталог}</a>
 
                                         <!-- Nav Item - Mega Menu -->
                                         <div class="hs-mega-menu w-100 dropdown-menu" aria-labelledby="basicMegaMenu">
@@ -582,14 +582,6 @@
                                 </p>
                             </div>
 
-                            <!-- Yandex ID -->
-                            @yandexid@
-                            <!-- End Yandex ID -->
-
-                            <!-- VK ID -->
-                            @vkid@
-                            <!-- End VK ID -->
-
                             <a class="js-animation-link btn btn-block btn-primary mb-2" href="#"
                                data-hs-show-animation-options='{
                                "targetSelector": "#signinWithEmailModalForm",
@@ -597,6 +589,13 @@
                                }'>{Войти по }Email</a>
                             <a class="btn btn-block btn-soft-primary mb-2 @sms_login_enabled@" href="/users/sms.html">{Войти по номеру телефона}</a>
 
+                            <!-- Yandex ID -->
+                            @yandexid@
+                            <!-- End Yandex ID -->
+
+                            <!-- VK ID -->
+                            @vkid@
+                            <!-- End VK ID -->
 
                         </div>
                         <!-- End Sign in -->

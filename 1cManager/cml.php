@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 3.2
+ * @version 3.4
  */
 class CommerceMLLoader {
 
@@ -14,10 +14,11 @@ class CommerceMLLoader {
     var $exchange_path = '';
     var $cleanup_import_directory = true;
     var $cleanup_time = 3600;
+    var $exchange_image_path = "/UserFiles/Image/";
 
     public function __construct() {
         global $PHPShopSystem;
-
+        
         // Параметры обмена
         $this->exchange_zip = $PHPShopSystem->getSerilizeParam("1c_option.exchange_zip");
         $this->exchange_key = $PHPShopSystem->getSerilizeParam("1c_option.exchange_key");
@@ -26,8 +27,7 @@ class CommerceMLLoader {
         $this->exchange_load_status = $PHPShopSystem->getSerilizeParam('1c_option.1c_load_status');
         $this->exchange_auth_path = $PHPShopSystem->getSerilizeParam("1c_option.exchange_auth_path");
         $this->exchange_auth = $PHPShopSystem->getSerilizeParam("1c_option.exchange_auth");
-        $this->exchange_image_path = "/UserFiles/Image/";
-        $this->image_result_path = $PHPShopSystem->getSerilizeParam('admoption.image_result_path');
+        $this->image_result_path = $PHPShopSystem->getSerilizeParam('1c_option.exchange_image_result_path');
         $this->exchange_log = $PHPShopSystem->getSerilizeParam("1c_option.exchange_log");
         $this->exchange_image = $PHPShopSystem->getSerilizeParam("1c_option.exchange_image");
         $this->exchange_price1 = $PHPShopSystem->getSerilizeParam("1c_option.exchange_price1");
@@ -852,11 +852,13 @@ class CommerceMLLoader {
                     }
 
                     // Форматирование цены 2.04
-                    $price1 = preg_replace('/\D+/', '', $price1);
-                    $price2 = preg_replace('/\D+/', '', $price2);
-                    $price3 = preg_replace('/\D+/', '', $price3);
-                    $price4 = preg_replace('/\D+/', '', $price4);
-                    $price5 = preg_replace('/\D+/', '', $price5);
+                    if (!strpos($price1, '.')) {
+                        $price1 = preg_replace('/\D+/', '', $price1);
+                        $price2 = preg_replace('/\D+/', '', $price2);
+                        $price3 = preg_replace('/\D+/', '', $price3);
+                        $price4 = preg_replace('/\D+/', '', $price4);
+                        $price5 = preg_replace('/\D+/', '', $price5);
+                    }
 
                     $this->product_array[(string) $item->Ид[0]] = array($uid, (string) $item->Наименование[0], null, $image, null, $image_count, $warehouse, $price1, $price2, $price3, $price4, $price5, "", "", (string) $item->Цены->Цена[0]->Валюта[0], null, $parent_name, (string) $item->Ид[0], $parent_enabled);
                 }
@@ -877,7 +879,8 @@ class CommerceMLLoader {
                             }
 
                             // Форматирование цены 2.04
-                            $prod['price'] = preg_replace('/\D+/', '', $prod['price']);
+                            if (!strpos($price1, '.'))
+                                $prod['price'] = preg_replace('/\D+/', '', $prod['price']);
 
                             $this->product_array[$id] = array(null, null, null, null, null, null, $prod['warehouse'], $prod['price'], "", "", "", "", "", "", "", null, $parent, $id, 0);
                         }
@@ -963,7 +966,6 @@ OUT: ' . $response . '
             }
         }
     }
-
 }
 
 $_classPath = "../phpshop/";

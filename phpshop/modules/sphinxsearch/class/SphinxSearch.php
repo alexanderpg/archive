@@ -3,7 +3,7 @@
 /**
  * Библиотека работы с поиском Sphinx
  * @author PHPShop Software
- * @version 1.0
+ * @version 1.1
  * @package PHPShopModules
  * @todo https://pushorigin.ru/sphinx/attrs
  * @todo http://chakrygin.ru/2013/07/sphinx-search.html
@@ -86,15 +86,15 @@ class SphinxSearch {
         // Область поиска
         if ($pole === 1) {
             if (self::getOption('search_uid_first') == 1)
-                $query = '@uid ' . $query . '|@name ' . $query;
+                $query = '(@uid ' . $query . ')|(@name ' . $query.')';
             else
-                $query = '@name ' . $query . '|@uid ' . $query;
+                $query = '(@name ' . $query . ')|(@uid ' . $query.')';
         }
         else {
             if (self::getOption('search_uid_first') == 1)
-                $query = '@uid ' . $query . '|@name ' . $query . '|@content ' . $query;
+                $query = '(@uid ' . $query . ')|(@name ' . $query . ')|(@content ' . $query.')';
             else
-                $query = '@name ' . $query . '|@uid ' . $query . '|@content ' . $query;
+                $query = '(@name ' . $query . ')|(@uid ' . $query . ')|(@content ' . $query.')';
         }
 
         $result = $this->query($query, $sort, $from, $size, array_values($categories));
@@ -139,7 +139,7 @@ class SphinxSearch {
         return [
             'products' => $products,
             'total' => $result['total'],
-            'categories' => $categories,
+            'categories' => $result['categories'],
             'count' => $result['count']
         ];
     }
@@ -202,7 +202,7 @@ class SphinxSearch {
     public function query($query, $sort, $from, $size, $categories) {
 
         if ($this->link_db)
-            $result = mysqli_query($this->link_db, "SELECT * FROM productsIndex WHERE MATCH('" . PHPShopString::win_utf8($query) . "') ORDER BY $sort WEIGHT() DESC");
+            $result = mysqli_query($this->link_db, "SELECT * FROM productsIndex WHERE MATCH('" . PHPShopString::win_utf8($query) . "') ORDER BY $sort WEIGHT() DESC LIMIT 1000");
 
         $i = 0;
         $total = 0;
@@ -224,12 +224,13 @@ class SphinxSearch {
                 }
 
                 $count[$row['category']] ++;
+                $category[]=$row['category'];
 
                 $i++;
                 $total++;
             }
 
-        return ['product' => $product, 'total' => $total, 'count' => $count];
+        return ['product' => $product, 'total' => $total, 'count' => $count,'categories'=>$category];
     }
 
     function getYandexSearchCloud($search) {

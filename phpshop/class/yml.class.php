@@ -3,7 +3,7 @@
 /**
  * Библиотека YML
  * @author PHPShop Software
- * @version 1.4
+ * @version 1.5
  * @package PHPShopClass
  */
 class PHPShopYml {
@@ -65,7 +65,7 @@ class PHPShopYml {
 
         // Промоакции
         $this->PHPShopPromotions = new PHPShopPromotions();
-        
+
         // Процент накрутки
         $this->percent = $this->PHPShopSystem->getValue('percent');
 
@@ -77,7 +77,7 @@ class PHPShopYml {
         // Кол-во знаков после запятой в цене
         $this->format = $this->PHPShopSystem->getSerilizeParam('admoption.price_znak');
 
-        //Ведущий товар в подтипах можно положить в корзину
+        // Ведущий товар в подтипах можно положить в корзину
         $this->parent_price_enabled = $this->PHPShopSystem->getSerilizeParam('admoption.parent_price_enabled');
 
         // CRM
@@ -189,28 +189,45 @@ class PHPShopYml {
      * @param array $product_row
      * @return string
      */
-    function getImages($product_row) {
-
+    public function getImages($id, $pic_main) {
         $xml = null;
-        if (isset($_GET['getall']) or isset($_GET['allimage'])) {
-            $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
-            $data = $PHPShopOrm->select(array('*'), array('parent' => '=' . $product_row['id']), array('order' => 'num,id'), array('limit' => 20));
+        
+        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+        $data = $PHPShopOrm->select(['*'], ['parent' => '=' . (int) $id, 'name' => '!="' . $pic_main . '"'], ['order' => 'num'], ['limit' => 15]);
 
-            if (is_array($data))
-                foreach ($data as $row) {
+        // Главное изображение
+        $pic_main_b = str_replace(".", "_big.", $pic_main);
+        if (!$this->image_source or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $pic_main_b))
+            $pic_main_b = $pic_main;
 
-                    // Исходное изображение
-                    if (!empty($this->image_source))
-                        $row['name'] = str_replace(".", "_big.", $row['name']);
+        if (!empty($pic_main_b)) {
+            if (!strstr($pic_main_b, 'https'))
+                $pic_main_b = 'https://' . $_SERVER['SERVER_NAME'] . $pic_main_b;
 
-                    if (strpos($row['name'], 'http:') === false && strpos($row['name'], 'https:') === false)
-                        $xml .= '<picture>' . $this->ssl . $_SERVER['SERVER_NAME'] . htmlspecialchars($row['name']) . '</picture>';
-                    else
-                        $xml .= '<picture>' . htmlspecialchars($row['name']) . '</picture>';
-                }
+            $images[] = $pic_main_b;
         }
-        if (empty($xml))
-            $xml = '<picture>' . $product_row['picture'] . '</picture>';
+
+        if (is_array($data)) {
+            foreach ($data as $row) {
+
+                $name = $row['name'];
+                $name_b = str_replace(".", "_big.", $name);
+
+                // Подбор исходного изображения
+                if (!$this->image_source or ! file_exists($_SERVER['DOCUMENT_ROOT'] . $name_b))
+                    $name_b = $name;
+
+                if (!strstr($name_b, 'https'))
+                    $name_b = 'https://' . $_SERVER['SERVER_NAME'] . $name_b;
+
+                $images[] = $name_b;
+            }
+        }
+
+        if (is_array($images))
+            foreach ($images as $image) {
+                $xml .= '<picture>' . $image . '</picture>';
+            }
 
         return $xml;
     }
@@ -270,10 +287,13 @@ class PHPShopYml {
                 $where = "export_ozon='1' and";
             } elseif (isset($_GET['marketplace']) && $_GET['marketplace'] === 'vk' && isset($GLOBALS['SysValue']['base']['vkseller']['vkseller_system'])) {
                 $where = "export_vk='1' and";
-            } 
-            elseif (isset($_GET['marketplace']) && $_GET['marketplace'] === 'megamarket' && isset($GLOBALS['SysValue']['base']['megamarket']['megamarket_system'])) {
+            } elseif (isset($_GET['marketplace']) && $_GET['marketplace'] === 'megamarket' && isset($GLOBALS['SysValue']['base']['megamarket']['megamarket_system'])) {
                 $where = "export_megamarket='1' and";
-            }else {
+            }
+            // Модуль Яндекс.Маркет
+            elseif (isset($_GET['campaign']) && isset($GLOBALS['SysValue']['base']['yandexcart']['yandexcart_system'])) {
+                $where = "yml_" . (int) $_GET['campaign'] . "='1' and";
+            } else {
                 $where = "yml='1' and";
             }
         }
@@ -298,155 +318,162 @@ class PHPShopYml {
         }
 
         $result = $PHPShopOrm->query("select * from " . $GLOBALS['SysValue']['base']['products'] . " where $where enabled='1' and parent_enabled='0' $wherePrice");
-        while ($row = mysqli_fetch_array($result)) {
+        if ($result)
+            while ($row = mysqli_fetch_array($result)) {
 
-            // Пропуск неопределенных товаров
-            if (in_array($row['category'], array(1000001, 1000004, 0)))
-                continue;
+                // Пропуск неопределенных товаров
+                if (in_array($row['category'], array(1000001, 1000004, 0)))
+                    continue;
 
-            $id = $row['id'];
-            $name = trim(strip_tags($row['name']));
+                $id = $row['id'];
+                $name = trim(strip_tags($row['name']));
 
-            // Основная категория
-            $category = $row['category'];
-            // Товар с доп. каталога, основного каталога в выводе нет.
-            if (count($this->categories) > 0) {
-                if (in_array($category, $this->categories) === false) {
-                    foreach (explode('#', $row['dop_cat']) as $dopCat) {
-                        if (!empty($dopCat) && in_array($dopCat, $this->categories)) {
-                            $category = $dopCat;
-                            break;
+                // Основная категория
+                $category = $row['category'];
+                // Товар с доп. каталога, основного каталога в выводе нет.
+                if (count($this->categories) > 0) {
+                    if (in_array($category, $this->categories) === false) {
+                        foreach (explode('#', $row['dop_cat']) as $dopCat) {
+                            if (!empty($dopCat) && in_array($dopCat, $this->categories)) {
+                                $category = $dopCat;
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-            $uid = $row['uid'];
+                $uid = $row['uid'];
 
-            $price = $row[$this->price];
-            $oldprice = $row['price_n'];
+                $price = $row[$this->price];
+                $oldprice = $row['price_n'];
 
-            $promotions = $this->PHPShopPromotions->getPrice($row);
-            if (is_array($promotions)) {
-                $price = $promotions['price'];
-                $oldprice = $promotions['price_n'];
-            }
-
-            if (empty($row['description']))
-                $row['description'] = $row['content'];
-
-            if ($row['p_enabled'] == 1)
-                $p_enabled = "true";
-            else
-                $p_enabled = "false";
-
-            // Чистка тегов
-            if (empty($_GET['striptag'])) {
-                $description = '<![CDATA[' . trim(strip_tags($row['description'], '<p><h3><ul><li><br>')) . ']]>';
-                $content = '<![CDATA[' . $row['content'] . ']]>';
-            } else {
-                $description = strip_tags($row['description']);
-                $content = strip_tags($row['content']);
-            }
-
-
-            $baseinputvaluta = $row['baseinputvaluta'];
-
-            //Если валюта отличается от базовой
-            if ($baseinputvaluta !== $this->defvaluta) {
-                $vkurs = $this->PHPShopValuta[$baseinputvaluta]['kurs'];
-
-                // Если курс нулевой или валюта удалена
-                if (empty($vkurs))
-                    $vkurs = 1;
-
-                // Приводим цену в базовую валюту
-                $price = $price / $vkurs;
-                $oldprice = $oldprice / $vkurs;
-            }
-
-
-            $price = ($price + (($price * $this->percent) / 100));
-            $price = round($price, intval($this->format));
-            $oldprice = round($oldprice, intval($this->format));
-
-            $array = array(
-                "id" => $id,
-                "category" => $category,
-                "name" => str_replace(array('&#43;', '&#43'), '+', $name),
-                "picture" => htmlspecialchars($row['pic_big']),
-                "price" => $price,
-                "price2" => round($row['price2'], (int) $this->format),
-                "price3" => round($row['price3'], (int) $this->format),
-                "price4" => round($row['price4'], (int) $this->format),
-                "price5" => round($row['price5'], (int) $this->format),
-                "oldprice" => $oldprice,
-                "weight" => $row['weight'],
-                "length" => $row['length'],
-                "width" => $row['width'],
-                "height" => $row['height'],
-                "p_enabled" => $p_enabled,
-                "yml_bid_array" => unserialize($row['yml_bid_array']),
-                "uid" => $uid,
-                "vkurs" => $vkurs,
-                "description" => $description,
-                "raw_description" => $row['description'],
-                "content" => $content,
-                "raw_content" => $row['content'],
-                "prod_seo_name" => $row['prod_seo_name'],
-                "manufacturer_warranty" => $row['manufacturer_warranty'],
-                "sales_notes" => $row['sales_notes'],
-                "country_of_origin" => $row['country_of_origin'],
-                "adult" => $row['adult'],
-                "delivery" => $row['delivery'],
-                "pickup" => $row['pickup'],
-                "store" => $row['store'],
-                "yandex_min_quantity" => $row['yandex_min_quantity'],
-                "yandex_step_quantity" => $row['yandex_step_quantity'],
-                "vendor_code" => $row['vendor_code'],
-                "vendor_name" => $row['vendor_name'],
-                "manufacturer" => $row['manufacturer'],
-                "condition" => $row['yandex_condition'],
-                "condition_reason" => $row['yandex_condition_reason'],
-                "quality" => $row['yandex_quality'],
-                "items" => $row['items'],
-                "gift" => $row['gift'],
-                "gift_check" => $row['gift_check'],
-                "gift_items" => $row['gift_items'],
-                "barcode" => $row['barcode'],
-                "model" => $row['model'],
-                "market_sku" => $row['market_sku'],
-                "cpa" => $row['cpa'],
-                "price_yandex_dbs" => round($row['price_yandex_dbs'], (int) $this->format),
-                "price_sbermarket" => round($row['price_sbermarket'], (int) $this->format),
-                "price_cdek" => round($row['price_cdek'], (int) $this->format),
-                "price_aliexpress" => round($row['price_aliexpress'], (int) $this->format),
-                "price_ozon" => round($row['price_ozon'], (int) $this->format),
-                "yandex_service_life_days" => $row['yandex_service_life_days'],
-                "price_vk" => round($row['price_vk'], (int) $this->format)
-            );
-
-            // Параметр сортировки
-            if (!empty($this->vendor))
-                $array['vendor_array'] = unserialize($row['vendor_array']);
-
-            // Цвет-размер
-            if ($_GET['search']) {
-                $row['parent'] = null;
-                $array['parent'] = null;
-            }
-            if (!empty($row['parent'])) {
-                $parent = @explode(",", $row['parent']);
-
-                $Parents = $this->parent($parent, $array);
-                if (is_array($Parents)) {
-                    $array['parent'] = 1;
-                    $Products = array_merge($Products, $Parents);
+                $promotions = $this->PHPShopPromotions->getPrice($row);
+                if (is_array($promotions)) {
+                    $price = $promotions['price'];
+                    $oldprice = $promotions['price_n'];
                 }
-            }
 
-            $Products[] = $array;
-        }
+                if (empty($row['description']))
+                    $row['description'] = $row['content'];
+
+                if ($row['p_enabled'] == 1)
+                    $p_enabled = "true";
+                else
+                    $p_enabled = "false";
+
+                // Чистка тегов
+                if (empty($_GET['striptag'])) {
+                    $description = '<![CDATA[' . trim(strip_tags($row['description'], '<p><h3><ul><li><br>')) . ']]>';
+                    $content = '<![CDATA[' . $row['content'] . ']]>';
+                } else {
+                    $description = strip_tags($row['description']);
+                    $content = strip_tags($row['content']);
+                }
+
+
+                $baseinputvaluta = $row['baseinputvaluta'];
+
+                //Если валюта отличается от базовой
+                if ($baseinputvaluta !== $this->defvaluta) {
+                    $vkurs = $this->PHPShopValuta[$baseinputvaluta]['kurs'];
+
+                    // Если курс нулевой или валюта удалена
+                    if (empty($vkurs))
+                        $vkurs = 1;
+
+                    // Приводим цену в базовую валюту
+                    $price = $price / $vkurs;
+                    $oldprice = $oldprice / $vkurs;
+                }
+
+
+                $price = ($price + (($price * $this->percent) / 100));
+                $price = round($price, intval($this->format));
+                $oldprice = round($oldprice, intval($this->format));
+
+                $array = array(
+                    "id" => $id,
+                    "category" => $category,
+                    "name" => str_replace(array('&#43;', '&#43'), '+', $name),
+                    "picture" => htmlspecialchars($row['pic_big']),
+                    "price" => $price,
+                    "price2" => round($row['price2'], (int) $this->format),
+                    "price3" => round($row['price3'], (int) $this->format),
+                    "price4" => round($row['price4'], (int) $this->format),
+                    "price5" => round($row['price5'], (int) $this->format),
+                    "oldprice" => $oldprice,
+                    "weight" => $row['weight'],
+                    "length" => $row['length'],
+                    "width" => $row['width'],
+                    "height" => $row['height'],
+                    "p_enabled" => $p_enabled,
+                    "yml_bid_array" => unserialize($row['yml_bid_array']),
+                    "uid" => $uid,
+                    "vkurs" => $vkurs,
+                    "description" => $description,
+                    "raw_description" => $row['description'],
+                    "content" => $content,
+                    "raw_content" => $row['content'],
+                    "prod_seo_name" => $row['prod_seo_name'],
+                    "manufacturer_warranty" => $row['manufacturer_warranty'],
+                    "sales_notes" => $row['sales_notes'],
+                    "country_of_origin" => $row['country_of_origin'],
+                    "adult" => $row['adult'],
+                    "delivery" => $row['delivery'],
+                    "pickup" => $row['pickup'],
+                    "store" => $row['store'],
+                    "yandex_min_quantity" => $row['yandex_min_quantity'],
+                    "yandex_step_quantity" => $row['yandex_step_quantity'],
+                    "vendor_code" => $row['vendor_code'],
+                    "vendor_name" => $row['vendor_name'],
+                    "manufacturer" => $row['manufacturer'],
+                    "condition" => $row['yandex_condition'],
+                    "condition_reason" => $row['yandex_condition_reason'],
+                    "quality" => $row['yandex_quality'],
+                    "items" => $row['items'],
+                    "gift" => $row['gift'],
+                    "gift_check" => $row['gift_check'],
+                    "gift_items" => $row['gift_items'],
+                    "barcode" => $row['barcode'],
+                    "model" => $row['model'],
+                    "market_sku" => $row['market_sku'],
+                    "cpa" => $row['cpa'],
+                    "price_yandex_dbs" => round($row['price_yandex_dbs'], (int) $this->format),
+                    "price_sbermarket" => round($row['price_sbermarket'], (int) $this->format),
+                    "price_cdek" => round($row['price_cdek'], (int) $this->format),
+                    "price_aliexpress" => round($row['price_aliexpress'], (int) $this->format),
+                    "price_ozon" => round($row['price_ozon'], (int) $this->format),
+                    "yandex_service_life_days" => $row['yandex_service_life_days'],
+                    "price_vk" => round($row['price_vk'], (int) $this->format),
+                    "price_yandex" => round($row['price_yandex'], (int) $this->format),
+                    "price_yandex_2" => round($row['price_yandex_2'], (int) $this->format),
+                    "price_yandex_3" => round($row['price_yandex_3'], (int) $this->format),
+                    "items1" => $row['items1'],
+                    "items2" => $row['items2'],
+                    "items3" => $row['items3'],
+                );
+
+                // Параметр сортировки
+                if (!empty($this->vendor))
+                    $array['vendor_array'] = unserialize($row['vendor_array']);
+
+                // Цвет-размер
+                if ($_GET['search']) {
+                    $row['parent'] = null;
+                    $array['parent'] = null;
+                }
+                if (!empty($row['parent'])) {
+                    $parent = @explode(",", $row['parent']);
+
+                    $Parents = $this->parent($parent, $array);
+                    if (is_array($Parents)) {
+                        $array['parent'] = 1;
+                        $Products = array_merge($Products, $Parents);
+                    }
+                }
+
+                $Products[] = $array;
+            }
         return $Products;
     }
 
@@ -551,6 +578,12 @@ class PHPShopYml {
             "price_cdek" => round($row['price_cdek'], (int) $this->format),
             "price_aliexpress" => round($row['price_aliexpress'], (int) $this->format),
             "price_vk" => round($row['price_vk'], (int) $this->format),
+            "price_yandex" => round($row['price_yandex'], (int) $this->format),
+            "price_yandex_2" => round($row['price_yandex_2'], (int) $this->format),
+            "price_yandex_3" => round($row['price_yandex_3'], (int) $this->format),
+            "items1" => $row['items1'],
+            "items2" => $row['items2'],
+            "items3" => $row['items3'],
         );
 
         $Products[$id] = $array;
@@ -718,17 +751,7 @@ function setProducts() {
             continue;
 
         // Изображение
-        if (!empty($val['picture'])) {
-            if (strpos($val['picture'], 'http:') === false && strpos($val['picture'], 'https:') === false) {
-
-                if (!empty($this->image_source))
-                    $val['picture'] = str_replace(".", "_big.", $val['picture']);
-
-                $val['picture'] = $this->ssl . $_SERVER['SERVER_NAME'] . $val['picture'];
-            }
-        }
-
-        $picture = $this->getImages($val);
+        $picture = $this->getImages($val['id'],$val['picture']);
 
         if (isset($_GET['getall'])) {
             $val['description'] = $val['content'];

@@ -4,7 +4,7 @@
  * Синхронизация данных через JSON
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  */
 $_classPath = "../../phpshop/";
 include($_classPath . "class/obj.class.php");
@@ -35,26 +35,64 @@ class PHPShopJSON extends PHPShopBaseXml {
         if ($this->admin()) {
 
             $this->sql = json_decode(file_get_contents("php://input"), true);
-            $this->parser();
 
-            if (in_array($this->xml['method'], $this->true_method)) {
-                if (method_exists($this, $this->xml['method'])) {
+            // Многомерный
+            if (is_array($this->sql[0])) {
 
-                    // Проверка прав
-                    if ($this->checkRules($this->xml['method']))
-                        call_user_func(array($this, $this->xml['method']));
-                    else
-                        $this->error('No permission');
+                $sql_array = $this->sql;
 
-                    if (!empty($this->error)) {
-                        $this->error($this->error);
-                    }
+                foreach ($sql_array as $sql) {
+                    $this->sql = $sql;
+                    $this->parser();
+
+                    if (in_array($this->xml['method'], $this->true_method)) {
+                        if (method_exists($this, $this->xml['method'])) {
+
+                            // Проверка прав
+                            if ($this->checkRules($this->xml['method']))
+                                call_user_func(array($this, $this->xml['method']));
+                            else
+                                $this->error('No permission');
+
+                            if (!empty($this->error)) {
+                                $this->error($this->error);
+                            }
+                        } else
+                            $this->error('Non method');
+                    } else
+                        $this->error('False method');
+
+                    $result[] = $this->compile();
+                }
+
+                header("Content-Type: application/json");
+                echo json_encode($result);
+            }
+            // Простой
+            else {
+                $this->parser();
+
+                if (in_array($this->xml['method'], $this->true_method)) {
+                    if (method_exists($this, $this->xml['method'])) {
+
+                        // Проверка прав
+                        if ($this->checkRules($this->xml['method']))
+                            call_user_func(array($this, $this->xml['method']));
+                        else
+                            $this->error('No permission');
+
+                        if (!empty($this->error)) {
+                            $this->error($this->error);
+                        }
+                    } else
+                        $this->error('Non method');
                 } else
-                    $this->error('Non method');
-            } else
-                $this->error('False method');
+                    $this->error('False method');
 
-            $this->compile();
+                $result = $this->compile();
+                header("Content-Type: application/json");
+                echo json_encode($result);
+            }
         } else {
             $this->error('Token not found');
         }
@@ -145,8 +183,7 @@ class PHPShopJSON extends PHPShopBaseXml {
             }
         }
 
-        header("Content-Type: application/json");
-        echo json_encode($result);
+        return $result;
     }
 
     public function error($text) {

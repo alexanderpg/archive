@@ -41,7 +41,7 @@ function actionStart() {
             $PHPShopGUI->setField("Товар", $PHPShopGUI->setInput('text.required', "product_name", null,null,false,false,false,false, false, '<a href="#" data-target="#product_name"  class="product-search"><span class="glyphicon glyphicon-search"></span> ' . __('Выбрать') . '</a>')) .
             $PHPShopGUI->setField("Статус", $PHPShopGUI->setCheckbox("enabled_new", 1, null, 1)) .
             $PHPShopGUI->setField("Рейтинг", $PHPShopGUI->setSelect('rate_new', $rate_value, 50)) .
-            $PHPShopGUI->setField("Комментарий", $oFCKeditor->AddGUI(). $PHPShopGUI->setAIHelpButton('content_new', 100, 'product_comment', 'product_name')) 
+            $PHPShopGUI->setField("Комментарий", $oFCKeditor->AddGUI(). $PHPShopGUI->setAIHelpButton('content_new', 300, 'product_comment', 'product_name')) 
           
     );
 

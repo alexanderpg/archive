@@ -475,9 +475,11 @@ $(document).ready(function () {
     });
     // mainNavMenuFix();
 
+    /*
     setTimeout(function () {
         $('.header-menu-wrapper, .navbar-cat-collapse').css("opacity", "1")
     }, 400);
+    */
 
     /*
      setTimeout(function () {

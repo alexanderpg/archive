@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_system` (
 PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','0','0','2.1');
+INSERT INTO `phpshop_modules_ozonseller_system` VALUES (1, '', '', '',1,0,'','1','','1','0','',0,'0','0','0','2.2');
 
 CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_log` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_categories` (
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
 
-ALTER TABLE `phpshop_orders` ADD `ozonseller_order_data` text NOT NULL;
+ALTER TABLE `phpshop_orders` ADD `ozonseller_order_data` varchar(255) DEFAULT '';
 ALTER TABLE `phpshop_categories` ADD `category_ozonseller` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_sort_categories` ADD `attribute_ozonseller` int(11) DEFAULT 0;
 ALTER TABLE `phpshop_products` ADD `export_ozon` enum('0','1') DEFAULT '0';
@@ -67,3 +67,5 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_ozonseller_type` (
 `parent_to` int(11) NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251;
+
+ALTER TABLE `phpshop_orders` ADD INDEX(`ozonseller_order_data`); 

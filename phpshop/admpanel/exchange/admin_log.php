@@ -29,7 +29,7 @@ function actionStart() {
             }
 
 
-            $PHPShopInterface->setRow(array('name' => $date, 'link' => '?path=exchange.import&return=exchange.log&id=' . $row['id']), array('name' => pathinfo($row['file'])['basename']), $status, array('name' => $text, 'align' => 'right'));
+            $PHPShopInterface->setRow(array('name' => $date, 'link' => '?path=exchange.import&return=exchange.log&id=' . $row['id']), array('name' => pathinfo($row['file'])['basename']), $status, array('name' => $text,'link'=>'?path=catalog&cat=0&import=' . $row['import_id'], 'align' => 'right'));
         }
 
 

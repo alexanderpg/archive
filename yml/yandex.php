@@ -2,7 +2,7 @@
 /**
  * Файл выгрузки для Яндекс Маркет
  * @author PHPShop Software
- * @version 4.1
+ * @version 4.2
  * @package PHPShopXML
  * @example ?retailcrm [bool] Выгрузка для RetailCRM
  * @example ?marketplace=cdek [bool] Выгрузка для СДЭК (упрощенный тип YML с использованием count)
@@ -16,7 +16,6 @@
  * @example ?price [int] Колонка цен (2/3/4/5)
  * @example ?available [bool] Выводить только в наличии
  * @example ?image_source [bool]  Показывать исходные изображения _big
- * @example ?allimage [bool] Выгрузка всех изображений
  * @example ?striptag [bool] Очистка html тегов  в описании
  */
 $_classPath = "../phpshop/";

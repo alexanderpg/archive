@@ -193,6 +193,13 @@ function actionStart() {
             $tree_array[$k]['id'] = $k;
         }
 
+    $tree_array[0]['sub'][1000000] = __('Неопределенные товары');
+    $tree_array[1000000]['name'] = __('Неопределенные товары');
+    $tree_array[1000000]['id'] = 1000000;
+    $tree_array[1000000]['sub'][1000001] = __('Загруженные CRM');
+    $tree_array[1000000]['sub'][1000002] = __('Загруженные CSV');
+    $tree_array[1000002]['id'] = 0;
+
     $GLOBALS['tree_array'] = &$tree_array;
 
     $dop_cat_array = preg_split('/#/', $data['dop_cat'], -1, PREG_SPLIT_NO_EMPTY);
@@ -258,7 +265,7 @@ function actionStart() {
             $Tab_info .= $PHPShopGUI->setField('Общий склад', $PHPShopGUI->setInputText(false, 'items_new', $data['items'], 100, $ed_izm), 'left');
 
             foreach ($dataWarehouse as $row) {
-                 $Tab_info .= $PHPShopGUI->setField($row['name'], $PHPShopGUI->setInputText(false, 'items' . $row['id'] . '_new', $data['items' . $row['id']], 100, $ed_izm), 2, $row['description'],null, 'control-label', false);
+                $Tab_info .= $PHPShopGUI->setField($row['name'], $PHPShopGUI->setInputText(false, 'items' . $row['id'] . '_new', $data['items' . $row['id']], 100, $ed_izm), 2, $row['description'], null, 'control-label', false);
             }
         } else
             $Tab_info .= $PHPShopGUI->setField('Склад', $PHPShopGUI->setInputText(false, 'items_new', $data['items'], 100, $ed_izm), 'left');
@@ -341,21 +348,12 @@ function actionStart() {
     if (empty($hideCatalog))
         $Tab_price .= $PHPShopGUI->setField('Валюта', $valuta_area);
 
-    // YML
-    $data['yml_bid_array'] = unserialize($data['yml_bid_array']);
-    $Tab_yml = $PHPShopGUI->setField('YML', $PHPShopGUI->setCheckbox('yml_new', 1, 'Вывод в Яндекс Маркете', $data['yml']) . '<br>' .
-            $PHPShopGUI->setRadio('p_enabled_new', 1, 'В наличии', $data['p_enabled']) . '<br>' .
-            $PHPShopGUI->setRadio('p_enabled_new', 0, 'Уведомить (Под заказ)', $data['p_enabled'])
-    );
 
     // BID
-    $Tab_yml .= $PHPShopGUI->setField('Ставка BID', $PHPShopGUI->setInputText(null, 'yml_bid_array[bid]', @$data['yml_bid_array']['bid'], 100));
+    //$Tab_yml .= $PHPShopGUI->setField('Ставка BID', $PHPShopGUI->setInputText(null, 'yml_bid_array[bid]', @$data['yml_bid_array']['bid'], 100));
 
     if (empty($hideCatalog)) {
         $Tab1 .= $PHPShopGUI->setCollapse('Цены', $Tab_price, 'in', true, true, array('type' => 'price'));
-        $Tab1 .= $PHPShopGUI->setCollapse('Яндекс Маркет', $Tab_yml, false);
-
-
         $Tab1 .= $PHPShopGUI->setCollapse('Габариты', $Tab_info_size);
     }
 
@@ -712,9 +710,9 @@ function actionInsert() {
 
         // Режим артикулов
         if ($PHPShopSystem->getSerilizeParam("1c_option.update_option") == 1) {
-            $PHPShopOrm->update(array('uid_new' => 'parent-'.$action), array('id' => '=' . intval($action)));
-            $parent_array_true[] = 'parent-'.$action;
-        } 
+            $PHPShopOrm->update(array('uid_new' => 'parent-' . $action), array('id' => '=' . intval($action)));
+            $parent_array_true[] = 'parent-' . $action;
+        }
         // Режим ID
         else
             $parent_array_true[] = $action;

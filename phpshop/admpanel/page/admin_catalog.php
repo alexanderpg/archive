@@ -98,7 +98,7 @@ function actionStart() {
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['page']);
     $PHPShopOrm->Option['where'] = ' or ';
     $PHPShopOrm->debug = false;
-    $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'id DESC'), array('limit' => 1000));
+    $data = $PHPShopOrm->select(array('*'), $where, array('order' => 'num,id DESC'), array('limit' => 1000));
     if (is_array($data))
         foreach ($data as $row) {
 

@@ -14,17 +14,25 @@ function addAvitoTab($data) {
         $tab = $PHPShopGUI->setField('Экспорт в Авито', $PHPShopGUI->setCheckbox('export_cat_avito_new', 1, '', $data['export_cat_avito']));
         $tab .= $PHPShopGUI->setField('Прайс-лист', $PHPShopGUI->setSelect('xml_price_avito', Avito::getAvitoCategoryTypes($data['category_avito'])));
         $tab .= $PHPShopGUI->setField('Категория товара', $PHPShopGUI->setSelect('category_avito_new', Avito::getAvitoCategories(null, $data['category_avito'])));
-        $tab .= $PHPShopGUI->setField('Вид товара', $PHPShopGUI->setSelect('type_avito_new', Avito::getCategoryTypes($data['category_avito'], $data['type_avito'])));
+        $tab .= $PHPShopGUI->setField('Вид товара', $PHPShopGUI->setSelect('type_avito_new', Avito::getCategoryTypes($data['category_avito'], $data['type_avito']),false,false, false, true));
         $tab .= $PHPShopGUI->setField('Состояние товара', $PHPShopGUI->setSelect('condition_cat_avito_new', Avito::getConditions($data['condition_cat_avito'])));
-        $tab .= $PHPShopGUI->setField('Тип товара (только для стройматериалов)', $PHPShopGUI->setSelect('subtype_avito_new', Avito::getCategorySubTypes($data['subtype_avito'])));
-
+        
+        $tab .= $PHPShopGUI->setField('Тип товара', $PHPShopGUI->setSelect('subtype_avito_new', Avito::getCategorySubTypes($data['subtype_avito'],$data['type_avito'])));
+        
         $PHPShopGUI->addTab(array("Авито", $tab, true));
+    }
+}
+
+function avitoUpdate() {
+
+    if (empty($_POST['export_cat_avito_new'])) {
+        $_POST['export_cat_avito_new'] = 0;
     }
 }
 
 $addHandler = array(
     'actionStart' => 'addAvitoTab',
     'actionDelete' => false,
-    'actionUpdate' => false
+    'actionUpdate' => 'avitoUpdate'
 );
 ?>

@@ -21,7 +21,7 @@ class AddToTemplateOneclickElement extends PHPShopElements {
     function option() {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['oneclick']['oneclick_system']);
         $PHPShopOrm->debug = $this->debug;
-        $this->option = $PHPShopOrm->select(); 
+        $this->option = $PHPShopOrm->select();
     }
 
     /**
@@ -30,8 +30,8 @@ class AddToTemplateOneclickElement extends PHPShopElements {
     function display() {
 
         $PHPShopRecaptchaElement = new PHPShopRecaptchaElement();
-        
-        if($this->option['captcha'] == 1)
+
+        if ($this->option['captcha'] == 1)
             $this->set('oneclick_captcha', $PHPShopRecaptchaElement->captcha('oneclick'));
 
         $forma = PHPShopParser::file($GLOBALS['SysValue']['templates']['oneclick']['oneclick_forma'], true, false, true);
@@ -70,19 +70,21 @@ class AddToTemplateOneclickElement extends PHPShopElements {
 
 function uid_mod_oneclick_hook($obj, $row, $rout) {
     if ($rout === 'MIDDLE') {
-        $AddToTemplateOneclickElement = new AddToTemplateOneclickElement();
 
-        if((int) $AddToTemplateOneclickElement->option['only_available'] === 1 && (int) $row['sklad'] === 1) {
-            $AddToTemplateOneclickElement->set('oneclick', '');
-        } 
-        elseif((int) $AddToTemplateOneclickElement->option['only_available'] === 2 && (int) $row['sklad'] === 0) {
-            $AddToTemplateOneclickElement->set('oneclick', '');
-        } 
-        else {
-            $AddToTemplateOneclickElement->display();
+        if (empty($obj->PHPShopSystem->getSerilizeParam('admoption.cart_minimum')) or (int)$obj->PHPShopSystem->getSerilizeParam('admoption.cart_minimum') <= $obj->price($row, false, false)) {
+
+            $AddToTemplateOneclickElement = new AddToTemplateOneclickElement();
+
+            if ((int) $AddToTemplateOneclickElement->option['only_available'] === 1 && (int) $row['sklad'] === 1) {
+                $AddToTemplateOneclickElement->set('oneclick', '');
+            } elseif ((int) $AddToTemplateOneclickElement->option['only_available'] === 2 && (int) $row['sklad'] === 0) {
+                $AddToTemplateOneclickElement->set('oneclick', '');
+            } else {
+                $AddToTemplateOneclickElement->display();
+            }
         }
     }
 }
 
-$addHandler = array ('UID' => 'uid_mod_oneclick_hook');
+$addHandler = array('UID' => 'uid_mod_oneclick_hook');
 ?>

@@ -122,8 +122,6 @@ function treegenerator($array, $m) {
 
 if (!empty($addNodes)) {
 
-
-
     $result[] = array(
         'text' => PHPShopString::win_utf8(__('Неопределенные товары')),
         'selectable' => false,
@@ -132,25 +130,63 @@ if (!empty($addNodes)) {
                 'text' => PHPShopString::win_utf8(__('Загруженные CRM')),
                 'icon' => 'glyphicon glyphicon-hdd',
                 'tags' => '1000001',
+                'editable' => 0
             ),
             1000002 => array(
                 'text' => PHPShopString::win_utf8(__('Загруженные CSV')),
                 'icon' => 'glyphicon glyphicon-import',
-                'tags' => '0&sub=csv'
+                'tags' => '0&sub=csv',
+                'editable' => 0
             )
             ,
             1000004 => array(
                 'text' => PHPShopString::win_utf8(__('Удаленные')),
                 'icon' => 'glyphicon glyphicon-trash',
-                'tags' => '1000004'
+                'tags' => '1000004',
+                'editable' => 0
             ),
             1000005 => array(
                 'text' => PHPShopString::win_utf8(__('Отложенные')),
                 'icon' => 'glyphicon glyphicon-copy',
-                'tags' => '1000005'
+                'tags' => '1000005',
+                'editable' => 0
             )
         )
     );
+
+    // Журнал загрузок
+    $PHPShopOrmImport = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges_log']);
+    $data = $PHPShopOrmImport->getList(['*'], ['import_id' => '!=""', 'status' => "='1'", 'import_id' => '!=""'], ['order' => 'date desc'], ['limit' => 100]);
+
+    $i = 0;
+    if (count($data) > 0) {
+        foreach ($data as $row) {
+
+            $file = PHPShopString::win_utf8(pathinfo($row['file'])['basename']);
+            $info = unserialize($row['info']);
+            $count = $info[2];
+
+            if (empty($count))
+                continue;
+            else
+                $i++;
+
+            if ($i < 10)
+                $exchanges['200000' . $i] = array(
+                    'text' => PHPShopDate::get($row['date'], true) . ': ' . $file . '<span class="badge">' . $count . '</span>',
+                    'icon' => 'glyphicon glyphicon-import',
+                    'tags' => '0&import=' . $row['import_id'],
+                    'editable' => 0
+                );
+        }
+
+
+        $result[] = array(
+            'text' => PHPShopString::win_utf8(__('История импортов')),
+            'selectable' => false,
+            'nodes' => $exchanges
+        );
+    }
 }
 
 if (empty($_GET['sub']))
@@ -166,4 +202,3 @@ if (in_array($_GET['cat'], array(1000001, 1000002, 1000004)) or $_GET['sub'] == 
 
 header("Content-Type: application/json");
 echo json_encode($result);
-?>

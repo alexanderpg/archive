@@ -97,7 +97,7 @@ function tab_dialog() {
             else
                 $message = null;
 
-            $tab .= '<li class="' . $class . '"><a href="?path=dialog&id=' . $row['chat_id'] . '&bot=' . $row['bot'] . '&user=' . $row['user_id'] . '&return=dialog"><img src="../lib/templates/messenger/' . $row['bot'] . '.svg" title="' . ucfirst($row['bot']) . '" class="bot-icon">' . $row['name'] . $badge . $message . '</a></li>';
+            $tab .= '<li class="' . $class . '"><a href="?path=dialog&id=' . $row['chat_id'] . '&sender=' . $row['bot'] . '&user=' . $row['user_id'] . '&return=dialog"><img src="../lib/templates/messenger/' . $row['bot'] . '.svg" title="' . ucfirst($row['bot']) . '" class="bot-icon">' . $row['name'] . $badge . $message . '</a></li>';
         }
         $tab .= '</ul>';
     } elseif(!$empty)

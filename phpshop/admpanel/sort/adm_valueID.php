@@ -157,8 +157,9 @@ function actionUpdate() {
     if (!empty($_POST['name_value'])) {
         $_POST['name_value'] = html_entity_decode($_POST['name_value']);
     }
-    
-    $_POST['icon_value'] = iconAdd();
+
+    if (isset($_POST['category_value']))
+        $_POST['icon_value'] = iconAdd();
 
     // Перехват модуля
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);

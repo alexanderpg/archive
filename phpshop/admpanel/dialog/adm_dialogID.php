@@ -36,7 +36,7 @@ function actionStart() {
     $PHPShopGUI->addCSSFiles('./css/support.css');
     $PHPShopGUI->addJSFiles('./js/jquery.waypoints.min.js', './dialog/gui/dialog.gui.js');
     $PHPShopOrm->debug = false;
-    $data = $PHPShopOrm->select(array('*'), array('chat_id' => "=" . intval($_GET['id']), 'bot' => '="' . PHPShopSecurity::TotalClean($_GET['bot']) . '"', 'user_id' => '=' . intval($_GET['user'])), array('order' => 'id'), array('limit' => 500));
+    $data = $PHPShopOrm->select(array('*'), array('chat_id' => "=" . intval($_GET['id']), 'bot' => '="' . PHPShopSecurity::TotalClean($_GET['sender']) . '"', 'user_id' => '=' . intval($_GET['user'])), array('order' => 'id'), array('limit' => 500));
 
     // Нет данных
     if (!is_array($data)) {
@@ -128,7 +128,7 @@ function actionStart() {
           <input type="hidden" name="actionList[selectID]" value="actionReplies.shopusers.edit">
           <input type="hidden" name="chat_id" value="' . $_GET['id'] . '">
           <input type="hidden" name="user_id" value="' . intval($_GET['user']) . '">
-          <input type="hidden" name="bot" value="' . $_GET['bot'] . '">
+          <input type="hidden" name="sender" value="' . $_GET['sender'] . '">
          </form>
       ';
 
@@ -184,7 +184,7 @@ function actionStart() {
 function actionReplies() {
     global $PHPShopSystem;
 
-    switch ($_GET['bot']) {
+    switch ($_GET['sender']) {
         case "telegram":
             $bot = new PHPShopTelegramBot();
             break;
@@ -236,14 +236,14 @@ function actionReplies() {
         'text' => $_POST['message'],
         'staffid' => 0,
         'attachments' => $file,
-        'bot' => $_GET['bot'],
+        'bot' => $_GET['sender'],
         'isview' => 0,
         'isview_user' => 0
     );
 
     $bot->dialog($insert);
 
-    if (!empty($_POST['message']) and $_GET['bot'] == 'message') {
+    if (!empty($_POST['message']) and $_GET['sender'] == 'message') {
         PHPShopObj::loadClass("user");
         $PHPShopUser = new PHPShopUser($_POST['user_id']);
         $title = __('Новый ответ в диалоге') . ' - ' . $PHPShopSystem->getName();
@@ -357,7 +357,7 @@ function actionGetNew() {
     global $PHPShopOrm;
 
     $PHPShopOrm->debug = false;
-    $data = $PHPShopOrm->select(array('*'), array('chat_id' => "=" . intval($_GET['id']), 'isview' => "='0'", 'bot' => '="' . PHPShopSecurity::TotalClean($_GET['bot']) . '"'), array('order' => 'id'), array('limit' => 500));
+    $data = $PHPShopOrm->select(array('*'), array('chat_id' => "=" . intval($_GET['id']), 'isview' => "='0'", 'bot' => '="' . PHPShopSecurity::TotalClean($_GET['sender']) . '"'), array('order' => 'id'), array('limit' => 500));
 
     // Сообщения
     if (is_array($data)) {

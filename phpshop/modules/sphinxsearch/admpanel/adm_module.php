@@ -158,7 +158,7 @@ searchd
     <h4>Подключение Sphinx на хостинге Beget</h4>
     <ol>
         <li>В личном кабинете аккаунта хостинга Beget в разделе <a href="https://cp.beget.com/cloudservices" target="_blank">Сервисы</a> активируйте сервис <kbd>Sphinx</kbd>.</li>
-        <li><a href="https://cp.beget.com/cloudservices" target="_blank">Инструкция по использованию</a> сервиса Sphinx на хостинге Beget.</li>
+        <li><a href="https://beget.com/ru/kb/how-to/services/ispolzovanie-sphinx#ispolzovanie-sphinx-na-hostinge" target="_blank">Инструкция по использованию</a> сервиса Sphinx на хостинге Beget.</li>
         <li>В качестве конфигурационного файла <kbd>sphinx.conf</kbd> для Sphinx используйте данных из закладки <kbd>Конфигурация</kbd> в настройках модуля.</li>
     </ol>   
     

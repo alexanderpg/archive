@@ -132,9 +132,9 @@ if (empty($memory) or ! is_array($memory['order.option'])) {
         $memory['order.option']['company'] = 0;
         $memory['order.option']['company'] = 0;
     }
-} else if(PHPShopString::is_mobile()){
-        $PHPShopInterface->mobile = true;
-    }
+} else if (PHPShopString::is_mobile()) {
+    $PHPShopInterface->mobile = true;
+}
 
 // Расширенная сортировка из JSON
 if (is_array($_GET['order']) and ! empty($_SESSION['jsort'][$_GET['order']['0']['column']])) {
@@ -237,30 +237,31 @@ if (is_array($data))
         $cart_list = $order['Cart']['cart'];
         $carts = $search_product = null;
 
-        if (sizeof($cart_list) != 0)
-            if (is_array($cart_list))
-                foreach ($cart_list as $key => $val) {
+        if (is_array($cart_list))
+            if (sizeof($cart_list) != 0)
+                if (is_array($cart_list))
+                    foreach ($cart_list as $key => $val) {
 
-                    if (!empty($val['id'])) {
+                        if (!empty($val['id'])) {
 
-                        // Проверка подтипа товара
-                        if (!empty($val['parent']))
-                            $val['id'] = $val['parent'];
-                        if (!empty($val['parent_uid']))
-                            $val['uid'] = $val['parent_uid'];
+                            // Проверка подтипа товара
+                            if (!empty($val['parent']))
+                                $val['id'] = $val['parent'];
+                            if (!empty($val['parent_uid']))
+                                $val['uid'] = $val['parent_uid'];
 
-                        $carts .= '<a href="?path=product&id=' . $val['id'] . '&return=order.' . $row['id'] . '" title="Артикул: ' . $val['uid'] . '">' . $val['name'] . '</a><br>';
+                            $carts .= '<a href="?path=product&id=' . $val['id'] . '&return=order.' . $row['id'] . '" title="Артикул: ' . $val['uid'] . '">' . $val['name'] . '</a><br>';
 
-                        // Поиск товара
-                        if (!empty($_GET['search']['name'])) {
+                            // Поиск товара
+                            if (!empty($_GET['search']['name'])) {
 
-                            if ($val['id'] == trim($_GET['search']['name']) or $val['uid'] == trim($_GET['search']['name']) or stristr(mb_strtolower($val['name'], 'windows-1251'), mb_strtolower(trim($_GET['search']['name']), 'windows-1251')))
-                                $search_product = true;
-                            else
-                                continue;
+                                if ($val['id'] == trim($_GET['search']['name']) or $val['uid'] == trim($_GET['search']['name']) or stristr(mb_strtolower($val['name'], 'windows-1251'), mb_strtolower(trim($_GET['search']['name']), 'windows-1251')))
+                                    $search_product = true;
+                                else
+                                    continue;
+                            }
                         }
                     }
-                }
 
         // Поиск товара
         if (!empty($_GET['search']['name']) and empty($search_product))
@@ -273,9 +274,9 @@ if (is_array($data))
             $user_link = null;
 
         // Сумма
-        if(empty($row['sum']))
-            $row['sum']=0;
-        
+        if (empty($row['sum']))
+            $row['sum'] = 0;
+
         $sum += $row['sum'];
         $num++;
 
@@ -294,8 +295,8 @@ if (is_array($total)) {
 
     $sum = $num = 0;
     foreach ($total as $row) {
-        if(empty($row['sum']))
-            $row['sum']=0;
+        if (empty($row['sum']))
+            $row['sum'] = 0;
         $sum += $row['sum'];
         $num++;
     }
@@ -313,11 +314,11 @@ if (!empty($PHPShopInterface->_AJAX["sort"])) {
     unset($PHPShopInterface->_AJAX["sort"]);
 }
 
-if(!is_array($PHPShopInterface->_AJAX["data"])){
-     $PHPShopInterface->_AJAX["recordsFiltered"]=0;
-     $PHPShopInterface->_AJAX["sum"]=0;
-     $PHPShopInterface->_AJAX["num"]=0;
-     $PHPShopInterface->_AJAX["data"] = array();
+if (!is_array($PHPShopInterface->_AJAX["data"])) {
+    $PHPShopInterface->_AJAX["recordsFiltered"] = 0;
+    $PHPShopInterface->_AJAX["sum"] = 0;
+    $PHPShopInterface->_AJAX["num"] = 0;
+    $PHPShopInterface->_AJAX["data"] = array();
 }
 
 header("Content-Type: application/json");

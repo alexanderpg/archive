@@ -424,7 +424,7 @@ class PHPShopText {
      * @param string $class class
      * @return string
      */
-    static function table($content, $cellpadding = 3, $cellspacing = 1, $align = 'center', $width = '100%', $option = false, $border = 0, $id = false, $class = false) {
+    static function table($content, $cellpadding = 3, $cellspacing = 1, $align = 'center', $width = '100%', $option = false, $border = false, $id = false, $class = false) {
         if ($cellpadding)
             $cellpadding = ' cellpadding="' . $cellpadding . '"';
         if ($cellspacing)
@@ -442,9 +442,9 @@ class PHPShopText {
         if($option)
             $option=' '.$option.' ';
 
-        $style = ' style="' . $align . $width .  $border . $option.'"';
+        $style = ' style="' . $align . $width .  $border.'"';
 
-        return '<table ' . $id . $style . $class . '>' . $content . '</table>';
+        return '<table ' . $id . $style . $class. $option . '>' . $content . '</table>';
     }
 
     /**

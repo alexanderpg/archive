@@ -90,15 +90,26 @@ function actionStart() {
     if (!empty($info[3]))
         $path_parts = pathinfo($info[3]);
     $result_file = './csv/' . $path_parts['basename'];
+    
+    if(stristr($data['file'],'http'))
+            $file = $data['file'];
+    else $file=pathinfo($data['file'])['basename'];
+    
 
     // Закладка 1
-    $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setText($PHPShopGUI->setLink($data['file'], pathinfo($data['file'])['basename']))) .
+    $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setText($PHPShopGUI->setLink('./csv/'.$file, $file))) .
             $PHPShopGUI->setField("Тип данных", $PHPShopGUI->setText($path_name[$option['path']], false, false, false)) .
             $PHPShopGUI->setField("Настройка", $PHPShopGUI->setText('<a href="?path=' . $option['path'] . '&exchanges=' . $data_exchanges['id'] . '">' . $data_exchanges['name'] . '</a>', false, false, false), false, false, $class) .
             $PHPShopGUI->setField("Обработано строк", $PHPShopGUI->setText($info[0]), false, false, $class) .
-            $PHPShopGUI->setField($info[1] . ' ' . __('записей'), $PHPShopGUI->setText($info[2]), false, false, $class, 'control-label', false) .
-            $PHPShopGUI->setField('Загружено изображений', $PHPShopGUI->setText((int) $info[4]), false, false, $class) .
-            $PHPShopGUI->setField('Отчет', $PHPShopGUI->setText('<a href="' . $result_file . '" target="_blank">CSV</a>'), false, false, $class) .
+            $PHPShopGUI->setField($info[1] . ' ' . __('записей'), $PHPShopGUI->setText($PHPShopGUI->setLink('./admin.php?path=catalog&import='.$data['import_id'], $info[2])), false, false, $class, 'control-label', false) .
+            $Tab1 .= $PHPShopGUI->setField('Загружено изображений', $PHPShopGUI->setText((int) $info[4]), false, false, $class)
+            ;
+    
+    if(!empty($info[3])){
+        $PHPShopGUI->setField('Отчет', $PHPShopGUI->setText('<a href="' . $result_file . '" target="_blank">CSV</a>'), false, false, $class) ;
+    }
+    
+    $Tab1 .=
             $PHPShopGUI->setField('Действие', $PHPShopGUI->setText($action_value[$option['export_action']], false, false, false)) .
             $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setText($delim_value[$option['export_delim']], false, false, false)) .
             $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setText($delim_sortvalue[$option['export_sortdelim']], false, false, false)) .

@@ -596,7 +596,7 @@ class OzonSeller {
      * Àòğèáóòû òîâàğà èç Ozon
      */
     public function getProductAttribures($product_id, $flag = 'product_id', $limit = 1) {
-
+        
         if (!is_array($product_id))
             $product = [$product_id];
         else
@@ -604,7 +604,7 @@ class OzonSeller {
 
         $params = [
             'filter' => [
-                $flag => $product_id,
+                $flag => $product,
                 'visibility' => 'ALL',
             ],
             'limit' => $limit,

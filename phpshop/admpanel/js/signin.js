@@ -1,5 +1,3 @@
-
-
 $().ready(function () {
 
     // Ошибка
@@ -7,16 +5,6 @@ $().ready(function () {
         $(this).parent('.input-group').removeClass('has-error');
     });
 
-    // Сообщение
-    if ($('.notification-alert').html() != '') {
-        $('#notification').removeClass('hide');
-        $('#notification').fadeIn('slow');
-
-        setTimeout(function () {
-            $('#notification').delay(500).fadeOut(1000);
-        }, 5000);
-
-    }
 
     // Восстановление пароля
     $("#remember-me").on('click', function () {
@@ -46,4 +34,13 @@ $().ready(function () {
         }
 
     });
+
+    if ($('#message').html() != "") {
+        $.MessageBox({
+            buttonDone: "OK",
+            message: $('#message').html()
+        })
+        $('input[name=pas]').val('');
+    }
+
 });

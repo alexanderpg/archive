@@ -115,6 +115,8 @@ $().ready(function () {
                     if (json['success'] == 1) {
                         showAlertMessage(json['result']);
                         parent.addClass('panel-success');
+                        id.tooltip('hide');
+                        id.removeClass('btn-warning').addClass('btn-default');
                         //id.remove();
                         parent.find('.panel-heading').html(path);
                         $('#template-tree').append('<tr class="treegrid-all"><td><a href="?path=tpleditor&name=' + path + '">' + path + '</a></td></tr>');

@@ -547,7 +547,7 @@ if (!empty($_COOKIE['fullscreen'])) {
 
 // update
                         if (!empty($_SESSION['update_check']))
-                            echo '<a class="navbar-btn btn btn-sm btn-info navbar-right hidden-xs" href="?path=update" data-toggle="tooltip" data-placement="bottom" title="' . __('Доступно обновление') . '">Update <span class="badge">' . intval($_SESSION['update_check']) . '</span></a>';
+                            echo '<a class="navbar-btn btn btn-sm btn-info navbar-right hidden-xs" href="?path=update" data-toggle="tooltip" data-placement="bottom" title="' . __('Доступно обновление') . '" >Update <span class="badge">' . intval($_SESSION['update_check']) . '</span></a>';
 
 
 // dialog

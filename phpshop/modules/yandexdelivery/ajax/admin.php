@@ -45,7 +45,7 @@ if (isset($_REQUEST['operation']) && strlen($_REQUEST['operation']) > 2) {
 
                     $tracking = $YandexDelivery->setDataFromOrderEdit($order->objRow);
                     if ($tracking) {
-                        (new PHPShopOrm($GLOBALS['SysValue']['base']['orders']))->update(['tracking_new'=>$tracking,'id'=>"=".(int) $_REQUEST['orderId']]);
+                        (new PHPShopOrm($GLOBALS['SysValue']['base']['orders']))->update(['tracking_new'=>$tracking],['id'=>"=".(int) $_REQUEST['orderId']]);
                         $result['success'] = true;
                     }
                     else  $result = ['success' => false, 'error' =>  PHPShopString::win_utf8('Ошибка передачи заказа')];

@@ -75,7 +75,7 @@ function actionStart() {
 
     $Tab2 = $PHPShopGUI->setField('Сообщений в рассылке', $PHPShopGUI->setInputText(null, 'message_limit', $_POST['message_limit'], 150), 1, 'Задается хостингом');
     $Tab2 .= $PHPShopGUI->setField('Временной интервал', $PHPShopGUI->setInputText(null, 'time_limit', $_POST['time_limit'], 150, __('минут')), 1, 'Задается хостингом');
-    $Tab2 .= $PHPShopGUI->setField("Помощник", $PHPShopGUI->setCheckbox('bot', 1, __('Умная рассылка для соблюдения правила ограничений на хостинге'), 0, false, false));
+    $Tab2 .= $PHPShopGUI->setField("Помощник", $PHPShopGUI->setCheckbox('smart', 1, __('Умная рассылка для соблюдения правила ограничений на хостинге'), 0, false, false));
 
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $Tab1);
 
@@ -232,7 +232,7 @@ function actionUpdate($option = false) {
             $limit = $option['start'] . ',' . $option['end'];
             $title = $option['name'];
             $content = $option['content'];
-        } elseif (!empty($_POST['bot'])) {
+        } elseif (!empty($_POST['smart'])) {
             $limit = '0,' . $_POST['message_limit'];
             $content = $_POST['content_new'];
             $title = $_POST['name_new'];
@@ -280,7 +280,7 @@ function actionUpdate($option = false) {
     $PHPShopModules->setAdmHandler(__FILE__, __FUNCTION__, $_POST);
 
     // Автоматизация
-    if (!empty($_POST['bot']) and empty($_POST['test'])) {
+    if (!empty($_POST['smart']) and empty($_POST['test'])) {
 
         // Всего пользователей
         $total = $PHPShopBase->getNumRows('shopusers', "where sendmail='1'");

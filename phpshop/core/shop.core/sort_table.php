@@ -170,7 +170,7 @@ function sort_table($obj, $row) {
                     }
                 }
 
-            $disp = PHPShopText::table($dis, $cellpadding = 3, $cellspacing = 3, $align = '', $width = '100%', 'itemprop="additionalProperty" itemscope itemtype="http://schema.org/PropertyValue"', $border = 0, $id = false, 'vendorenabled');
+            $disp = PHPShopText::table($dis, $cellpadding = 3, $cellspacing = 3, $align = '', $width = '100%', 'itemprop="additionalProperty" itemscope itemtype="http://schema.org/PropertyValue"', false, false, 'vendorenabled');
             $obj->set('vendorDisp', $disp);
         }
     }

@@ -4479,3 +4479,7 @@ padding: 5px;
 .main-navbar-list-catalog-wrapper small{
     display: none;
 }
+
+.header-menu-wrapper, .navbar-cat-collapse{
+    opacity: 1;
+}

@@ -80,12 +80,15 @@ class AddToTemplateOneclickElementAll extends PHPShopElements {
 function product_grid_mod_oneclick_hook($obj, $row) {
     $AddToTemplateOneclickElement = new AddToTemplateOneclickElementAll();
 
-    if ((int) $AddToTemplateOneclickElement->option['only_available'] === 1 && (int) $row['sklad'] === 1) {
-        $AddToTemplateOneclickElement->set('oneclick', '');
-    } elseif ((int) $AddToTemplateOneclickElement->option['only_available'] === 2 && (int) $row['sklad'] === 0) {
-        $AddToTemplateOneclickElement->set('oneclick', '');
-    } else {
-        $AddToTemplateOneclickElement->display();
+    if (empty($obj->PHPShopSystem->getSerilizeParam('admoption.cart_minimum')) or (int) $obj->PHPShopSystem->getSerilizeParam('admoption.cart_minimum') <= $obj->price($row, false, false)) {
+
+        if ((int) $AddToTemplateOneclickElement->option['only_available'] === 1 && (int) $row['sklad'] === 1) {
+            $AddToTemplateOneclickElement->set('oneclick', '');
+        } elseif ((int) $AddToTemplateOneclickElement->option['only_available'] === 2 && (int) $row['sklad'] === 0) {
+            $AddToTemplateOneclickElement->set('oneclick', '');
+        } else {
+            $AddToTemplateOneclickElement->display();
+        }
     }
 }
 

@@ -24,9 +24,12 @@ function actionStart() {
 
     // Режим обслуживания
     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Основное', $PHPShopGUI->setField("Режим обслуживания", $PHPShopGUI->setCheckbox('option[service_enabled]', 1, 'Включить вывод сообщения о проведении технических работ на сайте', $option['service_enabled'])) .
-            $PHPShopGUI->setField('Служебные IP адреса', $PHPShopGUI->setInputText(false, 'option[service_ip]', $option['service_ip']), 1, 'Укажите IP адреса через запятую') .
+            $PHPShopGUI->setField('Служебные IP адреса', $PHPShopGUI->setTextarea('option[service_ip]', $option['service_ip'], false, $width = false, 50), 1, 'Укажите IP адреса через запятую') .
             $PHPShopGUI->setField('Заголовок', $PHPShopGUI->setInputText(null, 'option[service_title]', $option['service_title'])) .        
             $PHPShopGUI->setField('Сообщение', $oFCKeditor->AddGUI())
+    );
+    
+     $PHPShopGUI->_CODE .= $PHPShopGUI->setCollapse('Защита', $PHPShopGUI->setField('Заблокированные IP адреса', $PHPShopGUI->setTextarea('option[block_ip]', $option['block_ip'], false, $width = false, 100), 1, 'Укажите IP адреса через запятую') 
     );
     
     // Robots.txt

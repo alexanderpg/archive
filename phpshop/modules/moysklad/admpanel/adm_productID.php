@@ -10,6 +10,7 @@ function addMoysklad($data) {
 $addHandler = array(
     'actionStart' => 'addMoysklad',
     'actionDelete' => false,
-    'actionUpdate' => false
+    'actionUpdate' => false,
+    'actionOptionEdit' => 'addMoysklad',
 );
 ?>

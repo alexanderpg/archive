@@ -26,6 +26,8 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('ФИО менеджера', $PHPShopGUI->setInputText( false, 'manager_new', $data['manager'], 600));
     $Tab1 .= $PHPShopGUI->setField('Телефон менеджера', $PHPShopGUI->setInputText( false, 'phone_new', $data['phone'], 600));
     $Tab1 .= $PHPShopGUI->setField('Адрес', $PHPShopGUI->setInputText( false, 'address_new', $data['address'], 600));
+    $Tab1 .= $PHPShopGUI->setField('Широта местоположения', $PHPShopGUI->setInputText( false, 'latitude_new', $data['latitude'], 600));
+    $Tab1 .= $PHPShopGUI->setField('Долгота местоположения', $PHPShopGUI->setInputText( false, 'longitude_new', $data['longitude'], 600));
     $Tab1 .= $PHPShopGUI->setField('Шаблон генерации описания', '<div id="avitotitleShablon">
 <textarea class="form-control avito-shablon" name="preview_description_template_new" rows="3" style="max-width: 600px;height: 70px;">' . $data['preview_description_template'] . '</textarea>
     <div class="btn-group" role="group" aria-label="...">
