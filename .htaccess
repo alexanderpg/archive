@@ -13,6 +13,7 @@ DirectoryIndex index.php
 Options -Indexes 
 
 AddDefaultCharset windows-1251
+AddType text/csv csv
 RewriteEngine On
 #Options FollowSymLinks
 #Options SymLinksIfOwnerMatch

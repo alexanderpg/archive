@@ -154,7 +154,7 @@ while($row = mysql_fetch_array($result))
 	$priceNew=$row['price_n'];
 	$price=($price+(($price*$LoadItems['System']['percent'])/100));
 	$pic_small=$row['pic_small'];
-	$description=$row['description'];
+	$description=stripslashes($row['description']);
 	$baseinputvaluta=$row['baseinputvaluta'];	
 	
 	// Выборка из базы нужной колонки цены

@@ -20,6 +20,9 @@
 | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,USA. |
 \***************************************************************************/
 
+
+
+
 // Путь и URL к файлам бекапа
 define('PATHDAMP', 'backup/');
 define('URL',  'backup/');
@@ -136,6 +139,7 @@ class dumper {
 	}
 
 	function backup() {
+		global $_REQUEST;
 		if (!isset($_POST)) {$this->main();}
 		set_error_handler("SXD_errorHandler");
 		$buttons = "<A ID=save HREF='' STYLE='display: none;' title=\"_blank\">Скачать файл</A> &nbsp; <INPUT ID=back TYPE=button  VALUE='Вернуться' DISABLED onClick=\"history.back();\" class=but>
@@ -221,7 +225,11 @@ class dumper {
 		}
 		$show = 10 + $tabinfo[0] / 50;
 		$info = $tabinfo[0] . $info;
-		$name = $db . '_' . date("Y-m-d_H-i_").substr(uniqid(md5(date("U"))),0,8);
+		
+		if($_REQUEST['upload_action'] == "upload_dump")
+			$name = "upload_dump";
+		else 
+			$name = $db . '_' . date("Y-m-d_H-i_").substr(uniqid(md5(date("U"))),0,8);
         $fp = $this->fn_open($name, "w");
 		echo tpl_l("Создание файла с резервной копией БД:<BR>\\n  -  {$this->filename}");
 		$this->fn_write($fp, "#SKD101|{$db}|{$tabs}|" . date("Y.m.d H:i:s") ."|{$info}\n\n");
@@ -448,6 +456,7 @@ class dumper {
 		if (GS) echo "<SCRIPT>document.getElementById('GS').src = 'http://sypex.net/gs.php?r={$this->tabs},{$this->records},{$this->size},{$this->comp},107';</SCRIPT>";
 
 		$this->fn_close($fp);
+		$_SESSION['base_update'] = "susses";
 	}
 
 	function main(){
@@ -687,17 +696,6 @@ var str = new String();
 str = "Фильтры\\n\\nВ фильтре таблиц указываются специальные шаблоны по которым отбираются таблицы. В шаблонах можно использовать следующие специальные символы:символ — означает любое количество символов.\\n\\nсимвол * — означает любое количество символов \\nсимвол ? — означает один любой символ \\nсимвол ^ — означает исключение из списка таблицы или таблиц\\n\\nПримеры: \\n\\nib_* - все таблицы начинающиеся с 'ib_' (все таблицы форума invision board) \\nib_*, ^ib_sessions - все таблицы начинающиеся с 'ib_', кроме 'ib_sessions' \\nib_s*s, ^ib_sessions - все таблицы начинающиеся с 'ib_s' и заканчивающиеся буквой 's', кроме 'ib_sessions' \\n^*s - все таблицы, кроме таблиц заканчивающихся буквой 's' \\n^ib_???? - все таблицы, кроме таблиц, которые начинаются с 'ib_' и содержат 4 символа после знака подчеркивания";
 confirm(str);
 }
-
-function helpWinParent(page){
-try{
-window.opener.top.document.getElementById('helppage').value=page;
-window.opener.top.initSlide(0);
-window.opener.top.loadhelp();
-}catch(e){ alert("Перейдите в раздел размещения формы и вызовите справку.")}
-try{
-window.opener.top.focus();
-}catch(e){}
-}
 </script>
 
 </HEAD>
@@ -728,11 +726,7 @@ window.opener.top.focus();
 {$content}
 <TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=2>
 <TR>
-
-<td align="left">
-    <BUTTON class="help" onclick="helpWinParent('dumper')">Справка</BUTTON></BUTTON>
-	</td>
-	<TD STYLE='color: #CECECE' ID=timer width="1"></TD>
+<TD STYLE='color: #CECECE' ID=timer></TD>
 <TD ALIGN=RIGHT>{$buttons}</TD>
 </TR>
 </TABLE></TD>
@@ -753,10 +747,109 @@ HTML;
 
 function tpl_main(){
 global $SK,$SysValue;
+
+if(@$_REQUEST['upload_action'] == "upload_dump")
+return <<<HTML
+<FIELDSET onClick="document.skb.action[0].checked = 1;">
+<LEGEND>
+<INPUT TYPE=radio NAME=action VALUE=backup checked=checked>
+<INPUT TYPE=hidden NAME=upload_action VALUE=upload_dump>
+<span name=txtLang id=txtLang>Создание резервной копии БД</span>&nbsp;</LEGEND>
+<TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
+<TR>
+<TD WIDTH=35%><span name=txtLang id=txtLang>БД</span>:</TD>
+<TD WIDTH=65%><SELECT NAME=db_backup>
+{$SK->vars['db_backup']}
+</SELECT></TD>
+<input type=hidden NAME=comp_method value=1>	
+<input type=hidden NAME=comp_level value=7>	
+</TR>
+</TABLE>
+</FIELDSET>
+</SPAN>
+<div style="padding-top:30"><hr></div>
+<SCRIPT>
+document.skb.action[{$SK->SET['last_action']}].checked = 1;
+</SCRIPT>
+
+HTML;
+
+
+elseif(@$_REQUEST['upload_action'] == "upload_backup")
+
+return <<<HTML
+<FIELDSET onClick="document.skb.action[1].checked = 1;">
+<LEGEND>
+<INPUT TYPE=radio NAME=action VALUE=restore checked=checked>
+<INPUT TYPE=hidden NAME=upload_action VALUE=upload_backup>
+<span name=txtLang id=txtLang>Обновление базы данных </span>&nbsp;</LEGEND>
+<TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
+<TR>
+<TD><span name=txtLang id=txtLang>БД</span>:</TD>
+<TD><SELECT NAME=db_restore>
+{$SK->vars['db_restore']}
+</SELECT></TD>
+</TR>
+<TR>
+<TD WIDTH=35%><span name=txtLang id=txtLang>Файл</span>:</TD>
+<TD WIDTH=65%>
+<input type=hidden NAME=file value="base_update.sql.gz">
+Выполнить обновление базы данный из файла <strong>base_update.sql.gz</strong>
+
+</TD>
+</TR>
+</TABLE>
+</FIELDSET>
+</SPAN>
+<div style="padding-top:30"><hr></div>
+<SCRIPT>
+document.skb.action[{$SK->SET['last_action']}].checked = 1;
+</SCRIPT>
+
+HTML;
+
+
+elseif(@$_REQUEST['upload_action'] == "upload_backup_back")
+
+return <<<HTML
+<FIELDSET onClick="document.skb.action[1].checked = 1;">
+<LEGEND>
+<INPUT TYPE=radio NAME=action VALUE=restore checked=checked>
+<INPUT TYPE=hidden NAME=upload_action VALUE=upload_backup>
+<span name=txtLang id=txtLang>Обновление базы данных </span>&nbsp;</LEGEND>
+<TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
+<TR>
+<TD><span name=txtLang id=txtLang>БД</span>:</TD>
+<TD><SELECT NAME=db_restore>
+{$SK->vars['db_restore']}
+</SELECT></TD>
+</TR>
+<TR>
+<TD WIDTH=35%><span name=txtLang id=txtLang>Файл</span>:</TD>
+<TD WIDTH=65%>
+<input type=hidden NAME=file value="upload_backup.sql.gz">
+Выполнить обновление базы данный из файла <strong>upload_backup.sql.gz</strong>
+
+</TD>
+</TR>
+</TABLE>
+</FIELDSET>
+</SPAN>
+<div style="padding-top:30"><hr></div>
+<SCRIPT>
+document.skb.action[{$SK->SET['last_action']}].checked = 1;
+</SCRIPT>
+
+HTML;
+
+else
+
+
 return <<<HTML
 <FIELDSET onClick="document.skb.action[0].checked = 1;">
 <LEGEND>
 <INPUT TYPE=radio NAME=action VALUE=backup>
+<INPUT TYPE=hidden NAME=upload_action VALUE="">
 <span name=txtLang id=txtLang>Создание резервной копии БД</span>&nbsp;</LEGEND>
 <TABLE WIDTH=100% BORDER=0 CELLSPACING=5 CELLPADDING=2>
 <TR>
@@ -809,6 +902,8 @@ document.skb.action[{$SK->SET['last_action']}].checked = 1;
 </SCRIPT>
 
 HTML;
+
+
 }
 
 function tpl_process($title){
@@ -906,7 +1001,7 @@ HTML;
 
 function SXD_errorHandler($errno, $errmsg, $filename, $linenum, $vars) {
 	if ($errno == 2048) return true;
-	if (preg_match("/chmod\(\): Operation not permitted/", $errmsg)) return true;
+	//if (preg_match("/chmod\(\): Operation not permitted/", $errmsg)) return true;
     $dt = date("Y.m.d H:i:s");
     $errmsg = addslashes($errmsg);
 
