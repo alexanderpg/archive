@@ -58,8 +58,8 @@ function actionStart() {
     $o_value[] = array('общая база заказов', 1, $data['write_order']);
 
     // Captcha
-    $c_value[] = array('Нет', 0, $data['captcha']);
-    $c_value[] = array('Есть', 1, $data['captcha']);
+    $c_value[] = array('нет', 0, $data['captcha']);
+    $c_value[] = array('есть', 1, $data['captcha']);
 
     // Доступые статусы заказов
     $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
@@ -81,7 +81,13 @@ function actionStart() {
     $Tab1 .= $PHPShopGUI->setField('Статус заказа', $PHPShopGUI->setSelect('status_new', $order_status_value, 250));
     
     $Tab1 .= $PHPShopGUI->setField('Защитная картинка', $PHPShopGUI->setSelect('captcha_new', $c_value, 250,true));
-    $Tab1 .= $PHPShopGUI->setField('Только в наличии', $PHPShopGUI->setCheckbox('only_available_new', 1, 'Отображать кнопку только у товаров в наличии', $data['only_available']));
+    
+    
+    $a_value[]=array('все', 0, $data['only_available']);
+    $a_value[]=array('только в наличии', 1, $data['only_available']);
+    $a_value[]=array('только под заказ', 2, $data['only_available']);
+    
+    $Tab1 .= $PHPShopGUI->setField('Показывать у товаров', $PHPShopGUI->setSelect('only_available_new', $a_value, 250,true));
 
 
     $Tab2 = $PHPShopGUI->setInfo($info);

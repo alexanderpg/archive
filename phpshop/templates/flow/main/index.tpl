@@ -529,7 +529,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                         <h4 class="modal-title">@returnCallName@</h4>
                     </div>
                     <form method="post" name="ajax-form" action="@ShopDir@/returncall/" data-modal="returnCallModal">
@@ -725,7 +725,7 @@
         <div id="notification" class="success-notification" style="display:none">
             <div class="alert alert-primary alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">x</span>
                 </button>
                 <span class="notification-alert"> </span>
             </div>
@@ -754,7 +754,7 @@
                     <!-- Заголовок модального окна -->
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true">x</span>
                         </button>
                         <div class="h4 modal-title">{Сообщение}</div>
                     </div>

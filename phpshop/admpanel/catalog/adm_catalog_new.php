@@ -217,6 +217,7 @@ function actionStart() {
     $Tab7 = $PHPShopGUI->loadLib('tab_headers', $data);
 
     // Безопасноть
+    if ($PHPShopSystem->ifSerilizeParam('admoption.rule_enabled', 1))
     $Tab8 = $PHPShopGUI->setCollapse('Редактирование', $PHPShopGUI->loadLib('tab_secure', $data));
 
     //Мультибаза

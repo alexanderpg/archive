@@ -7,10 +7,10 @@ function productsproperty_UID_hook($obj, $row, $rout) {
         $productsproperty_array = unserialize($row['productsproperty_array']);
 
         if (is_array($productsproperty_array)) {
-            
-            $list=null;
 
-            foreach ($productsproperty_array as $n=>$property) {
+            $list = null;
+
+            foreach ($productsproperty_array as $n => $property) {
 
                 if (!empty($property['name']))
                     $list .= PHPShopText::h5($property['name'], 'property-name');
@@ -19,9 +19,17 @@ function productsproperty_UID_hook($obj, $row, $rout) {
                     if (!empty($val)) {
 
                         if ($row['id'] == $property['id'][$k]) {
-                            $list .= PHPShopText::button($val, false, $class = 'btn btn-default property-value-'.($n+1).' active property-active') . ' ';
-                        } else
-                            $list .= PHPShopText::a('/shop/UID_' . $property['id'][$k] . '.html', $val, $val, false, false, false, 'btn btn-default property-value-'.($n+1)) . ' ';
+                            $list .= PHPShopText::button($val, false, $class = 'btn btn-default property-value-' . ($n + 1) . ' active property-active') . ' ';
+                        } else {
+
+                            $seo_name = (new PHPShopProduct($property['id'][$k]))->getParam('prod_seo_name');
+                            if (!empty($seo_name))
+                                $link = '/id/' . $seo_name . '-' . $property['id'][$k] . '.html';
+                            else
+                                $link = '/shop/UID_' . $property['id'][$k] . '.html';
+
+                            $list .= PHPShopText::a($link, $val, $val, false, false, false, 'btn btn-default property-value-' . ($n + 1)) . ' ';
+                        }
                     }
                 }
             }

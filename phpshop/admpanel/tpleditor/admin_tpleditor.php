@@ -49,6 +49,7 @@ function _tpl($file) {
         'main_product_forma_3.tpl' => '‘орма вывода товара в 3 €чейки',
         'main_product_forma_4.tpl' => '‘орма вывода товара в 4 €чейки',
         'main_product_forma_5.tpl' => '‘орма вывода товара в 5 €чеек',
+        'main_product_forma_6.tpl' => '‘орма вывода товара в 6 €чеек',
         'main_product_forma_full.tpl' => '‘орма подробного описани€ товара',
         'main_product_forma_full_productArt.tpl' => 'јртикул',
         'main_product_odnotip_list.tpl' => '—писок однотипных продуктов',

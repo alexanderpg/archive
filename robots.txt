@@ -1,5 +1,4 @@
 User-agent: Yandex
-Allow: /*.html?v[*]=*$
 Allow: /yml/?*$
 Disallow: /newprice/
 Disallow: /newtip/
@@ -23,7 +22,6 @@ Disallow: /*.html?*$
 Disallow: /?*$
 
 User-agent: Googlebot
-Allow: /*.html?v[*]=*$
 Disallow: /newprice/
 Disallow: /newtip/
 Disallow: /spec/
@@ -44,7 +42,6 @@ Disallow: /rss/
 Disallow: /*.html?*$
 
 User-agent: *
-Allow: /*.html?v[*]=*$
 Disallow: /newprice/
 Disallow: /newtip/
 Disallow: /spec/

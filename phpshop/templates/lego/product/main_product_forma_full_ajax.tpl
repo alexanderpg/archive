@@ -4,7 +4,7 @@
             <div class="col-md-12">
                 <div class="col-xs-12">
                     <div class="row">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                     </div>
                 </div>
             </div></div>

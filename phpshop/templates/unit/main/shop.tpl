@@ -502,7 +502,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
-                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                     <div class="h4 modal-title">{Авторизация}</div>
                     <span id="usersError" class="hide">@usersError@</span>
                 </div>
@@ -572,7 +572,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">x</span>
                     </button>
                     <div class="h4 modal-title d-flex" id="exampleModalLabel">{Уведомить при появлении товара в продаже}</div>
                 </div>
@@ -657,7 +657,7 @@
                 <!-- Заголовок модального окна -->
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">x</span>
                     </button>
 
                 </div>

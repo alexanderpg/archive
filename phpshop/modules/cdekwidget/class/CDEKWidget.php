@@ -149,6 +149,10 @@ class CDEKWidget {
             $name = $cart['Person']['name_person'];
         else
             $name = $order['fio'];
+        
+        $name = PHPShopString::win_utf8($name);
+        if(empty($name))
+            $name=PHPShopString::toLatin($name);
 
         $products = $this->getProducts($cart['Cart']['cart'], $cart['Person']['discount'], (int) $order['paid']);
 
@@ -161,7 +165,7 @@ class CDEKWidget {
                 'value' => (int) $order['paid'] === 1 ? 0 : $cart['Cart']['dostavka']
             ],
             'recipient' => [
-                'name'   => PHPShopString::win_utf8($name),
+                'name'   => $name,
                 'email'  => $cart['Person']['mail'],
                 'phones' => [
                     ['number' => str_replace(['(', ')', ' ', '+', '-', '&#43;'], '', $order['tel'])]

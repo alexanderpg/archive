@@ -6,7 +6,7 @@
             <div class="modal-header">
                 <span class="modal-title h4" id="exampleModalLongTitle">Панорама 360&deg; &mdash; @productName@</span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">x</span>
                 </button>
             </div>
             <div class="modal-body">

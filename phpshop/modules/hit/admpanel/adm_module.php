@@ -79,6 +79,7 @@ function actionStart() {
     $CategoryArray = $PHPShopCategoryArray->getArray();
     $GLOBALS['count'] = count($CategoryArray);
 
+    $CategoryArray[0]['name'] = '- ' . __('Выбрать каталог') . ' -';
     $tree_array = array();
 
     foreach ($PHPShopCategoryArray->getKey('parent_to.id', true) as $k => $v) {
@@ -120,7 +121,7 @@ function actionStart() {
         }
 
 
-    $tree_select = '<select class="selectpicker show-menu-arrow hidden-edit" data-live-search="true" data-container="body" data-style="btn btn-default btn-sm" name="hit_cat_new"  data-width="50%">' . $tree_select . '</select>';
+    $tree_select = '<select class="selectpicker show-menu-arrow hidden-edit" data-live-search="true" data-container="body" data-style="btn btn-default btn-sm" name="hit_cat_new"  data-width="50%"><option value="0">' . $CategoryArray[0]['name'] . '</option>' . $tree_select . '</select>';
 
     $Tab1 .= $PHPShopGUI->setField("Каталог хитов", $tree_select );
 

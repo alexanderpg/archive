@@ -451,7 +451,7 @@
         <div class="modal-dialog modal-sm auto-modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title">{Авторизация}</h4>
                     <span id="usersError" class="hide">@usersError@</span>
                 </div>
@@ -518,7 +518,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title">{Обратный звонок}</h4>
                 </div>
                 <form method="post" name="user_forma" action="@ShopDir@/returncall/">

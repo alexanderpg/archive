@@ -1723,6 +1723,67 @@
         </var>
     </template>
     <template>
+        <name>Форма вывода товара в 6 ячеек</name>
+        <path>product/main_product_forma_6.tpl</path>
+        <description>Форма вывода товара в 6 ячеек</description>
+        <var>
+            <name>productUid</name>
+            <description>ID товара</description>
+        </var>
+        <var>
+            <name>productName</name>
+            <description>Наименование товара</description>
+        </var>
+        <var>
+            <name>productPrice</name>
+            <description>Цена товара</description>
+        </var>
+        <var>
+            <name>productImg</name>
+            <description>Изображение товара</description>
+        </var>
+        <var>
+            <name>productImgBigFoto</name>
+            <description>Большое изображение товара</description>
+        </var>
+        <var>
+            <name>productValutaName</name>
+            <description>Валюта товара</description>
+        </var>
+        <var>
+            <name>productInfo</name>
+            <description>Ссылка на подробное описание</description>
+        </var>
+        <var>
+            <name>productSale</name>
+            <description>В корзину</description>
+        </var>
+        <var>
+            <name>productSklad</name>
+            <description>Склад</description>
+        </var>
+        <var>
+            <name>productNotice</name>
+            <description>Уведомить</description>
+        </var>
+        <var>
+            <name>optionsDisp</name>
+            <description>Опции товара</description>
+        </var>
+        <var>
+            <name>productDes</name>
+            <description>Описание</description>
+        </var>
+        <var>
+            <name>previewSorts</name>
+            <description>Характеристики</description>
+        </var>
+        <var>
+            <name>productArt</name>
+            <description>Артикул товара</description>
+        </var>
+    </template>
+    <template>
         <name>Форма вывода товара в 5 ячеек</name>
         <path>product/main_product_forma_5.tpl</path>
         <description>Форма вывода товара в 5 ячеек</description>

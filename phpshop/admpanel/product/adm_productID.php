@@ -302,7 +302,7 @@ function actionStart() {
 
     // Статьи
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['page']);
-    $data_page = $PHPShopOrm->select(['*'], ['category'=>'!=2000','enabled'=>"='1'"], array('order' => 'name'), array('limit' => 500));
+    $data_page = $PHPShopOrm->select(['*'], ['category' => '!=2000', 'enabled' => "='1'"], array('order' => 'name'), array('limit' => 500));
 
     if (strstr($data['page'], ',')) {
         $data['page'] = explode(",", $data['page']);
@@ -321,7 +321,7 @@ function actionStart() {
         }
 
     // Статьи
-    $Tab_docs = $PHPShopGUI->setCollapse('Статьи', $PHPShopGUI->setSelect('page_new[]', $value, '100%',false, false, true, false, false, true));
+    $Tab_docs = $PHPShopGUI->setCollapse('Статьи', $PHPShopGUI->setSelect('page_new[]', $value, '100%', false, false, true, false, false, true));
 
     // Файлы
     $Tab_docs .= $PHPShopGUI->setCollapse('Файлы', $PHPShopGUI->loadLib('tab_files', $data));
@@ -533,11 +533,13 @@ function actionUpdate() {
         // Файлы
         if (isset($_POST['editID'])) {
             if (!empty($_POST['files_new']) and is_array($_POST['files_new'])) {
-                foreach ($_POST['files_new'] as $k => $files)
+                foreach ($_POST['files_new'] as $k => $files) {
+                    
                     if (empty($files['name']))
                         $files['name'] = pathinfo($files['path'])['basename'];
 
-                $files_new[] = @array_map("urldecode", $files);
+                    $files_new[] = @array_map("urldecode", $files);
+                }
 
                 $_POST['files_new'] = serialize($files_new);
             } else

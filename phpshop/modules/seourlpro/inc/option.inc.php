@@ -52,6 +52,7 @@ class PHPShopSeoPro {
     var $cat_page_pre = 'page/CID_';
     var $true_dir = false;
     var $settings;
+    var $add_html;
 
     function __construct() {
 
@@ -78,6 +79,11 @@ class PHPShopSeoPro {
                 $GLOBALS['SysValue']['nav']['path'] = 'index';
                 $url['filename'] = substr($url['dirname'], 1, strlen($url['dirname']) - 1) . '/' . $url['filename'];
             }
+        } 
+
+        // Поддержка виртуальных каталогов /filters/
+        if (strpos($GLOBALS['SysValue']['nav']['truepath'], '/filters/') !== false) {
+            $url['filename'] = preg_replace('#^/(.*).html/filters/.*$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
         }
 
         $array_seo_name = explode('-', $url['filename']);
@@ -144,17 +150,17 @@ class PHPShopSeoPro {
 
     function setMemory($id, $name, $mode = 1, $latin = true) {
         if ($mode == 1) {
-            $this->memory[$this->cat_pre . $id] = $this->setLatin($name, $latin);
+            
+            $this->memory[$this->cat_pre . $id. $this->add_html] = $this->setLatin($name, $latin);
 
             if (strstr($name, '/')) {
-                $this->memory['./CID_' . $id . '_1'] = '/' . $this->setLatin($name . '-1', $latin);
+                $this->memory['./CID_' . $id . '_1'.$this->add_html] = '/' . $this->setLatin($name . '-1', $latin);
             } else
-                $this->memory['CID_' . $id . '_1'] = $this->setLatin($name . '-1', $latin);
-
+                $this->memory['CID_' . $id . '_1'.$this->add_html] = $this->setLatin($name . '-1', $latin);
         } elseif ($mode == 2)
-            $this->memory_prod[$this->prod_pre . $id] = $this->prod_pre_target . $this->setLatin($name, $latin) . '-' . $id;
+            $this->memory_prod[$this->prod_pre . $id.$this->add_html] = $this->prod_pre_target . $this->setLatin($name, $latin) . '-' . $id;
         elseif ($mode == 3)
-            $this->memory[$this->cat_page_pre . $id] = 'page/' . $this->setLatin($name, $latin);
+            $this->memory[$this->cat_page_pre . $id.$this->add_html] = 'page/' . $this->setLatin($name, $latin);
     }
 
     function setLatin($str, $enabled = true) {
@@ -176,10 +182,10 @@ class PHPShopSeoPro {
 
                 if (!empty($val['cat_seo_name'])) {
                     $this->setMemory($key, $val['cat_seo_name'], 1, false);
-                    $this->memory['CID_' . $key . '_1'] = $this->setLatin($val['cat_seo_name'] . '-1');
+                    $this->memory['CID_' . $key . '_1'.$this->add_html] = $this->setLatin($val['cat_seo_name'] . '-1');
                 } else {
                     $this->setMemory($key, $val['name']);
-                    $this->memory['CID_' . $key . '_1'] = $this->setLatin($val['name'] . '-1');
+                    $this->memory['CID_' . $key . '_1'.$this->add_html] = $this->setLatin($val['name'] . '-1');
                 }
             }
     }
@@ -203,7 +209,7 @@ class PHPShopSeoPro {
         if (is_array($GLOBALS['Cache'][$GLOBALS['SysValue']['base']['categories']]))
             foreach ($GLOBALS['Cache'][$GLOBALS['SysValue']['base']['categories']] as $key => $val) {
                 $this->setMemory($key, $val['name']);
-                $this->memory['CID_' . $key . '_1'] = $this->setLatin($val['name'] . '-1');
+                $this->memory['CID_' . $key . '_1'.$this->add_html] = $this->setLatin($val['name'] . '-1');
             }
     }
 

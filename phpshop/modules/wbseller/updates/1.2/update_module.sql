@@ -1,1 +1,2 @@
 ALTER TABLE `phpshop_modules_wbseller_system` ADD `create_products` enum('0','1') NOT NULL default '0';
+ALTER TABLE `phpshop_modules_wbseller_system` CHANGE `token` `token` TEXT default '';

@@ -16,19 +16,19 @@ function actionStart() {
     $PHPShopOrm->debug = false;
     $PHPShopOrm->mysql_error = false;
 
-    $PHPShopOrm->sql = 'SELECT id, uid, name, enabled, pic_small, count(name) from ' . $GLOBALS['SysValue']['base']['products'] . ' GROUP BY name HAVING count(name)>1';
+    $PHPShopOrm->sql = "SELECT id, uid, name, enabled, pic_small, count(name) from " . $GLOBALS['SysValue']['base']['products'] . " where parent_enabled='0' GROUP BY name HAVING count(name)>1";
 
     $data = $PHPShopOrm->select();
     if (is_array($data))
         foreach ($data as $row) {
 
-            if (empty($row['name']) or empty($row['uid']))
+            if (empty($row['name']))
                 continue;
             
             // Дубли
             $list=$ids=null;
             $PHPShopOrmProduct = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
-            $product = $PHPShopOrmProduct->getList(['*'],['name'=>'=\''.$row['name'].'\'']);
+            $product = $PHPShopOrmProduct->getList(['*'],['name'=>'=\''.$row['name'].'\'','parent_enabled'=>"='0'"]);
             if(is_array($product)){
                 foreach ($product as $val){
                    $ids.=$val['id'].'<br>';

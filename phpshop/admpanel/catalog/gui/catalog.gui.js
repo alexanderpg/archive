@@ -5,7 +5,7 @@ var ajax_path = "./catalog/ajax/";
 $().ready(function () {
 
     // Id каталога
-    var cat = $.getUrlVar('cat');
+    cat = $.getUrlVar('cat');
 
     // Блокировка ссылки на товары
     if ($('.viewproduct').hasClass('disabled'))
@@ -114,7 +114,10 @@ $().ready(function () {
 
     // Модальное окно закрытие
     $('#adminModal').on('hidden.bs.modal', function (event) {
+        
+        var cat = $.cookie('cat');
         $('.product-modal-content').attr('src', null);
+        $.cookie('cat',cat);
 
         if (adminModal.is_change) {
             var cat = adminModal.window.$('[name=category_new]').selectpicker('val');

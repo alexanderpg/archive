@@ -79,7 +79,7 @@ class PHPShopText {
      * @return string
      */
     static function img($src, $hspace = 5, $align = 'left', $css = null) {
-        return '<img src="' . $src . '" hspace="' . $hspace . '" align="' . $align . '" border="0" style="' . $css . '">';
+        return '<img src="' . $src . '" hspace="' . $hspace . '" align="' . $align . '" border="0" style="' . $css . '" alt="">';
     }
 
     /**

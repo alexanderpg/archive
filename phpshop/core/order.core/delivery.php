@@ -32,9 +32,8 @@ class PHPShopOrderDelivery {
         // Если нет доступных доставок
         if($this->allowedDeliveries === 0) {
             PHPShopParser::set('deliveryId', 0);
-            PHPShopParser::set('deliveryTitle', __('[Доставка по умолчанию]'));
-
-            $html .= ParseTemplateReturn($this->getTemplate(), true);
+            //PHPShopParser::set('deliveryTitle', __('[Доставка по умолчанию]'));
+            //$html .= ParseTemplateReturn($this->getTemplate(), true);
             $html .= '<INPUT TYPE="HIDDEN" id="makeyourchoise" VALUE="DONE">';
         }
         if($this->allowedDeliveries === 1) {

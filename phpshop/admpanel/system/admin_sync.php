@@ -83,6 +83,7 @@ if(empty($hideCatalog))
             $PHPShopGUI->setField("Цена 3",$PHPShopGUI->setInputText(false, 'option[exchange_price3]', $option['exchange_price3'], 300, false, false, false, 'Внешний код' )).
             $PHPShopGUI->setField("Цена 4",$PHPShopGUI->setInputText(false, 'option[exchange_price4]', $option['exchange_price4'], 300, false, false, false, 'Внешний код' )).
             $PHPShopGUI->setField("Цена 5",$PHPShopGUI->setInputText(false, 'option[exchange_price5]', $option['exchange_price5'], 300, false, false, false, 'Внешний код' )).
+            $PHPShopGUI->setField("Блокировка характеристик", $PHPShopGUI->setTextarea('option[exchange_sort_ignore]', $option['exchange_sort_ignore'], false, false, false, __('Укажите характеристики через запятую'),__('Примечание'))).
             $PHPShopGUI->setField("Авторизация", $PHPShopGUI->setSelect('option[exchange_auth]', $auth_value, 300)) .
             $PHPShopGUI->setField($PHPShopGUI->setLink('../../1cManager/'.$option['exchange_auth_path'].'.php', 'Имя файла', '_blank', false, __('Открыть ссылку')), $PHPShopGUI->setInputText($protocol . $_SERVER['SERVER_NAME'] . '/1cManager/', 'option[exchange_auth_path]', $option['exchange_auth_path'], 400, '.php', false, false, 'secret_cml_path'))
             
@@ -136,13 +137,12 @@ function actionUpdate() {
         //$_POST['option']['exchange_key'] = 'external';
         $_POST['option']['exchange_zip'] = 1;
     }
+    
 
     if (is_array($_POST['option']))
         foreach ($_POST['option'] as $key => $val)
             $option[$key] = $val;
-
-
-
+    
     // Поиск нулевых значений
     if (is_array($_POST['option']))
         $option_null = array_diff_key($option, $_POST['option']);
@@ -153,7 +153,8 @@ function actionUpdate() {
         foreach ($option_null as $key => $val)
             $option[$key] = 0;
     }
-
+    
+    
     $_POST['1c_load_accounts_new'] = $_POST['1c_load_accounts_new'] ? 1 : 0;
     $_POST['1c_load_invoice_new'] = $_POST['1c_load_invoice_new'] ? 1 : 0;
     $_POST['1c_option_new'] = serialize($option);

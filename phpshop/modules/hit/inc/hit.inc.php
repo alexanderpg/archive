@@ -3,7 +3,7 @@
 if (!defined("OBJENABLED"))
     exit(header('Location: /?error=OBJENABLED'));
 
-class AddToTemplateHitElement extends PHPShopProductIconElements {
+class AddToTemplateHitElement extends PHPShopProductIndexElements {
     var $check_index=null;
 
     function __construct() {

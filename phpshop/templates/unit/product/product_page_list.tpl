@@ -17,11 +17,8 @@
 @ProductCatalogContent@
 
 <!-- Виртуальный каталог -->
-<div class="virtual-catalog">
-    @vendorCatDisp@
-</div>
+<div class="catalog-block">@vendorCatDisp@</div>
 <!--/ Виртуальный каталог -->
-
 
 <div class="product-filter @hideSort@" id="filter-well">
     <div class="row d-flex align-items-center">

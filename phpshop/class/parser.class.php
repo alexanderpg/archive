@@ -3,7 +3,7 @@
 /**
  * Библиотека парсинга данных
  * @author PHPShop Software
- * @version 2.0
+ * @version 2.1
  * @package PHPShopParser
  */
 class PHPShopParser {
@@ -97,8 +97,14 @@ class PHPShopParser {
         // Запись файла локализации
         //writeLangFile();
 
-        if (!empty($replace))
+        if (!empty($replace)) {
+
+            // Пользовательская замена в шаблоне
+            if (is_array($replace))
+                $string = str_replace(array_keys($replace), array_values($replace), $string);
+
             $string = preg_replace(array_keys($replaces), array_values($replaces), $string);
+        }
 
         if (!empty($return))
             return $string;
@@ -481,7 +487,7 @@ function __hide($name, $type = 'parser', $class = 'hide d-none') {
         echo $class;
     else if ($type == 'class' and isset($GLOBALS['SysValue']['other'][$name]))
         echo $class;
-    else if ($type == 'zero' and empty((int)$GLOBALS['SysValue']['other'][$name]))
+    else if ($type == 'zero' and empty((int) $GLOBALS['SysValue']['other'][$name]))
         echo $class;
 }
 

@@ -5,8 +5,8 @@ CREATE TABLE `phpshop_modules_sitemappro_system` (
   `step` VARCHAR(64) DEFAULT 'content',
   `processed` int(11) NOT NULL default '0',
   `use_filter_combinations` enum('0','1') NOT NULL default '0',
-  `version` VARCHAR(64) DEFAULT '1.1',
+  `version` VARCHAR(64) DEFAULT '1.0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_sitemappro_system` VALUES (1, '10000', 'content', '0', '0', '1.1');
+INSERT INTO `phpshop_modules_sitemappro_system` VALUES (1, '10000', 'content', '0', '0', '1.2');

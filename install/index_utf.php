@@ -46,8 +46,7 @@ if ($PHPShopBase->connect(false)) {
 }
 
 // GD Support
-$GD = gd_info();
-if (!empty($GD['GD Version']))
+if (function_exists("gd_info"))
     $gd_support = $ok;
 else
     $gd_support = $error;

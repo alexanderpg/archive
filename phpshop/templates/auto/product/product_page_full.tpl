@@ -11,7 +11,7 @@
 
             <div class="modal-body">
                 <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">x</span>
                 </button>
                 <h4><a href="/shop/UID_@productUid@.html" title="@productNameClean@">@productName@</a></h4>
                 <div class="col-md-12">

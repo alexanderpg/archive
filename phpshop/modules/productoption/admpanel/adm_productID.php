@@ -89,6 +89,7 @@ function setEditor($name, $value){
 $addHandler = array(
     'actionStart' => 'addModOption',
     'actionDelete' => false,
-    'actionUpdate' => false
+    'actionUpdate' => false,
+    'actionOptionEdit' => 'addModOption'
 );
 ?>

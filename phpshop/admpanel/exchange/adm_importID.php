@@ -15,14 +15,14 @@ function actionStart() {
     $PHPShopGUI->field_col = 4;
 
     $option = unserialize($data['option']);
-
+    
     // Настройки
     $PHPShopOrmExchanges = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges']);
     $data_exchanges = $PHPShopOrmExchanges->select(array('*'), array('id' => '=' . intval($option['exchanges']) . ' or id=' . intval($option['exchanges_new'])), false, array("limit" => 1));
     if(!is_array($data_exchanges)){
        $data_exchanges['name'] = '-';
     }
-
+    
     if (empty($option['export_imgpath']))
         $option['export_imgpath'] = __('Выкл');
     else
@@ -63,12 +63,21 @@ function actionStart() {
     } else {
         $status = __("Выпонен");
         $info = unserialize($data['info']);
+        
         $text = __('Обработано ') . $info[0] . (' строк') . '.<br><a href="' . $info[3] . '" target="_blank">' . $info[1] . ' ' . $info[2] . __(' записей') . '</a>';
     }
+    
+    $path_name=[
+        'exchange.import.catalog' => __('Каталоги'),
+        'exchange.import' => __('Товары'),
+        'exchange.import.user' => __('Пользователи'),
+        'exchange.import.order' => __('Заказы'),
+    ];
 
     // Закладка 1
     $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setText($PHPShopGUI->setLink($data['file'], pathinfo($data['file'])['basename']))) .
-            $PHPShopGUI->setField("Настройка", $PHPShopGUI->setText('<a href="?path=exchange.import&exchanges=' . $data_exchanges['id'] . '">' . $data_exchanges['name'] . '</a>'), false, false, $class) .
+            $PHPShopGUI->setField("Тип данных",$PHPShopGUI->setText($path_name[$option['path']], false, false,  false)).
+            $PHPShopGUI->setField("Настройка", $PHPShopGUI->setText('<a href="?path='.$option['path'].'&exchanges=' . $data_exchanges['id'] . '">' . $data_exchanges['name'] . '</a>'), false, false, $class) .
             $PHPShopGUI->setField("Обработано строк", $PHPShopGUI->setText($info[0]), false, false, $class) .
             $PHPShopGUI->setField($info[1] . ' записей', $PHPShopGUI->setText($info[2]), false, false, $class) .
             $PHPShopGUI->setField('Загружено изображений', $PHPShopGUI->setText((int) $info[4]), false, false, $class) .

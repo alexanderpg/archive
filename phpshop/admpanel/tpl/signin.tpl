@@ -88,7 +88,7 @@
         <!-- Notification -->
         <div id="notification" class="success-notification hide">
             <div  class="alert alert-success alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                 <span class="notification-alert">@notification@</span>
             </div>
         </div>

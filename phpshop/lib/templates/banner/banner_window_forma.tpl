@@ -3,7 +3,7 @@
     <div class="modal-dialog @popupSize@">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close popup-close" data-id="@popupId@" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close popup-close" data-id="@popupId@" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title">@banerTitle@</h4>
             </div>
             <div class="modal-body">

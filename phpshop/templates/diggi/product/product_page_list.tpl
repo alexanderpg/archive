@@ -2,7 +2,7 @@
 @ProductCatalogContent@
 
 <!-- Виртуальный каталог -->
-@vendorCatDisp@
+<div class="catalog-block">@vendorCatDisp@</div>
 <!--/ Виртуальный каталог -->
 
 <!-- Product Filter Starts -->

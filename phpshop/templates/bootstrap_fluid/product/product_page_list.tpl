@@ -3,7 +3,7 @@
 @ProductCatalogContent@
 
 <!-- Виртуальный каталог -->
-@vendorCatDisp@
+<div class="catalog-block">@vendorCatDisp@</div>
 <!--/ Виртуальный каталог -->
 
 <span class="filter-btn" >{Фильтры}</span>

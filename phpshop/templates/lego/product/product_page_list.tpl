@@ -5,7 +5,7 @@
 @ProductCatalogContent@
 
 <!-- Виртуальный каталог -->
-@vendorCatDisp@
+<div class="row">@vendorCatDisp@</div>
 <!--/ Виртуальный каталог -->
 @catalogOption1@
 

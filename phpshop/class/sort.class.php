@@ -8,7 +8,7 @@ if (!defined("OBJENABLED")) {
 /**
  * Сортировки и фильтры товаров
  * @author PHPShop Software
- * @version 1.9
+ * @version 2.0
  * @package PHPShopClass
  */
 class PHPShopSort {
@@ -100,7 +100,7 @@ class PHPShopSort {
 
                 // Каталоги
                 if (!empty($row['virtual']))
-                    $this->catdisp.=$this->value($id, $name, true, $cattemplate);
+                    $this->catdisp.=$this->value($id, $name, true, $cattemplate,false,$row['sort_seo_name']);
             }
         }
     }
@@ -222,19 +222,19 @@ class PHPShopSort {
             if (!empty($this->sort_cache['filter_cache'][$n]) and is_array($this->sort_cache['filter_cache'][$n]) && $this->filter_cache_enabled) {
                 if (!in_array($id, $this->sort_cache['filter_cache'][$n])) {
                     if (!empty($this->sort_cache['products'][$n][$id]) && $this->count_products) {
-                        $value[$i] = array($name, $id, $sel, $this->sort_cache['products'][$n][$id], $row['icon']);
+                        $value[$i] = array($name, $id, $sel, $this->sort_cache['products'][$n][$id], $row['icon'],$row['sort_seo_name']);
                         $i++;
                     } else {
-                        $value[$i] = array($name, $id, $sel, null, $row['icon']);
+                        $value[$i] = array($name, $id, $sel, null, $row['icon'],$row['sort_seo_name']);
                         $i++;
                     }
                 }
             } else {
                 if (!empty($this->sort_cache['products'][$n][$id]) && $this->count_products) {
-                    $value[$i] = array($name, $id, $sel, $this->sort_cache['products'][$n][$id], $row['icon']);
+                    $value[$i] = array($name, $id, $sel, $this->sort_cache['products'][$n][$id], $row['icon'],$row['sort_seo_name']);
                     $i++;
                 } else {
-                    $value[$i] = array($name, $id, $sel, null, $row['icon']);
+                    $value[$i] = array($name, $id, $sel, null, $row['icon'],$row['sort_seo_name']);
                     $i++;
                 }
             }

@@ -8,7 +8,7 @@ function template_CID_Product($obj, $data, $rout) {
 
         // Виртуальные каталоги
         $obj->cat_template = 'sortсattemplatehook';
-        
+
         switch ($_GET['gridChange']) {
             case 1:
                 $obj->set('gridSetAactive', 'active');
@@ -21,12 +21,12 @@ function template_CID_Product($obj, $data, $rout) {
                 else
                     $obj->set('gridSetBactive', 'active');
         }
-        
-        if(empty($_GET['s']))
-            $_GET['s']=$obj->PHPShopCategory->getParam('order_by');
-        
-        if(empty($_GET['f']))
-            $_GET['f']=$obj->PHPShopCategory->getParam('order_to');
+
+        if (empty($_GET['s']))
+            $_GET['s'] = $obj->PHPShopCategory->getParam('order_by');
+
+        if (empty($_GET['f']))
+            $_GET['f'] = $obj->PHPShopCategory->getParam('order_to');
 
         switch ($_GET['s']) {
             case 1:
@@ -328,6 +328,7 @@ function sorttemplatehook($value, $n, $title, $vendor) {
  * Шаблон вывода характеристик виртуальные каталоги
  */
 function sortсattemplatehook($value, $n, $title, $vendor) {
+    global $PHPShopSeoPro, $PHPShopNav;
     $disp = null;
 
     if (is_array($value)) {
@@ -344,11 +345,38 @@ function sortсattemplatehook($value, $n, $title, $vendor) {
             if ($p[3] != null)
                 $text .= ' (' . $p[3] . ')';
 
-            $disp .= '<a class="btn btn-soft-primary btn-sm sortcat ' . $checked . ' mb-1" href="?v[' . $n . ']=' . $p[1] . '">' . $text . '</a> ';
+            if (!empty($p[5])) {
+
+                if (strpos($GLOBALS['SysValue']['nav']['truepath'], '.filters/') !== false) {
+                    $path = preg_replace('#^(.*)/filters/.*$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+                    $filters = preg_replace('#^.*/filters/(.*)$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+                } else
+                    $path = preg_replace('#^(.*).html/.*$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+
+
+                if ($filters == $p[5])
+                    $checked = 'active';
+                else
+                    $checked = null;
+            }
+
+
+            PHPShopParser::set('podcatalogIcon', $p[4]);
+            PHPShopParser::set('podcatalogName', $text);
+
+  
+            // SEO ссылка
+            if (!empty($p[5])){
+                PHPShopParser::set('podcatalogId', $PHPShopSeoPro->getCID());
+                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true,['.html' => '.html/filters/' . $p[5]]);
+            }else{
+                PHPShopParser::set('podcatalogId', $PHPShopNav->getId());
+                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html?v[' . $n . ']=' . $p[1]]);
+            }
         }
     }
 
-    return '<p>' . $disp . '</p>';
+    return $disp;
 }
 
 /**
@@ -362,7 +390,7 @@ function template_image_gallery($obj, $array) {
     $s = 1;
     $heroSlider = $heroSliderNav = null;
 
-    
+
 
     // Нет данных в галерее
     if (!is_array($data) and ! empty($array['pic_big']))
@@ -384,7 +412,7 @@ function template_image_gallery($obj, $array) {
         ksort($sort_data);
 
         foreach ($sort_data as $k => $row) {
-            
+
             if (empty($row['info']))
                 $row['info'] = $array['name'];
 
@@ -406,8 +434,8 @@ function template_image_gallery($obj, $array) {
                 $name_s = $obj->setImage($name_s);
             }
 
-            $heroSlider .= '<div class="js-slide"><img class="img-fluid rounded-lg" src="' . $name . '" alt="' . $alt . '" title="'.$alt.'"></div>';
-            $heroSliderNav .= '<div class="js-slide p-1" data-big-image="' . $name . '"><a class="js-slick-thumb-progress d-block avatar avatar-circle border p-1" href="javascript:;"><img class="avatar-img" src="' . $name_s . '" alt="' . $alt . '" title="'.$alt.'"></a></div>';
+            $heroSlider .= '<div class="js-slide"><img class="img-fluid rounded-lg" src="' . $name . '" alt="' . $alt . '" title="' . $alt . '"></div>';
+            $heroSliderNav .= '<div class="js-slide p-1" data-big-image="' . $name . '"><a class="js-slick-thumb-progress d-block avatar avatar-circle border p-1" href="javascript:;"><img class="avatar-img" src="' . $name_s . '" alt="' . $alt . '" title="' . $alt . '"></a></div>';
 
             $i++;
         }

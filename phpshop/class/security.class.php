@@ -3,7 +3,7 @@
 /**
  * Библиотека проверки безопасности
  * @author PHPShop Software
- * @version 1.7
+ * @version 1.8
  * @package PHPShopClass
  * @subpackage Helper
  */
@@ -196,6 +196,7 @@ class PHPShopSecurity {
             $search = str_replace("delete", "", $search);
             $search = str_replace("<", "", $search);
             $search = str_replace(">", "", $search);
+            $search = str_replace("+", "", $search);
 
             if (empty($option)) {
                 $search = str_replace(")", "", $search);

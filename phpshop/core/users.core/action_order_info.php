@@ -34,7 +34,7 @@ function action_order_info($obj, $tip) {
 
         // Статусы заказов
         $PHPShopOrderStatusArray = new PHPShopOrderStatusArray();
-        
+
         $files = null;
 
         if (is_array($row)) {
@@ -53,8 +53,10 @@ function action_order_info($obj, $tip) {
             $cart = $PHPShopOrderFunction->cart('usercartforma', array('obj' => $obj, 'currency' => $currency));
 
             // Цифровой контент
-            if ($PHPShopOrderStatusArray->getParam($row['statusi'] . '.sklad_action') == 1 and $obj->PHPShopSystem->getSerilizeParam('admoption.digital_product_enabled') == 1) {
-                $files = PHPShopText::tr('<b>' . __('Файлы') . '</b>', $PHPShopOrderFunction->cart('userfiles', array('obj' => $obj)), '-');
+            if ($obj->PHPShopSystem->getSerilizeParam('admoption.digital_product_enabled') == 1) {
+                if ($PHPShopOrderStatusArray->getParam($row['statusi'] . '.sklad_action') == 1 or $row['statusi'] == 101) {
+                    $files = PHPShopText::tr(PHPShopText::b( __('Файлы')), $PHPShopOrderFunction->cart('userfiles', array('obj' => $obj)), '-');
+                }
             }
 
             // Заголовок
@@ -85,7 +87,7 @@ function action_order_info($obj, $tip) {
                 $docs = null;
 
             // Документооборот файлы
-            $docs.= userorderfiles($row['files'], $obj);
+            $docs .= userorderfiles($row['files'], $obj);
 
             // Таблица
             $slide = PHPShopText::slide('Order');
@@ -102,7 +104,7 @@ function action_order_info($obj, $tip) {
                     $editTime . $comment;
             // Способ оплаты
             $payment = userorderpaymentlink($obj, $PHPShopOrderFunction, $tip, $row);
-            
+
             // Описание столбцов
             $caption = $obj->caption(__('Статус заказа'), __('Способ оплаты'));
             $table .= PHPShopText::p(PHPShopText::table($caption . $payment = PHPShopText::tr($time, $payment), 3, 1, 'left', '99%', false, 0, 'allspecwhite', 'list table table-striped table-bordered'));
@@ -117,10 +119,10 @@ function action_order_info($obj, $tip) {
             }
 
             $table .= PHPShopText::p(PHPShopText::table($caption . $temp, 3, 1, 'left', '100%', false, 0, '', 'list table table-striped table-bordered'));
-            
+
             // Трекинг
-            if(!empty($row['tracking']))
-             $table .= PHPShopText::p(PHPShopText::table($obj->caption(__('Код отслеживания')).PHPShopText::tr($row['tracking']), 3, 1, 'left', '99%', false, 0, 'allspecwhite', 'list table table-striped table-bordered'));
+            if (!empty($row['tracking']))
+                $table .= PHPShopText::p(PHPShopText::table($obj->caption(__('Код отслеживания')) . PHPShopText::tr($row['tracking']), 3, 1, 'left', '99%', false, 0, 'allspecwhite', 'list table table-striped table-bordered'));
 
             // Описание столбцов
             $caption = $obj->caption(__('Наименование'), __('Кол-во'), __('Сумма'));
@@ -128,8 +130,7 @@ function action_order_info($obj, $tip) {
 
 
             $obj->set('formaContent', $table, true);
-        }
-        else
+        } else
             $obj->action_index();
     }
 }
@@ -153,10 +154,24 @@ function userfiles($val, $option) {
         $files = unserialize($row['files']);
         if (is_array($files)) {
             foreach ($files as $cfile) {
-                $F = $option['obj']->link_encode($cfile['path']);
-                $link = '../files/filesSave.php?F=' . $F;
-                $dis.=PHPShopText::a($link, urldecode($cfile['name']), urldecode($cfile['name']), false, false, '_blank');
-                $dis.=PHPShopText::br();
+
+                // Проверка расширения
+                $extension = pathinfo($cfile['path'])['extension'];
+
+                if ($extension == 'txt') {
+
+                    if (empty($cfile['name']))
+                        $cfile['name'] = $content;
+
+                    $content = file_get_contents($_SERVER['DOCUMENT_ROOT'] . $cfile['path']);
+                    $dis .= PHPShopText::a($content, $cfile['name'], false, false, false, '_blank');
+                } else {
+                    $F = $option['obj']->link_encode($cfile['path']);
+                    $link = '../files/filesSave.php?F=' . $F;
+                    $dis .= PHPShopText::a($link, urldecode($cfile['name']), urldecode($cfile['name']), false, false, '_blank');
+                }
+
+                $dis .= PHPShopText::br();
             }
         }
     }
@@ -180,11 +195,11 @@ function usercartforma($val, $option) {
         $link = '/shop/UID_' . $val['id'] . '.html';
     else
         $link = '/shop/UID_' . $val['parent'] . '.html';
-    
-    if(!empty($val['pic_small']))
-        $img=PHPShopText::img($val['pic_small'],null,'left', 'width:30px;padding-right:5px');
 
-    $dis = PHPShopText::tr($img.PHPShopText::a($link, $val['name'], $val['name'], false, false, '_blank', 'b'), $val['num'], $val['total'] . ' ' . $option['currency']);
+    if (!empty($val['pic_small']))
+        $img = PHPShopText::img($val['pic_small'], null, 'left', 'width:30px;padding-right:5px');
+
+    $dis = PHPShopText::tr($img . PHPShopText::a($link, $val['name'], $val['name'], false, false, '_blank', 'b'), $val['num'], $val['total'] . ' ' . $option['currency']);
     return $dis;
 }
 
@@ -199,7 +214,7 @@ function userdeleveryforma($val, $option) {
     if ($hook)
         return $hook;
 
-    $adres=null;
+    $adres = null;
     $data_fields = unserialize($val['data_fields']);
     if (is_array($data_fields)) {
         $num = $data_fields['num'];
@@ -243,7 +258,7 @@ function userorderdoclink($val, $obj) {
                 $link_doc = '../files/docsSave.php?orderId=' . $n . '&list=accounts&tip=doc&datas=' . $row['datas'];
                 $link_xls = '../files/docsSave.php?orderId=' . $n . '&list=accounts&tip=xls&datas=' . $row['datas'];
                 $link_pdf = '../files/docsSave.php?orderId=' . $n . '&list=accounts&tip=pdf&datas=' . $row['datas'];
-                $dis.=PHPShopText::tr(PHPShopText::a($link_def, __('Счет на оплату'), false, false, false, '_blank', 'b'), PHPShopDate::dataV($row['datas']), PHPShopText::a($link_html, __('HTML'), __('Формат Web'), false, false, '_blank', 'b') . ' ' .
+                $dis .= PHPShopText::tr(PHPShopText::a($link_def, __('Счет на оплату'), false, false, false, '_blank', 'b'), PHPShopDate::dataV($row['datas']), PHPShopText::a($link_html, __('HTML'), __('Формат Web'), false, false, '_blank', 'b') . ' ' .
                                 PHPShopText::a($link_pdf, 'PDF', 'PDF', false, false, '_blank', 'b') . ' ' .
                                 PHPShopText::a($link_xls, 'XLS', 'Excel', false, false, '_blank', 'b'));
             }
@@ -255,7 +270,7 @@ function userorderdoclink($val, $obj) {
                 $link_doc = '../files/docsSave.php?orderId=' . $n . '&list=invoice&tip=doc&datas=' . $row['datas'];
                 $link_xls = '../files/docsSave.php?orderId=' . $n . '&list=invoice&tip=xls&datas=' . $row['datas'];
                 $link_pdf = '../files/docsSave.php?orderId=' . $n . '&list=invoice&tip=pdf&datas=' . $row['datas'];
-                $dis.=PHPShopText::tr(PHPShopText::a($link_def, __('Счет-фактура'), false, false, false, '_blank', 'b'), PHPShopDate::dataV($row['datas_f']), PHPShopText::a($link_html, 'HTML', 'HTML', false, false, '_blank', 'b') . ' ' .
+                $dis .= PHPShopText::tr(PHPShopText::a($link_def, __('Счет-фактура'), false, false, false, '_blank', 'b'), PHPShopDate::dataV($row['datas_f']), PHPShopText::a($link_html, 'HTML', 'HTML', false, false, '_blank', 'b') . ' ' .
                                 PHPShopText::a($link_pdf, 'PDF', 'PDF', false, false, '_blank', 'b') . ' ' .
                                 PHPShopText::a($link_xls, 'XLS', 'Excel', false, false, '_blank', 'b'));
             }
@@ -293,7 +308,7 @@ function userorderpaymentlink($obj, $PHPShopOrderFunction, $tip, $row) {
 
         // Сообщение
         case("message"):
-            $disp.=$icon . PHPShopText::b($name);
+            $disp .= $icon . PHPShopText::b($name);
             break;
 
         // Счет в банк
@@ -302,26 +317,26 @@ function userorderpaymentlink($obj, $PHPShopOrderFunction, $tip, $row) {
 
                 $disp = PHPShopText::a("phpshop/forms/account/forma.html?orderId=$id&tip=$tip&datas=$datas", $icon . $name, $name, false, false, '_blank', 'b');
             } else {
-                $disp.=PHPShopText::b($name) . '.<br>' . __('Ожидайте счета, после проведения документа<br> он автоматически появится в данном разделе<br> личного кабинета.');
+                $disp .= PHPShopText::b($name) . '.<br>' . __('Ожидайте счета, после проведения документа<br> он автоматически появится в данном разделе<br> личного кабинета.');
             }
             break;
 
         // Квитанция Сбербанка
         case("sberbank"):
-            $disp.=PHPShopText::a("phpshop/forms/receipt/forma.html?orderId=$id&tip=$tip&datas=$datas", $icon . $name, $name, false, false, '_blank', 'b');
+            $disp .= PHPShopText::a("phpshop/forms/receipt/forma.html?orderId=$id&tip=$tip&datas=$datas", $icon . $name, $name, false, false, '_blank', 'b');
             break;
 
         // Платежный модуль
         case("modules"):
-            
+
             // Проверка оплаты
-            if ($payment_date  = $PHPShopOrderFunction->checkPay()) {
-                return 'Оплачено '.PHPShopDate::get($payment_date);
+            if ($payment_date = $PHPShopOrderFunction->checkPay()) {
+                return 'Оплачено ' . PHPShopDate::get($payment_date);
             } else {
                 // Перехват модуля
                 $hook = $obj->setHook(__FUNCTION__, __FUNCTION__, $PHPShopOrderFunction);
                 if ($hook) {
-                    $disp.=$hook;
+                    $disp .= $hook;
                 }
             }
 
@@ -341,9 +356,8 @@ function userorderpaymentlink($obj, $PHPShopOrderFunction, $tip, $row) {
                 if (function_exists($users_function)) {
                     $disp = $icon . call_user_func_array($users_function, array(&$obj, $PHPShopOrderFunction));
                 }
-            }
-            else
-                $disp.=$icon . PHPShopText::b($name);
+            } else
+                $disp .= $icon . PHPShopText::b($name);
             break;
     }
 
@@ -356,13 +370,13 @@ function userorderpaymentlink($obj, $PHPShopOrderFunction, $tip, $row) {
 function userorderfiles($val, $obj) {
 
     $files = unserialize($val);
-    $dis=PHPShopText::br();
-    $dis.= $obj->caption(__('Документы'));
+    $dis = PHPShopText::br();
+    $dis .= $obj->caption(__('Документы'));
 
     if (is_array($files)) {
         foreach ($files as $cfile) {
 
-            $dis.=PHPShopText::tr(PHPShopText::a(urldecode($cfile['path']), urldecode($cfile['name']), urldecode($cfile['name']), false, false, '_blank'));
+            $dis .= PHPShopText::tr(PHPShopText::a(urldecode($cfile['path']), urldecode($cfile['name']), urldecode($cfile['name']), false, false, '_blank'));
         }
 
         $table = PHPShopText::p(PHPShopText::table($dis, 3, 1, 'left', '99%', false, 0, 'allspecwhite', 'list table table-striped table-bordered'));

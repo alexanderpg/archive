@@ -268,7 +268,9 @@ function template_UID($obj, $dataArray, $rout) {
  * Шаблон вывода характеристик виртуальные каталоги
  */
 function sortсattemplatehook($value, $n, $title, $vendor) {
+    global $PHPShopSeoPro, $PHPShopNav;
     $disp = null;
+
     if (is_array($value)) {
         foreach ($value as $p) {
 
@@ -283,11 +285,38 @@ function sortсattemplatehook($value, $n, $title, $vendor) {
             if ($p[3] != null)
                 $text .= ' (' . $p[3] . ')';
 
-            $disp .= '<a style="background-image: url(' . $p[4] . ');" class="sortcat btn btn-default ' . $checked . '" href="?v[' . $n . ']=' . $p[1] . '">' . $text . '</a> ';
+            if (!empty($p[5])) {
+
+                if (strpos($GLOBALS['SysValue']['nav']['truepath'], '.filters/') !== false) {
+                    $path = preg_replace('#^(.*)/filters/.*$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+                    $filters = preg_replace('#^.*/filters/(.*)$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+                } else
+                    $path = preg_replace('#^(.*).html/.*$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+
+
+                if ($filters == $p[5])
+                    $checked = 'active';
+                else
+                    $checked = null;
+            }
+
+
+            PHPShopParser::set('podcatalogIcon', $p[4]);
+            PHPShopParser::set('podcatalogName', $text);
+
+  
+            // SEO ссылка
+            if (!empty($p[5])){
+                PHPShopParser::set('podcatalogId', $PHPShopSeoPro->getCID());
+                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true,['.html' => '.html/filters/' . $p[5]]);
+            }else{
+                PHPShopParser::set('podcatalogId', $PHPShopNav->getId());
+                $disp .= PHPShopParser::file($GLOBALS['SysValue']['dir']['templates'] . chr(47) . $_SESSION['skin'] . '/catalog/cid_category.tpl', true, ['.html' => '.html?v[' . $n . ']=' . $p[1]]);
+            }
         }
     }
 
-    return '<p>' . $disp . '</p>';
+    return $disp;
 }
 
 /**

@@ -1,7 +1,7 @@
 
 @ProductCatalogContent@
 <!-- ¬иртуальный каталог -->
-@vendorCatDisp@
+<div class="catalog-block">@vendorCatDisp@</div>
 <!--/ ¬иртуальный каталог -->
 <!-- Product Filter Starts -->
 <div class="product-filter" id="filter-well">
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <a href="?" id="faset-filter-reset" data-toggle="tooltip" data-placement="top" title="{—бросить фильтр}"><span>{—бросить фильтр}</span>&times;</a>
+            <a href="?" id="faset-filter-reset" data-toggle="tooltip" data-placement="top" title="{—бросить фильтр}"><span>{—бросить фильтр}</span>x</a>
         </div>
     </div>
     <!--/ ‘асетный фильтр -->

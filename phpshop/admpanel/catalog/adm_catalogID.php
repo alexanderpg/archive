@@ -245,7 +245,8 @@ function actionStart() {
     $Tab7 = $PHPShopGUI->loadLib('tab_headers', $data);
 
     // Права
-    $Tab9 = $PHPShopGUI->setCollapse('Каталог могут редактировать', $PHPShopGUI->loadLib('tab_secure', $data), 'in', false);
+    if ($PHPShopSystem->ifSerilizeParam('admoption.rule_enabled', 1))
+        $Tab9 = $PHPShopGUI->setCollapse('Каталог могут редактировать', $PHPShopGUI->loadLib('tab_secure', $data), 'in', false);
 
     // Добавление закладки характеристики если нет подкаталогов
     $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['categories']);

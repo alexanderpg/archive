@@ -35,8 +35,6 @@ class PHPShopSeoProCore extends PHPShopShop {
         $this->PHPShopNav->objNav['nav'] = 'CID';
         $GLOBALS['SysValue']['nav']['nav'] = 'CID';
         
-
-
         if (!empty($GLOBALS['PHPShopNav']->objNav['id'])) {
             parent::CID();
  

@@ -3,7 +3,7 @@ var TABLE_EVENT = true;
 locale.icon_load = locale.file_load;
 
 $().ready(function () {
-    
+
     // Блокировка помощника для URL
     $('body').on('click', '#promtUrl', function () {
         $('#bot').bootstrapToggle('off').bootstrapToggle('disable');
@@ -14,10 +14,10 @@ $().ready(function () {
 
         var line_limit = Number($('#line_limit').val());
 
-        if ($(this).prop('checked') === true) {
-            line_limit = line_limit - 200;
-        } else {
+        if ($(this).val() != 1) {
             line_limit = line_limit + 200;
+        } else {
+            line_limit = 1;
         }
 
         $('#line_limit').val(line_limit);

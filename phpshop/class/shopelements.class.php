@@ -317,7 +317,7 @@ class PHPShopProductElements extends PHPShopElements {
                 $this->set('productSklad', '');
 
                 // Общий склад
-                if ($this->warehouse_sum == 0)
+                if ($this->warehouse_sum == 1)
                     $this->set('productSklad', PHPShopText::div(__('Общий склад') . ": " . $row['items'] . " " . $row['ed_izm']), true);
 
                 foreach ($this->warehouse as $store_id => $store_name) {

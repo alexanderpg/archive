@@ -3,7 +3,7 @@
 /**
  * Библиотека связи с МойСклад
  * @author PHPShop Software
- * @version 1.2
+ * @version 1.3
  * @package PHPShopClass
  * @subpackage RestApi
  * @todo https://dev.moysklad.ru/doc/api/remap/1.2/documents/#dokumenty-zakaz-pokupatelq-zakazy-pokupatelej
@@ -12,7 +12,7 @@ class MoySklad {
 
     var $request;
 
-    const API_URL = 'https://online.moysklad.ru/api/remap/1.2/entity';
+    const API_URL = 'https://api.moysklad.ru/api/remap/1.2/entity';
     const CREATE_ORDER_METHOD = 'customerorder';
     const GET_ORGANIZATIONS = 'organization';
     const GET_AGENT = 'counterparty';
@@ -94,7 +94,7 @@ class MoySklad {
                 foreach ($positions['rows'] as $row) {
 
 
-                    $products = $this->get('https://online.moysklad.ru/api/remap/1.2/report/stock/bystore?filter=product=' . $row['assortment']['meta']['href'], true);
+                    $products = $this->get('https://api.moysklad.ru/api/remap/1.2/report/stock/bystore?filter=product=' . $row['assortment']['meta']['href'], true);
                     $path_parts = pathinfo($row['assortment']['meta']['href']);
 
                     if (is_array($products['rows']))
@@ -268,7 +268,7 @@ class MoySklad {
                     "currency" => array(
                         "meta" => array(
                             "href" => self::API_URL . "/currency/" . $this->option['currency'],
-                            "metadataHref" => "https://online.moysklad.ru/api/remap/1.2/entity/currency/metadata",
+                            "metadataHref" => "https://api.moysklad.ru/api/remap/1.2/entity/currency/metadata",
                             "type" => "currency",
                             "mediaType" => "application/json"
                         )
@@ -444,14 +444,14 @@ class MoySklad {
                             "currency" => array(
                                 "meta" => array(
                                     "href" => self::API_URL . "/currency/" . $this->option['currency'],
-                                    "metadataHref" => "https://online.moysklad.ru/api/remap/1.2/entity/currency/metadata",
+                                    "metadataHref" => "https://api.moysklad.ru/api/remap/1.2/entity/currency/metadata",
                                     "type" => "currency",
                                     "mediaType" => "application/json"
                                 )
                             ),
                             "priceType" => array(
                                 "meta" => array(
-                                    "href" => "https://online.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/" . $this->option['pricetype'],
+                                    "href" => "https://api.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/" . $this->option['pricetype'],
                                     "type" => "pricetype",
                                     "mediaType" => "application/json"
                                 )
@@ -490,14 +490,14 @@ class MoySklad {
                             "currency" => array(
                                 "meta" => array(
                                     "href" => self::API_URL . "/currency/" . $this->option['currency'],
-                                    "metadataHref" => "https://online.moysklad.ru/api/remap/1.2/entity/currency/metadata",
+                                    "metadataHref" => "https://api.moysklad.ru/api/remap/1.2/entity/currency/metadata",
                                     "type" => "currency",
                                     "mediaType" => "application/json"
                                 )
                             ),
                             "priceType" => array(
                                 "meta" => array(
-                                    "href" => "https://online.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/" . $this->option['pricetype'],
+                                    "href" => "https://api.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/" . $this->option['pricetype'],
                                     "type" => "pricetype",
                                     "mediaType" => "application/json"
                                 )
@@ -822,6 +822,9 @@ class MoySklad {
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($properties));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Authorization: Bearer ' . $this->token,
             'Content-Type: application/json',
@@ -844,6 +847,9 @@ class MoySklad {
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Authorization: Bearer ' . $this->token,
             'Content-Type: application/json',

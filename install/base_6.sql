@@ -443,7 +443,7 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_oneclick_system` (
   `captcha` enum('0','1') DEFAULT '0',
   `status` int(11) DEFAULT '0',
   `version` varchar(64) DEFAULT '1.6',
-  `only_available` enum('0','1') DEFAULT '0',
+  `only_available` enum('0','1','2') DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 

@@ -74,7 +74,11 @@ function uid_mod_oneclick_hook($obj, $row, $rout) {
 
         if((int) $AddToTemplateOneclickElement->option['only_available'] === 1 && (int) $row['sklad'] === 1) {
             $AddToTemplateOneclickElement->set('oneclick', '');
-        } else {
+        } 
+        elseif((int) $AddToTemplateOneclickElement->option['only_available'] === 2 && (int) $row['sklad'] === 0) {
+            $AddToTemplateOneclickElement->set('oneclick', '');
+        } 
+        else {
             $AddToTemplateOneclickElement->display();
         }
     }

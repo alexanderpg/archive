@@ -29,7 +29,7 @@ function addYandexkassaOptions($data) {
     $vat[] = array(__('ÍÄÑ ÷åêà ïî ğàñ÷åòíîé ñòàâêå 10/110'), 5, $data['yandex_vat_code']);
     $vat[] = array(__('ÍÄÑ ÷åêà ïî ğàñ÷åòíîé ñòàâêå 20/120'), 6, $data['yandex_vat_code']);
 
-    $Tab3 .= $PHPShopGUI->setField('ÍÄÑ', $PHPShopGUI->setSelect('yandex_vat_code_new', $vat,'100%'));
+    $Tab3 .= $PHPShopGUI->setField('ÍÄÑ', $PHPShopGUI->setSelect('yandex_vat_code_new', $vat,'100%',false, false, false, false, 1, false, false,  'form-control hidden-edit'));
 
     $PHPShopGUI->addTab(array("ŞKassa", $Tab3, true));
 }

@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS `phpshop_modules_seourlpro_system` (
   `seo_news_enabled` enum('1','2') default '1',
   `seo_page_enabled` enum('1','2') default '1',
   `redirect_enabled` enum('1','2') default '1',
-  `version` VARCHAR(64) DEFAULT '',
+  `version` VARCHAR(64) DEFAULT '1.0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
-INSERT INTO `phpshop_modules_seourlpro_system` VALUES (1,'2','2','1','2','2','1','2.1');
+INSERT INTO `phpshop_modules_seourlpro_system` VALUES (1,'2','2','1','2','2','1','2.2');

@@ -186,7 +186,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                 <div class="h4 modal-title" id="myModalLabel">@productName@</div>
             </div>
             <div class="modal-body">
@@ -205,7 +205,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                 <div class="h4 modal-title">{Таблица размеров}</div>
             </div>
             <form method="post" name="user_forma_size_delivery" action="@ShopDir@/returncall/">
@@ -227,7 +227,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span><span class="sr-only">Close</span></button>
                 <div class="h4 modal-title">{Информация о доставке}</div>
             </div>
             <form method="post" name="user_forma_size_delivery" action="@ShopDir@/returncall/">
@@ -253,7 +253,7 @@
             <div class="modal-header">
                 <div class="h4 modal-title" id="exampleModalLabel" class="d-flex">{Оставить отзыв}
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">x</span>
                     </button>
                 </div>
             </div>
@@ -336,7 +336,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="h4 modal-title" id="exampleModalLabel" class="d-flex">{Пожаловаться на цену} <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">x</span>
                     </button></div >
             </div>
             <div class="modal-body">
@@ -428,7 +428,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="h4 modal-title" id="exampleModalLabel" class="d-flex">{Задать вопрос по продукту} <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">x</span>
                     </button>
                 </div>
             </div>

@@ -26,8 +26,8 @@ class AddToTemplateOneclickElementAll extends PHPShopElements {
             $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['oneclick']['oneclick_system']);
             $PHPShopOrm->debug = $this->debug;
             $OneclickOption = $this->option = $PHPShopOrm->select();
-        }
-        else $this->option = $OneclickOption;
+        } else
+            $this->option = $OneclickOption;
     }
 
     /**
@@ -40,7 +40,7 @@ class AddToTemplateOneclickElementAll extends PHPShopElements {
 
         $PHPShopRecaptchaElement = new PHPShopRecaptchaElement();
 
-        if($this->option['captcha'] == 1)
+        if ($this->option['captcha'] == 1)
             $this->set('oneclick_captcha', $PHPShopRecaptchaElement->captcha('oneclick'));
 
         $forma = PHPShopParser::file($GLOBALS['SysValue']['templates']['oneclick']['oneclick_forma'], true, false, true);
@@ -80,7 +80,9 @@ class AddToTemplateOneclickElementAll extends PHPShopElements {
 function product_grid_mod_oneclick_hook($obj, $row) {
     $AddToTemplateOneclickElement = new AddToTemplateOneclickElementAll();
 
-    if((int) $AddToTemplateOneclickElement->option['only_available'] === 1 && (int) $row['sklad'] === 1) {
+    if ((int) $AddToTemplateOneclickElement->option['only_available'] === 1 && (int) $row['sklad'] === 1) {
+        $AddToTemplateOneclickElement->set('oneclick', '');
+    } elseif ((int) $AddToTemplateOneclickElement->option['only_available'] === 2 && (int) $row['sklad'] === 0) {
         $AddToTemplateOneclickElement->set('oneclick', '');
     } else {
         $AddToTemplateOneclickElement->display();

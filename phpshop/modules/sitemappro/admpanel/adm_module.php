@@ -72,7 +72,7 @@ function actionStart() {
     }
 
     $Tab1 = $PHPShopGUI->setField('Товаров в одном файле', $PHPShopGUI->setInputText(false, 'limit_products_new', $data['limit_products'], 150));
-    $Tab1 .= $PHPShopGUI->setField('Комбинации значений фильтра', $PHPShopGUI->setCheckbox("use_filter_combinations_new", 1, "Добавить в карту сайта страницы категорий с комбинациями значений фильтра", $data["use_filter_combinations"]));
+    $Tab1 .= $PHPShopGUI->setField('Виртуалные каталоги', $PHPShopGUI->setCheckbox("use_filter_combinations_new", 1, "Добавить в карту сайта страницы виртуальных каталогов", $data["use_filter_combinations"]));
     $Tab1 .= $PHPShopGUI->setField('Следующий этап',sprintf('<div class="well well-sm" style="max-width:300px" role="alert">%s.</div>', __($status)));
 
     $Info = '

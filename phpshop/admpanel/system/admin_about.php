@@ -71,7 +71,7 @@ function actionStart() {
     else
         $ShowcaseLimit = __('нет');
 
-    $shop_type_value = array('интернет-магазин','каталог продукции','сайт компании');
+    $shop_type_value = array(__('интернет-магазин'),__('каталог продукции'),__('сайт компании'));
     
     // Содержание закладки 1
     $Tab1 = $PHPShopGUI->setCollapse('Информация', $PHPShopGUI->setField("Название программы", '<a class="btn btn-sm btn-default" href="https://www.phpshop.ru/page/compare.html?from=' . $_SERVER['SERVER_NAME'] . '" target="_blank"><span class="glyphicon glyphicon-info-sign"></span> PHPShop ' . $product_name . '</a>') .

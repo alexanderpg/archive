@@ -164,4 +164,5 @@ $().ready(function() {
              $('[name="option[hcaptcha_enabled]"]').bootstrapToggle('off');
          }
     });
+    
 });

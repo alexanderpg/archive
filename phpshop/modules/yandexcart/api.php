@@ -206,11 +206,11 @@ switch ($_SERVER["PATH_INFO"]) {
         if (is_array($data['order']['items']))
             foreach ($data['order']['items'] as $product) {
                 $sum += $product['price'] * $product['count'];
-
+                
                 // Ключ обновления
                 if ($option['type'] == 2) {
                     $key = 'uid';
-                    $offerId = str_replace(['-','_'], [' ','-'], PHPShopString::utf8_win1251($offerId));
+                    $offerId = str_replace(['-','_'], [' ','-'], PHPShopString::utf8_win1251($product['offerId']));
                 } else {
                     $key = 'id';
                     $offerId = $product['offerId'];
@@ -458,7 +458,7 @@ switch ($_SERVER["PATH_INFO"]) {
             if ($option['type'] == 2) {
                 
                 foreach ($data['skus'] as $k => $val){
-                    //$val = PHPShopString::utf8_win1251($val);
+                    $val = PHPShopString::utf8_win1251($val);
                     $val = str_replace(['-','_'], [' ','-'], $val);
                     $data['skus'][$k] = '"' . $val . '"';
                 }

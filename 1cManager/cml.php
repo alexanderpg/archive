@@ -4,7 +4,7 @@
  * Обмен по CommerceML
  * @package PHPShopExchange
  * @author PHPShop Software
- * @version 2.2
+ * @version 2.6
  */
 class CommerceMLLoader {
 
@@ -34,6 +34,7 @@ class CommerceMLLoader {
         $this->exchange_price3 = $PHPShopSystem->getSerilizeParam("1c_option.exchange_price3");
         $this->exchange_price4 = $PHPShopSystem->getSerilizeParam("1c_option.exchange_price4");
         $this->exchange_price5 = $PHPShopSystem->getSerilizeParam("1c_option.exchange_price5");
+        $this->exchange_sort_ignore = $PHPShopSystem->getSerilizeParam("1c_option.exchange_sort_ignore");
 
         // Параметры ресайзинга
         $this->img_tw = $PHPShopSystem->getSerilizeParam('admoption.img_tw');
@@ -96,8 +97,8 @@ class CommerceMLLoader {
 
         return $crc;
     }
-    
-    private function crc32($str){
+
+    private function crc32($str) {
         $data = trim($str);
         return crc32($data);
     }
@@ -316,12 +317,12 @@ class CommerceMLLoader {
     // Каталоги
     private function parser_category($parent, $item) {
 
-        $this->category_array[] = array($this->crc16((string) $item->Ид[0]), (string) $item->Наименование[0], (string) $parent);
+        $this->category_array[] = array($this->crc16((string) $item->Ид[0]), trim((string) $item->Наименование[0]), (string) $parent);
 
         if (isset($item->Группы[0]))
             foreach ($item->Группы[0] as $items) {
 
-                $this->category_array[] = array($this->crc16((string) $items->Ид[0]), (string) $items->Наименование[0], $this->crc16((string) $item->Ид[0]));
+                $this->category_array[] = array($this->crc16((string) $items->Ид[0]), trim((string) $items->Наименование[0]), $this->crc16((string) $item->Ид[0]));
 
                 if (isset($items->Группы[0]))
                     $this->parser_category($this->crc16((string) $items->Ид[0]), $items);
@@ -449,9 +450,17 @@ class CommerceMLLoader {
 
                     // Подробное описание
                     if (isset($item->Описание)) {
-                        $content = (string) $item->Описание;
+                        $content = nl2br((string) $item->Описание);
                     } else
                         $content = $description;
+
+                    // Блокировка характеристик
+                    if (!empty($this->exchange_sort_ignore)) {
+                        if (strstr($this->exchange_sort_ignore, ','))
+                            $sort_ignore = explode(',', $this->exchange_sort_ignore);
+                        else
+                            $sort_ignore[] = $this->exchange_sort_ignore;
+                    }
 
                     // Свойства
                     $properties = [];
@@ -462,7 +471,8 @@ class CommerceMLLoader {
                             if (isset($directory_array[(string) $req->Значение[0]]))
                                 $req->Значение[0] = $directory_array[(string) $req->Значение[0]];
 
-                            $properties[] = [$properties_array[(string) $req->Ид[0]], (string) $req->Значение[0]];
+                            if (!in_array(PHPShopString::utf8_win1251((string) $req->Значение[0]), $sort_ignore))
+                                $properties[] = [$properties_array[(string) $req->Ид[0]], (string) $req->Значение[0]];
                         }
                     }
 
@@ -479,12 +489,17 @@ class CommerceMLLoader {
                     $image_count = 0;
                     $image = null;
 
+
                     if (isset($item->Картинка) and ! empty($this->exchange_image)) {
 
                         if (!is_array((array) $item->Картинка))
                             (array) $item->Картинка[] = (string) $item->Картинка;
 
+
                         foreach ((array) $item->Картинка as $i => $img) {
+
+                            if ((string) $i == '@attributes')
+                                continue;
 
                             $new_name = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . '.jpg';
                             $new_name_s = 'img' . $this->crc32((string) $item->Ид[0]) . '_' . ($i + 1) . 's.jpg';
@@ -608,10 +623,25 @@ class CommerceMLLoader {
                             $parent_array[$p[0]]['warehouse'] = $warehouse;
                         }
 
-                        // Имя подтипа из МойСклад
+                        // Блокировка характеристик
+                        if (!empty($this->exchange_sort_ignore)) {
+                            if (strstr($this->exchange_sort_ignore, ','))
+                                $sort_ignore = explode(',', $this->exchange_sort_ignore);
+                            else
+                                $sort_ignore[] = $this->exchange_sort_ignore;
+                        }
+                        
+
+                        // Имя подтипа
                         $Наименование = $parent_name = null;
                         if (isset($item->ХарактеристикиТовара)) {
                             foreach ($item->ХарактеристикиТовара->ХарактеристикаТовара as $sorts) {
+                                
+                                // Блокировка характеристик
+                                if (in_array(PHPShopString::utf8_win1251((string) $sorts->Наименование), $sort_ignore)){
+                                    continue;
+                                }
+
                                 $Наименование .= ' ' . (string) $sorts->Значение;
                                 $parent_name .= (string) $sorts->Значение . '@';
                             }
@@ -654,6 +684,10 @@ class CommerceMLLoader {
                                 $image_count++;
                             }
                         }
+                    }
+                    else {
+                        $parent_enabled = 0;
+                        $parent_name = null;
                     }
 
                     // Характеристики
@@ -713,6 +747,7 @@ class CommerceMLLoader {
                 if (count($this->product_array) > 1) {
 
                     // Добавляем главные товары для подтипов
+                    $parent = null;
                     if (is_array($parent_array)) {
 
                         $parent = null;

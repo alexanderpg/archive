@@ -34,7 +34,7 @@ function UID_modules_productsgroup($obj,$row,$rout){
                     $obj->set('productsgroup_id', $products['id']);
                     $obj->set('currency', $obj->currency );
 
-                    $tr .= parseTemplateReturn('./phpshop/modules/productsgroup/templates/productsgroup_main_table_tr.tpl', true);
+                    $tr .= PHPShopParser::file('./phpshop/modules/productsgroup/templates/productsgroup_main_table_tr.tpl', true, true, true);
 
                     $data_uid_group .= $products['id'].':'.$productsgroup_array[ $products['id'] ].'|';
                 }
@@ -47,7 +47,7 @@ function UID_modules_productsgroup($obj,$row,$rout){
                 $obj->set('data_uid_group', $data_uid_group);
                 $obj->set('productsgroup_table_tr', $tr);
 
-                $table = parseTemplateReturn('./phpshop/modules/productsgroup/templates/productsgroup_main.tpl', true);
+                $table .= PHPShopParser::file('./phpshop/modules/productsgroup/templates/productsgroup_main.tpl', true, true, true);
             }
 
             $obj->set('ComStartCart', '<!--');

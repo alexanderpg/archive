@@ -6,9 +6,7 @@
     @ProductCatalogContent@
 
     <!-- Виртуальный каталог -->
-    <div class="@php __hide('empty_product_list','isset'); php@">
-        <div class="d-sm-block">@vendorCatDisp@</div>
-    </div>
+    <div class="row">@vendorCatDisp@</div>
     <!--/ Виртуальный каталог -->
 
     <div class="row">

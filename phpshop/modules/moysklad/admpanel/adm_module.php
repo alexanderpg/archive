@@ -53,7 +53,7 @@ function actionStart() {
         foreach ($OrderStatusArray as $order_status)
             $order_status_value[] = array($order_status['name'], $order_status['id'], $data['status']);
 
-    $Tab1 .= $PHPShopGUI->setField('Токен', $PHPShopGUI->setInputText(false, 'token_new', $data['token'], 400, '<a target="_blank" href="https://online.moysklad.ru/app/#token">' . __('Получить') . '</a>'));
+    $Tab1 .= $PHPShopGUI->setField('Токен', $PHPShopGUI->setInputText(false, 'token_new', $data['token'], 400, '<a target="_blank" href="https://api.moysklad.ru/app/#token">' . __('Получить') . '</a>'));
 
     if (empty($data['token'])) {
         $Tab1 .= $PHPShopGUI->setField(null, $PHPShopGUI->setAlert('Для доступа к дополнительным настройкам, введите "Токен" и нажмите "Сохранить"', 'warning', true, 400));
@@ -67,7 +67,7 @@ function actionStart() {
             $e_value[] = array('Вкл', 1, $data['webhooks']);
             $e_value[] = array('Выкл', 2, $data['webhooks']);
 
-            $Tab1 .= $PHPShopGUI->setField('Отслеживать изменения в МоемСкладе', $PHPShopGUI->setSelect('webhooks_new', $e_value, 100, true), 1, 'Использование вебхуков в МоемСкладе');
+            $Tab1 .= $PHPShopGUI->setField('Отслеживать изменения в МоемСкладе', $PHPShopGUI->setSelect('webhooks_new', $e_value, 100, true), 1, 'Использование вебхуков в МоемСкладе, только для платных тарифов.');
         } catch (\Exception $exception) {
             $Tab1 .= $exception->getMessage();
         }
@@ -88,6 +88,7 @@ function actionStart() {
 <li>Выбрать валюту в заказе.</li>
 <li>Выбрать тип цен.</li>
 <li>Выбрать статус заказа для передачи данных.</li>
+<li>Включить отслеживание изменений в МойСклад. Работает только на платных тарифах.</li>
 </ol>';
 
     $Tab2 = $PHPShopGUI->setInfo($info);

@@ -590,6 +590,12 @@ function csv_update($data) {
             } else
                 $uniq = 0;
 
+            
+            // Отключение изображений
+            if ($_POST['export_imgload'] == 0){
+                unset($data_img);
+                $row['pic_big']=$row['pic_small']=null;
+            }
 
 
             if (!empty($data_img) and is_array($data_img)) {
@@ -613,13 +619,24 @@ function csv_update($data) {
                     unset($data_img);
                 }
 
+                // Замена изображений
+                if ($_POST['export_imgfunc'] == 1) {
+                    $PHPShopOrmImg = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+                    $PHPShopOrmImg->delete(['parent' => '='.intval($row['id'])]);
+                }
+                
+                // Удаление изображений с заменой
+                if ($_POST['export_imgfunc'] == 2) {
+                    fotoDelete(['parent' => '='.intval($row['id'])]);
+                }
+                
                 foreach ($data_img as $k => $img) {
                     if (!empty($img)) {
 
                         // Полный путь к изображениям
                         if (!empty($_POST['export_imgpath']))
                             $img = '/UserFiles/Image/' . $img;
-                        
+
                         // Проверка изображния
                         $checkImage = checkImage($img, $row['id'], $row['parent_enabled']);
                         $img_save = $checkImage['img'];
@@ -628,7 +645,7 @@ function csv_update($data) {
                         if (empty($checkImage['check'])) {
 
                             // Загрузка изображений по ссылке
-                            if (isset($_POST['export_imgload']) and strstr($img, 'http')) {
+                            if ($_POST['export_imgload'] == 1 and strstr($img, 'http')) {
 
                                 // Файл загружен
                                 if (downloadFile($img, $_SERVER['DOCUMENT_ROOT'] . $img_save))
@@ -1099,8 +1116,11 @@ function actionSave() {
                 else {
 
                     // Файл результа
-                    $result_csv = './csv/result_' . date("d_m_y_His") . '.csv';
-                    PHPShopFile::writeCsv($result_csv, $csv_load);
+                    $result_csv = 'result_' . date("d_m_y_His") . '.csv';
+                    if (empty($GLOBALS['exchanges_cron']))
+                        PHPShopFile::writeCsv('./csv/' . $result_csv, $csv_load);
+                    else
+                        PHPShopFile::writeCsv('../../../admpanel/csv/' . $result_csv, $csv_load);
 
                     if ($_POST['export_action'] == 'insert') {
                         $lang_do = 'Создано';
@@ -1110,7 +1130,7 @@ function actionSave() {
                         $lang_do2 = 'обновленным';
                     }
 
-                    $result_message = $PHPShopGUI->setAlert(__('Файл') . ' <strong>' . $csv_file_name . '</strong> ' . __('загружен. Обработано ' . $csv_load_totale . ' строк. ' . $lang_do) . ' <strong>' . intval($csv_load_count) . '</strong> ' . __('записей') . '. ' . __('Отчет по ' . $lang_do2 . ' позициям ') . ' <a href="' . $result_csv . '" target="_blank">CSV</a>.');
+                    $result_message = $PHPShopGUI->setAlert(__('Файл') . ' <strong>' . $csv_file_name . '</strong> ' . __('загружен. Обработано ' . $csv_load_totale . ' строк. ' . $lang_do) . ' <strong>' . intval($csv_load_count) . '</strong> ' . __('записей') . '. ' . __('Отчет по ' . $lang_do2 . ' позициям ') . ' <a href="./csv/' . $result_csv . '" target="_blank">CSV</a>.');
                 }
             } else {
                 $result = 0;
@@ -1131,7 +1151,8 @@ function actionSave() {
     // Журнал загрузок
     if (empty($log_off)) {
         $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['exchanges_log']);
-        $PHPShopOrm->insert(array('date_new' => time(), 'file_new' => $csv_file, 'status_new' => $result, 'info_new' => serialize([$csv_load_totale, $lang_do, (int) $csv_load_count, $result_csv, (int) $img_load]), 'option_new' => serialize($_POST)));
+        $_POST['exchanges'] = $_GET['exchanges'];
+        $PHPShopOrm->insert(array('date_new' => time(), 'file_new' => $csv_file, 'status_new' => $result, 'info_new' => serialize([$csv_load_totale, $lang_do, (int) $csv_load_count, './csv/' . $result_csv, (int) $img_load]), 'option_new' => serialize($_POST)));
     }
 
     // Автоматизация
@@ -1176,17 +1197,21 @@ function actionStart() {
         $memory[$_GET['path']]['export_code'] = @$_POST['export_code'];
         $memory[$_GET['path']]['bot'] = @$_POST['bot'];
         $memory[$_GET['path']]['export_key'] = @$_POST['export_key'];
+        $memory[$_GET['path']]['export_imgfunc'] = @$_POST['export_imgfunc'];
 
         $export_sortdelim = @$memory[$_GET['path']]['export_sortdelim'];
         $export_sortsdelim = @$memory[$_GET['path']]['export_sortsdelim'];
         $export_imgvalue = @$memory[$_GET['path']]['export_imgdelim'];
         $export_code = $memory[$_GET['path']]['export_code'];
         $export_key = $memory[$_GET['path']]['export_key'];
+        $export_imgfunc = @$memory[$_GET['path']]['export_imgfunc'];
+        $export_imgload = $memory[$_GET['path']]['export_imgload'];
     }
     // Настройки по умолчанию
     else {
         $memory[$_GET['path']]['export_imgload'] = 1;
         $memory[$_GET['path']]['export_imgproc'] = 1;
+        $export_imgload = 1;
 
         $_POST['line_limit'] = 1;
 
@@ -1322,15 +1347,23 @@ function actionStart() {
     $code_value[] = array('ANSI', 'ansi', $export_code);
     $code_value[] = array('UTF-8', 'utf', $export_code);
 
-
+    $imgfunc_value[] = array(__('Добавить фото к существующим'), 0, $export_imgfunc);
+    $imgfunc_value[] = array(__('Заменить фото в базе, без удаления с сервера'), 1, $export_imgfunc);
+    $imgfunc_value[] = array(__('Заменить и удалить фото на сервере'), 2, $export_imgfunc);
+    
+    $imgload_value[] = array(__('Игнорировать'), 0, $export_imgload);
+    $imgload_value[] = array(__('Загрузить по внешней ссылке'), 1, $export_imgload);
+    $imgload_value[] = array(__('Прописать ссылку в базе'), 2, $export_imgload);
+    
     // Закладка 1
     $Tab1 = $PHPShopGUI->setField("Файл", $PHPShopGUI->setFile($_POST['lfile'])) .
             $PHPShopGUI->setField('Действие', $PHPShopGUI->setSelect('export_action', $action_value, 150, true)) .
             $PHPShopGUI->setField('CSV-разделитель', $PHPShopGUI->setSelect('export_delim', $delim_value, 150, true)) .
             $PHPShopGUI->setField('Разделитель для характеристик', $PHPShopGUI->setSelect('export_sortdelim', $delim_sortvalue, 150), false, false, $class) .
             $PHPShopGUI->setField('Разделитель значений характеристик', $PHPShopGUI->setSelect('export_sortsdelim', $delim_sort, 150), false, false, $class) .
-            $PHPShopGUI->setField('Обработка изображений', $PHPShopGUI->setCheckbox('export_imgproc', 1, null, @$memory[$_GET['path']]['export_imgproc']), 1, 'Создание тумбнейла и ватермарка', $class) .
-            $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setCheckbox('export_imgload', 1, null, @$memory[$_GET['path']]['export_imgload']), 1, 'Загрузка изображений на сервер по ссылке', $class) .
+            $PHPShopGUI->setField('Обработка изображений', $PHPShopGUI->setCheckbox('export_imgproc', 1, null, @$memory[$_GET['path']]['export_imgproc']), 1, 'Создание изображения для превью и ватермарк', $class) .
+            $PHPShopGUI->setField('Загрузка изображений', $PHPShopGUI->setSelect('export_imgload', $imgload_value, 250), 1, 'Загрузить изображения или использовать ссылки', $class) .
+             $PHPShopGUI->setField('Действие для изображений', $PHPShopGUI->setSelect('export_imgfunc', $imgfunc_value, 250), 1, 'Заменить на новые или дополнить изображения', $class) .
             $PHPShopGUI->setField('Разделитель для изображений', $PHPShopGUI->setSelect('export_imgdelim', $delim_imgvalue, 150), 1, 'Дополнительные изображения', $class) .
             $PHPShopGUI->setField('Кодировка текста', $PHPShopGUI->setSelect('export_code', $code_value, 150)) .
             $PHPShopGUI->setField('Ключ обновления', $PHPShopGUI->setSelect('export_key', $key_value, 150, false, false, true), 1, 'Изменение ключа обновления может привести к порче данных', $class) .
@@ -1562,6 +1595,46 @@ class sortCheck {
         return $this->result;
     }
 
+}
+
+// Удаление фотогалереи
+function fotoDelete($where = null) {
+
+    if (!is_array($where))
+        $where = array('parent' => '=' . intval($_POST['rowID']));
+
+    $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['foto']);
+    $data = $PHPShopOrm->select(array('*'), $where, false, array('limit' => 100));
+    if (is_array($data)) {
+        foreach ($data as $row) {
+            $name = $row['name'];
+            $pathinfo = pathinfo($name);
+            $oldWD = getcwd();
+            $dirWhereRenameeIs = $_SERVER['DOCUMENT_ROOT'] . $pathinfo['dirname'];
+            $oldFilename = $pathinfo['basename'];
+
+            @chdir($dirWhereRenameeIs);
+            @unlink($oldFilename);
+            $oldFilename_s = str_replace(".", "s.", $oldFilename);
+            @unlink($oldFilename_s);
+            $oldFilename_big = str_replace(".", "_big.", $oldFilename);
+            @unlink($oldFilename_big);
+            @chdir($oldWD);
+        }
+        $PHPShopOrm->clean();
+        $result = $PHPShopOrm->delete($where);
+
+        // Проверка главного изображения товара
+        $PHPShopOrm = new PHPShopOrm($GLOBALS['SysValue']['base']['products']);
+        $data_main = $PHPShopOrm->getOne(array('pic_big'), array('id' => '=' . intval($row['parent'])));
+
+        if (is_array($data_main) and $name == $data_main['pic_big']) {
+            $result = $PHPShopOrm->update(array('pic_small_new' => '', 'pic_big_new' => ''), array('id' => '=' . intval($row['parent'])));
+        }
+
+
+        return $result;
+    }
 }
 
 // Обработка событий

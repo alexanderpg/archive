@@ -9,7 +9,7 @@ PHPShopObj::loadClass('delivery');
 /**
  * Обработчик кабинета пользователя
  * @author PHPShop Software
- * @version 2.1
+ * @version 2.2
  * @package PHPShopCore
  */
 class PHPShopUsers extends PHPShopCore {
@@ -561,15 +561,16 @@ class PHPShopUsers extends PHPShopCore {
     function action_update_user() {
 
         if (PHPShopSecurity::true_num($_SESSION['UsersId'])) {
+            
 
             // запрещаем изменение e-mail
 //            if (!PHPShopSecurity::true_email($_POST['mail_new']))
 //                $this->error[] = $this->lang('error_mail');
             //if (strlen($_POST['name_new']) < 3)
             //  $this->error[] = $this->lang('error_name');
-
-            if (is_array($this->error) and count($this->error) == 0) {
-
+            
+            if (!is_array($this->error)) {
+                
                 if (!empty($_POST['sendmail_new']))
                     $update['sendmail_new'] = 0;
                 else

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Cортировка товаров
+ * Сортировка товаров
  * @author PHPShop Software
- * @version 1.6
+ * @version 1.1
  * @package PHPShopCoreFunction
  * @param obj $obj объект класса
  * @return mixed
@@ -43,7 +43,7 @@ function query_filter($obj) {
         $l = $_REQUEST['l'];
     else
         $l = null;
-    
+
     if (!empty($_REQUEST['w']))
         $w = intval($_REQUEST['w']);
     else
@@ -51,39 +51,51 @@ function query_filter($obj) {
 
     // Логика поиска
     $filter_logic = (int) $obj->PHPShopSystem->getSerilizeParam('admoption.filter_logic');
-    
-    switch($filter_logic){
-        
+
+    switch ($filter_logic) {
+
         case 0:
-             $filter_sort = 'and';
-             $filter_sort_search = 'and';
+            $filter_sort = 'and';
+            $filter_sort_search = 'and';
             break;
-        
-        case 1: 
+
+        case 1:
             $filter_sort = 'or';
             $filter_sort_search = 'and';
             break;
-        
-        case 2: 
-            $filter_sort = $filter_sort_search ='or';
+
+        case 2:
+            $filter_sort = $filter_sort_search = 'or';
             break;
     }
-    
+
+    // Виртуальные каталоги
+    if (strpos($GLOBALS['SysValue']['nav']['truepath'], '/filters/') !== false) {
+        $filters = preg_replace('#^.*/filters/(.*)$#', '$1', $GLOBALS['SysValue']['nav']['truepath']);
+
+        if (!empty($filters)) {
+            $filters_data = (new PHPShopOrm($GLOBALS['SysValue']['base']['sort']))->getOne(['*'], ['sort_seo_name' => '="' . PHPShopSecurity::TotalClean($filters) . '"']);
+            if (is_array($filters_data))
+                $v[$filters_data['category']] = $filters_data['id'];
+            else $v[0]=0;
+        }
+    }
 
     // Сортировка по характеристикам
-    $sort_count=0;
+    $sort_count = 0;
     if (is_array($v)) {
         foreach ($v as $key => $value) {
 
             // Множественный отбор [][]
             if (is_array($value)) {
-                
-                if(empty($sort_count))
-                $sort .= " and (";
-                else $sort .= " ".$filter_sort_search." (";
-                
+
+                if (empty($sort_count))
+                    $sort .= " and (";
+                else
+                    $sort .= " " . $filter_sort_search . " (";
+
                 $sort_count++;
-                
+
                 foreach ($value as $v) {
                     if (PHPShopSecurity::true_num($key) and PHPShopSecurity::true_num($v)) {
                         $obj->selected_filter[$key][] = $v;
@@ -98,7 +110,7 @@ function query_filter($obj) {
             elseif (PHPShopSecurity::true_num($key) and PHPShopSecurity::true_num($value)) {
                 $obj->selected_filter[$key][] = $value;
                 $hash = $key . "-" . $value;
-                $sort .= " ".$filter_sort_search." vendor REGEXP 'i" . $hash . "i' ";
+                $sort .= " " . $filter_sort_search . " vendor REGEXP 'i" . $hash . "i' ";
             }
         }
     }
@@ -133,15 +145,17 @@ function query_filter($obj) {
                 // Сортировка по цене среди мультивалютных товаров
                 if ($obj->multi_currency_search)
                     $order = array('order' => 'price_search' . $order_direction . ',' . $obj->PHPShopSystem->getPriceColumn() . $order_direction);
+                elseif ($obj->PHPShopSystem->getSerilizeParam('admoption.sklad_status') == 3)
+                    $order = array('order' => 'sklad,' . $obj->PHPShopSystem->getPriceColumn() . $order_direction);
                 else
                     $order = array('order' => $obj->PHPShopSystem->getPriceColumn() . $order_direction);
 
                 $obj->set('productSortB', 'sortActiv');
                 break;
-            case(3): $order = array('order' => 'num' . $order_direction . ", items ".$order_direction);
+            case(3): $order = array('order' => 'num' . $order_direction . ", items " . $order_direction);
                 $obj->set('productSortC', 'sortActiv');
                 break;
-            default: $order = array('order' => 'num' . $order_direction . ", items ".$order_direction);
+            default: $order = array('order' => 'num' . $order_direction . ", items " . $order_direction);
                 $obj->set('productSortC', 'sortActiv');
                 break;
         }
@@ -173,12 +187,12 @@ function query_filter($obj) {
             default: $order = array('order' => 'num, name' . $order_direction);
         }
     }
-    
+
     // Определенный склад
-    if($w){
-        $sort.= ' and items'.$w.' > 0 ';
+    if ($w) {
+        $sort .= ' and items' . $w . ' > 0 ';
     }
-       
+
     // Преобзазуем массив уловия сортировки в строку
     foreach ($order as $key => $val)
         $string = $key . ' by ' . $val;
@@ -240,7 +254,6 @@ function query_filter($obj) {
         else
             $sort .= " and (" . $obj->PHPShopSystem->getPriceColumn() . " BETWEEN " . ($priceOT / (100 + $percent) * 100) . " AND " . ($priceDO / (100 + $percent) * 100) . ") ";
     }
-    return array('sql' => $catt . " and enabled='1' and parent_enabled='0' " . $sort . " ".$string);
+    return array('sql' => $catt . " and enabled='1' and parent_enabled='0' " . $sort . " " . $string);
 }
-
 ?>

@@ -617,7 +617,7 @@ class PHPShopShop extends PHPShopShopCore {
             $this->set('productParentList', ParseTemplateReturn("product/product_odnotip_product_parent.tpl"));
             $this->set('optionsDisp', null);
         } else
-            $this->set('elementCartHide', 'hide hidden');
+            $this->set('elementCartHide', 'hide hidden d-none');
 
 
         // Перехват модуля в конце функции

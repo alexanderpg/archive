@@ -420,7 +420,10 @@ class PHPShopShopCore extends PHPShopCore {
             $sort .= 's=' . $_GET['s'] . '&';
         if (!empty($_GET['f']) and is_numeric($_GET['f']))
             $sort .= 'f=' . $_GET['f'] . '&';
-
+        
+        // Склады
+        if (!empty($_GET['w']) and is_numeric($_GET['w']))
+             $sort .= 'w=' . $_GET['w'] . '&';
 
         $sort = substr($sort, 0, strlen($sort) - 1);
 

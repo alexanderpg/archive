@@ -127,6 +127,8 @@ class PHPShopString {
 
         if ($lower)
             $str = strtolower($str);
+        
+        $str=trim($str);
 
         // UTF Fix
         if ($GLOBALS['PHPShopBase']->codBase == 'utf-8')
