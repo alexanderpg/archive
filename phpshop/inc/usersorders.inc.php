@@ -1,69 +1,5 @@
 <?
 
-// Просмотр документов в базе
-function GetOrderDocsList($n,$orderDate){
-global $SysValue,$LoadItems;
-$n=TotalClean($n,5);
-$sql="select * from ".$SysValue['base']['table_name9']." where uid=$n";
-$result=mysql_query($sql);
-@$row = mysql_fetch_array(@$result);
-@$num=mysql_num_rows(@$result);
-if($num!=0){
-$id=$row['id'];
-$datas=$row['datas'];
-$datas_f=$row['datas_f'];
-
-if($LoadItems['System']['1c_load_accounts'] == 1)
-$dis="
-<tr>
-  <td id=allspec><strong>Документооборот</strong></td>
-  <td id=allspec>
-  <strong>Дата</strong>
-  </td>
-   <td id=allspec colspan=2>
-  <strong>Загрузка</strong>
-  </td>
-</td>
-</tr>
-<tr>
-  <td id=allspecwhite>
-  <a class=b href=\"../files/docsSave.php?orderId=$n&list=accounts&datas=$orderDate\" title=\"Загрузить счет на оплату\" target=\"_blank\">Счет на оплату</a>
-  </td>
-  <td id=allspecwhite>
-  ".dataV($datas)."
-  </td>
-   <td id=allspecwhite colspan=2 align=center>
-  <a class=b href=\"../files/docsSave.php?orderId=$n&list=accounts&tip=html&datas=$orderDate\" target=\"_blank\" title=\"Формат Web\">HTM</a>&nbsp;&nbsp;&nbsp;
-<a class=b href=\"../files/docsSave.php?orderId=$n&list=accounts&tip=doc&datas=$orderDate\" target=\"_blank\" title=\"Формат Word\">DOC</a>&nbsp;&nbsp;&nbsp;
-<a class=b href=\"../files/docsSave.php?orderId=$n&list=accounts&tip=xls&datas=$orderDate\" target=\"_blank\" title=\"Формат Excel\">XLS</a>
-  </td>
-</td>
-</tr>
-";
-
-// Счет-фактура
-if($datas_f>0 and $LoadItems['System']['1c_load_invoice'] == 1)
-$dis.="
-<tr>
-  <td id=allspecwhite>
-  <a class=b href=\"../files/docsSave.php?orderId=$n&list=invoice&datas=$orderDate\" title=\"Загрузить счет-фактуру\" target=\"_blank\">Счет-фактура</a>
-  </td>
-  <td id=allspecwhite>
-  ".dataV($datas)."
-  </td>
-  <td id=allspecwhite colspan=2 align=center>
-  <a class=b href=\"../files/docsSave.php?orderId=$n&list=invoice&tip=html&datas=$orderDate\" target=\"_blank\" title=\"Формат Web\">HTM</a>&nbsp;&nbsp;&nbsp;
-<a class=b href=\"../files/docsSave.php?orderId=$n&list=invoice&tip=doc&datas=$orderDate\" target=\"_blank\" title=\"Формат Word\">DOC</a>&nbsp;&nbsp;&nbsp;
-<a class=b href=\"../files/docsSave.php?orderId=$n&list=invoice&tip=xls&datas=$orderDate\" target=\"_blank\" title=\"Формат Excel\">XLS</a>
-  </td>
-</td>
-</tr>
-";
-return $dis;
-}
-}
-
-
 function GetOrderStatusArray(){
 global $SysValue;
 $sql="select * from ".$SysValue['base']['table_name32'];
@@ -82,14 +18,13 @@ return @$Status;
 }
 
 
-
 // Вывод заказов
 function GetUsersOrdersList($n,$tip){
 global $SysValue,$_GET;
-$n=TotalClean($n,5);
+$n=TotalClean($n,1);
 if($tip==2) $sql="select * from ".$SysValue['base']['table_name1']." where uid='".htmlspecialchars($n)."'";
 if($tip==1) $sql="select * from ".$SysValue['base']['table_name1']." where user='$n' order by datas desc";
-$result=mysql_query($sql) or die("Техническая поддержка: <A href=\"mailto:support@phpshop.ru\">support@phpshop.ru</A>");
+$result=mysql_query($sql) or die("Брось эту затею, пофиксино...<br>Техническая поддержка: <A href=\"mailto:support@phpshop.ru\">support@phpshop.ru</A>");
 while(@$row = mysql_fetch_array(@$result))
     {
 	$id=$row['id'];
@@ -134,7 +69,7 @@ while(@$row = mysql_fetch_array(@$result))
 	'.$order['Person']['discount'].'
 	</td>
 	<td id=allspecwhite>
-	'.($SummaOrder+GetDeliveryPrice($order['Person']['dostavka_metod'],$SummaOrder,$order['Cart']['weight'])).' '.GetValutaOrder().'
+	'.($SummaOrder+$order['Cart']['dostavka']).' '.GetValutaOrder().'
 	</td>
 	<td  bgcolor="'.$bg.'">
 	'.$status_name.'
@@ -142,7 +77,7 @@ while(@$row = mysql_fetch_array(@$result))
 ';
 }
 $dis='
-<table id=allspecwhite cellpadding=3 width="95%">
+<table width="100%" id=allspecwhite cellpadding=3>
 <tr>
 	<td id=allspec>
 	<b>№ Заказа</b>
@@ -169,76 +104,11 @@ return $dis;
 }
 
 
-function CloseUrlFile($files){
-global $SysValue;
-$str=array(
-"files"=>$files,
-"time"=>(time("U")+($SysValue['my']['digital_time']*86400))
-);
-$str=serialize($str);
-$code=base64_encode($str);
-$code2=str_replace($SysValue['my']['digital_pass1'],"!",$code);
-$code2=str_replace($SysValue['my']['digital_pass2'],"$",$code2);
-return $code2;
-}
-
-
-
-// Проверка электронного платежа
-function CheckPayment($uid){
-global $SysValue;
-//$all_num=explode("-",$uid);
-//$ferst_num=$all_num[0];
-//$last_num=$all_num[1];
-//$id = $ferst_num.$last_num;
-$sql="select * from ".$SysValue['base']['table_name33']." where uid='$uid'";
-@$result=mysql_query($sql);
-$num = mysql_numrows(@$result);
-return $num;
-}
-
-
-// Проверка есть ли файлы к товару
-function CheckProductFiles($n,$num,$sklad,$uid){
-global $SysValue,$LoadItems,$DOCUMENT_ROOT;
-$n=TotalClean($n,5);
-$sql="select files from ".$SysValue['base']['table_name2']." where id=$n limit 1";
-$result=mysql_query($sql);
-$row = mysql_fetch_array(@$result);
-$files=unserialize($row['files']);
-$admoption=unserialize($LoadItems['System']['admoption']);
-
-// Если заказ оплачен электронно
-$CheckPayment=CheckPayment($uid);
-if(is_array($files) and ($sklad==1 or $CheckPayment>0) and $admoption['digital_product_enabled'] == 1){
-
-foreach($files as $f){
-$_Name=pathinfo($f);
-$F=CloseUrlFile($f);
-
-// Размер
-@$fstat = @stat($DOCUMENT_ROOT.$f);
-
-@$file_list.="
-<tr>
-	<td id=allspecwhite><a href=\"../files/filesSave.php?F=$F\" class=b title=\"".$SysValue['lang']['load']." ".$_Name['basename']."\"><img src=\"images/shop/action_save.gif\"  width=16 height=16 border=0 align=\"absmiddle\" hspace=5>".$_Name['basename']."</a></td>
-	<td id=allspecwhite>".round($fstat['size']/100)." Кб</td>
-</tr>
-";
-}
-$file_list="<table>$file_list</table>";
-}
- else $file_list="";
-return $file_list;
-}
-
-
-
 // Вывод заказов инфо
 function GetUsersOrdersInfo($n,$tip=1){
 global $SysValue,$_GET,$LoadItems;
-$n=TotalClean($n,5);
-$sql="select * from ".$SysValue['base']['table_name1']." where uid='$n'";
+$n=TotalClean($n,1);
+$sql="select * from ".$SysValue['base']['table_name1']." where uid=$n";
 $result=mysql_query($sql);
 $num=mysql_num_rows($result);
 $row = mysql_fetch_array(@$result);
@@ -258,14 +128,12 @@ $row = mysql_fetch_array(@$result);
 	$status_name=$GetOrderStatusArray[$statusi]['name'];
 	}
 	
-  $cart=$order['Cart']['cart'];
+$cart=$order['Cart']['cart'];
   if(sizeof($cart)!=0)
   foreach(@$cart as $val){
   $disCart.="
 <tr>
-  <td id=allspecwhite><a href=\"/shop/UID_".$val['id'].".html\" target=\"_blank\" class=b title=\"".$val['name']."\"><img src=\"images/shop/icon-setup.gif\"  width=16 height=16 border=0 align=\"absmiddle\" hspace=5>".$val['name']."</a>
-".CheckProductFiles($val['id'],0,$GetOrderStatusArray[$statusi]['sklad'],$uid)."
-</td>
+  <td id=allspecwhite><a href=\"/shop/UID_".$val['id'].".html\" target=\"_blank\" class=b title=\"".$val['name']."\">".$val['name']."</a></td>
   <td id=allspecwhite>".$val['num']."</td>
   <td id=allspecwhite>".ReturnSummaNal($val['price']*$val['num'],$order['Person']['discount'])." 
  ".GetValutaOrder()."</td>
@@ -275,19 +143,14 @@ $row = mysql_fetch_array(@$result);
 @$sum+=$val['price']*$val['num'];
 }
 
-// Доставка
-$GetDeliveryPrice=GetDeliveryPrice($order['Person']['dostavka_metod'],$sum,$order['Cart']['weight']);
-
 // Итоговая сумма
-$TotalSumOrder = ReturnSummaNal($sum,$order['Person']['discount'])+$GetDeliveryPrice;
-
-
+$TotalSumOrder = (ReturnSummaNal($sum,$order['Person']['discount'])+$order['Cart']['dostavka']);
 
 $disCart.="
 <tr>
   <td id=allspecwhite>Доставка -  ".GetDeliveryBase($order['Person']['dostavka_metod'],"city")."</td>
   <td id=allspecwhite>1</td>
-  <td id=allspecwhite>".$GetDeliveryPrice." 
+  <td id=allspecwhite>".$order['Cart']['dostavka']." 
  ".GetValutaOrder()."</td>
 </tr>
 <tr>
@@ -302,31 +165,30 @@ $disCart.="
 	</td>
 </tr>
 <tr>
-  <td id=allspec><strong>Способ оплаты</strong></td>
+  <td id=allspec><strong>Документооборот</strong> ".$status['time']."</td>
   <td colspan=\"3\" id=allspecwhite>
+  <table cellpadding=1 cellspacing=1>
+</td>
+</tr>
 ";
 
-  if($order['Person']['order_metod'] == 3)
-   $disCart.="<strong>Наличная оплата</strong>";
-
-  if($order['Person']['order_metod'] == 2)
-  $disCart.="
-	<a href=\"phpshop/forms/2/forma.html?orderId=$id&tip=$tip&datas=$datas\"  class=b  title=\"Квитанция Сбербанка\" target=\"_blank\" ><img src=\"images/shop/interface_dialog.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\" hspace=5 alt=\"Квитанция Сбербанка\">Квитанция Сбербанка</a>";
-  if($order['Person']['order_metod'] == 1){
-    if($LoadItems['System']['1c_load_accounts']!=1){
-  $disCart.="<a href=\"phpshop/forms/1/forma.html?orderId=$id&tip=$tip&datas=$datas\" class=b title=\"Счет в банк\"  target=\"_blank\"><img src=\"images/shop/interface_browser.gif\" alt=\"Счет в банк\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\" vspace=3  hspace=5>Счет в банк</a>";
-      }else   {$disCart.="<strong>Счет в банк</strong>. Ожидайте счета, после проведения документа он автоматически появится в данном разделе личного кабинета.";}
-    }
-  if($order['Person']['order_metod'] == 5){
+  $option=unserialize($LoadItems['System']['admoption']);
+  if($option['oplata_2'] == 1)
+  $disCart.="<tr>
+	<td><a href=\"javascript:void(0)\"  class=b  title=\"Квитанция Сбербанка\" onclick=\"miniWinFull('phpshop/forms/2/forma.html?orderId=$id&tip=$tip&datas=$datas',650,550);\" ><img src=\"images/shop/interface_dialog.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\" hspace=5 alt=\"Квитанция Сбербанка\">Квитанция Сбербанка</a></td>
+</tr>";
+  if($option['oplata_1'] == 1)
+  $disCart.="<tr>
+	<td><a href=\"javascript:void(0)\" class=b title=\"Счет в банк\" onclick=\"miniWinFull('phpshop/forms/1/forma.html?orderId=$id&tip=$tip&datas=$datas',650,550);\" ><img src=\"images/shop/interface_browser.gif\" alt=\"Счет в банк\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\" vspace=3  hspace=5>Счет в банк</a></td>
+</tr>";
+  if($option['oplata_5'] == 1){
   
  // регистрационная информация
 $mrh_login = $SysValue['roboxchange']['mrh_login'];    //логин
 $mrh_pass1 = $SysValue['roboxchange']['mrh_pass1'];    // пароль1
 
 //параметры магазина
-
-$mrh_ouid = explode("-", $uid);
-$inv_id = $mrh_ouid[0]."".$mrh_ouid[1];     //номер счета
+$inv_id    = $uid;       //номер счета
 
 //описание покупки
 $inv_desc  = "PHPShopPaymentService";
@@ -336,29 +198,31 @@ $shp_item = 2;                //тип товара
 // формирование подписи
 $crc  = md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1:shp_item=$shp_item");
   
-  $disCart.="
+  $disCart.="<tr>
+	<td>
 	 <form action='https://www.roboxchange.com/ssl/calc.asp' method=POST name=\"payrobots\">
       <input type=hidden name=mrh value=$mrh_login>
       <input type=hidden name=out_summ value=$out_summ>
       <input type=hidden name=inv_id value=$inv_id>
       <input type=hidden name=inv_desc value=$inv_desc>
-	<a href=\"javascript:void(0)\" class=b title=\"Оплатить ROBOXchange\" onclick=\"javascript:payrobots.submit();\" ><img src=\"images/shop/coins.gif\" alt=\"Обменная касса ROBOXchange\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\"  hspace=5>Обменная касса ROBOXchange</a></form>";
+	<a href=\"javascript:void(0)\" class=b title=\"Оплатить ROBOXchange\" onclick=\"javascript:payrobots.submit();\" ><img src=\"images/shop/coins.gif\" alt=\"Обменная касса ROBOXchange\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\"  hspace=5>Обменная касса ROBOXchange</a></form></td>
+</tr>";
 }
-  if($order['Person']['order_metod'] == 6){ // WebMoney
+  if($option['oplata_6'] == 1){ // WebMoney
    
    // регистрационная информация
    $LMI_PAYEE_PURSE = $SysValue['webmoney']['LMI_PAYEE_PURSE'];    //кошелек
    $wmid = $SysValue['webmoney']['wmid'];    //аттестат
    
    //параметры магазина
-   $mrh_ouid = explode("-", $uid);
-   $inv_id = $mrh_ouid[0]."".$mrh_ouid[1];     //номер счета
+   $inv_id    = $uid;       //номер счета
    
     //описание покупки
-    $inv_desc  = "Оплата заказа $inv_id";
+    $inv_desc  = "Оплата заказа №$inv_id";
     $out_summ  = $TotalSumOrder*$SysValue['webmoney']['kurs']; //сумма покупки
 	
-   $disCart.="
+   $disCart.="<tr>
+	<td>
 	 <form id=pay name=paywebmoney method=\"POST\" action=\"https://merchant.webmoney.ru/lmi/payment.asp\" name=\"paywebmoney\">
     <input type=hidden name=LMI_PAYMENT_AMOUNT value=\"$out_summ\">
 	<input type=hidden name=LMI_PAYMENT_DESC value=\"$inv_desc\">
@@ -367,25 +231,20 @@ $crc  = md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1:shp_item=$shp_item");
 	<input type=hidden name=LMI_SIM_MODE value=\"0\">
 	<a href=\"javascript:void(0)\" class=b title=\"Оплатить WebMoney\" onclick=\"javascript:paywebmoney.submit();\" ><img src=\"images/shop/coins.gif\" alt=\"WebMoney\" width=\"16\" height=\"16\" border=\"0\" align=\"absmiddle\"  hspace=5>WebMoney</a>
 </form>
-";
+</td>
+</tr>";
    }
 
-// Просмотр документов в базе
-$disCart.="  </td>
-</tr>
-".GetOrderDocsList($id,$datas);
+$disCart.="  </table></td>
+</tr>";
 
-
-
-
-$disCart='<table  id=allspecwhite cellpadding=3 width="95%">
+$disCart='<table width="100%" id=allspecwhite cellpadding=3>
 <tr>
   <td id=allspec><b>Наименование</b></td>
   <td id=allspec><b>Кол-во</b></td>
   <td id=allspec><b>Сумма</b></td>
 </tr>
 '.$disCart.'
-
 </table>';
 
 if(!empty($status['maneger']))
@@ -405,7 +264,7 @@ else return "<font color=#FF0000>Некорректный номер заказа</font>";
 // Вывод заказов пользователей
 function UsersOrders($UsersId){
 global $SysValue,$_POST,$_GET;
-$UsersId=TotalClean($UsersId,5);
+$UsersId=TotalClean($UsersId,1);
 $dis='
 <div id=allspec>
 <img src="images/shop/date.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Архив заказов</b>
@@ -417,13 +276,12 @@ if(!empty($_GET['orderId']))
 $dis.='
 <div id=allspec>
 <A id="PphpshopOrder"></A>
-<img src="images/shop/icon_info.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Информация по заказу № '.TotalClean($_GET['orderId'],5).'</b>
+<img src="images/shop/icon_info.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Информация по заказу № '.TotalClean($_GET['orderId'],1).'</b>
 </div>
 <p>
 '.GetUsersOrdersInfo($_GET['orderId']).'
 </p>
 ';
-
 return $dis;
 }
 ?>

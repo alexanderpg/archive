@@ -1,289 +1,16 @@
 //***************************************************//
-// PHPShop JavaScript 3                              //
+// PHPShop JavaScript 2.1                            //
 // Copyright © www.phpshop.ru. Все права защищены.   //
 //***************************************************//
-
-// Настройка подтипов товара
-function ShowPodtipOption(v){
-var obj=document.getElementById('podtip_list');
-if(v==1) obj.style.visibility="hidden";
- else obj.style.visibility="visible";
-}
-
-
-// Управление панелью
-function ClosePanelProductDisp(){
-var obj=document.getElementById('prevpanel_act');
-var clientW=document.body.clientWidth;
-var mem=document.getElementById('prevpanel_mem').value;
-if(!obj.checked){
-document.getElementById('prevpanel').innerHTML = "";
-
- // Новое окно
- if(window.opener)
- document.getElementById("interfacesWin1").height=(clientW-470);
-   else document.getElementById("interfacesWin1").height=(clientW-540);
-}else{
-      // Новое окно
-      if(window.opener)
-      document.getElementById("interfacesWin1").height=(clientW-600);
-	      else document.getElementById("interfacesWin1").height=(clientW-680);
-	  
-	  var req = new Subsys_JsHttpRequest_Js();
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				if (req.responseJS) {
-					document.getElementById('prevpanel').innerHTML = req.responseJS.interfaces;
-                    document.getElementById('prevpanel_mem').value = mem;
-				}
-			}
-		}
-		req.caching = false;
-		// Подготваливаем объект.
-		req.open('POST', './product/action.php?do=prev', true);
-		req.send( {  xid: mem } );
-	  
-	  
-	  }
-}
-
-
-// Описание товара в списке
-function DoUpdateProductDisp(xid) {
-var obj=window.top.document.getElementById('prevpanel_act');
-var clientW=window.top.document.body.clientWidth;
-if(obj.checked){
-
-// Новое окно
-if(window.top.opener) window.top.document.getElementById("interfacesWin1").height=(clientW-600);
-  else window.top.document.getElementById("interfacesWin1").height=(clientW-680);
-
-var req = new Subsys_JsHttpRequest_Js();
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				if (req.responseJS) {
-					window.top.document.getElementById('prevpanel').innerHTML = req.responseJS.interfaces;
-                    window.top.document.getElementById('prevpanel_mem').value = xid;
-				}
-			}
-		}
-		req.caching = false;
-		// Подготваливаем объект.
-		req.open('POST', '../product/action.php?do=prev', true);
-		req.send( {  xid: xid } );
-} else {
-       //window.top.document.getElementById('prevpanel').innerHTML = "";
-	   var req = new Subsys_JsHttpRequest_Js();
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				if (req.responseJS) {
-					window.top.document.getElementById('prevpanel').innerHTML = req.responseJS.interfaces;
-                    window.top.document.getElementById('prevpanel_mem').value = xid;
-				}
-			}
-		}
-		req.caching = false;
-		// Подготваливаем объект.
-		req.open('POST', '../product/action.php?do=info', true);
-		req.send( {  xid: xid } );
-	   }
-}
-
-
-
-// Панель справки в подчиненном окне
-function helpWinParent(page){
-try{
-window.opener.top.document.getElementById('helppage').value=page;
-window.opener.top.initSlide(0);
-window.opener.top.loadhelp();
-}catch(e){ alert("Справка отключена. Опция включается в настройках системы - режимы - интерактивная справка")}
-try{
-window.opener.top.focus();
-}catch(e){}
-}
-
-
-// Панель справки
-function initAnime() {
-	anime={wCurr:0,wTarg:0,wStep:0,wDelta:0,wTravel:0,vel:1,pathLen:1,interval:null};
-}
-
-function loadhelp() {
-	anime.wCurr=document.getElementById("helpdiv").offsetWidth;
-	if (anime.wCurr==15) {  //Если состояние свернутое, значит надо загружать данные и 
-	
-		preloader(1);		
-		var q=document.getElementById('helppage').value;
-		var text='';
-		var req = new Subsys_JsHttpRequest_Js();
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				if (req.responseJS) {
-					// Записываем в <div> результат работы. 
-					var data=(req.responseJS.text||'');
-					document.getElementById('helpcontent').innerHTML = ""+data+"";
-					preloader(0);		
-				}
-			}
-		}
-		req.caching = false;
-		// Подготваливаем объект.
-		req.open('POST', 'gethelp.php', true);
-		req.send({ q: q, text: text });
-
-	}
-}
-
-function initSlide(killer) {
-	initAnime();
-	anime.wCurr=document.getElementById("helpdiv").offsetWidth;
-	if ((anime.wCurr==15)&&(killer==0)) {  //Если состояние свернутое, значит надо загружать данные и 
-		anime.wTarg=255;
-//		document.getElementById("slidebutt").src="icon/helpout.gif";
-	} else {
-		anime.wTarg=15;
-//		document.getElementById("slidebutt").src="icon/helpin.gif";
-	}
-	anime.pathLen=anime.wTarg-anime.wCurr;
-	anime.wDelta=Math.abs(anime.pathLen);
-	anime.vel=10;
-	anime.wStep=(anime.pathLen/Math.abs(anime.pathLen))*anime.vel;
-	anime.interval=setInterval("doSlide()",10);
-}
-
-function doSlide() {
-	if((anime.wTravel+Math.abs(anime.wStep))<=anime.wDelta) {
-		var w=anime.wCurr+anime.wStep;
-		document.getElementById("helpdiv").style.width=w+"px";
-		anime.wTravel+=Math.abs(anime.wStep);
-		anime.wCurr=w;
-	} else {
-		document.getElementById("helpdiv").style.width=anime.wTarg+"px";
-		clearInterval(anime.interval);
-	}
-}
-
-function centerOnElement(baseElemID, posElemID) {
-    baseElem = document.getElementById(baseElemID);
-    posElem = document.getElementById(posElemID);
-    var offsetTrail = baseElem;
-    var offsetTop = 0;
-    while (offsetTrail) {
-        offsetTop += offsetTrail.offsetTop;
-        offsetTrail = offsetTrail.offsetParent;
-    }
-    if (navigator.userAgent.indexOf("Mac") != -1 &&  typeof(document.body.leftMargin) != "undefined") {
-        offsetTop += document.body.topMargin;
-    }
-    posElem.style.top = offsetTop + parseInt(baseElem.offsetHeight/2)-parseInt(posElem.offsetHeight/2)+"px";
-}
-
-
-function addOption (oListbox, text, value, isDefaultSelected, isSelected)
-{
-  var oOption = document.createElement("option");
-  oOption.appendChild(document.createTextNode(text));
-  oOption.setAttribute("value", value);
-
-  if (isDefaultSelected) oOption.defaultSelected = true;
-  else if (isSelected) oOption.selected = true;
-
-  oListbox.appendChild(oOption);
-}
-
-function enterchar(num){
-	var sellist=document.getElementById("list"+num);
-	var aoptions=sellist.options;
-	var addit=document.getElementById("addval"+num).value;
-	selopts=new Array;
-	var masi=0;
-
-	for(i=0;i<aoptions.length;i++){
-		var cse=aoptions[i].selected;
-		if (cse==true) {
-			selopts[masi]=aoptions[i].value; 
-			masi++; 
-		}
-	}
-
-	if (addit.length>0) { //Если значение введено, значит работаем
-		var req = new Subsys_JsHttpRequest_Js();
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				if (req.responseJS) {
-					optsres=req.responseJS.interfaces;
-					sellist.options.length = 0;
-					addOption(sellist, "Нет данных", "", false,false);
-					for (i=0;i<optsres.length;i++) {
-						addOption(sellist,optsres[i]['name'] , optsres[i]['id'], false,optsres[i]['selected']);
-					}
-				}
-			}
-		}
-		req.caching = false;
-		// Подготваливаем объект.
-		req.open('POST', 'action_char.php', true);
-		req.send( {  num: num, selopts:selopts, addit:addit } );
-
-	} else {//Нечего вводить!
-		alert("Введите значение!");	 	
-	}
-
-}
-
-
-function GenPassword(a){
-document.getElementById("pas1").value=a;
-document.getElementById("pas2").value=a;
-alert("Сгенерирован пароль: " +a);
-}
-
-function DispPasPole(p){
-p.value="";
-document.getElementById("rep_pass").style.display="block";
-}
-
-
-function TestPas(){
-var update=0;
-if(document.getElementById("update")){
-  if(document.getElementById("update").checked==true) update=1;
-}else update=1;
-
-if(update==1){
-var pas1=document.getElementById("pas1").value;
-var pas2=document.getElementById("pas2").value;
-var login=document.getElementById("login").value;
-var mes_zag="Внимание, обнаружены ошибки при заполнении формы:\n";
-var mes="";
-var pattern=/\w+@\w+/;
-if(pas1.length <6 || pas2.length < 6) 
-mes+="-> Пароль должен содержать не менее 6 символов\n";
-if(pas1 != pas2)
-mes+="-> Пароли должны совпадать\n";
-if(login.length <4)
-mes+="-> Логин должен содержать не менее 4 символов\n";
-if(mes != "") alert(mes_zag+mes);
-else document.product_edit.submit();
-} else document.product_edit.submit();
-}
-
-// Проверка дефолтных параметров
-function rootNote(){
-if(confirm("Вы используете стандартный пароль и логин для входа в панель управления\nЭто может привести к взлому сайта. Сменить пароль администратора сейчас?"))
-miniWin('users/adm_userID.php?id=1',500,360)
-}
 
 function CloseProdForm(IDS){
 if(confirm("Удалить все изображения к товару из галереи?\nПри отказе изображения автоматически появятся в создании следующего товара."))  miniWin('../window/adm_window.php?do=40&ids='+IDS,300,300);
 self.close();
 }
 
-
 function LoadAgent(){
 if(confirm("Загрузить Order Agent Windows на ваш компьютер?"))
- window.open("http://www.phpshop.ru/loads/ThLHDegJUj/setup.exe");
+ window.open("http://www.phpshop.ru/loads/downloadexe.php");
 }
 
 // Резиновый экран
@@ -293,8 +20,7 @@ if(document.getElementById("interfacesWin") || document.getElementById("interfac
 
 
 // Если заказы
-//if(page=="orders") clientW=clientW-200;
-
+if(page=="orders") clientW=clientW-20;
 
 // Если новое окно
 if(window.opener){
@@ -310,7 +36,7 @@ document.getElementById("interfacesWin").style.height=(clientW-425);
       if(document.getElementById("interfacesWin"))
       document.getElementById("interfacesWin").style.height=(clientW-500);
         else { 
-        document.getElementById("interfacesWin1").height=(clientW-540);
+        document.getElementById("interfacesWin1").height=(clientW-535);
 	    document.getElementById("interfacesWin2").height=(clientW-555);
              }
       }
@@ -432,84 +158,10 @@ cartwindow.style.pixelTop=Height-comboheight;
 cartwindow.style.visibility="visible";
 }
 
-function initializelicense(){
-combowidth=licensewindow.offsetWidth;
-comboheight=licensewindow.offsetHeight;
-Width = getClientWidth();
-Height = getClientHeight();
-if(document.all){
-licensewindow.style.pixelLeft=Width-combowidth-730;
-licensewindow.style.pixelTop=Height-comboheight;
-
-               if(navigator.appName == "Microsoft Internet Explorer"){
-               licensewindow.filters.revealTrans.Apply();
-               licensewindow.filters.revealTrans.Play();
-			   }
-}else{
-     licensewindow.style.left=(Width-combowidth-730) + "px";
-	 licensewindow.style.top=(Height-comboheight) + "px";
-     }
-licensewindow.style.visibility="visible";
-}
-
-function initializecomment(){
-combowidth=commentwindow.offsetWidth;
-comboheight=commentwindow.offsetHeight;
-Width = getClientWidth();
-Height = getClientHeight();
-if(document.all){
-commentwindow.style.pixelLeft=Width-combowidth-250;
-commentwindow.style.pixelTop=Height-comboheight;
-
-               if(navigator.appName == "Microsoft Internet Explorer"){
-               commentwindow.filters.revealTrans.Apply();
-               commentwindow.filters.revealTrans.Play();
-			   }
-}else{
-     commentwindow.style.left=(Width-combowidth-250) + "px";
-	 commentwindow.style.top=(Height-comboheight) + "px";
-     }
-commentwindow.style.visibility="visible";
-}
-
-
-function initializemessage(){
-combowidth=messagewindow.offsetWidth;
-comboheight=messagewindow.offsetHeight;
-Width = getClientWidth();
-Height = getClientHeight();
-if(document.all){
-messagewindow.style.pixelLeft=Width-combowidth-490;
-messagewindow.style.pixelTop=Height-comboheight;
-
-               if(navigator.appName == "Microsoft Internet Explorer"){
-               messagewindow.filters.revealTrans.Apply();
-               messagewindow.filters.revealTrans.Play();
-			   }
-}else{
-     messagewindow.style.left=(Width-combowidth-490) + "px";
-	 messagewindow.style.top=(Height-comboheight) + "px";
-     }
-messagewindow.style.visibility="visible";
-}
-
 function initialize_off(){
 cartwindow.style.visibility="hidden";
-//DoMessageComment();
 }
 
-function initializelicense_off(){
-licensewindow.style.visibility="hidden";
-}
-
-function initializecomment_off(){
-commentwindow.style.visibility="hidden";
-//DoMessageMessage();
-}
-
-function initializemessage_off(){
-messagewindow.style.visibility="hidden";
-}
 
 function staticit_ie(){
 cartwindow.style.pixelLeft=document.body.scrollLeft+document.body.clientWidth-combowidth-30;
@@ -519,21 +171,6 @@ cartwindow.style.pixelTop=document.body.scrollTop+document.body.clientHeight-com
 function startmessage(){
 setTimeout("initialize()",1000);
 setTimeout("initialize_off()",4000);
-}
-
-function startmessagelicense(){
-setTimeout("initializelicense()",5000);
-//setTimeout("initializelicense_off()",5000);
-}
-
-function startmessagecomment(){
-setTimeout("initializecomment()",2000);
-setTimeout("initializecomment_off()",5000);
-}
-
-function startmessagemessage(){
-setTimeout("initializemessage()",3000);
-setTimeout("initializemessage_off()",6000);
 }
 
 function startnotice(){
@@ -625,75 +262,11 @@ name="start";
         if (req.readyState == 4) {
 		    if(req.responseJS.order == 1)
 			startmessage();
-			
         }
     }
 	
     req.open(null, 'interface/cartwindow.php', true);
     req.send( {  name: name } );
-DoMessageComment();
-DoMessageMessage();
-}
-
-
-
-// Всплывыающее окно нового отзыва
-function DoMessageComment() {
-name="start";
-    var req = new JsHttpRequest();
-    req.onreadystatechange = function() {
-        if (req.readyState == 4) {
-		    if(req.responseJS.order == 1)
-			startmessagecomment();
-        }
-    }
-	
-    req.open(null, 'interface/comment.php', true);
-    req.send( {  name: name } );
-}
-
-// Всплывыающее окно нового сообщения
-function DoMessageMessage() {
-name="start";
-    var req = new JsHttpRequest();
-    req.onreadystatechange = function() {
-        if (req.readyState == 4) {
-		    if(req.responseJS.order == 1)
-			startmessagemessage();
-        }
-    }
-	
-    req.open(null, 'interface/message.php', true);
-    req.send( {  name: name } );
-}
-
-// Панель настроек загрузки 1с
-function Option1c(tip){
-d = document;
-if(tip == 0){
-  d.getElementById('pole_1c_option').style.display="none";
-  d.getElementById('1c_tree_check').value=1;
-  }
-  else{
-      d.getElementById('pole_1c_option').style.display="block";
-	  d.getElementById('1c_tree_check').value=0;
-	  }
-}
-
-
-// Если загружается список каталогов
-function UpdateFileNameBase1C(name){
-pattern=/tree/;
-if(pattern.test(name)==true){
-  document.getElementById('filenametree').checked = true;
-  d.getElementById('1c_tree_check').value=1;
-  document.getElementById('pole_1c_option').style.display="none";
-  }
-  else {
-       document.getElementById('filenamebase').checked = true;
-	   d.getElementById('1c_tree_check').value=0;
-	   document.getElementById('pole_1c_option').style.display="block";
-	   }
 }
 
 
@@ -715,8 +288,6 @@ if(page == "predload"){
   if(d.getElementById('tip_10').checked == true) tip[10] = 1;
   if(d.getElementById('tip_11').checked == true) tip[11] = 1;
   if(d.getElementById('tip_12').checked == true) tip[12] = 1;
-  if(d.getElementById('tip_14').checked == true) tip[14] = 1;
-  if(d.getElementById('tip_15').checked == true) tip[15] = 1;
  }
  
 if(page == "load"){
@@ -732,8 +303,6 @@ tip[9] = d.getElementById('tip_9').value;
 tip[10] = d.getElementById('tip_10').value;
 tip[11] = d.getElementById('tip_11').value;
 tip[12] = d.getElementById('tip_12').value;
-tip[14] = d.getElementById('tip_14').value;
-tip[15] = d.getElementById('tip_15').value;
 }
 
 preloader(1);
@@ -745,12 +314,7 @@ preloader(1);
         }
     }
 	
-	// Если загрузка каталогов
-	if(d.getElementById('1c_tree_check').value == 1)
-    req.open(null, '1c/admin_tree_csv.php', true);
-	  else req.open(null, '1c/admin_csv.php', true);
-	
-	
+    req.open(null, '1c/admin_csv.php', true);
     req.send( { 'file': value, tip: tip, page: page, name: name } );
 }
 
@@ -776,8 +340,6 @@ if(page == "predload"){
   if(d.getElementById('tip_13').checked == true) tip[13] = 1;
   if(d.getElementById('tip_14').checked == true) tip[14] = 1;
   if(d.getElementById('tip_15').checked == true) tip[15] = 1;
-  if(d.getElementById('tip_17').checked == true) tip[17] = 1;
-  tip[16] = d.getElementById('tip_16').value;
  }
  
 if(page == "load"){
@@ -796,15 +358,13 @@ tip[12] = d.getElementById('tip_12').value;
 tip[13] = d.getElementById('tip_13').value;
 tip[14] = d.getElementById('tip_14').value;
 tip[15] = d.getElementById('tip_15').value;
-tip[16] = d.getElementById('tip_16').value;
-tip[17] = d.getElementById('tip_17').value;
 }
 preloader(1);
     var req = new JsHttpRequest();
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
 			document.getElementById('interfaces').innerHTML = req.responseJS.content;
-			DoCheckInterfaceLang('csv_base','self');
+			//DoCheckInterfaceLang(pages,'self');
 			preloader(0);
         }
     }
@@ -812,9 +372,6 @@ preloader(1);
     req.open(null, 'export/admin_csv_base.php', true);
     req.send( { 'file': value, tip: tip, name: name, page: page } );
 }
-
-
-
 
 
 // Загрузка прайса
@@ -838,7 +395,6 @@ preloader(1);
 // Интерфейс перезагрузка
 function DoReloadMainWindow(page,var1,var2)
 {
-if(window.opener.document.getElementById('cartwindow')){
 if(page!=""){
 preloadertop(1)
         var req = new Subsys_JsHttpRequest_Js();
@@ -864,21 +420,12 @@ preloadertop(1)
 		req.send({ xid: 1, page: page, tit: 1, var1: var1, var2: var2, test:304 });
 		}
 		else self.close();
-  }else {
-        self.close();
-		window.opener.document.location.reload();
-		}
 }
 
 // Интерфейс
 function DoReload(page,var1,var2,var3,var4) {
-if (null!=document.getElementById('helppage')) {
-	document.getElementById('helppage').value = page;
-	initSlide(1);
-}
-
 preloader(1);
-	domenu=0; //ДОПИСКА ДЛЯ РАБОТЫ Кон.М.!!
+
 		var req = new Subsys_JsHttpRequest_Js();
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
@@ -906,13 +453,13 @@ function CalcSort(){
 if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
 miniWin('./product/adm_calc_sort.php?id='+catal,500,600);
-}else alert("Выберите подкаталог для редактирования");
+}else alert("Выберете подкаталог для редактирования");
 }
 
 
 // Копировать в буфер
 function copyToClipboard(){
-document.getElementById('upload_log').select();
+document.getElementById('encoded_text').select();
 var CopiedTxt=document.selection.createRange();
 CopiedTxt.execCommand("Copy");
 alert("Данные скопированы в буфер обмена.");
@@ -1021,15 +568,6 @@ var cookieValue = '';
 return cookieValue;
 }
 
-// Прелоадер
-function lock(fl) {
-if(navigator.appName == "Microsoft Internet Explorer"){
-	var el=document.getElementById('lock');
-	if(null!=el) {
-		el.style.visibility = (fl==1)?'visible':'hidden';
-		el.style.display = (fl==1)?'block':'none';
-	}
-}}
 
 // Прелоадер
 function preloader(fl) {
@@ -1101,7 +639,6 @@ function AllPage(){
 window.frame2.location.replace('page/admin_cat_content.php?pid=all');
 }
 
-
 function AllProducts(){
 window.frame2.location.replace('catalog/admin_cat_content.php?pid=all');
 }
@@ -1113,21 +650,6 @@ var catal=window.frame2.document.getElementById("catal").value;
 miniWin('page/adm_pages_new.php?categoryID='+catal,650,630);
 }
 
-function NewDelivery(){
-if(window.frame2.document.getElementById("catal")){
-var catal=window.frame2.document.getElementById("catal").value;
-}
-miniWin('delivery/adm_delivery_new.php?categoryID='+catal,650,630);
-}
-
-function NewDeliveryCatalog(){
-if(window.frame2.document.getElementById("catal")){
-var catal=window.frame2.document.getElementById("catal").value;
-}
-miniWin('delivery/adm_catalog_new.php?categoryID='+catal,650,630);
-}
-
-
 function NewProduct(){
 if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
@@ -1135,60 +657,20 @@ var catal=window.frame2.document.getElementById("catal").value;
 miniWin('product/adm_product_new.php?reload=true&categoryID='+catal,650,630);
 }
 
-function NewUMessage(){
-if(window.frame2.document.getElementById("catal")){
-var catal=window.frame2.document.getElementById("catal").value;
-if(catal!="ALL")
-miniWin('shopusers/adm_messages_new.php?UID='+catal,500,370);
-}else alert("Выберите пользователя для создания сообщения");
-
-}
-
-function DeleteUMessages(){
-if(window.frame2.document.getElementById("catal")){
-var catal=window.frame2.document.getElementById("catal").value;
-miniWin('./window/adm_window.php?do=42&ids='+catal,300,300)
-}else alert("Выберите пользователя для УДАЛЕНИЯ всех сообщений");
-
-}
-
-
-
 function EditCatalogPage(){
 if(window.frame2.document.getElementById("catal")){
 var catal=window.frame2.document.getElementById("catal").value;
-if(catal != 1000 && catal != 2000)
 miniWin('page/adm_catalogID.php?catalogID='+catal,500,370);
-}else alert("Выберите подкаталог для редактирования");
+}else alert("Выберете подкаталог для редактирования");
 
 }
-
-function EditCatalogDelivery(){
-if(window.frame2.document.getElementById("catal")){
-var catal=window.frame2.document.getElementById("catal").value;
-miniWin('delivery/adm_catalogID.php?id='+catal,500,370);
-}else alert("Выберите подкаталог для редактирования");
-
-}
-
-
 
 function EditCatalog(){
-try{
-if(window.document.getElementById("catalog_products")){
-if(window.frame2.document.getElementById("catal"))
- {
-  var catal=window.frame2.document.getElementById("catal").value;
-  if(catal != 1000001 && catal != 1000002)
-  miniWin('catalog/adm_catalogID.php?catalogID='+catal,650,630);
-  }else alert("Выберите каталог для редактирования");
- }
- else EditCatalogPage();
- 
-}catch(e){
-         alert("Выберите каталог для редактирования");
-		 DoReload('cat_prod');
-		 }
+if(window.frame2.document.getElementById("catal")){
+var catal=window.frame2.document.getElementById("catal").value;
+if(catal != 1000001 && catal != 1000002)
+miniWin('catalog/adm_catalogID.php?catalogID='+catal,650,630);
+}else alert("Выберете подкаталог для редактирования");
 }
 
 // Выделение заказов при нажатии v1.0
@@ -1280,52 +762,54 @@ obj2.value = 1;
 }
 
 function DoWithSelect(tip,obj,num){
-if (document.location.href.indexOf(".php?")==-1) {var dots="";} else {var dots=".";} 
+
+// Если передается объект
+//if(num) num = num.length
 
 try{
 if(tip!=0){
 var IDS=new Array();
 var j=0;
 for (var i=0;i<=num; i++){
-	if (obj.elements[i]){
-		if ((obj.elements[i]).checked){
-			IDS[j]=(obj.elements[i]).value;
-			j++;
-		}
-	}
-}
+if (obj.elements[i]){
+if ((obj.elements[i]).checked){
+IDS[j]=(obj.elements[i]).value;
+j++;
+}}}
 
 
 if(tip==9){
  if(j>1) alert('Внимание!\nДанная операция может быть выполнена только с одним объектом.\nУберите ненужные флажки.');
- if(j==1) miniWin(dots+'./product/adm_product_new.php?productID='+IDS,650,630);
+ if(j==1) miniWin('./product/adm_product_new.php?productID='+IDS,650,630);
 } 
 
 else if(tip==24){// Характеристки
   if(window.frame2.document.getElementById("catal")){
   var catal=window.frame2.document.getElementById("catal").value;
-  miniWin(dots+'./window/adm_window.php?do='+tip+'&ids='+IDS+'&catal='+catal,300,220);
+  miniWin('./window/adm_window.php?do='+tip+'&ids='+IDS+'&catal='+catal,300,300);
   }
+
 }
 else if(tip==38){// Новый заказ
  if(j>1) alert('Внимание!\nДанная операция может быть выполнена только с одним объектом.\nУберите ненужные флажки.');
- if(j==1) miniWin(dots+'./order/adm_visitor_new.php?orderAdd='+IDS,650,500);
+ if(j==1) miniWin('./order/adm_visitor_new.php?orderAdd='+IDS,650,500);
 }
 
-else if(IDS.length>0) miniWin(dots+'./window/adm_window.php?do='+tip+'&ids='+IDS,300,220);
+else if(IDS.length>0) miniWin('./window/adm_window.php?do='+tip+'&ids='+IDS,300,300);
  
   
        
 }
-}catch(e){alert("Выберите категорию для выполнения операций...");};
+}catch(e){alert("Выберете категорию для выполнения операций...");};
+
+
 
 try{
 document.getElementById('actionSelect').value=0;
 document.getElementById('DoAll').checked=false;
 }catch(e){}
 
-} //Конец функции
-
+}
 
 
 
@@ -1419,13 +903,27 @@ var win=window.showModelessDialog(url, "","dialogHeight: "+h+"px; dialogWidth: "
 
 // Новое окно с подчетом координат клика
 function miniWin(url,w,h,event){
-
-var Width = getClientWidth();
-var Height = getClientHeight();
-Width = (Width/2) - (w/2);
-Height = (Height/2) - (h/2);
-//lock(1);
-window.open(url,"_blank","dependent=1,left="+Width+",top="+Height+",width="+w+",height="+h+",location=0,menubar=0,resizable=1,scrollbars=0,status=0,titlebar=0,toolbar=0");
+if(event == null){
+x=100;
+y=100;
+x_m=0;
+y_m=0;
+}
+  else{
+    x_m=150;
+    y_m=50;
+    var isMSIE = document.attachEvent != null;
+    var isGecko = !document.attachEvent && document.addEventListener;
+      if (isMSIE) {
+            x = window.event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft;
+            y = window.event.clientY + document.documentElement.scrollTop + document.body.scrollTop;
+        }
+        if (isGecko) {
+             x = event.clientX + window.scrollX;
+             y = event.clientY + window.scrollY;
+        }
+  }
+window.open(url,"_blank","dependent=1,left="+(x-x_m)+",top="+(y-y_m)+",width="+w+",height="+h+",location=0,menubar=0,resizable=1,scrollbars=0,status=0,titlebar=0,toolbar=0");
 }
 
 function miniModalPrice(url,w,h)
@@ -1474,15 +972,13 @@ var uri="news/news_to_mail.php?data="+s;
 window.open(uri,"_blank","left=100,top=100,width="+w+",height="+h+",location=0,menubar=0,resizable=0,scrollbars=0,status=0");
 }
 
-var IDS=0; //Начальное значение текущего идентификатора
+
 function show_on(a){
 document.getElementById(a).style.background='#C0D2EC';
-IDS=a.replace("r","");
 }
 
 function show_out(a){
 document.getElementById(a).style.background='white';
-IDS=0;
 }
 
 function onPreview() {

@@ -28,7 +28,7 @@ function Vivod_product_price($n)// вывод товаров для прайса
 {
 global $SysValue,$LoadItems;
 $n=TotalClean($n,1);
-$sql="select id,name,price,price2,price3,price4,price5,baseinputvaluta from ".$SysValue['base']['table_name2']." where (category='$n' or dop_cat LIKE '%#$n#%') and enabled='1' order by name";
+$sql="select id,name,price,price2,price3,price4,price5 from ".$SysValue['base']['table_name2']." where category='$n' and enabled='1' order by name";
 $result=mysql_query($sql);
 while($row = mysql_fetch_array($result))
 {
@@ -38,7 +38,6 @@ $name=$row['name'];
 $price=$row['price'];
 $price=($price+(($price*$LoadItems['System']['percent'])/100));
 
-$baseinputvaluta=$row['baseinputvaluta']; 
 // Выборка из базы нужной колонки цены
 	if(session_is_registered('UsersStatus')){
     $GetUsersStatusPrice=GetUsersStatusPrice($_SESSION['UsersStatus']);
@@ -50,28 +49,13 @@ $baseinputvaluta=$row['baseinputvaluta'];
 	   }
 	}
 
-
-	
-// Если цены показывать только после аторизации
-$admoption=unserialize($LoadItems['System']['admoption']);
-if($admoption['user_price_activate']==1 and !$_SESSION['UsersId']){
-    $price="~";
-	$valuta="";
-}else{
-	$price=GetPriceValuta($price,"",$baseinputvaluta);
-//    $price=GetPriceValuta($price);
-	$valuta=GetValuta();
-     }
-
-
-	
 @$disp.="
 <tr bgcolor=\"#ffffff\">
 	<td>
 	".$name."
 	</td>
 	<td width=\"150\" align=\"center\">
-	".$price." ".$valuta."
+	".GetPriceValuta($price)." ".GetValuta()."
 	</td>
 	
 </tr>";

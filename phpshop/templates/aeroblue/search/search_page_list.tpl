@@ -1,77 +1,51 @@
-
-
- <div class="plashka_center">
-				<div class="plashka_zag">Расширенный поиск</div>
+<div class="plashka_center">
+				<div class="plashka_zag" >Расширенный поиск</div>
+				
 			</div>
-
-<div class="page_nava">
+			<div class="page_nava">
 <div>
-<a href="/">Главная</a> /  Расширенный поиск
-</div></div>
-<br>
-<TABLE cellpadding="0" cellspacing="0" width="100%" class="text_1">
-					<TR>
-						<TD style="padding-left:10" colspan="2">	
+<a href="/">Главная</a> / Расширенный поиск
+</div></div>	
+
+
+<div id="allspec" style="margin-top: 5px">
+
 						<FORM method="post" name="forma_search" action="/search/">	
-						<table>
+						<table cellpadding="0" cellspacing="0">
 					
 <tr>
 	<td>
 	Введите слово:<br>
-	<INPUT style="WIDTH:400px" maxLength="100" name="words" value="@searchString@">
-	</td>
-	<td>
+	<INPUT style="WIDTH:350px" maxLength="100" name="words" value="@searchString@">
+	<input type="submit" value="Искать" class="ok">
 	<br>
-	<input type="submit" value="Искать">
-	
-	</td>
-</tr>
-<tr>
-	<td colspan="2">
 	Выберете каталог:<br>
 	@searchPageCategory@
 	</td>
-	
-</tr>
-<tr>
-	<td colspan="2" id="sort">
-	<table cellpadding="0" cellspacing="0"><tr>@searchPageSort@</tr></table>
-	</td>
-	
 </tr>
  <tr>
-   <td colspan="2"><b>Логика поиска:</b>
-<input type="Radio" value="1" name="set" @searchSetA@>и &nbsp;<input type="Radio" value="2" name="set" @searchSetB@ >или
-&nbsp;&nbsp;&nbsp;/ &nbsp;&nbsp;<b>Область:</b> <input type="Radio" value="1" name="pole" @searchSetC@>Наименование &nbsp;<input type="Radio" value="2" name="pole" @searchSetD@ >Учитывать все
+   <td colspan="3"><b>Логика поиска:</b>
+<input type="Radio" value="1" name="set" @searchSetA@>и &nbsp;<input type="Radio" value="2" name="set" @searchSetB@ >или<br>
+<b>Область поиска:</b> <input type="Radio" value="1" name="pole" @searchSetC@>Наименование &nbsp;<input type="Radio" value="2" name="pole" @searchSetD@ >Учитывать все
 
 </td>
 </tr>  
 
-</table></FORM>
-						</TD>
-					</TR>
-					<TR>
-						<TD class="black" style="padding:10">	@searchPageNav@
-						</TD>
-					</TR>
-					<TR>
-						<TD>	@productPageDis@
-						</TD>
-					</TR>
-					
-					<TR>
-						<TD width="100%" style="padding-left:10" class="text_1">
-							<DIV style="padding-top:15;padding-bottom:15">	@searchPageNav@
-							</DIV>
-						</TD>
-					</TR>
-				</TABLE>
+</table>
+</FORM></div>
 
-															
-
-
-
+<div class="page_nava" style="margin-top:3px;">
+<div style="float:right;"><a href="#down" style="color:AC8694"><img src="images/shop/1.gif" alt="" width="15" height="16" border="0" align="absmiddle">Вниз</a></div>
+	<div>@searchPageNav@</div>
 	
+</div>
+
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+@productPageDis@
+</table>
+
+<div class="page_nava" style="margin-top:3px;">
+<div style="float:right;"><a href="#up" style="color:AC8694"><img src="images/shop/1.gif" alt="" width="15" height="16" border="0" align="absmiddle">Вверх</a></div>
+	<div>@searchPageNav@</div>
 	
-		
-		
+</div>

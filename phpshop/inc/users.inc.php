@@ -25,7 +25,6 @@ return $row;
 // Проверка пользователя
 function ChekUsersBase($log,$pas){
 global $SysValue;
-$return=0;
 if(true_login($log) and true_login($pas)){
 $pas=base64_encode($pas);
 $sql="select id,status from ".$SysValue['base']['table_name27']." where login='$log' and password='$pas' and enabled='1' LIMIT 0, 1";
@@ -38,10 +37,10 @@ $sql="UPDATE ".$SysValue['base']['table_name27']."
      SET
      datas='".date("U")."'
      where id='".$row['id']."'";
-$result=mysql_query($sql);
+$result=mysql_query($sql)or @die("".mysql_error()."");
 $return=array(@$row['id'],@$row['status']);
-         }else $return=0;
-}
+}}
+  else  $return="FALSE";
 
 return $return;
 }
@@ -55,7 +54,6 @@ if($_POST['pas_send']==1){
 $login=CleanSearch($_POST['login']);
 
 $sql="select * from ".$SysValue['base']['table_name27']." where login='".htmlspecialchars($login)."' and enabled='1'";
-
 $result=mysql_query($sql);
 @$row = mysql_fetch_array(@$result);
 $num=mysql_num_rows($result);
@@ -65,7 +63,7 @@ if($num>0) {
 // Шлем мыло 
 $codepage  = "windows-1251";     
 $header_adm  = "MIME-Version: 1.0\n";
-$header_adm .= "From:   <robot@".str_replace("www.","",$SERVER_NAME).">\n";
+$header_adm .= "From:   <support@".str_replace("www.","",$SERVER_NAME).">\n";
 $header_adm .= "Content-Type: text/plain; charset=$codepage\n";
 $header_adm .= "X-Mailer: PHP/";
 $zag_adm=$LoadItems['System']['name']." - Восстановление пароля пользователя ".$_POST['login'];
@@ -87,7 +85,7 @@ IP отправителя:".$REMOTE_ADDR."
 
 Powered & Developed by www.PHPShop.ru
 ".$SysValue['license']['product_name'];
-mail($row['mail'],$zag_adm, $content_adm, $header_adm);
+mail($_POST['mail'],$zag_adm, $content_adm, $header_adm);
 
 $disp='
 <div id=allspec>
@@ -149,7 +147,8 @@ function UserAddData(){
 global $SysValue,$_POST,$_SESSION,$LoadItems;
 $admoption=unserialize($LoadItems['System']['admoption']);
 $flag="";
-if(!empty($_SESSION['text']) and $_POST['key']!=$_SESSION['text']){
+
+if($_POST['key']!=substr(md5(session_id()),0,5)){
 $flag="<li>Некорректный ключ";
 return $flag;
 }
@@ -229,11 +228,8 @@ return $disp;
 
 // Регистрация нового пользрвателя
 function GetUserRegister(){
-global $SysValue,$SERVER_NAME,$LoadItems,$REMOTE_ADDR,$_SESSION;
-$textSession=$_SESSION['text'];
-
-
-
+global $SysValue,$SERVER_NAME,$LoadItems,$REMOTE_ADDR;
+$textSession=substr(md5(session_id()),0,5);
 $admoption=unserialize($LoadItems['System']['admoption']);
 
 if($_POST['add_user']==1)
@@ -241,41 +237,6 @@ $UserAddData=UserAddData();
 
 
 if($UserAddData=="DONE" and $admoption['user_mail_activate'] == 1){
-
-  if($admoption['user_mail_activate_pre'] == 1){
-    $disp='
-<div id=allspec>
-<img src="images/shop/icon_key.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Авторизация</b>
-</div>
-<p>
-Активация пользователя выполняется администратором в ручном режиме, это может занять некоторое время.
-После активации Вам будут доступны дополнительные возможности работы с интернет-магазином.
- </p>';
- 
- // Шлем мыло менеджеру
-$codepage  = "windows-1251";     
-$header_adm  = "MIME-Version: 1.0\n";
-$header_adm .= "From:  User Activation <donotreply@".str_replace("www.","",$SERVER_NAME).">\n";
-$header_adm .= "Content-Type: text/plain; charset=$codepage\n";
-$header_adm .= "X-Mailer: PHP/";
-$zag_adm=$LoadItems['System']['name']." - Активация регистрации пользователя ".$_POST['name_new'];
-$content_adm="
-Доброго времени!
---------------------------------------------------------
-
-Требуется ручная активация пользователя '".$_POST['name_new']."'.
-Логин: ".$_POST['login_new']."
-
-Дата/время: ".date("d-m-y H:i a")."
-IP:".$REMOTE_ADDR."
----------------------------------------------------------
-
-
-Powered & Developed by www.PHPShop.ru
-".$SysValue['license']['product_name'];
-mail($LoadItems['System']['adminmail2'],$zag_adm, $content_adm, $header_adm);
- }else{
-
   $disp='
 <div id=allspec>
 <img src="images/shop/icon_key.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Авторизация</b>
@@ -285,7 +246,7 @@ mail($LoadItems['System']['adminmail2'],$zag_adm, $content_adm, $header_adm);
 После активации Вам будут доступны дополнительные возможности работы с интернет-магазином.
  </p>';
  
-// Шлем мыло клиенту
+// Шлем мыло менеджеру
 $codepage  = "windows-1251";     
 $header_adm  = "MIME-Version: 1.0\n";
 $header_adm .= "From:  User Activation <donotreply@".str_replace("www.","",$SERVER_NAME).">\n";
@@ -316,7 +277,6 @@ Powered & Developed by www.PHPShop.ru
 ".$SysValue['license']['product_name'];
 mail($_POST['mail_new'],$zag_adm, $content_adm, $header_adm);
 }
-}
 elseif($UserAddData=="DONE" and $admoption['user_mail_activate'] != 1){
   $disp='
 <div id=allspec>
@@ -337,14 +297,14 @@ $disp='
 <tr>
 	<td>Логин:</td>
 	<td width="10"></td>
-	<td><input type="text" name="login_new" style="width:250px;" value="'.$_POST['login_new'].'"><img src="images/shop/flag_green.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"> (не менее 4 знаков)</td>
+	<td><input type="text" name="login_new" style="width:250px;" value="'.$_POST['login_new'].'"><img src="images/shop/flag_green.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"></td>
 	<td rowspan="2" valign="top" style="padding-left:10">
 	</td>
 </tr>
 <tr>
 	<td>Пароль:</td>
 	<td width="10"></td>
-	<td><input type="Password" name="password_new" style="width:250px;" value="'.$_POST['password_new'].'"><img src="images/shop/flag_green.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"> (не менее 6 знаков)</td>
+	<td><input type="Password" name="password_new" style="width:250px;" value="'.$_POST['password_new'].'"><img src="images/shop/flag_green.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"></td>
 </tr>
 <tr>
 	<td>Повторите пароль:</td>
@@ -395,13 +355,12 @@ $disp='
 </table>
 <table>
 <tr>
-	<td align="center"><img src="phpshop/captcha.php" id="captcha" alt="" border="0"><br>
-	<a class=b  title="Обновить картинку" href="javascript:CapReload();">Обновить картинку</a></td>
+	<td><img src="phpshop/captcha.php" alt="" border="0"></td>
 	<td>Введите код, указанный на картинке<br><input type="text" name="key" style="width:220px;"><img src="images/shop/flag_green.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"></td>
 </tr>
 <tr>
    <td colspan="2">	<br>
-<div id=allspec><img src="images/shop/comment.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle">Данные, отмеченные <b>флажками</b> обязательны для заполнения.<br>
+<div  id=allspec><img src="images/shop/comment.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle">Данные, отмеченные <b>флажками</b> обязательны для заполнения.<br>
 <ol>
 '.$UserAddData.'
 </ol>
@@ -484,111 +443,6 @@ $flag="<li class=done>Данные изменены</font>";
 return $flag;
 }
 
-
-//Подготовка таблички для сообщения
-function MessageList ($UID=0) {
-global $SysValue;
-
-$sql=Page_messages($UID);
-
-$result=mysql_query($sql);
-$lvl++;
-while ($row = mysql_fetch_array($result))
-    {
-	$id=$row['ID'];
-	$UID=$row['UID'];
-	$AID=$row['AID'];
-
-	if ($AID) { //Получаем имя администратора, если сообщение от админа
-		$sqlad='select * from '.$SysValue['base']['table_name19'].' WHERE id='.$AID;
-		$resultad=mysql_query($sqlad);
-                $rowad = mysql_fetch_array($resultad);
-		if (strlen($rowad['name'])) {$name=$rowad['name'];} else {$name='Менеджер';}
-		$color='style="background:#C0D2EC;"';
-	} else { //или имя пользователя
-		$sqlus='select * from '.$SysValue['base']['table_name27'].' WHERE id='.$UID;
-		$resultus=mysql_query($sqlus);
-                $rowus = mysql_fetch_array($resultus);
-		$name=$rowus['name'];
-		$color='';
-	}
-
-	$DataTime=$row['DateTime'];
-	$Subject=$row['Subject'];
-	$Message=$row['Message'];
-
-
-	if (strlen($Subject)>1) {$Subject='<B>'.$Subject.'</B><BR>';}
-
-	@$display.="
-	<tr >
-	<td ".$color." id=allspecwhite>
-	$DataTime<BR>
-	От: <B>$name</B>
-	</td>
-	<td ".$color." id=allspecwhite>
-        $Subject
-	$Message
-	</td>
-    </tr>
-	";
-	}
-
-return $display;
-
-} //Конец MessageList
-
-function Page_messages($UID=0)// Создание страниц
-{
-
-global $SysValue,$LoadItems;
-$p=$SysValue['nav']['id']; if(@!$p) $p=1;
-$num_row=$LoadItems['System']['num_row'];
-$num_ot=0;
-$q=0;
-while($q<$p)
-  {
-  $sql="select * from ".$SysValue['base']['table_name37']." where (UID=".$UID.") order by DateTime DESC LIMIT $num_ot, $num_row ";
-  $q++;
-  $num_ot=$num_ot+$num_row;
-  }
-return $sql;
-}
-
-
-function Nav_messages($UID=0)// Навигация 
-{
-global $SysValue,$LoadItems;
-$p=$SysValue['nav']['id']; if(@!$p) $p=1;
-$num_row=$LoadItems['System']['num_row'];
-$num_page=NumFrom("table_name37"," where (UID=".$UID.")");
-$i=1;
-$num=$num_page/$num_row;
-while ($i<$num+1) {
-	if($i!=$p){
-		if($i==1) {$pageOt=$i+@$pageDo;} else {$pageOt=$i+@$pageDo-$i;}
-			$pageDo=$i*$num_row;
-			@$navigat.="\n<a href=\"./message_".$i.".html\">".$pageOt."-".$pageDo."</a> | ";
-		} else{
-			if($i==1) {$pageOt=$i+@$pageDo;} else {$pageOt=$i+@$pageDo-$i;}
-			$pageDo=$i*$num_row;
-			@$navigat.="\n<b>".$pageOt."-".$pageDo."</b> | ";
-		}
-	$i++;
-}
-if($num>1) {
-	if($p>$num) {$p_to=$i-1;} else {$p_to=$p+1;}
-	$nava="<table cellpadding=\"0\" cellpadding=\"0\" border=\"0\"><tr ><td class=style5>
-	".$SysValue['lang']['page_now'].": 
-	<a href=\"./message_".($p-1).".html\"><img src=\"images/shop/3.gif\" width=\"16\" height=\"15\" border=\"0\" align=\"absmiddle\"></a>
-	$navigat&nbsp<a href=\"./message_".$p_to.".html\"><img src=\"images/shop/4.gif\" width=\"16\" height=\"15\" border=\"0\" align=\"absmiddle\" title=\"Вперед\"></a>
-		</td></tr></table>";
-}
-return @$nava;
-}
-
-
-
 // Сообщение послать
 function UsersMessage($UsersId){
 $UsersId=TotalClean($UsersId,1);
@@ -636,91 +490,27 @@ IP:".$REMOTE_ADDR."
 
 Powered & Developed by www.PHPShop.ru
 ".$SysValue['license']['product_name'];
-//mail($LoadItems['System']['adminmail2'],$zag_adm, $content_adm, $header_adm);
-
-
-$sql='select * from '.$SysValue['base']['table_name37'].' where (UID='.$id.') order by DateTime DESC';
-$result=mysql_query($sql);
-$row = mysql_fetch_array($result);
-
-if ($row['AID']=="0") {
- $DateTime=$row['DateTime'];
- $message=TotalClean($_POST['message'],2)."<HR>".$row['DateTime'].": ".$row['Message'];
-	$sql='UPDATE '.$SysValue['base']['table_name37'].' SET Message="'.$message.'", DateTime="'.date("Y-m-d H:i:s").'" WHERE ID='.$row['ID'];
-	$result=mysql_query($sql)or @die("".mysql_error()."");
-	$p=$SysValue['nav']['id']; if(@!$p) $p=1;
-	if ($p>1) {$nav='_'.$p;} else {$nav='';}
-	HEADER ("Location: /users/message$nav.html");
-
-
-} else {
-	$sql='INSERT INTO '.$SysValue['base']['table_name37'].' VALUES ("",0,'.$id.',\'\',\''.date("Y-m-d H:i:s").'\',\''.TotalClean($_POST['Subject'],2).'\',\''.TotalClean($_POST['message'],2).'\',"0")';
-	$result=mysql_query($sql)or @die("".mysql_error()."");
-	HEADER ("Location: /users/message.html");
-}
-//КОНЕЦ Отправки мыла
-
-
-
-
+mail($LoadItems['System']['adminmail2'],$zag_adm, $content_adm, $header_adm);
 $statusMail='
 <div id=allspecwhite>
 <img src="images/shop/comment.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><font color="#008000"><b>Сообщение менеджеру отправлено</b></font></div>
 ';
 }
 	  
-
-
-$display= MessageList($id);
-
-//Формочко для отправки!!!	  
-
-$sql='select * from '.$SysValue['base']['table_name37'].' where (UID='.$id.') order by DateTime DESC';
-$result=mysql_query($sql);
-$i=mysql_num_rows($result);
-$row = mysql_fetch_array($result);
-
-
-if (($row['AID']==0) && ($i)) {
- $Subject=$row['Subject'];
- $Subjectreadonly=' readonly disabled';
- $message=$row['Message'];
- $oldmessage='<B>Вы можете дополнить ваше сообщение. Введите дополнительный текст:</B><BR>';
-} else {
- $Subject='';
- $Subjectreadonly='';
- $message='';
- $oldmessage='  <B>Текст сообщения</B>';
-}
-
-if ($i) {
-$display='
-<H3>История сообщений</H3>
-<table id=allspecwhite cellpadding="1" cellspacing="1" width="100%">
-<tr>
-	<td width="20%"  id=allspec><span name=txtLang id=txtLang>Дата</span></td>
-	<td width="80%"  id=allspec><span name=txtLang id=txtLang>Сообщение</span></td>
-</tr>
-	'.$display.'
-    </table>'.Nav_messages($id);
-} else {
-	$display='';
-}
-
+	  
 $disp='
+<p><br></p>
+
 <div id=allspec>
-<img src="images/shop/icon_info.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Задать вопрос менеджеру</b> 
+<img src="images/shop/icon_info.gif" alt="" width="16" height="16" border="0" hspace="5" align="absmiddle"><b>Задать вопрос менеджеру по почте</b> 
 </div>
-<table style="width:100%;">
+<p>
+<table width="100%">
 <tr>
-  <td style="width:100%;height:100px;">
+  <td >
   <form method="post" name="forma_message">
-  <B>Заголовок сообщения</B><BR>
-  <input type="TEXT" style="width:100%;" value="'.$Subject.'" '.$Subjectreadonly.' name="Subject"><BR>
-  '.$oldmessage.'
-
   <textarea style="width:100%;height:100px;" name="message" id="message"></textarea>
-
+  '.@$statusMail.'<br>
   <div>
   <input type="button" value="Задать вопрос менеджеру" onclick="CheckMessage()">
   </div>
@@ -728,11 +518,8 @@ $disp='
   </td>
 </tr>
 </table>
-   '.$display.'
-  '.@$statusMail.'<br>
-<BR>
 
-
+</p>
 <p><br></p>
 ';
 return $disp;

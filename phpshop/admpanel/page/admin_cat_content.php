@@ -14,10 +14,7 @@ require("../language/".$Lang."/language.php");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?=$SysValue['Lang']['System']['charset']?>">
 <LINK href="../css/texts.css" type=text/css rel=stylesheet>
-<LINK href="../css/contextmenu.css" type=text/css rel=stylesheet>
-<script language="JavaScript" src="../java/contextmenu.js" type="text/javascript"></script>
-<script type="text/javascript" language="JavaScript1.2" src="../language/<?
-echo $Lang; ?>/language_windows.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="../language/<?=$Lang?>/language_windows.js"></script>
 <script language="JavaScript1.2" src="../java/javaMG.js" type="text/javascript"></script>
 <script type="text/javascript" language="JavaScript1.2" src="../java/sorttable.js"></script>
 
@@ -57,15 +54,15 @@ while ($row = mysql_fetch_array($result))
 	if(($row['enabled'])=="1"){$checked="<img name=imgLang src=../img/icon-activate.gif name=imgLang  alt=\"В наличии\">";}else{$checked="<img src=../img/icon-deactivate.gif name=imgLang  alt=\"Отсутствует\">";};
     if(($row['secure'])=="1"){$checked.="&nbsp;&nbsp;<img name=imgLang src=../img/icon-duplicate-acl.gif name=imgLang alt=\"Только для зарегистрированных пользователей\">";}
 	@$display.="
-	<tr class=row id=\"r".$id."\">
-   <td class=\"forma\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" align=center onclick=\"miniWin('adm_pagesID.php?id=$id',650,600)\">$checked</td>
-	<td class=\"forma\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('adm_pagesID.php?id=$id',650,600)\">
+	<tr onmouseover=\"show_on('r".$id."')\" id=\"r".$id."\" onmouseout=\"show_out('r".$id."')\" class=row >
+   <td class=\"forma\">$checked</td>
+	<td onclick=\"miniWin('adm_pagesID.php?id=$id',650,600)\" class=\"forma\">
 	$link
 	</td>
-	<td class=\"forma\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" onclick=\"miniWin('adm_pagesID.php?id=$id',650,600)\">
+	<td onclick=\"miniWin('adm_pagesID.php?id=$id',650,600)\" class=\"forma\">
 	$name
 	</td>
-	<td class=\"forma\" id=Nws class=Nws onmouseover=\"show_on('r".$id."')\" onmouseout=\"show_out('r".$id."')\" >
+	<td class=\"forma\">
 	<a href=\"".$SysValue['dir']['dir']."/page/".$link.".html\" target=\"_blank\" class=none><img src=\"../img/icon_world.gif\" alt=\"Перейти по ссылке\" border=\"0\" align=\"absmiddle\" hspace=\"1\">".$SERVER_NAME.$SysValue['dir']['dir']."/page/".$link.".html</a>
 	</td>
 	<td class=forma style=\"padding:0px\">
@@ -79,9 +76,9 @@ if($i>20)$razmer="height:600;";
 	$dis="
 <div align=\"left\" style=\"width:100%;".@$razmer.";overflow:auto\"> 
 <form name=\"form_flag\">
-<table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\" class=\"sortable\" id=\"sort\">
+<table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" bgcolor=\"#808080\">
 <tr>
-    <td width=\"10%\" id=pane align=center><img  src=\"../icon/blank.gif\"  width=\"1\" height=\"1\" border=\"0\" onLoad=\"starter('pages');\" align=left><span name=txtLang id=txtLang>Вывод</span></td>
+    <td width=\"10%\" id=pane align=center><span name=txtLang id=txtLang>Вывод</span></td>
     <td width=\"10%\" id=pane align=center><span name=txtLang id=txtLang>Ссылка</span></td>
 	<td width=\"45%\" id=pane align=center><span name=txtLang id=txtLang>Название</span> (Title)</td>
 	<td width=\"35%\" id=pane align=center><span name=txtLang id=txtLang>Реальное размещение</span></td>
@@ -93,22 +90,7 @@ if($i>20)$razmer="height:600;";
     </table></form>
 <input type=\"hidden\" value=\"$pid\" id=\"catal\" name=\"catal\">
 </div>
-	".'
-<div class=cMenu id=cMenuNws> 
-	<TABLE style="width:260px;"  border="0" cellspacing="0" cellpadding="0">
-	<TR><TD id="txtLang" STYLE="background: #C0D2EC;"><B>Действия</B></TD></TR>
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews30>Включить вывод</A></TD></TR>
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews31>Отключить вывод</A></TD></TR>	
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews32>Включить регистрацию</A></TD></TR>	
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews33>Отключить регистрацию</A></TD></TR>	
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews34>Перенести в каталог</A></TD></TR>	
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews35>Добавить рекомендованные товары</A></TD></TR>	
-	<TR><TD id="txtLang" STYLE="background: #fff"><A name="tarurl" id=nameNews39>Удалить из базы</A></TD></TR>		
-	</TABLE>
-
-</div>
-
-';
+	";
 return $dis;
 }
 	

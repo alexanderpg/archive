@@ -8,7 +8,7 @@
 </tr>
 <tr>
  <td style="padding-left:0;padding-top:10" "text_1">
-  <table width="100%">
+  <table>
   @productPageDis@
   </table>
  </td>

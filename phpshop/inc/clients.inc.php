@@ -56,7 +56,7 @@ return $disCart;
 
 function ClientsCheck($order,$mail){
 global $SysValue,$_POST,$LoadItems,$REMOTE_ADDR;
-$order=TotalClean($order,5);
+$order=TotalClean($order,1);
 $sql="select * from ".$SysValue['base']['table_name1']." where uid='$order'";
 $result=mysql_query($sql);
 $row = mysql_fetch_array($result);

@@ -1,5 +1,3 @@
-<font color="#FF0000">@usersError@</font>
-
 <form method="post" name="user_forma">
 						<table cellspacing="5">
 							<tr>

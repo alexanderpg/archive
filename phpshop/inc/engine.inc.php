@@ -7,19 +7,6 @@
 */
 
 
-
-// Отрезаем до точки
-function mySubstr($str,$a){
-if(empty($str)) return $str;
-$str = htmlspecialchars(strip_tags($str));
-for ($i = 1; $i <= $a; $i++) {
-	if($str{$i} == ".") $T=$i;
-}
-if($T<1) return substr($str, 0, $a)."...";
-  else return substr($str, 0, $T+1);
-}
-
-
 // Выборка колонки цен для статуса пользователя
 function GetUsersStatusPrice($n){
 global $SysValue;
@@ -49,17 +36,14 @@ if(!empty($row[$pole])) return $row[$pole];
 function Sorts()
  {
 global $SysValue;
-$sql="select * from ".$SysValue['base']['table_name21'];
+$sql="select id,name from ".$SysValue['base']['table_name21'];
 $result=mysql_query($sql) or  die("".PHPSHOP_error(102,$SysValue['my']['error_tracer'])."");
-$Sorts='';
 while ($row = mysql_fetch_array($result))
     {
 	$id=$row['id'];
 	$name=$row['name'];
-	$page=$row['page'];
 	$array=array(
 	"id"=>$id,
-	"page"=>$page,
 	"name"=>$name
 	);
 	$Sorts[$id]=$array;
@@ -74,24 +58,15 @@ function CatalogSorts()
 global $SysValue;
 $sql="select * from ".$SysValue['base']['table_name20'];
 @$result=mysql_query($sql);
-$Sorts='';
 while (@$row = mysql_fetch_array(@$result))
     {
 	$id=$row['id'];
 	$name=$row['name'];
 	$category=$row['category'];
-	$filtr=$row['filtr'];
-	$flag=$row['flag'];
-	$goodoption=$row['goodoption'];
-	$page=$row['page'];
 	$array=array(
 	"id"=>$id,
 	"name"=>$name,
-	"category"=>$category,
-	"filtr"=>$filtr,
-	"page"=>$page,
-	"flag"=>$flag,
-	"goodoption"=>$goodoption
+	"category"=>$category
 	);
 	$Sorts[$id]=$array;
 	}
@@ -141,7 +116,7 @@ return $Catalog;
 function  CatalogKeys()
  {
 global $SysValue;
-$sql="select id,parent_to,num  from ".$SysValue['base']['table_name']." order by num";
+$sql="select id,parent_to  from ".$SysValue['base']['table_name']." order by num";
 $result=mysql_query($sql);
 while (@$row = mysql_fetch_array(@$result))
     {
@@ -173,7 +148,7 @@ while (@$row = mysql_fetch_array(@$result))
 	$keywords_enabled=$row['keywords_enabled'];
 	$skin_enabled=$row['skin_enabled'];
 	$skin=$row['skin'];
-	@$array=array(
+	$array=array(
 	"id"=>$id,
 	"name"=>$name,
 	"parent_to"=>$parent_to,
@@ -206,7 +181,7 @@ global $SysValue,$LoadItems,$_SESSION;
 if($str != "none"){
 
 $System=DispSystems();
-$sql="select id,uid,name,category,price,price_n,sklad,odnotip,vendor,title_enabled,datas,page,user,descrip_enabled,keywords_enabled,pic_small,pic_big,parent,baseinputvaluta  from ".$SysValue['base']['table_name2'].$str;
+$sql="select id,uid,name,category,price,price_n,sklad,odnotip,vendor,title_enabled,datas,page,user,descrip_enabled,keywords_enabled,pic_small,pic_big,parent,price2,price3,price4,price5  from ".$SysValue['base']['table_name2'].$str;
 $result=mysql_query($sql);
 while (@$row = mysql_fetch_array($result))
     {
@@ -254,7 +229,7 @@ while (@$row = mysql_fetch_array($result))
 	$odnotip=explode(",",$row['odnotip']);
 	$parent=explode(",",$row['parent']);
 	$vendor=$row['vendor'];
-	$baseinputvaluta=$row['baseinputvaluta'];	
+	
 	
 	$array=array(
 	"category"=>$category,
@@ -274,7 +249,6 @@ while (@$row = mysql_fetch_array($result))
 	"keywords_enabled"=>$keywords_enabled,
 	"datas"=>$datas,
 	"page"=>$page,
-	"baseinputvaluta"=>$baseinputvaluta,
 	"user"=>$user
 	);
 	$Products[$id]=$array;
@@ -293,7 +267,7 @@ function NumFrom($from_base,$query)
 global $SysValue;
 $sql="select COUNT('id') as count from ".$SysValue['base'][$from_base]." ".$query;
 @$result=mysql_query(@$sql);
-@$row = mysql_fetch_array(@$result);
+$row = mysql_fetch_array($result);
 @$num=$row['count'];
 return @$num;
 }
@@ -361,15 +335,15 @@ function Vivod_mini_cart()// Вывод мини корзины
 {
 global $SysValue,$LoadItems,$_SESSION;
 $cart=@$_SESSION['cart'];
-$compare=@$_SESSION['compare'];
-
 if(count($cart)>0)
 {
 if(is_array($cart))
 foreach($cart as $j=>$v)
   {
    @$sum+=$cart[$j]['price']*$cart[$j]['num'];
+   @$sum=number_format($sum,"2",".","");
    @$sum_r=@$sum*$LoadItems['System']['kurs'];
+   @$sum_r=number_format($sum_r,"2",".","");
    @$num+=$cart[$j]['num'];
   }
 $SysValue['other']['orderEnabled']= "block";
@@ -380,17 +354,6 @@ $SysValue['other']['orderEnabled']= "block";
 	 $num="--";
 	 $SysValue['other']['orderEnabled']= "none";
 	 }
-
-if(count($compare)>0)
-{
-	if(is_array($compare)) {foreach($compare as $j=>$v) {@$numcompare=count($compare);}}
-	$SysValue['other']['compareEnabled']= "block";
-} else {
-	 $numcompare="--";
-	 $SysValue['other']['compareEnabled']= "none";
-}
-$SysValue['other']['numcompare']= $numcompare;
-
 
 // Определяем переменые
 $SysValue['other']['tovarNow']= $SysValue['lang']['cart_tovar_now'];
@@ -426,7 +389,7 @@ while($row = mysql_fetch_array($result))
           if(strpos($REQUEST_URI, $dir) or $REQUEST_URI==$dir){
             // Определяем переменые
             $SysValue['other']['leftMenuName']= $row['name'];  
-            $SysValue['other']['leftMenuContent']= stripslashes($row['content']);
+            $SysValue['other']['leftMenuContent']= $row['content'];
 			// Подключаем шаблон
             @$dis.=ParseTemplateReturn($SysValue['templates']['left_menu']);
           }
@@ -492,7 +455,7 @@ foreach($dirs as $dir)
 if(strpos($REQUEST_URI, $dir) or $REQUEST_URI==$dir){
 // Определяем переменые
 $SysValue['other']['leftMenuName']= $row['name'];
-$SysValue['other']['leftMenuContent']= stripslashes($row['content']);
+$SysValue['other']['leftMenuContent']= $row['content'];
 // Подключаем шаблон
 if(!ParseTemplateReturn($SysValue['templates']['right_menu']))
 @$dis.=ParseTemplateReturn($SysValue['templates']['left_menu']);
@@ -647,52 +610,55 @@ return @$dis;
 }
 
 // Вывод городов доставки
-require_once "delivery.inc.php";
-
+function GetDelivery($deliveryID){
+global $SysValue;
+$sql="select * from ".$SysValue['base']['table_name30']." where enabled='1' order by city";
+$result=mysql_query($sql);
+while($row = mysql_fetch_array($result)){
+     if(!empty($deliveryID)){
+	   if($row['id'] == $deliveryID) $chk="selected";
+	     else $chk="";
+	   }
+       else{
+	      if($row['flag']==1) $chk="selected"; 
+	        else $chk="";
+		}
+	     
+@$dis.='<OPTION value='.$row['id'].' '.$chk.'>'.$row['city'];
+}
+$disp='<SELECT onchange="UpdateDelivery(this.value)" name="dostavka_metod">'.@$dis.'</SELECT>';
+return $disp;
+}
 
 // Вывод стоимости доставки
-function GetDeliveryPrice($deliveryID,$sum,$weight=0){
+function GetDeliveryPrice($deliveryID,$sum){
 global $SysValue;
-
 $deliveryID=TotalClean($deliveryID,1);
 if(!empty($deliveryID)){
-	$sql="select * from ".$SysValue['base']['table_name30']." where id='$deliveryID' and enabled='1'";
-	$result=mysql_query($sql);
-	$num=mysql_numrows($result);
-	$row = mysql_fetch_array($result);
-	if($num == 0){
-		$sql="select * from ".$SysValue['base']['table_name30']." where flag='1' and enabled='1'";
-		$result=mysql_query($sql);
-		$row = mysql_fetch_array($result);
-	}
-} else {
-	$sql="select * from ".$SysValue['base']['table_name30']." where flag='1' and enabled='1'";
-	$result=mysql_query($sql);
-	$row = mysql_fetch_array($result);
+$sql="select * from ".$SysValue['base']['table_name30']." where id='$deliveryID' and enabled='1'";
+$result=mysql_query($sql);
+$num=mysql_numrows($result);
+$row = mysql_fetch_array($result);
+
+if($num == 0){
+$sql="select * from ".$SysValue['base']['table_name30']." where flag='1' and enabled='1'";
+$result=mysql_query($sql);
+$row = mysql_fetch_array($result);
+}}
+
+else
+{
+$sql="select * from ".$SysValue['base']['table_name30']." where flag='1' and enabled='1'";
+$result=mysql_query($sql);
+$row = mysql_fetch_array($result);
 }
 
 @$SysValue['sql']['num']++;
 
-if($row['price_null_enabled'] == 1 and $sum>=$row['price_null']) {
-	return 0;
-} else {
-	if ($row['taxa']>0) {
-		$addweight=$weight-500;
-		if ($addweight<0) {
-			$addweight=0; 
-			$at='';
-		} else {
-			$at='';
-//			$at='Вес: '.$weight.' гр. Превышение: '.$addweight.' гр. Множитель:'.ceil($addweight/500).' = ';
-		}
-		$addweight=ceil($addweight/500)*$row['taxa'];
-		$endprice=$row['price']+$addweight;
-		return $at.$endprice;
-	} else {
-		return $row['price'];
-	}
+if($row['price_null_enabled'] == 1 and $sum>=$row['price_null'])
+  return 0;
+  else return $row['price'];
 }
-}//endfunct
 
 // Вывод доставки
 function GetDeliveryBase($deliveryID,$name){
@@ -828,5 +794,4 @@ if(empty($_Array[$val])) @$new_str.=$val;
 
 return @$new_str;
 }
-
 ?>

@@ -1,4 +1,4 @@
-<div class="product_forma_1" style="height:250px">
+<div class="product_forma_1" style="height:225px">
    <div class="product_name" align="center">
         <A href="/shop/UID_@productUid@.html"  title="@productName@">@productName@</A>
    </div>

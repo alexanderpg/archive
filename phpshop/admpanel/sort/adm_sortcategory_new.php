@@ -68,7 +68,7 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 <tr>
 	<td colspan="2">
 	<FIELDSET>
-<LEGEND><span name=txtLang id=txtLang><u>О</u>писание</span></LEGEND>
+<LEGEND><span name=txtLang id=txtLang><u>О</u>пиписание</span></LEGEND>
 <div style="padding:10">
 <textarea class=full name=description_new style="height:40px"><?=$description?></textarea>
 </div>
@@ -88,10 +88,7 @@ DoResize(<? echo $GetSystems['width_icon']?>,500,400);
 </table>
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
-<tr> 
-    <td align="left" style="padding:10">
-    <BUTTON class="help" onclick="helpWinParent('sort_groupID')">Справка</BUTTON>
-	</td>
+<tr>
 	<td align="right" style="padding:10">
 	<input type="submit" name="editID" value="OK" class=but>
 	<input type="reset" name="btnLang" class=but value="Сбросить">
@@ -105,7 +102,7 @@ if(isset($editID) and !empty($name_new))// Запись редактирования
 {
 if(CheckedRules($UserStatus["cat_prod"],2) == 1){
 
-$sql="INSERT INTO ".$SysValue['base']['table_name20']." VALUES ('','$name_new','0','$num_new','0','0','$description_new','0','0','')";
+$sql="INSERT INTO ".$SysValue['base']['table_name20']." VALUES ('','$name_new','0','$num_new','0','0','$description_new')";
 $result=mysql_query($sql)or @die("".mysql_error()."");
 echo"
 	  <script>

@@ -5,8 +5,6 @@
 |  Оформление Заказа                  |
 +-------------------------------------+
 */
-
-
 function Summa_cart()
 {
 global $cart,$LoadItems,$SysValue;
@@ -17,22 +15,8 @@ for ($i=0; $i<count($cid); $i++)
  @$in_cart.="
 ".$cart[$j]['name']." (".TotalClean($cart[$j]['num'],1)." шт.), ";
  @$sum+=$cart[$j]['price']*$cart[$j]['num'];
-//Определение и суммирование веса
- $goodid=$cart[$j]['id'];
- $goodnum=$cart[$j]['num'];
- $wsql='select weight from '.$SysValue['base']['table_name2'].' where id=\''.$goodid.'\'';
- $wresult=mysql_query($wsql);
- $wrow=mysql_fetch_array($wresult);
- $cweight=$wrow['weight']*$goodnum;
- if (!$cweight) {$zeroweight=1;} //Один из товаров имеет нулевой вес!
- $weight+=$cweight;
  }
-
-//Обнуляем вес товаров, если хотя бы один товар был без веса
-if ($zeroweight) {$weight=0;}
-
-
-$dis=array(@$in_cart,@$sum,@$weight);
+$dis=array(@$in_cart,@$sum);
 return @$dis;
 }
 
@@ -51,9 +35,6 @@ if(isset($_POST['send_to_order']))
    
    // Подключаем шаблон
    @$disp=ParseTemplateReturn($SysValue['templates']['order_forma_mesage']);
-   
-   // Если включено авт. загрузка документов, убираем генерацию счета
-   if($LoadItems['System']['1c_load_accounts']!=1)
    @$disp.="
 <script language=\"JavaScript1.2\">
 miniWinFull('phpshop/forms/1/forma.php?name_person=".$_POST['name_person']."&org_name=".$_POST['org_name']."&ouid=".$_POST['ouid']."&delivery=".$_POST['dostavka_metod']."',650,600);
@@ -62,17 +43,7 @@ window.document.getElementById('num').innerHTML='0';
 window.document.getElementById('sum').innerHTML='0';
 }
 </script>";
-     else {
-	 @$disp.="
-<script language=\"JavaScript1.2\">
-if(window.document.getElementById('num')){
-window.document.getElementById('num').innerHTML='0';
-window.document.getElementById('sum').innerHTML='0';
-}
-</script>";
-     session_unregister('cart');
-     }
-	 
+   //session_unregister('cart');
    }
    // Квитанция Сбербанка
    elseif(@$_POST['mail'] and @$_POST['name_person'
@@ -121,8 +92,8 @@ window.document.getElementById('sum').innerHTML='0';
      {
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
-     $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1],$cart_list[2]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
+     $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod']);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
 	 $disp=('
 	  <table width=420 align=center bgcolor="#ffffff">
        <tr>
@@ -166,8 +137,8 @@ window.document.getElementById('sum').innerHTML='0';
      {
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
-     $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1],$cart_list[2]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
+     $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
 	 $disp=('
 	 <table width=420 align=center bgcolor="#ffffff">
        <tr>
@@ -216,16 +187,15 @@ window.document.getElementById('sum').innerHTML='0';
 	 
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
-     $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1],$cart_list[2]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
+     $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $mrh_login = $SysValue['roboxchange']['mrh_login'];    //логин
 $mrh_pass1 = $SysValue['roboxchange']['mrh_pass1'];    // пароль1
 
 //параметры магазина
-$mrh_ouid = explode("-", $_POST['ouid']);
-$inv_id = $mrh_ouid[0]."".$mrh_ouid[1];     //номер счета
+$inv_id    = $_POST['ouid'];       //номер счета
 
 //описание покупки
 $inv_desc  = "PHPShopPaymentService";
@@ -254,8 +224,6 @@ $disp= "
       <input type=hidden name=out_summ value=$out_summ>
       <input type=hidden name=inv_id value=$inv_id>
       <input type=hidden name=inv_desc value=$inv_desc>
-	  <input type=hidden name=crc value=$crc>
-	  <input type=hidden name=shp_item value=$shp_item>
 	  <table>
 <tr><td><img src=\"images/shop/icon-setup.gif\" width=\"16\" height=\"16\" border=\"0\"></td>
 	<td align=\"center\"><a href=\"javascript:history.back(1)\"><u>
@@ -279,23 +247,19 @@ $disp= "
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
- $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
+ $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $LMI_PAYEE_PURSE = $SysValue['webmoney']['LMI_PAYEE_PURSE'];    //кошелек
 $wmid = $SysValue['webmoney']['wmid'];    //аттестат
 
 //параметры магазина
-//$inv_id    = $_POST['ouid'];       //номер счета
-
-//параметры магазина
-$mrh_ouid = explode("-", $_POST['ouid']);
-$inv_id = $mrh_ouid[0]."".$mrh_ouid[1];     //номер счета
-
+$inv_id    = $_POST['ouid'];       //номер счета
 
 //описание покупки
 $inv_desc  = "Оплата заказа №$inv_id";
 $out_summ  = $sum_pol*$SysValue['webmoney']['kurs']; //сумма покупки
+
 
 
 // вывод HTML страницы с кнопкой для оплаты
@@ -348,7 +312,7 @@ $disp= "
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
-     $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
+     $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $LMI_PAYEE_PURSE = $SysValue['z-payment']['LMI_PAYEE_PURSE'];    //кошелек
@@ -411,7 +375,7 @@ $disp= "
 	 $cart_list=Summa_cart();
 	 $ChekDiscount=ChekDiscount($cart_list[1]);
      $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
-     $sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
+     $sum_pol=(ReturnSummaNal($cart_list[1],$order['Person']['discount'])+$GetDeliveryPrice);
 	 
 	 // регистрационная информация
 $MERCHANTNUMBER = $SysValue['rbs']['MERCHANTNUMBER'];    //кошелек
@@ -477,90 +441,6 @@ $disp= "
 </tr>
 </table>
 </form> 
-</div>";
-	 
-	 //session_unregister('cart');
-	 }
-	 // Interkassa
-	  elseif(@$_POST['mail'] and @$_POST['name_person'
- ] and @$_POST['tel_name'] and @$_POST['adr_name'] and @$cart and @$_POST['order_metod']==9)
-     {
-	 
-	 $cart_list=Summa_cart();
-	 $ChekDiscount=ChekDiscount($cart_list[1]);
-     $GetDeliveryPrice=GetDeliveryPrice($_POST['dostavka_metod'],$cart_list[1]);
-$sum_pol=(ReturnSummaNal($cart_list[1],$ChekDiscount[0])+$GetDeliveryPrice);
-//$sum_pol=$cart_list[1];
-
-
- 
-	 // регистрационная информация
-$LMI_PAYEE_PURSE = $SysValue['interkassa']['LMI_PAYEE_PURSE'];    //кошелек
-$LMI_SECRET_KEY = $SysValue['interkassa']['LMI_SECRET_KEY'];    //кошелек
-
-//параметры магазина
-//$inv_id    = $_POST['ouid'];       //номер счета
-
-//параметры магазина
-$mrh_ouid = explode("-", $_POST['ouid']);
-$inv_id = $mrh_ouid[0]."".$mrh_ouid[1];     //номер счета
-
-
-//описание покупки
-$inv_desc  = "Оплата заказа №$inv_id";
-$out_summ  = $sum_pol; //сумма покупки
-
-
-// Тест
-//$out_summ=0.5;
-
-
-
-$ik_shop_id = $LMI_PAYEE_PURSE;
-$ik_payment_amount = $out_summ;
-$ik_payment_id = $inv_id;
-$ik_payment_desc = $inv_desc;
-$ik_paysystem_alias = '';
-$ik_sign_hash = '';
-$ik_baggage_fields = '';
-$secret_key = $LMI_SECRET_KEY;
-
-$ik_sign_hash_str = $ik_shop_id.':'.
-$ik_payment_amount.':'.
-$ik_payment_id.':'.
-$ik_paysystem_alias.':'.
-$ik_baggage_fields.':'.
-$secret_key;
-
-$ik_sign_hash = md5($ik_sign_hash_str);
-
-
-
-// вывод HTML страницы с кнопкой для оплаты
-$disp= "
-<div align=\"center\">
-
- <p><br></p>
-
-<form name=\"pay\" action=\"https://interkassa.com/lib/payment.php\" method=\"post\" target=\"_top\">
-<input type=\"hidden\" name=\"ik_shop_id\" value=\"$LMI_PAYEE_PURSE\">
-<input type=\"hidden\" name=\"ik_payment_amount\" value=\"$out_summ\">
-<input type=\"hidden\" name=\"ik_payment_id\" value=\"$inv_id\">
-<input type=\"hidden\" name=\"ik_payment_desc\" value=\"$inv_desc\">
-<input type=\"hidden\" name=\"ik_paysystem_alias\" value=\"\">
-<input type=\"hidden\" name=\"ik_sign_hash\" value=\"$ik_sign_hash\">
-
-	  <table>
-<tr><td><img src=\"images/shop/icon-setup.gif\" width=\"16\" height=\"16\" border=\"0\"></td>
-	<td align=\"center\"><a href=\"javascript:history.back(1)\"><u>
-	Вернуться к оформлению<br>
-	покупки</u></a></td>
-	<td width=\"20\"></td>
-	<td><img src=\"images/shop/icon-client-new.gif\" alt=\"\" width=\"16\" height=\"16\" border=\"0\" align=\"left\">
-	<a href=\"javascript:pay.submit();\"><u>Оплатить через платежную систему</u></a></td>
-</tr>
-</table>
-      </form>
 </div>";
 	 
 	 //session_unregister('cart');
