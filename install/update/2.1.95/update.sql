@@ -1,4 +1,5 @@
 
+
 ALTER TABLE `phpshop_system` ADD `rss_use` int(1) unsigned NOT NULL default '1';
 ALTER TABLE `phpshop_system` ADD `1c_load_accounts` enum('0','1') NOT NULL default '1';
 ALTER TABLE `phpshop_system` ADD `1c_load_invoice` enum('0','1') NOT NULL default '1';
@@ -143,3 +144,5 @@ ALTER TABLE `phpshop_products` ADD `ed_izm` VARCHAR( 255 ) NOT NULL;
 
 ALTER TABLE `phpshop_sort_categories` ADD `goodoption` ENUM( '0', '1' ) NOT NULL;
 ALTER TABLE `phpshop_sort_categories` ADD `optionname` ENUM( '0', '1' ) NOT NULL;
+ALTER TABLE `phpshop_sort_categories` ADD `page` varchar(255) NOT NULL default '';
+ALTER TABLE `phpshop_sort` ADD `page` varchar(255) NOT NULL default '';

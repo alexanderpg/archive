@@ -158,7 +158,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 	<FIELDSET>
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>К</u>аталог</span>:</LEGEND>
 	<div style="padding:10">
-	<input type=text id="myName"  style="width: 550" value="">
+	<input type=text id="myName"  style="width: 500" value="">
 	<input type="hidden" value="'.$parent_to.'" name="parent_to_new" id="myCat">
 <BUTTON style="width: 3em; height: 2.2em; margin-left:5"  onclick="miniWinFull(\'adm_cat.php?category='.$parent_to.'\',300,400);return false;"><img src="../img/icon-move-banner.gif"  width="16" height="16" border="0"></BUTTON>
 	</FIELDSET>
@@ -184,6 +184,7 @@ tabPane.addTabPage( document.getElementById( "intro-page" ) );
 		<input type="radio" name="num_row_new" value="1" >1&nbsp;&nbsp;&nbsp;
 		<input type="radio" name="num_row_new" value="2" checked>2&nbsp;&nbsp;&nbsp;
 		<input type="radio" name="num_row_new" value="3" >3&nbsp;&nbsp;&nbsp;
+		<input type="radio" name="num_row_new" value="4" >4&nbsp;&nbsp;&nbsp;
 </FIELDSET>
 	</td>
 	<td width="10"></td>
@@ -546,6 +547,9 @@ echo ('
 <hr>
 <table cellpadding="0" cellspacing="0" width="100%" height="50" >
 <tr>
+    <td align="left" style="padding:10">
+    <BUTTON class="help" onclick="helpWinParent(\'catalogID\')">Справка</BUTTON></BUTTON>
+	</td>
 	<td align="right" style="padding:10">
 <input type="submit"  name="productSAVE" value="OK" class=but>
 <input type="reset" class=but name="btnLang" value="Сбросить">

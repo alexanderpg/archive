@@ -204,7 +204,7 @@ td.panel_r{ /*Раскла в 2 колонки правая колонка*/
 div.product_forma_1{
 	font-size: 11px;
 	color: #696969;
-   background-image: url(images/product_bg.jpg);
+    background-image: url(images/product_bg.jpg);
 	background-repeat: repeat-x;
 	width: 100%;
 	padding-top:15px;

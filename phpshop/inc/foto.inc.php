@@ -26,7 +26,7 @@ function getFotoIconPodrobno($n,$pic_big){
 global $SysValue;
 $sql="select * from ".$SysValue['base']['table_name35']." where parent=$n order by num";
 $result=mysql_query($sql);
-$num=mysql_num_rows($result);
+@$num=mysql_num_rows(@$result);
 if($num !=0){
 $j=1;
 while(@$row = mysql_fetch_array(@$result))
@@ -53,22 +53,21 @@ if(is_array($FotoArray))
 	
     
 	
-if(is_array($FotoArray[0]))
+if(is_array($FotoArray[0]) and count($FotoArray)>1)
 @$disp.='
   <td align="center">
-  1<br>
   <a href="javascript:fotoload('.$n.',0);"><img src="'.$FotoArray[0]["name_s"].'" alt="'.$FotoArray[0]["info"].'" border="1" class="imgOn" onerror="NoFoto2(this)"></a><br>&nbsp;
   </td>';
   
 if(is_array(@$FotoArray[1]))
 @$disp.='
-  <td align="center">2<br>
+  <td align="center">
     <a href="javascript:fotoload('.$n.',1);"><img src="'.$FotoArray[1]["name_s"].'" alt="'.$FotoArray[1]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" onerror="NoFoto2(this)"></a><br>&nbsp;
   </td>';
   
 if(is_array(@$FotoArray[2]))
 @$disp.='
-  <td align="center">3<br>
+  <td align="center">
     <a href="javascript:fotoload('.$n.',2);"><img src="'.$FotoArray[2]["name_s"].'" alt="'.$FotoArray[2]["info"].'" border="1" class="imgOff" onmouseover="ButOn(this)" onmouseout="ButOff(this)" onerror="NoFoto2(this)"><br>
 Вперед &raquo;</a>
   </td>
