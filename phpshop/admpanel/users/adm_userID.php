@@ -411,6 +411,12 @@ tabPane.addTabPage( document.getElementById( "rules" ) );
 	<input type="checkbox" value="1" name="rss_rul_3" <?=Checked($status['rsschanels'],2)?>> <span name=txtLang id=txtLang>Создание</span>&nbsp;&nbsp;
 	</td>
 </tr>
+<tr class="row">
+	<td ><span name=txtLang id=txtLang>Автоматическое обновление</span></td>
+	<td align="center">
+	<input type="checkbox" value="1" name="upload_rul_1" <?=Checked($status['upload'],0)?>> <span name=txtLang id=txtLang>Разрешить</span>&nbsp;&nbsp;
+	</td>
+</tr>
 </table>
 </div>
 <hr>
@@ -459,7 +465,8 @@ $statusUser=array(
 "valuta"=>Zero($valuta_rul_1)."-".Zero($valuta_rul_2)."-".Zero($valuta_rul_3),
 "delivery"=>Zero($delivery_rul_1)."-".Zero($delivery_rul_2)."-".Zero($delivery_rul_3),
 "servers"=>Zero($servers_rul_1)."-".Zero($servers_rul_2)."-".Zero($servers_rul_3),
-"rsschanels"=>Zero($rss_rul_1)."-".Zero($rss_rul_2)."-".Zero($rss_rul_3)
+"rsschanels"=>Zero($rss_rul_1)."-".Zero($rss_rul_2)."-".Zero($rss_rul_3),
+"upload"=>Zero($upload_rul_1)
 );
 
 $sql="UPDATE $table_name19

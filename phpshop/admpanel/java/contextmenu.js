@@ -103,7 +103,7 @@ function cMenu(t,i){
 		}
 		
 	}
-	
+/*	
 	o2.style.left=d.all?d.body.scrollTop+event.clientX:d.body.scrollLeft+event.pageX; //Проверяем на IEобразность и показываем около курсора
 
 	if(isIE&&(d.getElementById("interfacesWin"))&&(curpage=="visiter")) {var topper=d.getElementById("interfacesWin").offsetTop;} else {var topper=0;} //Если слой  нас сдвинул, то  сдвинуть контменю обратно на величину сдвижки.
@@ -112,6 +112,22 @@ function cMenu(t,i){
 
 
 	o2.style.top=d.all?event.clientY-topper:event.pageY-topper; //Проверяем на IEобразность и показываем около курсора
+*/
+
+	o2.style.left=d.all?d.body.scrollLeft+event.clientX:d.body.scrollLeft+event.pageX; //Проверяем на IEобразность и показываем около курсора
+
+	var topper=0;
+	var inntopper=0;
+
+	if (d.getElementById("interfacesWin")) {
+		inntopper=d.getElementById("interfacesWin").scrollTop;
+	}
+
+
+	if(isIE&&(d.getElementById("interfacesWin"))&&(curpage=="visiter")) {var topper=d.getElementById("interfacesWin").offsetTop;} //Если слой  нас сдвинул, то  сдвинуть контменю обратно на величину сдвижки.
+	o2.style.top=d.all?event.clientY-topper+d.body.scrollTop+inntopper:event.pageY-topper+d.body.scrollTop; //Проверяем на IEобразность и показываем около курсора
+
+
 	o2.style.visibility ='visible';
 	event.cancelBubble=!0;
 	if (timerID) {clearInterval(timerID);} timerID = null;

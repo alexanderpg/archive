@@ -48,7 +48,7 @@ switch($p){
 	  	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td><form name="calendar">
+<td style="padding-left:10px"><form name="calendar">
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td width="5"></td>
@@ -357,7 +357,7 @@ switch($p){
 <tr>
 	<td>
 	<span name=txtLang id=txtLang>Выберите файл с расширением *.csv</span><br>
-	<INPUT type=file size=80 name=csv_file>
+	<INPUT type=file size=80 name="csv_file" id="csv_file" onchange="UpdateFileNameBase1C(this.value)">
 	</td>
 	
 	<td align="right">
@@ -368,20 +368,35 @@ switch($p){
 </tr>
 <tr>
    <td colspan="2">
+    <FIELDSET>
+	<LEGEND>Тип файла</LEGEND>
+	<div style="padding:10">
+	<input type="hidden" id="1c_tree_check" value="0">
+	<input type="radio" name="filename" id="filenamebase" value="base" checked onclick="Option1c(1)"> Экспорт номенклатуры
+	<input type="radio" name="filename" id="filenametree" value="tree" onclick="Option1c(0)"> Экспорт каталога групп
+	</div>
+	</FIELDSET>
+   </td>
+</tr>
+   
+<tr>
+   <td colspan="2" id="pole_1c_option">
      <FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>анные, отмеченные флажками будут изменены/добавлены</span></LEGEND>
 <div style="padding:10">
 <input type="checkbox" value="1" id="tip_1" checked> Наименование</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" id="tip_2" > <span name=txtLang id=txtLang>Краткое описание</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" id="tip_3" > <span name=txtLang id=txtLang>Маленькая картинка</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_4" > <span name=txtLang id=txtLang>Подробное описание</span>&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_4" > <span name=txtLang id=txtLang>Подробное описание</span>&nbsp;&nbsp;<br>
 <input type="checkbox" value="1" id="tip_5" > <span name=txtLang id=txtLang>Большая картинка</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" id="tip_6" checked> <span name=txtLang id=txtLang>Цена1</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" id="tip_7" checked> <span name=txtLang id=txtLang>Цена2</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" id="tip_8" checked> <span name=txtLang id=txtLang>Цена3</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" id="tip_9" checked> <span name=txtLang id=txtLang>Цена4</span>&nbsp;&nbsp;
 <input type="checkbox" value="1" id="tip_10" checked> <span name=txtLang id=txtLang>Цена5</span>&nbsp;&nbsp;
-<input type="checkbox" value="1" id="tip_11" checked> <span name=txtLang id=txtLang>Склад</span>&nbsp;&nbsp;
+<input type="checkbox" value="1" id="tip_11" checked> <span name=txtLang id=txtLang>Склад</span>&nbsp;&nbsp;<br>
+<input type="checkbox" value="1" id="tip_14" checked> <span name=txtLang id=txtLang>Категория&nbsp;&nbsp;</span>
+<input type="checkbox" value="1" id="tip_15" checked> <span name=txtLang id=txtLang>Характеристики&nbsp;&nbsp;</span>
 <input type="checkbox" value="1" id="tip_12" checked disabled> <span name=txtLang id=txtLang>Вес</span>&nbsp;&nbsp;
 </div>
 </div>
@@ -391,33 +406,10 @@ switch($p){
 </table>
 
 </FIELDSET>
-<p><br></p>
-<table style="border: 1px;border-style: inset;" cellpadding="10">
-<tr>
-	<td width="100%" ><h4><span name=txtLang id=txtLang>Ход операции</span></h4>
-<ol>
-    <li><span name=txtLang id=txtLang><strong>Шаг 1</strong> - загрузить <a href="http://www.phpshop.ru/docs/1c.html" target="_blank">обработчик связи 1C-PHPShop</a> (7.7,8.0,8.1)</span>
-    <li><span name=txtLang id=txtLang><strong>Шаг 2</strong> - в программе 1С:Предприятие в меню "Файл -> Открыть" выбрать скаченный обработчик</span>
-    <li><span name=txtLang id=txtLang><strong>Шаг 3</strong> - выгрузить товарную базу клавишей "Выгрузить"</span>
-	<li><span name=txtLang id=txtLang><strong>Шаг 4</strong> - выбрать заранее выгруженный файл базы с расширением *.csv</span>
-	<li><span name=txtLang id=txtLang><strong>Шаг 5</strong> - принять изменения в распечатанном файле</span>
-	<li><span name=txtLang id=txtLang><strong>Шаг 6</strong> - дождаться выполнения операции</span>
-	<li><span name=txtLang id=txtLang><strong>Шаг 7</strong> - перейти в раздел "Каталог - Выгруженные товары - 1С:Предприятие"</span>
-    <li><span name=txtLang id=txtLang><strong>Шаг 8</strong> - выделите флажком товары и выберете папку для переноса опцией "С отмеченными - Перенести в каталог". Если требуется,  составьте соответствующие каталоги.</span>
-</ol></td>
-</tr>
-<tr>
-   <td valign="top"><h4><span name=txtLang id=txtLang>Внимание!</span></h4>
-<span name=txtLang id=txtLang>Внимательно проверяйте предварительно загруженные данные во избежания
- неверной их загрузки.</span></td>
-</tr>
-</table>
+
+
 <div align="right" style="padding:10">
 <BUTTON class="help" onclick="initSlide(0);loadhelp();">Справка</BUTTON>
-<BUTTON style="width: 15em; height: 2.2em; margin-left:5"  onclick="miniWin(\'./1c/seamply_base_1c.csv\',500,370)">
-<img src="./img/action_save.gif" width="16" height="16" border="0" align="absmiddle" hspace="3">
-<span name=txtLang id=txtLang>Скачать пример файла</span>
-</BUTTON>
 </div>
 </TD></TR></TABLE>
 	  ';
@@ -471,6 +463,7 @@ switch($p){
 <input type="checkbox" value="1" id="tip_13" checked> <span name=txtLang id=txtLang>Артикул&nbsp;&nbsp;</span>
 <input type="checkbox" value="1" id="tip_14" checked> <span name=txtLang id=txtLang>Категория&nbsp;&nbsp;</span>
 <input type="checkbox" value="1" id="tip_15" checked> <span name=txtLang id=txtLang>Характеристики&nbsp;&nbsp;</span>
+<input type="checkbox" value="1" id="tip_17" checked> <span name=txtLang id=txtLang>Доп. категория&nbsp;&nbsp;</span>
 <input type="checkbox" value="1" id="tip_12" checked disabled> <span name=txtLang id=txtLang>Вес&nbsp;&nbsp;</span>
 Валюта: '.ChoiceValuta().' 
 </div>
@@ -483,7 +476,7 @@ switch($p){
 
 </FIELDSET>
 <p><br></p>
-<table style="border: 1px;border-style: inset;" cellpadding="10">
+<table style="border: 1px;border-style: inset;background-color: White;" cellpadding="10">
 <tr>
 	<td width="100%" ><h4><span name=txtLang id=txtLang>Ход операции</span></h4>
 <ol>
@@ -790,7 +783,7 @@ switch($p){
 	  $interface='
 	  <table width="100%" cellpadding="0" cellpadding="0" style="border: 1px;border-style: outset;">
 <tr>
-<td style="padding-left:5px">
+<td style="padding-left:10px">
 <form method="post" name=calendar>
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -989,8 +982,6 @@ $interface=('
       <td id="but38" class="butoff"><img name="imgLang" src="icon/layout_content.gif" title="Вывод всех товаров" width="16" height="16" border="0" onmouseover="ButOn(38)" onmouseout="ButOff(38)" onclick="AllProducts()"></td>
   <td width="3"></td>
 <td id="but39"  class="butoff"><img name="imgLang" src="icon/icon_component.gif" title="Характеристики" width="16" height="16" border="0" onmouseover="ButOn(39)" onmouseout="ButOff(39)" onclick="DoReload(\'sort\')"></td>
-  <td width="3"></td>
-  <td id="buttable_sort" class="butoff"><img name="imgLang" src="icon/table_sort.gif" title="Калькулятор характеристик" width="16" height="16" border="0" onmouseover="ButOn(\'table_sort\')" onmouseout="ButOff(\'table_sort\')" onclick="CalcSort()"></td>
      <td width="5"></td>
 	<td width="1" bgcolor="#ffffff"></td>
 	<td width="1" bgcolor="#808080"></td>

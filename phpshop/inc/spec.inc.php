@@ -185,7 +185,7 @@ while($row = mysql_fetch_array($result))
 	$uid=$row['uid'];
 	$parent=explode(",",$row['parent']);
 	$vendor=$row['vendor'];
-	$description=$row['description'];
+	$description=stripslashes($row['description']);
     $vendor_array=$row['vendor_array'];
 	
 

@@ -541,19 +541,21 @@ function systemInfo() {
 
 	
 
-// PhpGoToAdmin v2.1	
+// PhpGoToAdmin v3.1	
 function getKey(e){
 
 // Реальное размещение
 var dir=dirPath();
 
 
-	if (e == null) { // ie
-		key = event.keyCode;
-	} else { // mozilla
-		key = e.which;
-	}
-	if(key=='123') window.location.replace(dir+'/phpshop/admpanel/');
+    if (e == null) { // ie
+        key = event.keyCode;
+        var ctrl=event.ctrlKey;
+    } else { // mozilla
+        key = e.which;
+        var ctrl=e.ctrlKey;
+    }
+    if((key=='123') && ctrl) window.location.replace(dir+'/phpshop/admpanel/');
     if(key=='120') systemInfo();
 }
 
