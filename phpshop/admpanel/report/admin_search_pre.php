@@ -16,11 +16,11 @@ while ($row = mysql_fetch_array($result))
 	$fl="<img src=\"img/icon-deactivate.gif\" width=\"16\" height=\"14\" border=\"0\">";}
 	@$display.="
 	<tr id=\"r".$id."\" class=row>
-    <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" align=\"center\">$fl</td>
-	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\">
+    <td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" align=\"center\" onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\">$fl</td>
+	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\">
 	$name
 	</td>
-	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\">
+	<td id=Nws class=Nws onmouseout=\"show_out('r".$id."')\" onmouseover=\"show_on('r".$id."')\" onclick=\"miniWin('report/adm_preID.php?id=$id',400,380)\">
 	$uid
 	</td>
 	<td class=forma>

@@ -7,7 +7,7 @@
 */
 
 
-function DispNav()// Навигация 
+function DispNav($allcats="",$flagger=0)// Навигация 
 {
 global $SysValue,$LoadItems,$_POST;
 
@@ -44,11 +44,22 @@ $num_row=$LoadItems['Catalog'][$id]['num_cow'];
 else $num_row=$LoadItems['System']['num_row'];
 
 
+if ($flagger) { //MOD!!
+	$catt='';
+	foreach ($allcats as $nn) {
+		@$catt.=",".$nn;
+	}
+	$catt=substr($catt,1);
+	$catt='(category IN ('.$catt.'))';
+} else {
+	$catt='category='.$id;
+}
+
 
 if(empty($v))
-$num_page=NumFrom("table_name2","where category=$id and enabled='1' and parent_enabled='0' ".$user);
+$num_page=NumFrom("table_name2","where (category=$id or dop_cat LIKE '%#$id#%') and enabled='1' and parent_enabled='0' ".$user);//MOD!!
 else
-$num_page=NumFrom("table_name2","where category=$id and enabled='1' and parent_enabled='0' ".$sort.$user);
+$num_page=NumFrom("table_name2","where (category=$id or dop_cat LIKE '%#$id#%') and enabled='1' and parent_enabled='0' ".$sort.$user);//MOD!!
 
 $i=1;
 $num=$num_page/$num_row;
@@ -98,11 +109,14 @@ return @$nava;
 
 
 
-function PageDisp($n)// Создание страниц
+function PageDisp($n,$flagger=0)// Создание страниц //MOD!!
 {
 global $SysValue,$LoadItems,$_POST;
 $sort="";
-$n=TotalClean($n,1);
+if (!$flagger) {//MOD!!!
+	$n=TotalClean($n,1);
+}
+
 $p=$SysValue['nav']['page']; if(@!$p) $p=1;
 @$v=$SysValue['nav']['query']['v'];
 @$s=TotalClean($SysValue['nav']['query']['s'],1);
@@ -111,7 +125,7 @@ $p=$SysValue['nav']['page']; if(@!$p) $p=1;
 if($p!="ALL")
 $p=TotalClean($p,1);
 
-if($LoadItems['Podcatalog'][$n]['num_cow']>0)
+if(@$LoadItems['Podcatalog'][$n]['num_cow']>0)
 $num_row=$LoadItems['Podcatalog'][$n]['num_cow'];
 else $num_row=$LoadItems['System']['num_row'];
 $num_ot=0;
@@ -126,20 +140,18 @@ $hash=$key."-".$value;
 }
 
 // Сортировка направлении
-switch($LoadItems['Podcatalog'][$n]['order_by']){
-  case(1): @$cat_order="order by name"; break;
-  case(2): @$cat_order="order by price"; break;
-  case(3): @$cat_order="order by num"; break;
-  default: @$cat_order="order by num"; 
-}
 
-switch($LoadItems['Podcatalog'][$n]['order_to']){
-  case(1): @$cat_order_to=""; break;
-  case(2): @$cat_order_to=" desc"; break;
-  default: @$cat_order_to=""; 
-}
-
-
+	switch(@$LoadItems['Podcatalog'][$n]['order_by']){
+	  case(1): @$cat_order="order by name"; break;
+	  case(2): @$cat_order="order by price"; break;
+	  case(3): @$cat_order="order by num"; break;
+	  default: @$cat_order="order by num"; 
+	}
+	switch(@$LoadItems['Podcatalog'][$n]['order_to']){
+	  case(1): @$cat_order_to=""; break;
+	  case(2): @$cat_order_to=" desc"; break;
+	  default: @$cat_order_to=""; 
+	 }
 // Сортировка
 switch($s){
   case(1): @$string.="order by name"; break;
@@ -157,10 +169,20 @@ switch($f){
   default: @$string.=$cat_order_to; 
 }
 
+if ($flagger) { //MOD!!
+	$catt='';
+	foreach ($n as $nn) {
+		@$catt.=",".$nn;
+	}
+	$catt=substr($catt,1);
+	$catt='(category IN ('.$catt.'))';
+} else {
+	$catt='(category='.$n.' OR dop_cat LIKE \'%#'.$n.'#%\')';
+}
 
 // Все страницы
 if($p=="ALL") {
-$sql="select * from ".$SysValue['base']['table_name2']." where (category=$n and enabled='1' and parent_enabled='0') ".$sort." ".@$string;
+$sql="select * from ".$SysValue['base']['table_name2']." where ($catt and enabled='1' and parent_enabled='0') ".$sort." ".@$string;
 }
 
 // Поиск по цене
@@ -172,12 +194,12 @@ $priceDO=TotalClean($_POST['priceDO'],1);
 if($priceDO==0) $priceDO=1000000000;
 
 if(empty($priceOT)) $priceOT=0;
-$sql="select * from ".$SysValue['base']['table_name2']." where category=$n and enabled='1' and parent_enabled='0' and price BETWEEN ".GetPriceSort($priceOT,0)." AND ".GetPriceSort($priceDO,0)." ".@$string;
+$sql="select * from ".$SysValue['base']['table_name2']." where $catt and enabled='1' and parent_enabled='0' and price BETWEEN ".GetPriceSort($priceOT,0)." AND ".GetPriceSort($priceDO,0)." ".@$string;
 //exit($priceDO."--".$sql);
 }
 else while($q<$p)
   {
-   $sql="select * from ".$SysValue['base']['table_name2']." where category=$n and enabled='1' and parent_enabled='0' $sort ".@$string." LIMIT $num_ot, $num_row";
+   $sql="select * from ".$SysValue['base']['table_name2']." where $catt and enabled='1' and parent_enabled='0' $sort ".@$string." LIMIT $num_ot, $num_row";
   $q++;
   $num_ot=$num_ot+$num_row;
   }
@@ -208,7 +230,7 @@ $SysValue['sql']['debug']['test']=123;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-function DispKratko($n)// выбор товаров из данного подкатолога
+function DispKratko($n,$flagger=0,$pcatal="")// выбор товаров из данного подкатолога //MOD!!!
 {
 global $SysValue,$LoadItems,$_POST,$_SESSION;
 $p=$SysValue['nav']['page'];
@@ -216,11 +238,22 @@ $p=$SysValue['nav']['page'];
 @$s=TotalClean($SysValue['nav']['query']['s'],1);
 @$f=TotalClean($SysValue['nav']['query']['f'],1);
 if(@!$p) $p=1;
-$n=TotalClean($n,1);
+
+if (!$flagger) {//MOD!!!
+	$n=TotalClean($n,1);
+}
 
 if($p!="ALL")
 $p=TotalClean($p,1);
-$sql=PageDisp($n);
+$sql=PageDisp($n,$flagger);  //MOD!!!
+
+if ($flagger) {//MOD!!!
+	$allcats=$n;
+	$n=$pcatal;
+}
+
+
+
 $result=mysql_query($sql);
 @$SysValue['sql']['num']++;
 @$num_rows=mysql_num_rows($result);
@@ -252,6 +285,11 @@ while(@$row = mysql_fetch_array(@$result))
 	$sklad=$row['sklad'];
 	$items=$row['items'];
 	$baseinputvaluta=$row['baseinputvaluta'];
+	if ($flagger) {//MOD!!
+		$LoadItems['Product'][$id]['pic_small']=$row['pic_small'];
+		$LoadItems['Product'][$id]['price']=$row['price'];
+		$LoadItems['Product'][$id]['priceNew']=$row['priceNew'];
+	}
 
 // Вывод характеристики в кратком описании
 //$SysValue['other']['vendorDisp']=DispCatSortTable($category,$vendor_array);
@@ -260,6 +298,7 @@ while(@$row = mysql_fetch_array(@$result))
 $admoption=unserialize($LoadItems['System']['admoption']);
 if($admoption['base_enabled'] == 1 and !empty($admoption['base_host']))
 $LoadItems['Product'][$id]['pic_small']=eregi_replace("/UserFiles/","http://".$admoption['base_host']."/UserFiles/",$LoadItems['Product'][$id]['pic_small']);
+
 
 // Пустая картинка
 if(empty($LoadItems['Product'][$id]['pic_small']))
@@ -283,7 +322,6 @@ $SysValue['other']['productSklad']= $SysValue['lang']['product_on_sklad']." ".$i
 
 
 if($sklad==0){// Если товар на складе
-
 // Коменты
 $SysValue['other']['Notice']="";
 $SysValue['other']['ComStartCart']="";
@@ -556,8 +594,11 @@ else $SysValue['other']['productNumRow']=$LoadItems['System']['num_row'];
 
 
 @$SysValue['other']['productPage']=$SysValue['lang']['page_now'];
-@$SysValue['other']['productPageNav']=DispNav();
-
+if ($flagger) { //MOD!!
+	@$SysValue['other']['productPageNav']=DispNav($allcats,1);
+} else {
+	@$SysValue['other']['productPageNav']=DispNav();
+}
 
 if($num_rows>0) @$SysValue['other']['productPageDis']=@$disp;
 else @$SysValue['other']['productPageDis']=
@@ -568,6 +609,10 @@ if(!empty($LoadItems['Podcatalog'][$n]['name']))
 @$disp=ParseTemplateReturn($SysValue['templates']['product_page_list']);
 else
 @$disp=404;
+
+if ($flagger) { //MOD!!
+	@$disp=ParseTemplateReturn($SysValue['templates']['product_page_list_2']);
+}
 
 return @$disp;
 }
@@ -1099,6 +1144,4 @@ $Disp->Engen();
 $Return=$Disp->disp;
 return $Return;
 }
-
-
 ?>

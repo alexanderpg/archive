@@ -97,6 +97,39 @@ $yml_bid_array_new=array(
 );
 
 
+// Склад<br>
+$option=unserialize($systems['admoption']);
+switch($option['sklad_status']){
+  
+       case(3):
+	   if($items_new<1) {
+	      $sklad=1;
+		  $enabled=1;
+		  }
+	     else {
+		 $sklad=0;
+		 $enabled=1;
+		 }
+	   break;
+	   
+	   case(2):
+	   if($items_new<1) {
+	     $enabled=0;
+		 $sklad=0;
+		 }
+	     else {
+		 $enabled=1;
+		 $sklad=0;
+		 }
+	   break;
+	   
+	   default: 
+	   $sklad=$numBox;
+	   $enabled=$enabled_new;
+	   break;
+  }
+
+
 
 $sql="UPDATE $table_name2
 SET
@@ -106,9 +139,9 @@ content='".addslashes($EditorContent2)."',
 description='".addslashes($EditorContent)."',
 price='$priceOne',
 price_n='$priceBox',
-sklad='$numBox',
+sklad='$sklad',
 p_enabled='$p_enabled_new',
-enabled='$enabled_new',
+enabled='$enabled',
 uid='$uid_new',
 spec='$spec_new',
 odnotip='$odnotip_new',
@@ -141,7 +174,8 @@ price4='$price4',
 price5='$price5',
 files='".serialize($filenum)."',
 baseinputvaluta='$baseinputvaluta_new',
-ed_izm='$edizm_new'
+ed_izm='$edizm_new',
+dop_cat='$dop_cat_new' 
 where id='$productID'";
 $result=mysql_query($sql)or @die("".mysql_error()."");
 
@@ -482,9 +516,10 @@ while($row = mysql_fetch_array($result))
 	$parent_enabled=$row['parent_enabled'];
 	$files=unserialize($row['files']);
 	$ed_izm=$row['ed_izm'];
+	$dop_cat=$row['dop_cat'];
 	
-	if($parent_enabled == 0) $p1="checked";
-	  else $p2="checked";
+	if($parent_enabled == 0) { $p1="checked"; }
+	  else {$p2="checked"; $p3="visibility:hidden";}
 	
 	
 	if($title_enabled == 0) {
@@ -701,22 +736,28 @@ echo ('
 <tr>
     <td align=left >
 	
-	<FIELDSET id=fldLayout >
+	<table cellpadding="0" cellspacing="0" width="100%">
+<tr>
+   <td align=left >
+<FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Р</u>екомендуемые товары для совместной продажи</span>:</LEGEND>
 <div style="padding:10">
-<textarea class=full name=odnotip_new style="height:40px">'.$odnotip.'</textarea>
-<table width="570">
-<tr>
-	<td><img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <span name=txtLang id=txtLang>Введите идентификаторы (ID) товаров через запятую без пробелов</span> (100,101).</td>
-	
-</tr>
-</table>
-
-
-
+	<textarea class=full  name=odnotip_new style="height:40px">'.$odnotip.'</textarea>
+	<img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> <span name=txtLang id=txtLang>Введите ID товаров в формате 1,2,3</span>
 </div>
 </FIELDSET>
-
+	</td>
+	<td style="padding-left:5px" valign="top" width="300">
+	<FIELDSET id=fldLayout >
+<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Д</u>ополнительные  каталоги</span>:</LEGEND>
+<div style="padding:10">
+<textarea class=full  name="dop_cat_new" style="height:40px">'.$dop_cat.'</textarea>
+<img src="../icon/icon_info.gif" alt="" width="16" height="16" border="0" align="absmiddle"> Введите ID каталогов в формате #1#2#3#
+</div>
+</FIELDSET>
+   </td>
+</tr>
+</table>
 	</td>
 </tr>
 <tr>
@@ -748,6 +789,7 @@ echo ('
 </FIELDSET>
 </div>
 	</td>
+	
 
 
 </tr>
@@ -1166,19 +1208,6 @@ tabPane.addTabPage( document.getElementById( "har" ) );
 </script>
 <div style="height:420px;overflow:auto">
 <table width="100%">'.DispCatSort($category,$vendor_array).'
-<tr>
-  <td>
-  <FIELDSET id=fldLayout >
-<LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>Т</u>абличная запись для загрузки базы через Excel</span>:</LEGEND>
-<div style="padding:10">
-<textarea style="height:50px;width:550px"  id="encoded_text">'.base64_encode(serialize($vendor_array)).'</textarea>
-<div align="right" style="padding:10px">
-<input type="button" name="btnLang" value="Копировать" onmouseover="GetNumNameBtn(this)"  onclick="copyToClipboard()">
-</div>
-</div>
-</FIELDSET>
-  </td>
-</tr>
 </table>
 
 </div>
@@ -1194,6 +1223,18 @@ tabPane.addTabPage( document.getElementById( "har2" ) );
 	<td>
 	
 	<FIELDSET id=fldLayout >
+<LEGEND id=lgdLayout> <span name=txtLang id=txtLang><u>С</u>вязи</span></LEGEND>
+<div style="padding:10">
+<input type="radio" value="0" name="parent_enabled_new" '.$p1.' onclick="ShowPodtipOption(this.value)"> <span name=txtLang id=txtLang>Обычный товар</span>
+<input type="radio" value="1" name="parent_enabled_new" '.$p2.' onclick="ShowPodtipOption(this.value)"> <span name=txtLang id=txtLang>Добавочная опция для ведущего товара</span>
+</div>
+</FIELDSET>
+	</td>
+</tr>
+<tr>
+	<td id="podtip_list" style="'.$p3.'">
+	
+	<FIELDSET id=fldLayout >
 <LEGEND id=lgdLayout><span name=txtLang id=txtLang><u>П</u>одтипы товара</span></LEGEND>
 <div style="padding:10">
 <textarea class=full name=parent_new style="height:40px">'.$parent.'</textarea><br><br>
@@ -1202,18 +1243,7 @@ tabPane.addTabPage( document.getElementById( "har2" ) );
 </FIELDSET>
 	</td>
 </tr>
-<tr>
-	<td>
-	
-	<FIELDSET id=fldLayout >
-<LEGEND id=lgdLayout> <span name=txtLang id=txtLang><u>С</u>вязи</span></LEGEND>
-<div style="padding:10">
-<input type="radio" value="0" name="parent_enabled_new" '.$p1.'> <span name=txtLang id=txtLang>Обычный товар</span>
-<input type="radio" value="1" name="parent_enabled_new" '.$p2.'> <span name=txtLang id=txtLang>Добавочная опция для ведущего товара</span>
-</div>
-</FIELDSET>
-	</td>
-</tr>
+
 </table>
 </div>
 

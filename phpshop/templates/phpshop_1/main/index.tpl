@@ -132,6 +132,9 @@ so.write("flashban");
 </script>
 
 
+
+
+
   <div id="bg_catalog_1">@mainContentTitle@</div>
     <div style="color:#5e5e5e; padding-right:10px;">@mainContent@</div>
 	
@@ -202,12 +205,7 @@ so.write("flashban");
 
                
            @oprosDisp@
-		   <p>@cloud@</p>
-		   <div align="center" id="calres" style="padding:10px">
-		   @calendar@ 
-		   </div>
-		   
-		   
+		   @cloud@
            @leftMenu@ 
 		  
 		  

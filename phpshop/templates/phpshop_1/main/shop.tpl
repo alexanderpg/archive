@@ -17,6 +17,7 @@
 <SCRIPT language="JavaScript" src="java/cartwindow.js"></SCRIPT>
 <SCRIPT language="JavaScript" src="phpshop/lib/Subsys/JsHttpRequest/Js.js"></SCRIPT>
 <SCRIPT language="JavaScript" type="text/javascript" src="java/tabpane.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="java/swfobject.js"></SCRIPT>
 </HEAD>
 <BODY onLoad="pressbutt_load('@thisCat@','@pathTemplate@','false','false');NavActive('@NavActive@');LoadPath('@ShopDir@');">
 <table width="1004" cellpadding="0" cellspacing="0" align="center">
@@ -154,7 +155,7 @@
 		  
 		   @oprosDisp@  
 		   
-		    <p>@cloud@</p>
+		   @cloud@
             
             @leftMenu@
                
