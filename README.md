@@ -21,15 +21,15 @@
 
 Дополнительно:
 
-1C - Устаревшие обработчики 1С (архив)
-CMS-Free - Сборки PHPShop CMS Free (архив), текущая версия https://github.com/phpshopsoftware/phpshopcms
-CMS-Free-Micro - Сборки PHPShop CMS Miro (архив), текущая версия https://github.com/phpshopsoftware/phpshopcms-micro
-EasyControl - Сборки EasyControl (архив)
-Modules - Устаревшие модули (архив)
-No-Zend-Index - Версии для PHPShop 2.1 - 3.3 без Zend Optimizer (архив)
+1C - Устаревшие обработчики 1С (архив)<br>
+CMS-Free - Сборки PHPShop CMS Free (архив), текущая версия https://github.com/phpshopsoftware/phpshopcms<br>
+CMS-Free-Micro - Сборки PHPShop CMS Miro (архив), текущая версия https://github.com/phpshopsoftware/phpshopcms-micro<br>
+EasyControl - Сборки EasyControl (архив)<br>
+Modules - Устаревшие модули (архив)<br>
+No-Zend-Index - Версии для PHPShop 2.1 - 3.3 без Zend Optimizer (архив)<br>
 
 Сайт проекта: https://www.phpshop.ru<br>
 Демо-версия (пользовательская часть): https://myphpshop.ru<br>
 Демо-версия (административная часть): https://myphpshop.ru/phpshop/admpanel/<br>
-Учебник: https://docs.phpshop.ru
+Учебник: https://docs.phpshop.ru<br>
 Зеркало учебника: https://wiki.phpshop.ru
